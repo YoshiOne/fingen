@@ -9,4 +9,5 @@ build
 /captures/*.li
 /keystore.properties
 /yoshione.jks
-/google-services.json
+/app/google-services.json
+/app/fabric.properties
