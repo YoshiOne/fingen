@@ -69,16 +69,11 @@ android {
         prod {
             dimension "main"
         }
-        sync {
-            applicationIdSuffix ".sync"
-            resValue "string", "app_name", "Fingen sync"
-            dimension "main"
-        }
-        nd {
-            applicationIdSuffix ".nd"
-            resValue "string", "app_name", "Fingen alpha"
-            dimension "main"
-        }
+//        sync {
+//            applicationIdSuffix ".sync"
+//            resValue "string", "app_name", "Fingen sync"
+//            dimension "main"
+//        }
     }
 
     packagingOptions {
@@ -105,8 +100,6 @@ dependencies {
     implementation "com.android.support:support-annotations:$supportLibVersion"
     implementation "com.android.support:preference-v7:$supportLibVersion"
     implementation "com.android.support:support-v13:$supportLibVersion"
-    implementation "com.google.android.gms:play-services-auth:$playServicesLibVersion"
-    implementation "com.google.android.gms:play-services-gcm:$playServicesLibVersion"
     implementation "com.google.android.gms:play-services-location:$playServicesLibVersion"
     implementation "com.google.android.gms:play-services-maps:$playServicesLibVersion"
     implementation('com.anjlab.android.iab.v3:library:1.0.44') { exclude module: 'support-v4' }
