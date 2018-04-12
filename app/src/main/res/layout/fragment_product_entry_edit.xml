@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/textInputLayoutProduct"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/imageButtonDeleteCategory"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <AutoCompleteTextView
+            android:id="@+id/textViewProduct"
+            style="@style/EditableEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:completionThreshold="1"
+            android:hint="@string/ent_product"
+            android:inputType="textNoSuggestions"
+            tools:text="Зефир Ванильный Каравай глазированный 500гр"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/imageButtonDeleteProduct"
+        style="@style/ClearButtonStyle"
+        android:layout_centerVertical="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutProduct"
+        app:layout_constraintTop_toTopOf="@+id/textInputLayoutProduct"
+        tools:ignore="ContentDescription" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/textInputLayoutCategory"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/imageButtonDeleteCategory"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutProduct">
+
+        <EditText
+            android:id="@+id/textViewCategory"
+            style="@style/NotEditableEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/ent_category"
+            android:inputType="textMultiLine|textNoSuggestions"
+            tools:text="Быт еда" />
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/imageButtonDeleteCategory"
+        style="@style/ClearButtonStyle"
+        android:layout_centerVertical="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutCategory"
+        app:layout_constraintTop_toTopOf="@+id/textInputLayoutCategory"
+        tools:ignore="ContentDescription" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/textInputLayoutProject"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/imageButtonDeleteProject"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCategory">
+
+        <EditText
+            android:id="@+id/textViewProject"
+            style="@style/NotEditableEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/ent_project"
+            android:inputType="textMultiLine|textNoSuggestions"
+            tools:text="Быт еда" />
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/imageButtonDeleteProject"
+        style="@style/ClearButtonStyle"
+        android:layout_centerVertical="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutProject"
+        app:layout_constraintTop_toTopOf="@+id/textInputLayoutProject"
+        tools:ignore="ContentDescription" />
+
+    <com.yoshione.fingen.widgets.AmountEditor
+        android:id="@+id/amount_editor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutProject" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/textInputLayoutQuantity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/imageButtonLess"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/amount_editor">
+
+        <EditText
+            android:id="@+id/textViewQuantity"
+            style="@style/EditableEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:selectAllOnFocus="true"
+            android:hint="@string/ent_quantity"
+            android:inputType="numberDecimal"
+            tools:text="1"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/imageButtonMore"
+        style="@style/ClearButtonStyle"
+        android:layout_centerVertical="true"
+        app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutQuantity"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textInputLayoutQuantity"
+        android:src="@drawable/ic_add_blue"
+        tools:ignore="ContentDescription" />
+
+    <ImageButton
+        android:id="@+id/imageButtonLess"
+        style="@style/ClearButtonStyle"
+        android:layout_centerVertical="true"
+        app:layout_constraintEnd_toStartOf="@id/imageButtonMore"
+        app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutQuantity"
+        app:layout_constraintTop_toTopOf="@+id/textInputLayoutQuantity"
+        android:src="@drawable/ic_minus_blue"
+        tools:ignore="ContentDescription" />
+
+</android.support.constraint.ConstraintLayout>

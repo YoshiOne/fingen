@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:targetApi="n_mr1">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_expense"
+        android:shortcutId="new_expense"
+        android:shortcutLongLabel="@string/act_new_expense"
+        android:shortcutShortLabel="@string/act_new_expense">
+        <intent
+            android:action="com.yoshione.fingen.ACT_NEW_EXPENSE"
+            android:targetClass="com.yoshione.fingen.ActivityEditTransaction"
+            android:targetPackage="com.yoshione.fingen" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_income"
+        android:shortcutId="new_income"
+        android:shortcutLongLabel="@string/act_new_income"
+        android:shortcutShortLabel="@string/act_new_income">
+        <intent
+            android:action="com.yoshione.fingen.ACT_NEW_INCOME"
+            android:targetClass="com.yoshione.fingen.ActivityEditTransaction"
+            android:targetPackage="com.yoshione.fingen" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_transfer"
+        android:shortcutId="new_transfer"
+        android:shortcutLongLabel="@string/act_new_transfer"
+        android:shortcutShortLabel="@string/act_new_transfer">
+        <intent
+            android:action="com.yoshione.fingen.ACT_NEW_TRANSFER"
+            android:targetClass="com.yoshione.fingen.ActivityEditTransaction"
+            android:targetPackage="com.yoshione.fingen" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_main"
+        android:shortcutId="templates"
+        android:shortcutLongLabel="@string/ent_templates"
+        android:shortcutShortLabel="@string/ent_templates">
+        <intent
+            android:action="com.yoshione.fingen.ACT_SHOW_TEMPLATES"
+            android:targetClass="com.yoshione.fingen.ActivityModelList"
+            android:targetPackage="com.yoshione.fingen" />
+    </shortcut>
+</shortcuts>

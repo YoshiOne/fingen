@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?listItemBackground"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.yoshione.fingen.tag.TagView
+        android:id="@+id/layoutTagView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:gravity="end"
+        app:layout_constraintEnd_toStartOf="@+id/imageButtonDeleteProduct"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@color/blue_color"
+        tools:layout_height="16dp">
+
+
+    </com.yoshione.fingen.tag.TagView>
+
+    <!--<TextView-->
+        <!--android:id="@+id/textViewCategoryName"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="4dp"-->
+        <!--android:background="@drawable/rounded_corner"-->
+        <!--android:ellipsize="middle"-->
+        <!--android:fontFamily="sans-serif-medium"-->
+        <!--android:includeFontPadding="false"-->
+        <!--android:singleLine="true"-->
+        <!--android:textSize="@dimen/text_size_micro"-->
+        <!--android:textStyle="normal"-->
+        <!--app:layout_constraintEnd_toStartOf="@+id/imageButtonDeleteProduct"-->
+        <!--app:layout_constraintTop_toTopOf="parent"-->
+        <!--tools:text="кафе" />-->
+
+    <TextView
+        android:id="@+id/textViewProductName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-light"
+        android:maxLines="1"
+        android:textColor="?android:textColor"
+        android:textSize="@dimen/text_size_small"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toStartOf="@+id/imageButtonDeleteProduct"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutTagView"
+        tools:text="Зефир Ванильный Каравай глазированный 500гр" />
+
+    <ImageButton
+        android:id="@+id/imageButtonDeleteProduct"
+        style="@style/ClearButtonStyle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/textViewSum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="?android:textColor"
+        android:textSize="@dimen/text_size_micro"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageButtonDeleteProduct"
+        app:layout_constraintTop_toBottomOf="@+id/textViewProductName"
+        tools:text="150.00 руб. x 2 = 300.00 руб."
+        tools:textColor="@color/negative_color" />
+
+    <FrameLayout
+        android:id="@+id/spaceBottom"
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:layout_weight="1"
+        android:background="@color/lightListDividerColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

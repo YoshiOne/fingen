@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?listItemBackground"
+    style="@style/StyleListItemTransationsNormal">
+
+    <eu.davidea.flipview.FlipView
+        android:id="@+id/flipViewIcon"
+        android:layout_width="56dp"
+        android:layout_height="0dp"
+        android:clickable="true"
+        android:inAnimation="@anim/grow_from_middle_x_axis"
+        android:outAnimation="@anim/grow_from_middle_x_axis"
+        app:checked="false"
+        app:enableInitialAnimation="false"
+        app:frontBackgroundColor="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:rearBackgroundColor="@android:color/transparent"
+        app:rearImageAnimationDelay="100"
+        tools:frontImage="@drawable/ic_expense">
+
+    </eu.davidea.flipview.FlipView>
+
+    <TextView
+        android:id="@+id/textViewDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:ellipsize="marquee"
+        android:fontFamily="sans-serif-light"
+        android:singleLine="true"
+        android:textColor="@color/gray_text"
+        android:textSize="@dimen/text_size_small"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutCategory"
+        tools:text="12:32" />
+
+    <TextView
+        android:id="@+id/textViewAccount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="marquee"
+        android:fontFamily="sans-serif-light"
+        android:singleLine="true"
+        android:textColor="?android:textColor"
+        android:textSize="@dimen/text_size_small"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAmount"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/flipViewIcon"
+        tools:layout_editor_absoluteY="16dp"
+        tools:text="Account" />
+
+    <TextView
+        android:id="@+id/textViewPayee"
+        style="@style/StyleTextPrimary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:ellipsize="end"
+        android:maxLines="1"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAmount"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAccount"
+        tools:text="Payee (Location)" />
+
+    <TextView
+        android:id="@+id/textViewComment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
+        android:maxLines="1"
+        android:textColor="@color/light_gray_text"
+        android:textSize="@dimen/text_size_small"
+        android:textStyle="normal"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/flipViewIcon"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAmount"
+        tools:text="Комментарий" />
+
+    <RelativeLayout
+        android:id="@+id/layoutCategory"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textViewCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/rounded_corner"
+            android:ellipsize="middle"
+            android:fontFamily="sans-serif-medium"
+            android:includeFontPadding="false"
+            android:singleLine="true"
+            android:textSize="@dimen/text_size_micro"
+            android:textStyle="normal"
+            tools:text="финансы" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/textViewAmount"
+        style="@style/StyleTextAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAccount"
+        tools:text="-3 000.00 ₽"
+        tools:textColor="@color/negative_color" />
+
+    <LinearLayout
+        android:id="@+id/iconsContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewDate"
+        app:layout_constraintEnd_toStartOf="@+id/textViewDate"
+        app:layout_constraintTop_toTopOf="@+id/textViewDate">
+
+        <ImageView
+            android:id="@+id/imageViewAutoCreated"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_sms_blue"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/imageViewHasLocation"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_location"
+            tools:ignore="ContentDescription" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/spaceBottom"
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:layout_weight="1"
+        android:background="@color/lightListDividerColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/flipViewIcon"
+        app:layout_constraintTop_toBottomOf="@id/textViewComment" />
+
+</android.support.constraint.ConstraintLayout>

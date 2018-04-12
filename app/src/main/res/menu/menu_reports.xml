@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_toggle_percents"
+        android:title="@string/act_toggle_percents"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_toggle_lines"
+        android:title="@string/act_toggle_lines"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_toggle_shrink_values"
+        android:title="@string/act_toggle_shrink_labels"
+        app:showAsAction="never" />
+</menu>

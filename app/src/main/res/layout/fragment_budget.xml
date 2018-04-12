@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sliding_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    sothree:umanoDragView="@+id/dragView"
+    sothree:umanoOverlay="false"
+    sothree:umanoPanelHeight="48dp"
+    sothree:umanoShadowHeight="4dp"
+    sothree:umanoParallaxOffset="@dimen/fg_list_item_height_large"
+    sothree:umanoAnchorPoint="0.5"
+    sothree:umanoScrollableView="@+id/recycler_view_summary">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/p_f_d"
+            layout="@layout/content_p_f_d" />
+
+        <com.yoshione.fingen.widgets.ContextMenuRecyclerView
+            android:id="@+id/recycler_view"
+            style="@style/FastScrollRecyclerVew"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/p_f_d" />
+
+        <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/fabMenu"
+            style="@style/FabMenuStyle">
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fabAddModel"
+                style="@style/FabMenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_label="@string/act_add_category" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fabAddDebt"
+                style="@style/FabMenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_label="@string/act_add_credit" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fabCopyBudget"
+                style="@style/FabMenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_label="@string/act_copy_budget" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fabCreateFromFact"
+                style="@style/FabMenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_label="@string/act_create_from_fact" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fabClearBudget"
+                style="@style/FabMenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_label="@string/act_clear_budget" />
+
+        </com.github.clans.fab.FloatingActionMenu>
+
+        <ImageView
+            android:id="@+id/imageViewPullMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/pull_me_animated"
+            android:visibility="visible" />
+    </RelativeLayout>
+
+    <!-- SLIDING LAYOUT -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="false"
+        android:id="@+id/dragView">
+
+        <include
+            android:id="@+id/sliding_panel_header"
+            layout="@layout/content_slidingup_panel_header"/>
+
+        <include layout="@layout/content_p_f_d" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view_summary"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:scrollbars="vertical" />
+
+
+    </LinearLayout>
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

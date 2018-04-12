@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:fitsSystemWindows="true"
+              android:orientation="vertical"
+              tools:context="com.yoshione.fingen.ActivityAdditional">
+
+
+    <include
+        layout="@layout/common_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.daimajia.numberprogressbar.NumberProgressBar
+            android:id="@+id/progressbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:progress_reached_color="@color/ColorAccent"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textInputLayoutDir"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?listItemBackground">
+
+            <EditText
+                android:id="@+id/editTextDirectory"
+                style="@style/NotEditableEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/ent_path_to_dir_or_file"
+                android:inputType="textMultiLine"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textInputLayoutFileName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?listItemBackground">
+
+            <EditText
+                android:id="@+id/editTextFileName"
+                style="@style/EditableEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/ent_file_name"
+                android:inputType="textMultiLine"/>
+        </android.support.design.widget.TextInputLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

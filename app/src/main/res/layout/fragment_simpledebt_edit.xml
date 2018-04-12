@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2015.
+  -->
+
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/scrollView3"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:orientation="vertical"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:padding="4dp">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/edit_text_name"
+                style="@style/EditableEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/ent_name"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <com.yoshione.fingen.widgets.AmountEditor
+            android:id="@+id/amountEditorStartAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </com.yoshione.fingen.widgets.AmountEditor>
+
+        <CheckBox
+            android:text="@string/ttl_loan_closed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/checkBoxClosed"/>
+
+    </LinearLayout>
+</ScrollView>

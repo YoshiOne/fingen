@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2015.
+  -->
+
+<menu
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_search"
+          android:title="@string/ent_search"
+          app:actionViewClass="android.support.v7.widget.SearchView"
+          app:showAsAction="always|collapseActionView"/>
+    <item
+        android:id="@+id/action_select_all"
+        app:showAsAction="always"
+        android:title="@string/act_select_all"/>
+    <item
+        android:id="@+id/action_unselect_all"
+        app:showAsAction="always"
+        android:title="@string/act_unselect_all"/>
+    <item
+        android:id="@+id/action_complete_selection"
+        app:showAsAction="always"
+        android:title=""/>
+</menu>

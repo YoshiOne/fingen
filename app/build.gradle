@@ -1,0 +1,147 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.24.3'
+    }
+
+}
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+    maven { url "https://jitpack.io" }
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+def keystorePropertiesFile= rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+android {
+    signingConfigs {
+        config {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile rootProject.file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+    defaultConfig {
+        applicationId "com.yoshione.fingen"
+        minSdkVersion 21
+        targetSdkVersion 27
+        versionCode 103
+        versionName "2.2.3.1"
+        multiDexEnabled true
+        resValue "string", "app_name", "Fingen"
+        resValue "string", "inAppLicenseKey", keystoreProperties["inAppLicenseKey"]
+        resValue "string", "inAppLicenseSalt", keystoreProperties["inAppLicenseSalt"]
+        manifestPlaceholders = [
+                dropboxApiKey:keystoreProperties["dropboxApiKey"],
+                mapsApiKey:keystoreProperties["mapsApiKey"],
+                fabricApiKey:keystoreProperties["fabricApiKey"]
+        ]
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+        }
+        debug {
+            ext.enableCrashlytics = false
+//            applicationIdSuffix ".debug"
+        }
+    }
+    flavorDimensions "main"
+    productFlavors {
+        prod {
+            dimension "main"
+        }
+        sync {
+            applicationIdSuffix ".sync"
+            resValue "string", "app_name", "Fingen sync"
+            dimension "main"
+        }
+        nd {
+            applicationIdSuffix ".nd"
+            resValue "string", "app_name", "Fingen alpha"
+            dimension "main"
+        }
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+    }
+}
+
+dependencies {
+    repositories {
+        mavenCentral()
+    }
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation files('libs/opencsv-2.4.jar')
+    implementation files('libs/juniversalchardet-1.0.3.jar')
+    implementation(name: 'MaterialShowCase-1.0.5', ext: 'aar')
+    implementation(name: 'HeaderDecor-0.2.7', ext: 'aar')
+    implementation "com.android.support:cardview-v7:$supportLibVersion"
+    implementation "com.android.support:design:$supportLibVersion"
+    implementation "com.android.support:recyclerview-v7:$supportLibVersion"
+    implementation "com.android.support:support-annotations:$supportLibVersion"
+    implementation "com.android.support:preference-v7:$supportLibVersion"
+    implementation "com.android.support:support-v13:$supportLibVersion"
+    implementation "com.google.android.gms:play-services-auth:$playServicesLibVersion"
+    implementation "com.google.android.gms:play-services-gcm:$playServicesLibVersion"
+    implementation "com.google.android.gms:play-services-location:$playServicesLibVersion"
+    implementation "com.google.android.gms:play-services-maps:$playServicesLibVersion"
+    implementation('com.anjlab.android.iab.v3:library:1.0.44') { exclude module: 'support-v4' }
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') { transitive = true }
+    implementation('com.github.omadahealth:lollipin:2.1.0@aar') { transitive = true }
+    implementation('com.mikepenz:materialdrawer:6.0.7@aar') { transitive = true }
+    implementation 'com.mikepenz:actionitembadge:3.3.2@aar'
+    implementation 'biz.kasual:materialnumberpicker:1.2.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.daimajia.numberprogressbar:library:1.4@aar'
+    implementation 'com.dropbox.core:dropbox-core-sdk:3.0.6'
+    implementation 'com.github.clans:fab:1.6.4'
+    implementation 'com.github.gabrielemariotti.changeloglib:changelog:2.1.0'
+    implementation 'com.github.hotchemi:permissionsdispatcher:3.1.0'
+    implementation 'com.github.PhilJay:MPAndroidChart:v2.2.5'
+    implementation 'com.github.QuadFlask:colorpicker:0.0.13'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    implementation 'com.l4digital.fastscroll:fastscroll:1.0.4'
+    implementation 'com.sothree.slidinguppanel:library:3.4.0'
+    implementation 'com.wdullaer:materialdatetimepicker:3.5.2'
+    implementation 'eu.davidea:flipview:1.1.3'
+    implementation 'io.requery:sqlite-android:3.20.0'
+    implementation 'net.xpece.android:support-preference:2.1.2'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.59'
+    implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'de.psdev.licensesdialog:licensesdialog:1.8.3'
+    implementation 'com.evernote:android-job:1.2.5'
+    implementation 'com.github.angads25:filepicker:1.1.1'
+    implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.3'
+    annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:3.1.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation 'org.apache.commons:commons-lang3:3.7'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'ru.tinkoff.decoro:decoro:1.3.4'
+}
+
+apply plugin: 'com.google.gms.google-services'

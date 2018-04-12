@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelog bulletedList="true">
+    <changelogversion versionName="2.2.3.1" changeDate=">2018.03.22">
+        <changelogtext>In reports, you can turn off shortening of values.</changelogtext>
+        <changelogtext>The display of the amounts of the income and the expense for the accounts can be turned off in the settings.</changelogtext>
+        <changelogtext>The "Compact View" setting is applied to the list of accounts.</changelogtext>
+        <changelogtext>Fixed an issue with the exclude filter.</changelogtext>
+        <changelogtext>Fixed display of debts with long names.</changelogtext>
+        <changelogtext>The budget excludes amounts on closed accounts.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.2.2" changeDate=">2018.02.25">
+        <changelogtext>Bug fixed.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.2" changeDate=">2018.02.22">
+        <changelogtext>Now you can bind the list of products to the transaction.</changelogtext>
+        <changelogtext>Scan the receipt, and the list of products is automatically downloaded from the server of the Federal Tax Service (Russia only), or create a list manually.</changelogtext>
+        <changelogtext>You can assign a separate category and a project (split) to each product.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.1.2" changeDate=">2018.02.07">
+        <changelogtext>Temporaly turn off "Ask a question" feature.</changelogtext>
+        <changelogtext>Bulk transaction edit bug fixed.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.1.1" changeDate=">2018.01.29">
+        <changelogtext>Fixed bugs.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.1" changeDate=">2018.01.23">
+        <changelogtext>Reading QR codes from checks.</changelogtext>
+        <changelogtext>In the transaction list, projects are now visible.</changelogtext>
+        <changelogtext>Projects can be assigned colors.</changelogtext>
+        <changelogtext>In the settings, you can specify the Default Department.</changelogtext>
+        <changelogtext>Debts display more information.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.0.4" changeDate=">2018.01.16">
+        <changelogtext>Minor improvements and bugs fixes.</changelogtext>
+    </changelogversion>
+    <!--(87)-->
+    <changelogversion versionName="2.0.3" changeDate=">2018.01.14">
+        <changelogtext>Added exclusion filters.</changelogtext>
+        <changelogtext>Now you can export only selected transactions to CSV.</changelogtext>
+        <changelogtext>New file selection dialog for import / export.</changelogtext>
+    </changelogversion>
+    <!--(87)-->
+    <changelogversion versionName="2.0.2" changeDate=">2017.12.29">
+        <changelogtext>The size of the item in the transaction list has been reduced (now there are more of them on the screen).</changelogtext>
+        <changelogtext>New setting "Transactions" → "Compact view mode" allows you to make them fit even more.</changelogtext>
+    </changelogversion>
+    <!--(86)-->
+    <changelogversion versionName="2.0.1" changeDate=">2017.12.27">
+        <changelogtext>Fixed some new design issues.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.0" changeDate=">2017.12.26">
+        <changelogtext>New design.</changelogtext>
+        <changelogtext>New calculator.</changelogtext>
+        <changelogtext>Ability to customize the display of the pie chart (PRO).</changelogtext>
+        <changelogtext>Many other changes.</changelogtext>
+    </changelogversion>
+    <!--(80)-->
+    <changelogversion versionName="1.4.1" changeDate=">2017.11.11">
+        <changelogtext>Search in comments.</changelogtext>
+        <changelogtext>When you select transactions, their number and amount are shown.</changelogtext>
+        <changelogtext>The setting "Add credit limit to balance" in the Sender properties allows you to correctly recognize the balance of credit cards.</changelogtext>
+        <changelogtext>The work with Dropbox has been slightly changed.</changelogtext>
+        <changelogtext>Geographical coordinates of the transaction are exported to CSV.</changelogtext>
+        <changelogtext>New setting "Hide panel with sums".</changelogtext>
+        <changelogtext>Swapes in the date and time fields in the transaction editor change change values ​​by 1 day and hour, respectively.</changelogtext>
+        <changelogtext>Instead of the filter list context menu, there are now buttons in the header of each filter.</changelogtext>
+        <changelogtext>When you delete the last item from the filter, the filter itself is also deleted.</changelogtext>
+        <changelogtext>Buttons to edit and delete filters.</changelogtext>
+        <changelogtext>Fixed the response of the sum filter to the switch.</changelogtext>
+        <changelogtext>Fixed cursor jumping when editing sums in a filter.</changelogtext>
+        <changelogtext>Fixed notifications for Oreo.</changelogtext>
+    </changelogversion>
+    <!--(78)-->
+    <changelogversion versionName="1.4" changeDate=">2017.11.03">
+        <changelogtext>Disable the ability to disable automatic backup. Now backups are made by default between 1 am and 6 am (at the discretion of the system).</changelogtext>
+        <changelogtext>[Android 6+] At the first start, a dialog with a suggestion to give rights to the memory card is displayed, as it is necessary for backup.</changelogtext>
+        <changelogtext>Bulk editing of transactions.</changelogtext>
+        <changelogtext>Fast filtering and selection of transactions through the context menu.</changelogtext>
+        <changelogtext>Buttons for switching transaction type: Payment / Transfer. Can be disabled in the settings.</changelogtext>
+    </changelogversion>
+    <!--(77)-->
+    <changelogversion versionName="1.3.5" changeDate=">2017.03.10">
+        <changelogtext>Minor bugs fixes and improvements.</changelogtext>
+    </changelogversion>
+    <!--(76)-->
+    <changelogversion versionName="1.3.4" changeDate=">2017.02.28">
+        <changelogtext>Minor bugs fixes.</changelogtext>
+    </changelogversion>
+    <!--(75)-->
+    <changelogversion versionName="1.3.3" changeDate=">2017.02.26">
+        <changelogtext>Minor bugs fixes.</changelogtext>
+    </changelogversion>
+    <!--(74)-->
+    <changelogversion versionName="1.3.2" changeDate=">2017.02.23">
+        <changelogtext>Bugs fixes.</changelogtext>
+    </changelogversion>
+    <!--(72)-->
+    <changelogversion versionName="1.3.1" changeDate=">2017.02.21">
+		<changelogtext>Bugs fixed.</changelogtext>
+    </changelogversion>
+    <!--(71)-->
+    <changelogversion versionName="1.3" changeDate=">2017.02.20">
+		<changelogtext>A great work to optimize the application. Fixed problems with the speed on large databases.</changelogtext>
+		<changelogtext>Displays the current balances of both accounts involved in the transfer.</changelogtext>
+		<changelogtext>In the section "About" button "Rebuild Database" added.</changelogtext>
+		<changelogtext>Quick edit transaction button in system notyfication.</changelogtext>
+		<changelogtext>In the header of the main screen appeared inbox button with a unprocessed SMS counter.</changelogtext>
+		<changelogtext>New option "Account click actin" Show transaction list (default) or create a new transaction for the account.</changelogtext>
+		<changelogtext>Context menu for list "summary".</changelogtext>
+		<changelogtext>Minimum android version required for the application is now 4.1 (API 16).</changelogtext>
+    </changelogversion>
+    <!--(68)-->
+    <changelogversion versionName="1.2.1" changeDate=">2017.02.01">
+        <changelogtext>Bugs fixes.</changelogtext>
+    </changelogversion>
+    <!--(67)-->
+    <changelogversion versionName="1.2" changeDate=">2017.01.27">
+        <changelogtext>Initial amount of debt.</changelogtext>
+        <changelogtext>Сurrency of the loan now is necessary.</changelogtext>
+        <changelogtext>Loans icons added.</changelogtext>
+        <changelogtext>Closed debts displayed at the end of the list and is not visible in the transaction editor.</changelogtext>
+        <changelogtext>Loan tap actions similar to credit.</changelogtext>
+        <changelogtext>Search button in the list of transactions moved to the bottom drawer.</changelogtext>
+        <changelogtext>Dramatically improvement of CSV import performance.</changelogtext>
+        <changelogtext>Modified and improved a CSV file exported format.</changelogtext>
+        <changelogtext>Added a new menu item "Additional" -> "CSV Fingen Import". It allows you to import the application exported CSV-files.</changelogtext>
+        <changelogtext>Advanced CSV import correctly reads text files exported from Cash Ogranizer.</changelogtext>
+        <changelogtext>When creating a SMS sender, now possible to choose a phone number from the already received messages.</changelogtext>
+        <changelogtext>Now, when you add a category to the budget can not specify the amount without currency.</changelogtext>
+    </changelogversion>
+    <!--(64)-->
+    <changelogversion versionName="1.1.2" changeDate=">2016.12.28">
+        <changelogtext>Bugs fixes.</changelogtext>
+    </changelogversion>
+    <!--(63)-->
+    <changelogversion versionName="1.1.1" changeDate=">2016.12.22">
+        <changelogtext>Bugs fixes.</changelogtext>
+    </changelogversion>
+    <!--(62)-->
+    <changelogversion versionName="1.1" changeDate=">2016.12.20">
+        <changelogtext>Implemented sets of accounts. Pull up on the bottom panel in the list of accounts to add account to the set, or switch between sets. All amounts and transactions are displayed for accounts, included in the set.</changelogtext>
+        <changelogtext>Display account balance after ever transaction.</changelogtext>
+        <changelogtext>Closed accounts are now not accounted for in the balance sheet. Transactions on them just do not appear except for transfers between open and closed accounts.</changelogtext>
+        <changelogtext>When you click on the account in the "Accounts" or a period in the "Summary", opens a list of the relevant transaction element. Editing is available via the context menu.</changelogtext>
+        <changelogtext>Removed create an account floating button from the list of accounts. Instead, there was a button "New Account" at the bottom of the panel, the pulled up accounts list.</changelogtext>
+        <changelogtext>Configure the order of tabs on the main screen. Settings now groupped in different screens.</changelogtext>
+        <changelogtext>New quick shortcuts for Android 7.1+ (caused by a long press on an app icon).</changelogtext>
+        <changelogtext>It returned to the ability to remove the transaction from the context menu.</changelogtext>
+        <changelogtext>In the "Backup and Restore" displays the date and time of the last successful save in Dropbox.</changelogtext>
+        <changelogtext>[font color=#4CAF50](FIXED)[/font] wrong amount in the transaction list, when you add account filter but turn it off.</changelogtext>
+        <changelogtext>[font color=#4CAF50](FIXED)[/font] incorrect dates titles display in the list of transaction.</changelogtext>
+    </changelogversion>
+    <!--(58)-->
+    <changelogversion versionName="1.0.1" changeDate=">2016.11.23">
+        <changelogtext>Fixed amount detection in some messages.</changelogtext>
+    </changelogversion>
+    <!--(57)-->
+    <changelogversion versionName="1.0.0" changeDate=">2016.11.19">
+        <changelogtext>Some bugs fixes.</changelogtext>
+    </changelogversion>
+    <!--(53)-->
+    <changelogversion versionName="0.9.9" changeDate=">2016.11.14">
+        <changelogtext>New Summary tab.</changelogtext>
+        <changelogtext>New option "Skip duplicates" when import CSV.</changelogtext>
+        <changelogtext>Manual currency display order.</changelogtext>
+        <changelogtext>Bugs fixes and improvements.</changelogtext>
+    </changelogversion>
+    <!--(50)-->
+    <changelogversion versionName="0.9.8" changeDate=">2016.11.03">
+        <changelogtext>Now you can backup to Dropbox and restore from it</changelogtext>
+        <changelogtext>Payees, Projects, Departments and Locations are now multilevel. It works like categories.</changelogtext>
+        <changelogtext>You can filter transactions with undefined parameters (for example all transactions without category). Select item "-" when setup filter.</changelogtext>
+        <changelogtext>Backup archives are now optionally password locked.</changelogtext>
+    </changelogversion>
+    <!--(45)-->
+    <changelogversion versionName="0.9.7" changeDate=">2016.10.20">
+        <changelogtext>Splash screen instead of empty screen when on app start.</changelogtext>
+        <changelogtext>"Balance adjustment" item in account context menu.</changelogtext>
+        <changelogtext>Template selection via template manage screen.</changelogtext>
+        <changelogtext>All spinners changed to single choice dialogs or entity manage screens.</changelogtext>
+        <changelogtext>New edit text and fast scroll components.</changelogtext>
+        <changelogtext>Bugs fixes</changelogtext>
+    </changelogversion>
+    <!--(43)-->
+    <changelogversion versionName="0.9.6" changeDate=">2016.10.06">
+        <changelogtext>Bugs fixes and improvements.</changelogtext>
+    </changelogversion>
+    <!--(39)-->
+    <changelogversion versionName="0.9.5" changeDate=">2016.9.29">
+        <changelogtext>List of transactions sticky headers are now displays day of the week.</changelogtext>
+        <changelogtext>When checking sms on suitability for the automatic creation of a transaction, the entities "payee" and "category" does not apply to transfers.</changelogtext>
+        <changelogtext>Transactions for which the determined location are indicated on the list.</changelogtext>
+        <changelogtext>The name of the category in the transaction list item deferred to a separate line and now does not overlap with the name of the account for long names of accounts or categories.</changelogtext>
+        <changelogtext>From the transaction list context menu are removed  items "Delete" and "Delete All". These operations can be done by selecting the desired transaction and selecting the "Delete Selected".</changelogtext>
+        <changelogtext>When you create a transaction through intent, if you specify a template, "type" parameter (if specified) is not taken into account. Type is taken from the template.</changelogtext>
+        <changelogtext>The algorithm of deleting transactions was changed. If before they were removed without confirmation, and can be restored for some time, now deleted after confirmation with no possibility.</changelogtext>
+        <changelogtext>Setting the payee selecttion style for the transaction: drop-down list when you type the name or the conclusion the list of recipients in a separate window.</changelogtext>
+        <changelogtext>Setting a PIN code length (4-8 digits). The change is only possible when the protection is disabled.</changelogtext>
+        <changelogtext>Changed display transfers display format in the list of transactions (was "Account1 -> Account2", became "⇒ Account2").</changelogtext>
+        <changelogtext>Improved display of dark themes.</changelogtext>
+        <changelogtext>When generating reports by category is no longer transfers taken into account.</changelogtext>
+        <changelogtext>Fixed error when building reports</changelogtext>
+        <changelogtext>Fixed a bug when copying budget.</changelogtext>
+    </changelogversion>
+    <!--(35)-->
+    <changelogversion versionName="0.9.4" changeDate=">2016.08.03">
+        <changelogtext>All SMS markers of "Sender" type were transformed into objects "Sender".</changelogtext>
+        <changelogtext>Implemented alternative debt management option. The former option is now called "Credits".</changelogtext>
+        <changelogtext>Now you can add shortcuts for templates on your desktop.</changelogtext>
+        <changelogtext>Some fields in the transactions editor are hidden by default.</changelogtext>
+    </changelogversion>
+    <!--(31)-->
+    <changelogversion versionName="0.9.3" changeDate=">2016.07.26">
+        <changelogtext>Added the ability to build graphical reports (Pull up the lower panel on the "Transactions" tab). Function is paid, you can buy in the section "PRO features" in the main menu. Support the development of program, purchase reports!</changelogtext>
+        <changelogtext>Fixed a bug which caused the program sometimes crashes when you press the "Back" button</changelogtext>
+        <changelogtext>Fixed a bug due to which the transactions were not created from Tasker through Send intent</changelogtext>
+    </changelogversion>
+    <!--(27)-->
+    <changelogversion versionName="0.9.1" changeDate=">2016.07.06">
+        <changelogtext>A quick search in the list of transactions implemented.
+            The search is performed on the names of accounts, categories, payees, locations, projects, departments and comments</changelogtext>
+        <changelogtext>Bugs fixes</changelogtext>
+    </changelogversion>
+    <!--(25)-->
+    <changelogversion versionName="0.8.7" changeDate=">2016.06.07">
+        <changelogtext>When creating transactions through the intent, it is possible to specify a template (parameter "template").</changelogtext>
+        <changelogtext>Improved tool "Import CSV advanced". Now you can skip the line at the beginning of the file.</changelogtext>
+        <changelogtext>Now you can sort categories tree.</changelogtext>
+    </changelogversion>
+    <!--(24)-->
+    <changelogversion versionName="0.8.6" changeDate=">2016.06.02">
+        <changelogtext>Added Department visualisation in the list of transactions and the corresponding filter added.</changelogtext>
+        <changelogtext>Added new option "Autocreate prerequisites" it defines a minimum set of extracted information (Account, Amount, Payee or Category), which is required to autocreate transaction without putting it in inbox.</changelogtext>
+        <changelogtext>Fixed a bug when it was impossible to enter to the section Templates on some systems.</changelogtext>
+    </changelogversion>
+    <!--(23)-->
+    <changelogversion versionName="0.8.5" changeDate=">2016.05.31">
+        <changelogtext>Added a new transaction parameter - "Department". It can be used to account for the one who made the payment, if several persons have access to the same account.</changelogtext>
+        <changelogtext>You can now select multiple transactions. To perform selection click on the icon of its type (arrow) in the list.</changelogtext>
+        <changelogtext>At this stage, only one mass operation with selected transactions is available - "Delete transaction".</changelogtext>
+        <changelogtext>Changed the layout of calculator, added "00" button. Now the calculator understands the expressions of the form "X + Y %".</changelogtext>
+        <changelogtext>Transfers amounts between accounts are now displayed without a minus sign</changelogtext>
+        <changelogtext>Fixed a bug where the balance of the account to be displayed in the list, can vary a few cents from the current</changelogtext>
+    </changelogversion>
+    <!--(22)-->
+    <changelogversion versionName="0.8.4" changeDate=">2016.05.22">
+        <changelogtext>Added custom CSV import. Now you can import files of different structure and specify the fields from which to load entities.</changelogtext>
+        <changelogtext>The transaction list now displays comments</changelogtext>
+        <changelogtext>Pop-up button "quick scroll to top" added to transaction list</changelogtext>
+        <changelogtext>Fixed a bug with the loss of leading zeros in the last 4 digits of the card number</changelogtext>
+    </changelogversion>
+    <!--(20)-->
+    <changelogversion versionName="0.8.2" changeDate=">2016.05.14">
+        <changelogtext>App was translated into English. If you want to translate the app into your language, please contact me, it's not a difficult process.</changelogtext>
+        <changelogtext>Fingen is now available for all Google Play regions</changelogtext>
+        <changelogtext>Item "Help" appears in the main menu</changelogtext>
+        <changelogtext>Added the ability to take intent (eg, from Tasker) with transaction parameters and create it in the background, or open in the editor</changelogtext>
+        <changelogtext>Duplicate transactions are now created with the current time</changelogtext>
+        <changelogtext>Now you can create templates with not filled fields. In this case, the transaction will be opened in the editor before saving</changelogtext>
+    </changelogversion>
+</changelog>

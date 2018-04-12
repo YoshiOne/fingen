@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="56dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?listItemBackground">
+
+    <ImageView
+        android:id="@+id/imageViewAccountIcon"
+        android:layout_width="56dp"
+        android:layout_height="0dp"
+        android:scaleType="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_credit_card_gray"/>
+
+    <TextView
+        android:id="@+id/textViewAccountName"
+        style="@style/StyleTextPrimary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageViewAccountIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Account name" />
+
+    <TextView
+        android:id="@+id/textViewAccountType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="?vertical_spacimg_tr_list"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:fontFamily="sans-serif-light"
+        android:textColor="?android:textColor"
+        android:textSize="@dimen/text_size_small"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageViewAccountIcon"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAccountName"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="Type (Currency)" />
+
+    <TextView
+        android:id="@+id/textViewIncome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/positive_color"
+        android:textSize="@dimen/text_size_pico"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAccountName"
+        tools:text="200 000 ₽" />
+
+    <TextView
+        android:id="@+id/textViewOutcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list_half"
+        android:fontFamily="sans-serif-medium"
+        tools:text="-100 000 ₽"
+        android:textColor="@color/negative_color"
+        android:textSize="@dimen/text_size_pico"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewIncome" />
+
+    <TextView
+        android:id="@+id/textViewAccountCurBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="?vertical_spacimg_tr_list"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list_half"
+        style="@style/StyleTextAmount"
+        android:textColor="@color/positive_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewOutcome"
+        tools:text="100 000 ₽" />
+
+    <FrameLayout
+        android:id="@+id/spaceBottom"
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:layout_weight="1"
+        android:background="@color/lightListDividerColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewAccountIcon" />
+
+    <FrameLayout
+        android:id="@+id/spaceBottomFinal"
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:layout_weight="1"
+        android:background="@color/lightListDividerColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

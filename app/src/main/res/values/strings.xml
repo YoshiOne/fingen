@@ -1,0 +1,1991 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_total" formatted="false">Total sum</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_income" formatted="false">Income</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ok" formatted="false">OK</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="cancel" formatted="false">Cancel</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_outcome" formatted="false">Expense</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_name" formatted="false">Name</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_type" formatted="false">Type</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_date" formatted="false">Date</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_time" formatted="false">Time</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_amount" formatted="false">Amount</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_comment" formatted="false">Comment</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_search" formatted="false">Search</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="sort_type_asc" formatted="false">Ascending</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="sort_type_desc" formatted="false">Descending</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_start_date" formatted="false">Start date</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_end_date" formatted="false">Finish date</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_date_range" formatted="false">Date interval</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_date_range_day" formatted="false">Day</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_date_range_week" formatted="false">Week</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_date_range_month" formatted="false">Month</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_date_range_year" formatted="false">Year</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_date_range_current" formatted="false">Current</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_date_range_past" formatted="false">Last</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_date_range_current_and_past" formatted="false">Curr. and last</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_min" formatted="false">min</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_max" formatted="false">max</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_both" formatted="false">Both</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_exchange_rate" formatted="false">Exchange rate</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_additional" formatted="false">Additional</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_references" formatted="false">Entities</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_help" formatted="false">Help</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_percent" formatted="false">Percent</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_percents" formatted="false">Percents</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_more" formatted="false">More</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_password" formatted="false">Password</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_item" formatted="false">Item</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_nested_item" formatted="false">Child item</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_calculator" formatted="false">Calculator</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_summary" formatted="false">Summary</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_date_time" formatted="false">Date, time</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_payee_dest_account" formatted="false">Payee or destination account</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_sms_body" formatted="false">SMS body</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_create" formatted="false">New</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_add" formatted="false">Add</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_add_nested" formatted="false">Add child</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_edit" formatted="false">Edit</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_delete" formatted="false">Delete</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_delete_all" formatted="false">Delete all</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_undo" formatted="false">Undo</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_duplicate" formatted="false">Duplicate</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_sort" formatted="false">Sort</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_paste" formatted="false">Paste</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_next" formatted="false">Next</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_save" formatted="false">Save</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_ask_question" formatted="false">Ask a question</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_new_expense" formatted="false">New expense</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_new_income" formatted="false">New income</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_new_transfer" formatted="false">New transfer</string>
+
+    <!-- 1. General -->
+    <!-- Titles -->
+    <string name="ttl_enter_new_name" formatted="false">Enter new name</string>
+
+    <!-- 1. General -->
+    <!-- Titles -->
+    <string name="ttl_confirm_action" formatted="false">Confirm action</string>
+
+    <!-- 1. General -->
+    <!-- Titles -->
+    <string name="ttl_select_action" formatted="false">Select a action</string>
+
+    <!-- 1. General -->
+    <!-- Titles -->
+    <string name="ttl_error" formatted="false">Error</string>
+
+    <!-- 1. General -->
+    <!-- Titles -->
+    <string name="ttl_delete_item_confirm" formatted="false">Delete item?</string>
+
+    <!-- 1. General -->
+    <!-- Titles -->
+    <string name="ttl_billing_error" formatted="false">Server connection error (code %s)</string>
+
+    <!-- 1. General -->
+    <!-- Messages -->
+    <string name="msg_set_date" formatted="false">Specify date</string>
+
+    <!-- 1. General -->
+    <!-- Messages -->
+    <string name="msg_set_time" formatted="false">Specify time</string>
+
+    <!-- 1. General -->
+    <!-- Messages -->
+    <string name="msg_invalid_data_in_fields" formatted="false">Invalid data</string>
+
+    <!-- 1. General -->
+    <!-- Messages -->
+    <string name="msg_error_on_write_to_db" formatted="false">Error on write to DB. Operation cancelled.</string>
+
+    <!-- 1. General -->
+    <!-- Messages -->
+    <string name="msg_error_on_read_from_db" formatted="false">Error on read from DB</string>
+
+    <!-- 1. General -->
+    <!-- Messages -->
+    <string name="msg_press_back_again_to_exit" formatted="false">Press back again to exit</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_account" formatted="false">Account</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_accounts" formatted="false">Accounts</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_emitent" formatted="false">Issuer</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_last4digits" formatted="false">Last 4 digits of the card number</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_start_balance" formatted="false">Opening amount</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_credit_limit" formatted="false">Limit amount</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_account_isclosed" formatted="false">Account closed</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_new_account" formatted="false">New account</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_edit_account" formatted="false">Edit account</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_all_accounts" formatted="false">All accounts</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_active_account_set" formatted="false">Active accounts set</string>
+
+    <!-- 2. Accounts -->
+    <!-- Account types -->
+    <string name="account_type_cash" formatted="false">Cash</string>
+
+    <!-- 2. Accounts -->
+    <!-- Account types -->
+    <string name="account_type_bank_account" formatted="false">Bank account</string>
+
+    <!-- 2. Accounts -->
+    <!-- Account types -->
+    <string name="account_type_debit_card" formatted="false">Debit card</string>
+
+    <!-- 2. Accounts -->
+    <!-- Account types -->
+    <string name="account_type_credit_card" formatted="false">Credit card</string>
+
+    <!-- 2. Accounts -->
+    <!-- Account types -->
+    <string name="account_type_asset" formatted="false">Asset</string>
+
+    <!-- 2. Accounts -->
+    <!-- Account types -->
+    <string name="account_type_red" formatted="false">Liability</string>
+
+    <!-- 2. Accounts -->
+    <!-- Account types -->
+    <string name="account_type_other" formatted="false">Other</string>
+
+    <!-- 2. Accounts -->
+    <!-- Account sort types -->
+    <string name="acc_sort_type_custom" formatted="false">By hand</string>
+
+    <!-- 2. Accounts -->
+    <!-- Account sort types -->
+    <string name="acc_sort_type_date_creation" formatted="false">By date of creation</string>
+
+    <!-- 2. Accounts -->
+    <!-- Account sort types -->
+    <string name="acc_sort_type_date_last_operation" formatted="false">By date of last operation</string>
+
+    <!-- 2. Accounts -->
+    <!-- Account sort types -->
+    <string name="acc_sort_type_balance" formatted="false">By total sum</string>
+
+    <!-- 2. Accounts -->
+    <!-- Account sort types -->
+    <string name="acc_sort_type_type" formatted="false">By type</string>
+
+    <!-- 2. Accounts -->
+    <!-- Account sort types -->
+    <string name="acc_sort_type_alphabet" formatted="false">Alphabetically</string>
+
+    <!-- 2. Accounts -->
+    <!-- Actions -->
+    <string name="act_drag_mode" formatted="false">"By hand" sort mode</string>
+
+    <!-- 2. Accounts -->
+    <!-- Actions -->
+    <string name="act_balance_adjustment" formatted="false">Balance adjustment</string>
+
+    <!-- 2. Accounts -->
+    <!-- Actions -->
+    <string name="act_add_accounts_set" formatted="false">Set of accounts</string>
+
+    <!-- 2. Accounts -->
+    <!-- Actions -->
+    <string name="act_edit_name" formatted="false">Edit name</string>
+
+    <!-- 2. Accounts -->
+    <!-- Actions -->
+    <string name="act_edit_accounts" formatted="false">Edit accounts</string>
+
+    <!-- 2. Accounts -->
+    <!-- Titles -->
+    <string name="ttl_sort_accounts" formatted="false">Account sorting</string>
+
+    <!-- 2. Accounts -->
+    <!-- Titles -->
+    <string name="ttl_accounts_sort_type" formatted="false">Sort by…</string>
+
+    <!-- 2. Accounts -->
+    <!-- Titles -->
+    <string name="ttl_accounts_sort_order" formatted="false">Order</string>
+
+    <!-- 2. Accounts -->
+    <!-- Titles -->
+    <string name="ttl_enter_actual_balance" formatted="false">Enter actual balance</string>
+
+    <!-- 2. Accounts -->
+    <!-- Messages -->
+    <string name="msg_delete_account_confirmation" formatted="false">Delete account %s? All transactions on this account will be deleted.</string>
+
+    <!-- 2. Accounts -->
+    <!-- Messages -->
+    <string name="msg_delete_account_set_confirmation" formatted="false">Delete account set %s?</string>
+
+    <!-- 2. Accounts -->
+    <!-- Messages -->
+    <string name="hint_press_back_to_exit_drag_mode" formatted="false">Click the Back button to exit drag mode</string>
+
+    <!-- 2. Accounts -->
+    <!-- Errors -->
+    <string name="err_specify_account_name" formatted="false">You must specify name</string>
+
+    <!-- 2. Accounts -->
+    <!-- Errors -->
+    <string name="err_specify_account_currency" formatted="false">You must specify currency of the account</string>
+
+    <!-- 3. Transactions -->
+    <!-- Entities -->
+    <string name="ent_transaction" formatted="false">Transaction</string>
+
+    <!-- 3. Transactions -->
+    <!-- Entities -->
+    <string name="ent_transactions" formatted="false">Transactions</string>
+
+    <!-- 3. Transactions -->
+    <!-- Entities -->
+    <string name="ent_transfer" formatted="false">Transfer</string>
+
+    <!-- 3. Transactions -->
+    <!-- Entities -->
+    <string name="ent_payment" formatted="false">Payment</string>
+
+    <!-- 3. Transactions -->
+    <!-- Entities -->
+    <string name="ent_dest_account" formatted="false">Destination account</string>
+
+    <!-- 3. Transactions -->
+    <!-- Entities -->
+    <string name="ent_dest_amount" formatted="false">The amount of the recipient\'s currency</string>
+
+    <!-- 3. Transactions -->
+    <!-- Entities -->
+    <string name="ent_new_transfer" formatted="false">New transfer</string>
+
+    <!-- 3. Transactions -->
+    <!-- Entities -->
+    <string name="ent_edit_transaction" formatted="false">Edit transaction</string>
+
+    <!-- 3. Transactions -->
+    <!-- Entities -->
+    <string name="ent_edit_transfer" formatted="false">Edit transfer</string>
+
+    <!-- 3. Transactions -->
+    <!-- Actions -->
+    <string name="act_create_transaction" formatted="false">New transaction</string>
+
+    <!-- 3. Transactions -->
+    <!-- Actions -->
+    <string name="act_create_transaction_from_sms" formatted="false">Create a transaction</string>
+
+    <!-- 3. Transactions -->
+    <!-- Actions -->
+    <string name="act_show_transactions" formatted="false">Show transactions</string>
+
+    <!-- 3. Transactions -->
+    <!-- Actions -->
+    <string name="act_select_all" formatted="false">Select all</string>
+
+    <!-- 3. Transactions -->
+    <!-- Actions -->
+    <string name="act_unselect_all" formatted="false">Remove selection</string>
+
+    <!-- 3. Transactions -->
+    <!-- Actions -->
+    <string name="act_delete_selected" formatted="false">Delete selected</string>
+
+    <!-- 3. Transactions -->
+    <!-- Actions -->
+    <string name="act_edit_selected" formatted="false">Edit selected</string>
+
+    <!-- 3. Transactions -->
+    <!-- Actions -->
+    <string name="act_filter_on_selected" formatted="false">Add filter...</string>
+
+    <!-- 3. Transactions -->
+    <!-- Actions -->
+    <string name="act_select_on_selected" formatted="false">Select...</string>
+
+    <!-- 3. Transactions -->
+    <!-- Titles -->
+    <string name="ttl_transaction_deleted" formatted="false">The transaction was deleted</string>
+
+    <!-- 3. Transactions -->
+    <!-- Titles -->
+    <string name="ttl_transaction_splitted" formatted="false">The transaction was splitted</string>
+
+    <!-- 3. Transactions -->
+    <!-- Titles -->
+    <string name="ttl_src_transaction_amount" formatted="false">Remaining amount</string>
+
+    <!-- 3. Transactions -->
+    <!-- Titles -->
+    <string name="ttl_sms_body" formatted="false">Sms body</string>
+
+    <!-- 3. Transactions -->
+    <!-- Titles -->
+    <string name="ttl_selection" formatted="false">Selection</string>
+
+    <!-- 3. Transactions -->
+    <!-- Titles -->
+    <string name="ttl_selected" formatted="false">selected</string>
+
+    <!-- 3. Transactions -->
+    <!-- Titles -->
+    <string name="ttl_change_selected_param" formatted="false">Edit param</string>
+
+    <!-- 3. Transactions -->
+    <!-- Messages -->
+    <string name="msg_select_marker_text_before" formatted="false">First, select the marker text in the message body</string>
+
+    <!-- 3. Transactions -->
+    <!-- Messages -->
+    <string name="msg_confirm_create_correcting_transaction" formatted="false">Account balance differs from that specified in an SMS to %s. Create a correction transaction?</string>
+
+    <!-- 3. Transactions -->
+    <!-- Messages -->
+    <string name="msg_confirm_delete_transaction" formatted="false">Delete transaction?</string>
+
+    <!-- 3. Transactions -->
+    <!-- Messages -->
+    <string name="msg_confirm_delete_selected_transactions" formatted="false">Delete selected transactions?</string>
+
+    <!-- 3. Transactions -->
+    <!-- Messages -->
+    <string name="msg_confirm_delete_all_transaction" formatted="false">Delete all transactions?</string>
+
+    <!-- 3. Transactions -->
+    <!-- Notifications -->
+    <string name="notif_ticker_transaction_auto_created" formatted="false">The transaction created</string>
+
+    <!-- 3. Transactions -->
+    <!-- Notifications -->
+    <string name="notif_count_of_new_transactions" formatted="false">New transactions:</string>
+
+    <!-- 3. Transactions -->
+    <!-- Notifications -->
+    <string name="notif_create_correcting_transaction_caption" formatted="false">Account balance differs from that specified in an SMS</string>
+
+    <!-- 3. Transactions -->
+    <!-- Notifications -->
+    <string name="notif_create_correcting_transaction" formatted="false">Account %s balance differs from that specified in an SMS to %s. Press to adjust.</string>
+
+    <!-- 3. Transactions -->
+    <!-- Errors -->
+    <string name="err_specify_account" formatted="false">You must specify account</string>
+
+    <!-- 4. Payees -->
+    <!-- Entities -->
+    <string name="ent_payee" formatted="false">Payee</string>
+
+    <!-- 4. Payees -->
+    <!-- Entities -->
+    <string name="ent_payer" formatted="false">Payer</string>
+
+    <!-- 4. Payees -->
+    <!-- Entities -->
+    <string name="ent_payee_or_payer" formatted="false">Payee/Payer</string>
+
+    <!-- 4. Payees -->
+    <!-- Entities -->
+    <string name="ent_payees" formatted="false">Payees/Payers</string>
+
+    <!-- 4. Payees -->
+    <!-- Titles -->
+    <string name="ttl_delete_payee_confirmation" formatted="false">Delete payee/payer?</string>
+
+    <!-- 4. Payees -->
+    <!-- Titles -->
+    <string name="ttl_select_payee" formatted="false">Select payee/payer</string>
+
+    <!-- 4. Payees -->
+    <!-- Titles -->
+    <string name="ttl_new_payee" formatted="false">New payee/payer</string>
+
+    <!-- 4. Payees -->
+    <!-- Titles -->
+    <string name="ttl_edit_payee" formatted="false">Edit payee/payer</string>
+
+    <!-- 5. Categories -->
+    <!-- Entities -->
+    <string name="ent_category" formatted="false">Category</string>
+
+    <!-- 5. Categories -->
+    <!-- Entities -->
+    <string name="ent_category_nested" formatted="false">Child category</string>
+
+    <!-- 5. Categories -->
+    <!-- Entities -->
+    <string name="ent_categories" formatted="false">Categories</string>
+
+    <!-- 5. Categories -->
+    <!-- Actions -->
+    <string name="act_add_child" formatted="false">Add child</string>
+
+    <!-- 5. Categories -->
+    <!-- Actions -->
+    <string name="act_convert_to_child" formatted="false">Convert co child</string>
+
+    <!-- 5. Categories -->
+    <!-- Actions -->
+    <string name="act_convert_to_parent" formatted="false">Convert to parent</string>
+
+    <!-- 5. Categories -->
+    <!-- Actions -->
+    <string name="act_select_color" formatted="false">Select color</string>
+
+    <!-- 5. Categories -->
+    <!-- Titles -->
+    <string name="ttl_delete_children_category" formatted="false">Delete child categories</string>
+
+    <!-- 5. Categories -->
+    <!-- Titles -->
+    <string name="ttl_delete_category_confirmation" formatted="false">Delete category?</string>
+
+    <!-- 5. Categories -->
+    <!-- Titles -->
+    <string name="ttl_select_parent_item" formatted="false">Select parent item</string>
+
+    <!-- 5. Categories -->
+    <!-- Titles -->
+    <string name="ttl_select_color" formatted="false">Color selection</string>
+
+    <!-- 5. Categories -->
+    <!-- Titles -->
+    <string name="ttl_sort_items_confirmation" formatted="false">Sort list alphabetically?</string>
+
+    <!-- 5. Categories -->
+    <!-- Errors -->
+    <string name="err_category_already_child" formatted="false">Category already has a parent</string>
+
+    <!-- 5. Categories -->
+    <!-- Errors -->
+    <string name="err_category_already_parent" formatted="false">Category is already a parent</string>
+
+    <!-- 5. Categories -->
+    <!-- Errors -->
+    <string name="err_category_has_children" formatted="false">Category has children</string>
+
+    <!-- 6. Currencies -->
+    <!-- Entities -->
+    <string name="ent_currency" formatted="false">Currency</string>
+
+    <!-- 6. Currencies -->
+    <!-- Entities -->
+    <string name="ent_currencies" formatted="false">Currencies</string>
+
+    <!-- 6. Currencies -->
+    <!-- Entities -->
+    <string name="ent_currency_code" formatted="false">Code</string>
+
+    <!-- 6. Currencies -->
+    <!-- Entities -->
+    <string name="ent_currency_symbol" formatted="false">Symbols for display</string>
+
+    <!-- 6. Currencies -->
+    <!-- Entities -->
+    <string name="ent_currency_scale" formatted="false">A number of simbols after comma</string>
+
+    <!-- 6. Currencies -->
+    <!-- Titles -->
+    <string name="ttl_delete_cabbage_confirmation" formatted="false">Delete currency?</string>
+
+    <!-- 6. Currencies -->
+    <!-- Titles -->
+    <string name="ttl_new_currency" formatted="false">New cuurency</string>
+
+    <!-- 6. Currencies -->
+    <!-- Titles -->
+    <string name="ttl_edit_currency" formatted="false">Edit currency</string>
+
+    <!-- 6. Currencies -->
+    <!-- Titles -->
+    <string name="ttl_select_system_currency" formatted="false">System currencies</string>
+
+    <!-- 6. Currencies -->
+    <!-- Titles -->
+    <string name="ttl_available_system_currencies" formatted="false">System currencies</string>
+
+    <!-- 7. Projects -->
+    <!-- Entities -->
+    <string name="ent_project" formatted="false">Project</string>
+
+    <!-- 7. Projects -->
+    <!-- Entities -->
+    <string name="ent_projects" formatted="false">Projects</string>
+
+    <!-- 7. Projects -->
+    <!-- Entities -->
+    <string name="ent_new_project" formatted="false">New project</string>
+
+    <!-- 7. Projects -->
+    <!-- Entities -->
+    <string name="ent_edit_project" formatted="false">Edit project</string>
+
+    <!-- 7. Projects -->
+    <!-- Titles -->
+    <string name="ttl_delete_project_confirmation" formatted="false">Delete project?</string>
+
+    <!-- 7. Projects -->
+    <!-- Titles -->
+    <string name="title_select_project" formatted="false">Select project</string>
+
+    <!-- 8. Locations -->
+    <!-- Entities -->
+    <string name="ent_location" formatted="false">Location</string>
+
+    <!-- 8. Locations -->
+    <!-- Entities -->
+    <string name="ent_locations" formatted="false">Locations</string>
+
+    <!-- 8. Locations -->
+    <!-- Entities -->
+    <string name="ent_current_location" formatted="false">Current location</string>
+
+    <!-- 8. Locations -->
+    <!-- Entities -->
+    <string name="new_new_location" formatted="false">New location</string>
+
+    <!-- 8. Locations -->
+    <!-- Entities -->
+    <string name="ent_edit_location" formatted="false">Edit location</string>
+
+    <!-- 8. Locations -->
+    <!-- Titles -->
+    <string name="title_select_location" formatted="false">Select location</string>
+
+    <!-- 8. Locations -->
+    <!-- Messages -->
+    <string name="ttl_delete_location_confirmation" formatted="false">Delete location?</string>
+
+    <!-- 8. Locations -->
+    <!-- Messages -->
+    <string name="msg_permission_location_rationale" formatted="false">Location permission is nedded to detect transaction coordinates. Click Next, and allow access to location data.</string>
+
+    <!-- 8. Locations -->
+    <!-- Messages -->
+    <string name="msg_permission_location_denied" formatted="false">Location permission was denied</string>
+
+    <!-- 8. Locations -->
+    <!-- Messages -->
+    <string name="msg_permission_location_never_askagain" formatted="false">Location permission was denied</string>
+
+    <!-- 9. Templates -->
+    <!-- Entities -->
+    <string name="ent_template" formatted="false">Template</string>
+
+    <!-- 9. Templates -->
+    <!-- Entities -->
+    <string name="ent_templates" formatted="false">Templates</string>
+
+    <!-- 9. Templates -->
+    <!-- Entities -->
+    <string name="ent_edit_template" formatted="false">Edit template</string>
+
+    <!-- 9. Templates -->
+    <!-- Actions -->
+    <string name="act_create_template" formatted="false">New template</string>
+
+    <!-- 9. Templates -->
+    <!-- Titles -->
+    <string name="ttl_delete_template_confirmation" formatted="false">Delete template?</string>
+
+    <!-- 9. Templates -->
+    <!-- Titles -->
+    <string name="ttl_select_template" formatted="false">Select template</string>
+
+    <!-- 9. Templates -->
+    <!-- Titles -->
+    <string name="ttl_template_name" formatted="false">The name of the template</string>
+
+    <!-- 10. SMS Markers -->
+    <!-- Entities -->
+    <string name="ent_sms_markers" formatted="false">SMS markers</string>
+
+    <!-- 10. SMS Markers -->
+    <!-- Entities -->
+    <string name="ent_sms_parser_type" formatted="false">Type of marker</string>
+
+    <!-- 10. SMS Markers -->
+    <!-- Entities -->
+    <string name="ent_sms_parser_object" formatted="false">Object</string>
+
+    <!-- 10. SMS Markers -->
+    <!-- Entities -->
+    <string name="ent_sms_parser_value" formatted="false">Value</string>
+
+    <!-- 10. SMS Markers -->
+    <!-- Entities -->
+    <string name="ent_skip" formatted="false">Skip</string>
+
+    <!-- 10. SMS Markers -->
+    <!-- Actions -->
+    <string name="act_set_marker" formatted="false">Set marker</string>
+
+    <!-- 10. SMS Markers -->
+    <!-- Actions -->
+    <string name="act_create_marker" formatted="false">New marker</string>
+
+    <!-- 10. SMS Markers -->
+    <!-- Titles -->
+    <string name="ttl_edit_sms_parser_marker" formatted="false">Edit marker</string>
+
+    <!-- 10. SMS Markers -->
+    <!-- Titles -->
+    <string name="ttl_select_text_to_add_marker" formatted="false">SelectText to add marker</string>
+
+    <!-- 10. SMS Markers -->
+    <!-- Messages -->
+    <string name="msg_delete_sms_marker_confirmation" formatted="false">Delete marker?</string>
+
+    <!-- 10. SMS Markers -->
+    <!-- Messages -->
+    <string name="msg_select_marker_type" formatted="false">Select type of marker</string>
+
+    <!-- 11. Credits -->
+    <!-- Entities -->
+    <string name="ent_credit" formatted="false">Credit</string>
+
+    <!-- 11. Credits -->
+    <!-- Entities -->
+    <string name="ent_credits" formatted="false">Credits</string>
+
+    <!-- 11. Credits -->
+    <!-- Entities -->
+    <string name="ent_new_credit" formatted="false">New credit</string>
+
+    <!-- 11. Credits -->
+    <!-- Entities -->
+    <string name="ent_edit_credit" formatted="false">Edit credit</string>
+
+    <!-- 11. Credits -->
+    <!-- Titles -->
+    <string name="ttl_delete_credit_confirmation" formatted="false">Delete credit?</string>
+
+    <!-- 11. Credits -->
+    <!-- Messages -->
+    <string name="msg_confirmation_create_credit_percent_transaction" formatted="false">Create a transaction with the payment of interest on the loan?</string>
+
+    <!-- 11. Debts -->
+    <!-- Entities -->
+    <string name="ent_init_amount_short" formatted="false">init.</string>
+
+    <!-- 11. Debts -->
+    <!-- Entities -->
+    <string name="ent_debt" formatted="false">Loan</string>
+
+    <!-- 11. Debts -->
+    <!-- Entities -->
+    <string name="ent_debts" formatted="false">Loans</string>
+
+    <!-- 11. Debts -->
+    <!-- Entities -->
+    <string name="ent_debt_start_amount" formatted="false">Initial amount of loan</string>
+
+    <!-- 11. Debts -->
+    <!-- Entities -->
+    <string name="ent_new_debt" formatted="false">New loan</string>
+
+    <!-- 11. Debts -->
+    <!-- Entities -->
+    <string name="ent_edit_debt" formatted="false">Edit loan</string>
+
+    <!-- 11. Debts -->
+    <!-- Actions -->
+    <string name="act_borrow" formatted="false">Borrow</string>
+
+    <!-- 11. Debts -->
+    <!-- Actions -->
+    <string name="act_repay" formatted="false">Repay</string>
+
+    <!-- 11. Debts -->
+    <!-- Actions -->
+    <string name="act_grant_a_loan_to" formatted="false">Grant a loan to</string>
+
+    <!-- 11. Debts -->
+    <!-- Actions -->
+    <string name="act_take_in_payment" formatted="false">Take in payment</string>
+
+    <!-- 11. Debts -->
+    <!-- Titles -->
+    <string name="ttl_delete_debt_confirmation" formatted="false">Delete loan?</string>
+
+    <!-- 11. Debts -->
+    <!-- Titles -->
+    <string name="ttl_loan_closed" formatted="false">Loan closed</string>
+
+    <!-- 11. Debts -->
+    <!-- Titles -->
+    <string name="ttl_i_lent" formatted="false">I lent:</string>
+
+    <!-- 11. Debts -->
+    <!-- Titles -->
+    <string name="ttl_i_borrewed" formatted="false">I borrowed:</string>
+
+    <!-- 11. Debts -->
+    <!-- Titles -->
+    <string name="ttl_total_owe_me" formatted="false">Total owe me:</string>
+
+    <!-- 11. Debts -->
+    <!-- Titles -->
+    <string name="ttl_total_I_owe" formatted="false">Total I owe:</string>
+
+    <!-- 11. Debts -->
+    <!-- Errors -->
+    <string name="err_specify_currency" formatted="false">You must specify currency</string>
+
+    <!-- 12. SMS -->
+    <!-- Entities -->
+    <string name="ent_incoming" formatted="false">Inbox</string>
+
+    <!-- 12. SMS -->
+    <!-- Entities -->
+    <string name="ent_import_sms" formatted="false">Import SMS</string>
+
+    <!-- 12. SMS -->
+    <!-- Titles -->
+    <string name="ttl_delete_sms_confirmation" formatted="false">Delete SMS?</string>
+
+    <!-- 12. SMS -->
+    <!-- Titles -->
+    <string name="ttl_delete_all_sms_confirmation" formatted="false">Delete all SMS?</string>
+
+    <!-- 12. SMS -->
+    <!-- Titles -->
+    <string name="ttl__allow_auto_create_transactions" formatted="false">Create transactions automatically</string>
+
+    <!-- 12. SMS -->
+    <!-- Titles -->
+    <string name="ttl_do_not_create_duplicates" formatted="false">Do not create duplicate transactions</string>
+
+    <!-- 12. SMS -->
+    <!-- Titles -->
+    <string name="ttl_total_sms_found" formatted="false">Total SMS found</string>
+
+    <!-- 12. SMS -->
+    <!-- Titles -->
+    <string name="ttl_transactions_created" formatted="false">Transactions created</string>
+
+    <!-- 12. SMS -->
+    <!-- Titles -->
+    <string name="ttl_transactions_skipped" formatted="false">Transactions skipped</string>
+
+    <!-- 12. SMS -->
+    <!-- Titles -->
+    <string name="ttl_sms_created" formatted="false">Added to incoming</string>
+
+    <!-- 12. SMS -->
+    <!-- Titles -->
+    <string name="ttl_sms_skipped" formatted="false">Skipped</string>
+
+    <!-- 12. SMS -->
+    <!-- Messages -->
+    <string name="msg_permission_read_sms_rationale" formatted="false">"Read SMS" permission nedded to import SMS. Click Next, and allow access to messages data.</string>
+
+    <!-- 12. SMS -->
+    <!-- Messages -->
+    <string name="msg_permission_read_sms_denied" formatted="false">Access messages permission was denid</string>
+
+    <!-- 12. SMS -->
+    <!-- Messages -->
+    <string name="msg_permission_read_sms_never_askagain" formatted="false">Access messages permission was denid</string>
+
+    <!-- 12. SMS -->
+    <!-- Messages -->
+    <string name="msg_permission_recieve_sms_rationale" formatted="false">SMS markers or senders were created, but message receiving not allowed. Click Next and allow work with messaging.</string>
+
+    <!-- 12. SMS -->
+    <!-- Errors -->
+    <string name="err_empty_sender" formatted="false">Specify sender phone number</string>
+
+    <!-- 12. SMS -->
+    <!-- Errors -->
+    <string name="err_parse_clipboard" formatted="false">Error parse clipboard</string>
+
+    <!-- 13. Filters -->
+    <!-- Entities -->
+    <string name="ent_filters" formatted="false">Filters</string>
+
+    <!-- 13. Filters -->
+    <!-- Actions -->
+    <string name="act_add_filter" formatted="false">Add filter</string>
+
+    <!-- 13. Filters -->
+    <!-- Actions -->
+    <string name="act_clear_filters" formatted="false">Clear filters</string>
+
+    <!-- 13. Filters -->
+    <!-- Titles -->
+    <string name="ttl_new_filter" formatted="false">New filter</string>
+
+    <!-- 13. Filters -->
+    <!-- Titles -->
+    <string name="ttl_select_accounts" formatted="false">Select accounts</string>
+
+    <!-- 13. Filters -->
+    <!-- Titles -->
+    <string name="ttl_select_payees" formatted="false">Select payees/payers</string>
+
+    <!-- 13. Filters -->
+    <!-- Titles -->
+    <string name="ttl_select_projects" formatted="false">Select projects</string>
+
+    <!-- 13. Filters -->
+    <!-- Titles -->
+    <string name="ttl_select_simpledebts" formatted="false">Select loans</string>
+
+    <!-- 13. Filters -->
+    <!-- Titles -->
+    <string name="ttl_select_departments" formatted="false">Select departments</string>
+
+    <!-- 13. Filters -->
+    <!-- Titles -->
+    <string name="ttl_select_locations" formatted="false">Select locations</string>
+
+    <!-- 13. Filters -->
+    <!-- Titles -->
+    <string name="ttl_select_category" formatted="false">Select categories</string>
+
+    <!-- 13. Filters -->
+    <!-- Titles -->
+    <string name="ttl_exclude" formatted="false">Exclude</string>
+
+    <!-- 14. Splits -->
+    <!-- Actions -->
+    <string name="act_split" formatted="false">Split</string>
+
+    <!-- 14. Splits -->
+    <!-- Errors -->
+    <string name="err_split_of_transfers_not_supported" formatted="false">Split of transfers is not supported</string>
+
+    <!-- 15. Budget -->
+    <!-- Entities -->
+    <string name="ent_budget" formatted="false">Budget</string>
+
+    <!-- 15. Budget -->
+    <!-- Entities -->
+    <string name="ent_budget_on" formatted="false">Budget on</string>
+
+    <!-- 15. Budget -->
+    <!-- Entities -->
+    <string name="ent_budget_total_start" formatted="false">Total sum on start of month</string>
+
+    <!-- 15. Budget -->
+    <!-- Entities -->
+    <string name="ent_budget_total_end" formatted="false">Total sum on finish of month</string>
+
+    <!-- 15. Budget -->
+    <!-- Entities -->
+    <string name="ent_budget_total_income" formatted="false">Income</string>
+
+    <!-- 15. Budget -->
+    <!-- Entities -->
+    <string name="ent_budget_total_outcome" formatted="false">Expense</string>
+
+    <!-- 15. Budget -->
+    <!-- Entities -->
+    <string name="ent_budget_total_io_for_month" formatted="false">Total sum for month</string>
+
+    <!-- 15. Budget -->
+    <!-- Entities -->
+    <string name="ent_budget_total_borrow" formatted="false">Total borrow</string>
+
+    <!-- 15. Budget -->
+    <!-- Entities -->
+    <string name="ent_budget_total_repay" formatted="false">Total repay</string>
+
+    <!-- 15. Budget -->
+    <!-- Entities -->
+    <string name="ent_budget_total_credits" formatted="false">Total sum for credits</string>
+
+    <!-- 15. Budget -->
+    <!-- Entities -->
+    <string name="ent_plan" formatted="false">Plan</string>
+
+    <!-- 15. Budget -->
+    <!-- Entities -->
+    <string name="ent_fact" formatted="false">Fact</string>
+
+    <!-- 15. Budget -->
+    <!-- Entities -->
+    <string name="ent_difference" formatted="false">Difference</string>
+
+    <!-- 15. Budget -->
+    <!-- Actions -->
+    <string name="act_add_category" formatted="false">Add category</string>
+
+    <!-- 15. Budget -->
+    <!-- Actions -->
+    <string name="act_add_credit" formatted="false">Add credit</string>
+
+    <!-- 15. Budget -->
+    <!-- Actions -->
+    <string name="act_copy_budget" formatted="false">Copy plan from…</string>
+
+    <!-- 15. Budget -->
+    <!-- Actions -->
+    <string name="act_create_from_fact" formatted="false">Create from fact</string>
+
+    <!-- 15. Budget -->
+    <!-- Actions -->
+    <string name="act_clear_budget" formatted="false">Clear budget</string>
+
+    <!-- 15. Budget -->
+    <!-- Titles -->
+    <string name="ttl_replace_exists" formatted="false">Modify existing</string>
+
+    <!-- 15. Budget -->
+    <!-- Messages -->
+    <string name="msg_dialog_clear_budget" formatted="false">Clear plan on current month?</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Entities -->
+    <string name="ent_backup_data" formatted="false">Backup and restore</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Actions -->
+    <string name="act_backup" formatted="false">Backup DB</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Actions -->
+    <string name="act_restore" formatted="false">Restore DB</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Actions -->
+    <string name="act_restore_from_dropbox" formatted="false">Restore DB from Dropbox</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Actions -->
+    <string name="act_logout_from_dropbox" formatted="false">Logout from Dropbox</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Titles -->
+    <string name="ttl_select_db_file" formatted="false">Select file</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Titles -->
+    <string name="ttl_enable_auto_backup" formatted="false">Enable daily automatic backups</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Titles -->
+    <string name="ttl_enable_backup_password_protection" formatted="false">Enable backup file password protection</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Titles -->
+    <string name="ttl_enable_backup_to_dropbox" formatted="false">Upload backups to Dropbox</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Titles -->
+    <string name="ttl_dropbox_account" formatted="false">Dropbox account</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Titles -->
+    <string name="ttl_enter_password" formatted="false">Enter password</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Titles -->
+    <string name="ttl_last_backup_to_dropbox" formatted="false">Last Dropbox backup:</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Titles -->
+    <string name="ttl_auto_backup_info" formatted="false">Backups are creates automatically and stores on the memory card in the Fingen/\Backup</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Messages -->
+    <string name="msg_confirm_restore_db" formatted="false">Restore the database from a file? The program will be restarted.</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Messages -->
+    <string name="msg_permission_rw_external_storage_rationale" formatted="false">External storage access permission nedded to backup and restore DB. Click Next, and allow access to external storage.</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Messages -->
+    <string name="msg_permission_rw_external_storage_denied" formatted="false">External storage access permission denied</string>
+
+    <!-- 16. Backup & Restore -->
+    <!-- Messages -->
+    <string name="msg_permission_rw_external_storage_never_askagain" formatted="false">External storage access permission denied</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Entities -->
+    <string name="ent_import_data" formatted="false">Import data</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Entities -->
+    <string name="ent_export_data" formatted="false">Export data</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Entities -->
+    <string name="ent_export" formatted="false">Export</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Entities -->
+    <string name="ent_export_selected" formatted="false">Export selected to CSV</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Entities -->
+    <string name="ent_path_to_file" formatted="false">Path to file</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Entities -->
+    <string name="ent_path_to_dir_or_file" formatted="false">Path to directory or file</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Entities -->
+    <string name="ent_file_name" formatted="false">File name</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Entities -->
+    <string name="ent_import_csv_fingen" formatted="false">Import Fingen CSV</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Entities -->
+    <string name="ent_import_csv_financisto" formatted="false">Import Financisto CSV</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Entities -->
+    <string name="ent_import_csv_advanced" formatted="false">Import CSV (advanced)</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Entities -->
+    <string name="ent_export_sheet" formatted="false">Google sheet export</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Actions -->
+    <string name="act_import" formatted="false">Import</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Titles -->
+    <string name="ttl_import_complete" formatted="false">Import complete</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Titles -->
+    <string name="ttl_skip_lines" formatted="false">Skip lines</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Titles -->
+    <string name="ttl_set_fields_links" formatted="false">Specify fields from file that corresponding Fingen entities</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Titles -->
+    <string name="ttl_skip_duplicates" formatted="false">Skip duplicates</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Titles -->
+    <string name="ttl_select_csv_file" formatted="false">Select CSV file</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Titles -->
+    <string name="ttl_select_export_dir" formatted="false">Select file or directory</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Errors -->
+    <string name="err_set_dir" formatted="false">Please select file or directory</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Errors -->
+    <string name="err_set_file_name" formatted="false">Please input file name</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Messages -->
+    <string name="msg_permission_write_external_storage_rationale" formatted="false">External storage access permission nedded to import/export data. Click Next, and allow access to external storage.</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Messages -->
+    <string name="msg_permission_write_external_storage_denied" formatted="false">External storage access permission denied</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Messages -->
+    <string name="msg_permission_write_external_storage_never_askagain" formatted="false">External storage access permission denied</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Messages -->
+    <string name="msg_permission_read_external_storage_rationale" formatted="false">External storage access permission nedded to import/export data. Click Next, and allow access to external storage.</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Messages -->
+    <string name="msg_permission_read_external_storage_denied" formatted="false">External storage access permission denied</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Messages -->
+    <string name="msg_permission_read_external_storage_never_askagain" formatted="false">External storage access permission denied</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Messages -->
+    <string name="msg_file_not_exist" formatted="false">The file does not exist</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Messages -->
+    <string name="msg_path_is_empty" formatted="false">Specify path to file</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Messages -->
+    <string name="msg_import_complete_ok" formatted="false">Import comlete</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Messages -->
+    <string name="msg_export_complete_ok" formatted="false">Export complete</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Messages -->
+    <string name="msg_import_complete_error_1" formatted="false">An error occurred during the import process</string>
+
+    <!-- 17. Import & Export -->
+    <!-- Messages -->
+    <string name="msg_export_complete_error_1" formatted="false">An error occurred during the export process</string>
+
+    <!-- 18. Pin lock -->
+    <!-- Titles -->
+    <string name="pin_code_forgot_text" formatted="false">Forgot you PIN?</string>
+
+    <!-- 18. Pin lock -->
+    <!-- Titles -->
+    <string name="pin_code_step_disable" formatted="false">Disable protection\nEnter your current PIN</string>
+
+    <!-- 18. Pin lock -->
+    <!-- Titles -->
+    <string name="pin_code_step_create" formatted="false">Create a %d-digit PIN</string>
+
+    <!-- 18. Pin lock -->
+    <!-- Titles -->
+    <string name="pin_code_step_change" formatted="false">Enter your current PIN</string>
+
+    <!-- 18. Pin lock -->
+    <!-- Titles -->
+    <string name="pin_code_step_unlock" formatted="false">Enter your PIN</string>
+
+    <!-- 18. Pin lock -->
+    <!-- Titles -->
+    <string name="pin_code_step_enable_confirm" formatted="false">Confirm your PIN</string>
+
+    <!-- 18. Pin lock -->
+    <!-- Titles -->
+    <string name="pin_code_fingerprint_text" formatted="false">Fingerprint</string>
+
+    <!-- 18. Pin lock -->
+    <!-- Messages -->
+    <string name="pin_code_fingerprint_success" formatted="false">Fingerprint recognized</string>
+
+    <!-- 18. Pin lock -->
+    <!-- Messages -->
+    <string name="pin_code_fingerprint_not_recognized" formatted="false">Fingerprint not recognized. Try again</string>
+
+    <!-- 19. About -->
+    <!-- Settings -->
+    <string name="ent_about" formatted="false">About</string>
+
+    <!-- 19. About -->
+    <!-- Titles -->
+    <string name="ttl_app_name_full" formatted="false">Fingen Expense Manager</string>
+
+    <!-- 19. About -->
+    <!-- Titles -->
+    <string name="ttl_app_version" formatted="false">Version</string>
+
+    <!-- 19. About -->
+    <!-- Titles -->
+    <string name="ttl_changelog" formatted="false">Change log</string>
+
+    <!-- 19. About -->
+    <!-- Titles -->
+    <string name="ttl_third_party_license" formatted="false">Open source licenses</string>
+
+    <!-- 19. About -->
+    <!-- Titles -->
+    <string name="ttl_sqlite_version" formatted="false">SQLite version: </string>
+
+    <!-- 19. About -->
+    <!-- Titles -->
+    <string name="ttl_rebuild_db" formatted="false">Rebuild DB</string>
+
+    <!-- 19. About -->
+    <!-- Messages -->
+    <string name="msg_db_rebuild_error" formatted="false">Error on rebuilding database</string>
+
+    <!-- 19. About -->
+    <!-- Messages -->
+    <string name="msg_db_rebuild_success" formatted="false">Success</string>
+
+    <!-- 19. About -->
+    <!-- Messages -->
+    <string name="msg_db_upgrade" formatted="false">Upgrading database...</string>
+
+    <!-- 20. Settings -->
+    <!-- Entities -->
+    <string name="ent_settings" formatted="false">Preferences</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_header_general" formatted="false">General</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_title_start_tab" formatted="false">Start tab</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_summary_start_tab" formatted="false">Tab that will be open when the application starts</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_title_theme" formatted="false">Theme</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_title_theme_light" formatted="false">Light</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_title_theme_dark" formatted="false">Dark</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_tab_order" formatted="false">Main screen tab order</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_expand_lists" formatted="false">Expand nested lists</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_hide_sums_panel" formatted="false">Hide sums panel</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_enable_scan_qr" formatted="false">Enable scan QR</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_fts_credentials" formatted="false">FTS Credentials</string>
+
+    <!-- 20. Settings -->
+    <!-- Account list -->
+    <string name="pref_header_accounts_list" formatted="false">Accounts</string>
+
+    <!-- 20. Settings -->
+    <!-- Account list -->
+    <string name="pref_title_accounts_show_income_expense_for_accounts" formatted="false">Show income/expense for accounts</string>
+
+    <!-- 20. Settings -->
+    <!-- Account list -->
+    <string name="pref_title_accounts_list_show_closed" formatted="false">Show closed accounts</string>
+
+    <!-- 20. Settings -->
+    <!-- Account list -->
+    <string name="pref_title_accounts_list_show_credits" formatted="false">Show credit accounts</string>
+
+    <!-- 20. Settings -->
+    <!-- Account list -->
+    <string name="pref_title_account_click_action" formatted="false">Account tap action</string>
+
+    <!-- 20. Settings -->
+    <!-- Account list -->
+    <string name="pref_title_account_click_action_list" formatted="false">List transactions</string>
+
+    <!-- 20. Settings -->
+    <!-- Account list -->
+    <string name="pref_title_account_click_action_new" formatted="false">New transaction</string>
+
+    <!-- 20. Settings -->
+    <!-- Account list -->
+    <string name="pref_title_detect_locations" formatted="false">Automatically detect location</string>
+
+    <!-- 20. Settings -->
+    <!-- Work with SMS -->
+    <string name="pref_header_sms" formatted="false">SMS</string>
+
+    <!-- 20. Settings -->
+    <!-- Work with SMS -->
+    <string name="pref_title_auto_create_transaction_on_full_set_of_patterns" formatted="false">Automatically create transactions</string>
+
+    <!-- 20. Settings -->
+    <!-- Work with SMS -->
+    <string name="pref_title_auto_create_prerequisites" formatted="false">Autocreate prerequisites</string>
+
+    <!-- 20. Settings -->
+    <!-- Work with SMS -->
+    <string name="pref_summary_auto_create_transaction_on_full_set_of_patterns" formatted="false">In the presence of markers specified in autocreate prerequisites</string>
+
+    <!-- 20. Settings -->
+    <!-- Work with SMS -->
+    <string name="pref_title_check_actual_balance_in_sms" formatted="false">Compare account balance with balance in SMS</string>
+
+    <!-- 20. Settings -->
+    <!-- Work with SMS -->
+    <string name="pref_title_balance_compare_error" formatted="false">Min. balance difference</string>
+
+    <!-- 20. Settings -->
+    <!-- Security -->
+    <string name="pref_header_security" formatted="false">Security</string>
+
+    <!-- 20. Settings -->
+    <!-- Security -->
+    <string name="pref_title_enable_pin_lock" formatted="false">Enable PIN protection</string>
+
+    <!-- 20. Settings -->
+    <!-- Security -->
+    <string name="pref_title_change_pin" formatted="false">Change PIN</string>
+
+    <!-- 20. Settings -->
+    <!-- Security -->
+    <string name="toast_pin_enabled" formatted="false">PIN protection enabled</string>
+
+    <!-- 20. Settings -->
+    <!-- Security -->
+    <string name="toast_pin_disabled" formatted="false">PIN protection disabled</string>
+
+    <!-- 20. Settings -->
+    <!-- Security -->
+    <string name="pref_title_pin_length" formatted="false">PIN length</string>
+
+    <!-- 20. Settings -->
+    <!-- Security -->
+    <string name="toast_pin_turn_off_pinlock_before_change_pin_length" formatted="false">Disable PIN protection before change PIN length</string>
+
+    <!-- 20. Settings -->
+    <!-- Transaction editor -->
+    <string name="pref_header_transactions" formatted="false">Transactions</string>
+
+    <!-- 20. Settings -->
+    <!-- Transaction editor -->
+    <string name="pref_title_compact_view_mode" formatted="false">Compact view mode</string>
+
+    <!-- 20. Settings -->
+    <!-- Transaction editor -->
+    <string name="pref_summary_compact_view_mode" formatted="false">App restart required</string>
+
+    <!-- 20. Settings -->
+    <!-- Transaction editor -->
+    <string name="pref_title_select_payee_style" formatted="false">Payee selection style</string>
+
+    <!-- 20. Settings -->
+    <!-- Transaction editor -->
+    <string name="pref_title_payee_autocomplete" formatted="false">Autocomplete list</string>
+
+    <!-- 20. Settings -->
+    <!-- Transaction editor -->
+    <string name="pref_title_payee_window" formatted="false">Standalone window</string>
+
+    <!-- 20. Settings -->
+    <!-- Transaction editor -->
+    <string name="pref_title_show_transaction_type_titles" formatted="false">Show transaction type titles</string>
+
+    <!-- 21. Help -->
+    <!-- Edit transaction -->
+    <string name="hlp_tr_editor_intro" formatted="false">On this screen you can change the properties of a transaction. A transaction is any movement of your money (income, expense or transfer)</string>
+
+    <!-- 21. Help -->
+    <!-- Edit transaction -->
+    <string name="hlp_tr_editor_date" formatted="false">Click to change the date of the transaction</string>
+
+    <!-- 21. Help -->
+    <!-- Edit transaction -->
+    <string name="hlp_tr_editor_time" formatted="false">Click to change the time of the transaction</string>
+
+    <!-- 21. Help -->
+    <!-- Edit transaction -->
+    <string name="hlp_tr_editor_account_income" formatted="false">Select an account, which receives funds</string>
+
+    <!-- 21. Help -->
+    <!-- Edit transaction -->
+    <string name="hlp_tr_editor_account_outcome_or_transfer" formatted="false">Please select the account from which the funds are debited</string>
+
+    <!-- 21. Help -->
+    <!-- Edit transaction -->
+    <string name="hlp_tr_editor_account_transfer" formatted="false">Select an account, which receives funds</string>
+
+    <!-- 21. Help -->
+    <!-- Edit transaction -->
+    <string name="hlp_tr_editor_payee_outcome" formatted="false">Enter the payee. Swipe left to go to the transfer mode between your accounts</string>
+
+    <!-- 21. Help -->
+    <!-- Edit transaction -->
+    <string name="hlp_tr_editor_payee_income" formatted="false">Enter the payer. Swipe left to go to the transfer mode between your accounts</string>
+
+    <!-- 21. Help -->
+    <!-- Edit transaction -->
+    <string name="hlp_tr_editor_dest_account" formatted="false">Select an account for depositing funds. Swipe right to go to the income/expense mode</string>
+
+    <!-- 21. Help -->
+    <!-- Edit transaction -->
+    <string name="hlp_tr_editor_category" formatted="false">Choose category of transaction from list</string>
+
+    <!-- 21. Help -->
+    <!-- Edit transaction -->
+    <string name="hlp_tr_editor_amount" formatted="false">Enter the amount of the transaction</string>
+
+    <!-- 21. Help -->
+    <!-- Edit transaction -->
+    <string name="hlp_tr_editor_amount_sign" formatted="false">Change the type of transaction - Income/Expense</string>
+
+    <!-- 21. Help -->
+    <!-- Edit transaction -->
+    <string name="hlp_tr_editor_amount_dest_account" formatted="false">When transferring funds between accounts in different currencies, it is displayed in the currency of the sum of the destination account. When you edit amount it automatically changes currency exchange rate</string>
+
+    <!-- 21. Help -->
+    <!-- Edit transaction -->
+    <string name="hlp_tr_editor_exchange_rate" formatted="false">If you change the exchange rate, will automatically change the amount in the currency of the destination account</string>
+
+    <!-- 21. Help -->
+    <!-- Edit account -->
+    <string name="hlp_account_editor_intro" formatted="false">На этом экране изменяются свойства счета</string>
+
+    <!-- 21. Help -->
+    <!-- Edit account -->
+    <string name="hlp_account_editor_name" formatted="false">Enter a unique name for the account</string>
+
+    <!-- 21. Help -->
+    <!-- Edit account -->
+    <string name="hlp_account_editor_type" formatted="false">Select the type of account</string>
+
+    <!-- 21. Help -->
+    <!-- Edit account -->
+    <string name="hlp_account_editor_currency" formatted="false">Click to call currency choice dialog. In the same dialog you can create a new currency</string>
+
+    <!-- 21. Help -->
+    <!-- Edit account -->
+    <string name="hlp_account_editor_emitent" formatted="false">Enter the name of the bank (not necessarily)</string>
+
+    <!-- 21. Help -->
+    <!-- Edit account -->
+    <string name="hlp_account_editor_last4digits" formatted="false">Enter the last 4 digits of the card number (not required)</string>
+
+    <!-- 21. Help -->
+    <!-- Edit account -->
+    <string name="hlp_account_editor_comment" formatted="false">Enter a comment (optional)</string>
+
+    <!-- 21. Help -->
+    <!-- Edit account -->
+    <string name="hlp_account_editor_start_balance" formatted="false">Enter the initial balance</string>
+
+    <!-- 21. Help -->
+    <!-- Edit account -->
+    <string name="hlp_account_editor_closed" formatted="false">Check, if you want to hide the account from the list. You need to uncheck the option Show closed accounts in the preferences</string>
+
+    <!-- 22. Departments -->
+    <!-- Entities -->
+    <string name="ent_department" formatted="false">Department</string>
+
+    <!-- 22. Departments -->
+    <!-- Entities -->
+    <string name="ent_departments" formatted="false">Departments</string>
+
+    <!-- 22. Departments -->
+    <!-- Entities -->
+    <string name="ent_default_department" formatted="false">Default department</string>
+
+    <!-- 22. Departments -->
+    <!-- Entities -->
+    <string name="ent_new_department" formatted="false">New department</string>
+
+    <!-- 22. Departments -->
+    <!-- Entities -->
+    <string name="ent_edit_department" formatted="false">Edit department</string>
+
+    <!-- 22. Departments -->
+    <!-- Titles -->
+    <string name="ttl_delete_department_confirmation" formatted="false">Delete department?</string>
+
+    <!-- 22. Departments -->
+    <!-- Titles -->
+    <string name="title_select_department" formatted="false">Select department</string>
+
+    <!-- 22. Departments -->
+    <!-- Actions -->
+    <string name="title_reset_default_department" formatted="false">Reset default department</string>
+
+    <!-- 23. Reports -->
+    <!-- Entities -->
+    <string name="ent_report" formatted="false">Report</string>
+
+    <!-- 23. Reports -->
+    <!-- Entities -->
+    <string name="ent_reports" formatted="false">Reports</string>
+
+    <!-- 23. Reports -->
+    <!-- Entities -->
+    <string name="ent_data" formatted="false">Data</string>
+
+    <!-- 23. Reports -->
+    <!-- Entities -->
+    <string name="ent_show" formatted="false">Show</string>
+
+    <!-- 23. Reports -->
+    <!-- Entities -->
+    <string name="ent_pie_chart" formatted="false">Pie chart</string>
+
+    <!-- 23. Reports -->
+    <!-- Entities -->
+    <string name="ent_bar_chart" formatted="false">Bar chart</string>
+
+    <!-- 23. Reports -->
+    <!-- Actions -->
+    <string name="act_show_report" formatted="false">Show report</string>
+
+    <!-- 23. Reports -->
+    <!-- Actions -->
+    <string name="act_toggle_percents" formatted="false">Percents/Sums</string>
+
+    <!-- 23. Reports -->
+    <!-- Actions -->
+    <string name="act_toggle_lines" formatted="false">Lines on/off</string>
+
+    <!-- 23. Reports -->
+    <!-- Actions -->
+    <string name="act_toggle_shrink_labels" formatted="false">Shrink labels on/off</string>
+
+    <!-- 23. Reports -->
+    <!-- Titles -->
+    <string name="ttl_no_chart_data" formatted="false">No chart data available</string>
+
+    <!-- 23. In-app purchases -->
+    <!-- Entities -->
+    <string name="ent_pro_features" formatted="false">PRO features</string>
+
+    <!-- 23. In-app purchases -->
+    <!-- Messages -->
+    <string name="msg_inapp_purchases_not_avaliable" formatted="false">PRO features are not avaliable</string>
+
+    <!-- 23. In-app purchases -->
+    <!-- Messages -->
+    <string name="msg_thanks_for_purchase_reports" formatted="false">Thank you for your purchase! To build graphical reports, go to the "Transactions" tab, pull up the bottom panel and click charting. Reports are based on the transactions displayed in the list, taking into account all of the filters.</string>
+
+    <!-- 24. Senders -->
+    <!-- Entities -->
+    <string name="ent_sender" formatted="false">Sms sender</string>
+
+    <!-- 24. Senders -->
+    <!-- Entities -->
+    <string name="ent_senders" formatted="false">Sms senders</string>
+
+    <!-- 24. Senders -->
+    <!-- Entities -->
+    <string name="ent_new_sender" formatted="false">New sms sender</string>
+
+    <!-- 24. Senders -->
+    <!-- Entities -->
+    <string name="ent_edit_sender" formatted="false">Edit sms sender</string>
+
+    <!-- 24. Senders -->
+    <!-- Entities -->
+    <string name="ent_phoneno" formatted="false">Phone No</string>
+
+    <!-- 24. Senders -->
+    <!-- Entities -->
+    <string name="ent_amount_pos" formatted="false">Amount position</string>
+
+    <!-- 24. Senders -->
+    <!-- Entities -->
+    <string name="ent_balance_pos" formatted="false">Balance position</string>
+
+    <!-- 24. Senders -->
+    <!-- Titles -->
+    <string name="ttl_delete_sender_confirmation" formatted="false">Delete sms sender?</string>
+
+    <!-- 24. Senders -->
+    <!-- Titles -->
+    <string name="title_select_sender" formatted="false">Select sms sender</string>
+
+    <!-- 24. Senders -->
+    <!-- Titles -->
+    <string name="title_senders_phone_no" formatted="false">Senders phone No</string>
+
+    <!-- 24. Senders -->
+    <!-- Titles -->
+    <string name="title_senders_add_credit_limit_to_balance" formatted="false">Add credit limit to balance</string>
+
+    <!-- 25. Sync -->
+    <!-- Entities -->
+    <string name="ent_sync" formatted="false">Synchronization</string>
+
+    <!-- 25. Sync -->
+    <!-- Entities -->
+    <string name="ent_user" formatted="false">User</string>
+
+    <!-- 25. Sync -->
+    <!-- Entities -->
+    <string name="ent_read" formatted="false">Read</string>
+
+    <!-- 25. Sync -->
+    <!-- Entities -->
+    <string name="ent_write" formatted="false">Write</string>
+
+    <!-- 25. Sync -->
+    <!-- Actions -->
+    <string name="act_signin_with_google_account" formatted="false">Sign-in with Google account</string>
+
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_manage_permissions" formatted="false">Manage permissions</string>
+
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_enter_email" formatted="false">Enter user\'s email (Google)</string>
+
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_delete_user" formatted="false">Delete user?</string>
+
+    <!-- 26. Summary -->
+    <!-- Entities -->
+    <string name="ent_today" formatted="false">Today</string>
+
+    <!-- 26. Summary -->
+    <!-- Entities -->
+    <string name="ent_this_week" formatted="false">This week</string>
+
+    <!-- 26. Summary -->
+    <!-- Entities -->
+    <string name="ent_this_month" formatted="false">This month</string>
+
+    <!-- 26. Summary -->
+    <!-- Entities -->
+    <string name="ent_this_year" formatted="false">This year</string>
+
+    <!-- 26. Summary -->
+    <!-- Entities -->
+    <string name="ent_yesterday" formatted="false">Yesterday</string>
+
+    <!-- 26. Summary -->
+    <!-- Entities -->
+    <string name="ent_last_week" formatted="false">Last week</string>
+
+    <!-- 26. Summary -->
+    <!-- Entities -->
+    <string name="ent_last_month" formatted="false">Last month</string>
+
+    <!-- 26. Summary -->
+    <!-- Entities -->
+    <string name="ent_last_year" formatted="false">Last year</string>
+
+    <!-- 26. Summary -->
+    <!-- Titles -->
+    <string name="ttl_summary_items" formatted="false">Summary tab items</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_scan_qr" formatted="false">Scan QR</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Messages -->
+    <string name="msg_camera_permission_was_granted" formatted="false">Camera permission was granted</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Messages -->
+    <string name="msg_camera_permission_request_was_denied" formatted="false">Camera permission request was denied</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Messages -->
+    <string name="msg_camera_access_is_required" formatted="false">Camera access is required to display the camera preview</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Messages -->
+    <string name="msg_permission_is_not_available" formatted="false">Permission is not available. Requesting camera permission</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Entities -->
+    <string name="ent_fn" formatted="false">FN</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Entities -->
+    <string name="ent_fd" formatted="false">FD</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Entities -->
+    <string name="ent_fp" formatted="false">FP</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ent_product" formatted="false">Product</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ent_products" formatted="false">Products</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ent_product_list" formatted="false">Product list</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ent_split_category" formatted="false">Split cat.</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ent_split_project" formatted="false">Split proj.</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ent_quantity" formatted="false">Quantity</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ent_price" formatted="false">Price</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ent_code_from_sms" formatted="false">Code from sms</string>
+
+    <!-- 27. Products -->
+    <!-- Actions -->
+    <string name="act_add_product" formatted="false">Add product...</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_loading_products" formatted="false">Loading products...</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_add_product" formatted="false">Add product</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_new_product" formatted="false">New product</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_edit_product" formatted="false">Edit product</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_split_unknown" formatted="false">Unknown</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_connection_params" formatted="false">Connection parameters</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_not_now" formatted="false">Not now</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_do_not_show_again" formatted="false">Do not show again</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_you_can_edit_later" formatted="false">You can edit credentials later it preferences</string>
+
+    <!-- 27. Products -->
+    <!-- Messages -->
+    <string name="msg_delete_product_confirmation" formatted="false">Delete product?</string>
+
+    <!-- 27. Products -->
+    <!-- Errors -->
+    <string name="err_loading_products" formatted="false">Error on loading products</string>
+
+    <!-- 27. Products -->
+    <!-- Errors -->
+    <string name="err_set_product" formatted="false">I must specify product</string>
+
+    <!-- 27. Products -->
+    <!-- Messages -->
+    <string name="msg_fts_login_html" formatted="false"><![CDATA[<p>For the ability to download a list of products from the receipt:</p><p>&nbsp;&nbsp;&nbsp; 1. Install the application "<strong>Проверка касcового чека</strong>" (author of <strong>АО ГНИВЦ</strong>).</p><p>&nbsp;&nbsp;&nbsp; 2. Register in it using your mobile phone number and get the code by SMS.</p><p>&nbsp;&nbsp;&nbsp; 3. Enter the phone number and code in the form below.</p><p>&nbsp;&nbsp;&nbsp; 4. Tap "<strong>Save</strong>".</p>]]></string>
+
+    <!-- 28. EditorConstructor -->
+    <!-- Entities -->
+    <string name="ent_editor_constructor" formatted="false">Transaction editor constructor</string>
+
+    <!-- 28. EditorConstructor -->
+    <!-- Actions -->
+    <string name="act_tune_editor" formatted="false">Tune editor</string>
+</resources>

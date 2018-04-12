@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sliding_layout_transactions"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:umanoDragView="@+id/dragView"
+    app:umanoScrollableView="@+id/recycler_view_filters"
+    style="@style/StyleSlidingUpPanel">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/cardViewSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="0dp"
+            android:background="?listItemBackground"
+            android:elevation="4dp"
+            android:padding="0dp"
+            android:visibility="gone">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:padding="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/imageButtonClearSearchString"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <EditText
+                    android:id="@+id/editTextSearch"
+                    style="@style/EditableEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:hint="@string/ent_search"
+                    android:inputType="textNoSuggestions" />
+            </android.support.design.widget.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/imageButtonClearSearchString"
+                style="@style/ClearButtonStyle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription" />
+        </android.support.constraint.ConstraintLayout>
+
+        <com.yoshione.fingen.widgets.ContextMenuRecyclerView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            style="@style/FastScrollRecyclerVew"
+            android:id="@+id/recycler_view"
+            android:focusableInTouchMode="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/cardViewSearch"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginStart="0dp"
+            tools:listitem="@layout/list_item_transactions_2"/>
+
+        <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/fabMenuSelection"
+            style="@style/FabMenuStyle"
+            app:menu_fab_label="@string/ttl_selection">
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fabSelectAll"
+                style="@style/FabMenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_select_all_white"
+                app:fab_label="@string/act_select_all" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fabUnselectAll"
+                style="@style/FabMenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_unselect_all_white"
+                app:fab_label="@string/act_unselect_all" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fabEditSelected"
+                style="@style/FabMenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_edit_white"
+                app:fab_label="@string/act_edit_selected" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fabExportSelected"
+                style="@style/FabMenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_export_white"
+                app:fab_label="@string/ent_export_selected" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fabDeleteSelected"
+                style="@style/FabMenuButtonsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_trash_white"
+                app:fab_label="@string/act_delete_selected" />
+
+        </com.github.clans.fab.FloatingActionMenu>
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabGoTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/fab_margin"
+            android:layout_marginStart="@dimen/fab_margin"
+            android:visibility="gone"
+            style="@style/FabMenuButtonsStyle"
+            app:fab_hideAnimation="@anim/jump_to_down"
+            app:fab_showAnimation="@anim/jump_from_down"
+            app:fab_size="mini"/>
+
+        <TextView
+            android:id="@+id/textViewSelectedCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:textColor="@color/ColorAccent"
+            android:visibility="gone"
+            tools:text="Selected ..." />
+
+        <ImageView
+            android:id="@+id/imageViewPullMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/pull_me_animated"
+            android:visibility="visible" />
+
+    </RelativeLayout>
+
+    <!-- SLIDING LAYOUT -->
+    <LinearLayout
+        android:id="@+id/dragView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="false">
+
+        <include
+            android:id="@+id/sliding_panel_header"
+            layout="@layout/content_slidingup_panel_header"/>
+
+
+        <LinearLayout
+            android:id="@+id/buttonsBarFilters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="?listItemBackground">
+
+            <Button
+                android:id="@+id/buttonSearch"
+                style="@style/BottomBarButton"
+                android:drawableTop="@drawable/selector_search"
+                android:text="@string/ent_search" />
+
+            <Button
+                android:id="@+id/buttonReports"
+                style="@style/BottomBarButton"
+                android:drawableTop="@drawable/selector_reports"
+                android:text="@string/ent_reports" />
+
+            <Button
+                android:id="@+id/buttonAddFilter"
+                style="@style/BottomBarButton"
+                android:drawableTop="@drawable/selector_filter"
+                android:text="@string/ent_filters" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:visibility="gone">
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switch_all_filters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentStart="false"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="false"
+                android:layout_centerVertical="true"
+                android:checked="false"/>
+        </RelativeLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <com.yoshione.fingen.widgets.ContextMenuRecyclerView
+            style="@style/FastScrollRecyclerVew"
+            android:id="@+id/recycler_view_filters"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/buttonClearfilters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="0dp"
+            android:textSize="@dimen/text_size_big"
+            android:fontFamily="sans-serif-medium"
+            android:textStyle="normal"
+            android:textColor="@color/blue_color"
+            android:text="@string/act_clear_filters"
+            android:layout_gravity="center_vertical"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

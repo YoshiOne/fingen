@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="account_types" translatable="false">
+        <item>@string/account_type_cash</item>
+        <item>@string/account_type_bank_account</item>
+        <item>@string/account_type_debit_card</item>
+        <item>@string/account_type_credit_card</item>
+        <item>@string/account_type_asset</item>
+        <item>@string/account_type_red</item>
+        <item>@string/account_type_other</item>
+    </string-array>
+
+    <string-array name="acc_sort_types" translatable="false">
+        <item>@string/acc_sort_type_custom</item>
+        <item>@string/acc_sort_type_date_creation</item>
+        <item>@string/acc_sort_type_date_last_operation</item>
+        <item>@string/acc_sort_type_balance</item>
+        <item>@string/acc_sort_type_type</item>
+        <item>@string/acc_sort_type_alphabet</item>
+    </string-array>
+
+    <string-array name="acc_sort_orders" translatable="false">
+        <item>@string/sort_type_asc</item>
+        <item>@string/sort_type_desc</item>
+    </string-array>
+
+
+    <string-array name="pref_start_tab_titles" translatable="false">
+        <item>@string/ent_summary</item>
+        <item>@string/ent_accounts</item>
+        <item>@string/ent_transactions</item>
+    </string-array>
+    <string-array name="pref_start_tab_values" translatable="false">
+        <item>summary</item>
+        <item>accounts</item>
+        <item>transactions</item>
+    </string-array>
+
+    <string-array name="pref_tabs_order" translatable="false">
+        <item>@string/ent_summary</item>
+        <item>@string/ent_accounts</item>
+        <item>@string/ent_transactions</item>
+    </string-array>
+    <string-array name="pref_tabs_order_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="pref_theme_titles" translatable="false">
+        <item>@string/pref_title_theme_light</item>
+        <item>@string/pref_title_theme_dark</item>
+    </string-array>
+    <string-array name="pref_theme_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="pref_account_click_actions_titles" translatable="false">
+        <item>@string/pref_title_account_click_action_list</item>
+        <item>@string/pref_title_account_click_action_new</item>
+    </string-array>
+    <string-array name="pref_account_click_actions_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="pref_payee_selection_styles_titles" translatable="false">
+        <item>@string/pref_title_payee_autocomplete</item>
+        <item>@string/pref_title_payee_window</item>
+    </string-array>
+    <string-array name="pref_payee_selection_styles_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="pref_pin_length_values" translatable="false">
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+
+    <string-array name="pref_autocreate_prerequisites_captions" translatable="false">
+        <item>@string/ent_account</item>
+        <item>@string/ent_amount</item>
+        <item>@string/ent_payee_or_payer</item>
+        <item>@string/ent_category</item>
+    </string-array>
+    <string-array name="pref_autocreate_prerequisites_values" translatable="false">
+        <item>account</item>
+        <item>amount</item>
+        <item>payee</item>
+        <item>category</item>
+    </string-array>
+
+    <string-array name="pref_summary_items_captions" translatable="false">
+        <item>@string/ent_today</item>
+        <item>@string/ent_yesterday</item>
+        <item>@string/ent_this_week</item>
+        <item>@string/ent_last_week</item>
+        <item>@string/ent_this_month</item>
+        <item>@string/ent_last_month</item>
+        <item>@string/ent_this_year</item>
+        <item>@string/ent_last_year</item>
+    </string-array>
+    <string-array name="pref_summary_items_values" translatable="false">
+        <item>today</item>
+        <item>yesterday</item>
+        <item>this_week</item>
+        <item>last_week</item>
+        <item>this_month</item>
+        <item>last_month</item>
+        <item>this_year</item>
+        <item>last_year</item>
+    </string-array>
+</resources>

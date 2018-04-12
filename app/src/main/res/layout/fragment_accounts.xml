@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sliding_layout_accounts"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    sothree:umanoDragView="@+id/dragView"
+    style="@style/StyleSlidingUpPanel">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:animateLayoutChanges="true"
+                    android:orientation="vertical">
+
+        <com.yoshione.fingen.widgets.ContextMenuRecyclerView
+            android:id="@+id/recycler_view"
+            style="@style/FastScrollRecyclerVew"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <ImageView
+            android:id="@+id/imageViewPullMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/pull_me_animated"
+            android:visibility="visible" />
+
+    </RelativeLayout>
+
+    <!-- SLIDING LAYOUT -->
+    <LinearLayout
+        android:id="@+id/dragViewAccounts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="false"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/sliding_panel_header"
+            layout="@layout/content_slidingup_panel_header"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <Button
+                android:id="@+id/buttonAddAccount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/ent_new_account"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                style="@style/BlueButtonStyle" />
+
+            <Button
+                android:id="@+id/buttonAddAccountSet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_gravity="center_vertical"
+                android:text="@string/act_add_accounts_set"
+                android:layout_weight="1"
+                style="@style/BlueButtonStyle" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.yoshione.fingen.widgets.ContextMenuRecyclerView
+                android:id="@+id/recycler_view_accounts_sets"
+                style="@style/FastScrollRecyclerVew"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </FrameLayout>
+    </LinearLayout>
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

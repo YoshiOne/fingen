@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_show_transactions"
+        android:title="@string/act_show_transactions"
+        android:orderInCategory="100"
+        />
+    <item
+        android:id="@+id/action_show_report"
+        android:title="@string/act_show_report"
+        android:orderInCategory="100"
+        android:visible="false"
+        />
+</menu>

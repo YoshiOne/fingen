@@ -1,0 +1,37 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".ActivityList">
+
+    <com.yoshione.fingen.widgets.ContextMenuRecyclerView
+        android:id="@+id/recycler_view"
+        style="@style/FastScrollRecyclerVew"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <com.github.clans.fab.FloatingActionMenu
+        style="@style/FabMenuStyle"
+        android:id="@+id/fabMenu"
+        fab:menu_fab_label="@string/act_create">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabAddModel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_label="@string/ent_item"
+            style="@style/FabMenuButtonsStyle" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabAddNestedModel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_label="@string/ent_nested_item"
+            style="@style/FabMenuButtonsStyle" />
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+</RelativeLayout>

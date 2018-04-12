@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="fg_black_color">#333333</color>
+    <color name="fg_white_color">#ffffff</color>
+    <color name="gray_text">#808080</color>
+    <color name="light_gray_text">#999999</color>
+
+    <color name="negative_color">#e94c4a</color>
+    <color name="positive_color">#2eb893</color>
+    <color name="transfer_color">#008dca</color>
+    <color name="blue_color">#1DA6E0</color>
+    <color name="blue_color_pressed">#0d8abf</color>
+
+
+
+    <color name="ColorMain">#FFD700</color>
+    <color name="ColorPrimaryDark">#249376</color>
+    <color name="ColorPrimary">#2EB893</color>
+    <color name="ColorPrimaryTransparent">#E64CAF50</color>
+    <color name="ColorPrimaryLight">#A6F0DC</color>
+    <color name="ColorAccent">@color/blue_color</color>
+    <color name="ColorDivider">#B6B6B6</color>
+
+    <color name="lightColorPrimaryText">#E6212121</color>
+    <color name="lightColorSecondaryText">#727272</color>
+    <color name="lightHeaderTextColor">#808080</color>
+    <color name="lightListDividerColor">#CCCCCC</color>
+    <color name="lightGrayBackground">#F5F5F5</color>
+
+    <color name="darkColorPrimaryText">#E6FFFFFF</color>
+    <color name="darkColorSecondaryText">#5aFFFFFF</color>
+    <color name="darkListDividerColor">#3D3D3D</color>
+    <color name="darkGrayBackground">#3D3D3D</color>
+
+    <!--Spannable colors-->
+    <color name="ColorAccount">#B8CF0C</color>
+    <color name="ColorCabbage">#80C8D1</color>
+    <color name="ColorType">#F9D168</color>
+    <color name="ColorPayee">#ED7053</color>
+    <color name="ColorDestAccount">#26a69a</color>
+    <color name="ColorSign">#9e9d24</color>
+    <color name="ColorAmount">#FFC68C</color>
+
+    <!--Calculator-->
+
+
+    <color name="colorInversePrimaryText">#FFFFFF</color>
+    <color name="colorPrimaryButton">#2196F3</color>
+    <color name="colorSuccessButton">#0F9D58</color>
+    <color name="colorDangerButton">#FF5252</color>
+
+    <color name="pad_numeric_background_color">#434343</color>
+    <color name="pad_operator_background_color">#636363</color>
+
+
+    <color name="dark_grey_color">@color/gray_text</color>
+
+    <array  name="material_palette">
+        <item>#FFEBEE</item>
+        <item>#FFCDD2</item>
+        <item>#EF9A9A</item>
+        <item>#E57373</item>
+        <item>#EF5350</item>
+        <item>#F44336</item>
+        <item>#E53935</item>
+        <item>#D32F2F</item>
+        <item>#C62828</item>
+        <item>#B71C1C</item>
+        <item>#FF8A80</item>
+        <item>#FF5252</item>
+        <item>#FF1744</item>
+        <item>#D50000</item>
+        <item>#EDE7F6</item>
+        <item>#D1C4E9</item>
+        <item>#B39DDB</item>
+        <item>#9575CD</item>
+        <item>#7E57C2</item>
+        <item>#673AB7</item>
+        <item>#5E35B1</item>
+        <item>#512DA8</item>
+        <item>#4527A0</item>
+        <item>#311B92</item>
+        <item>#B388FF</item>
+        <item>#7C4DFF</item>
+        <item>#651FFF</item>
+        <item>#6200EA</item>
+        <item>#E1F5FE</item>
+        <item>#B3E5FC</item>
+        <item>#81D4FA</item>
+        <item>#4FC3F7</item>
+        <item>#29B6F6</item>
+        <item>#03A9F4</item>
+        <item>#039BE5</item>
+        <item>#0288D1</item>
+        <item>#0277BD</item>
+        <item>#01579B</item>
+        <item>#80D8FF</item>
+        <item>#40C4FF</item>
+        <item>#00B0FF</item>
+        <item>#0091EA</item>
+        <item>#E8F5E9</item>
+        <item>#C8E6C9</item>
+        <item>#A5D6A7</item>
+        <item>#81C784</item>
+        <item>#66BB6A</item>
+        <item>#4CAF50</item>
+        <item>#43A047</item>
+        <item>#388E3C</item>
+        <item>#2E7D32</item>
+        <item>#1B5E20</item>
+        <item>#B9F6CA</item>
+        <item>#69F0AE</item>
+        <item>#00E676</item>
+        <item>#00C853</item>
+        <item>#FFFDE7</item>
+        <item>#FFF9C4</item>
+        <item>#FFF59D</item>
+        <item>#FFF176</item>
+        <item>#FFEE58</item>
+        <item>#FFEB3B</item>
+        <item>#FDD835</item>
+        <item>#FBC02D</item>
+        <item>#F9A825</item>
+        <item>#F57F17</item>
+        <item>#FFFF8D</item>
+        <item>#FFFF00</item>
+        <item>#FFEA00</item>
+        <item>#FFD600</item>
+        <item>#FBE9E7</item>
+        <item>#FFCCBC</item>
+        <item>#FFAB91</item>
+        <item>#FF8A65</item>
+        <item>#FF7043</item>
+        <item>#FF5722</item>
+        <item>#F4511E</item>
+        <item>#E64A19</item>
+        <item>#D84315</item>
+        <item>#BF360C</item>
+        <item>#FF9E80</item>
+        <item>#FF6E40</item>
+        <item>#FF3D00</item>
+        <item>#DD2C00</item>
+        <item>#ECEFF1</item>
+        <item>#CFD8DC</item>
+        <item>#B0BEC5</item>
+        <item>#90A4AE</item>
+        <item>#78909C</item>
+        <item>#607D8B</item>
+        <item>#546E7A</item>
+        <item>#455A64</item>
+        <item>#37474F</item>
+        <item>#263238</item>
+        <item>#FCE4EC</item>
+        <item>#F8BBD0</item>
+        <item>#F48FB1</item>
+        <item>#F06292</item>
+        <item>#EC407A</item>
+        <item>#E91E63</item>
+        <item>#D81B60</item>
+        <item>#C2185B</item>
+        <item>#AD1457</item>
+        <item>#880E4F</item>
+        <item>#FF80AB</item>
+        <item>#FF4081</item>
+        <item>#F50057</item>
+        <item>#C51162</item>
+        <item>#E8EAF6</item>
+        <item>#C5CAE9</item>
+        <item>#9FA8DA</item>
+        <item>#7986CB</item>
+        <item>#5C6BC0</item>
+        <item>#3F51B5</item>
+        <item>#3949AB</item>
+        <item>#303F9F</item>
+        <item>#283593</item>
+        <item>#1A237E</item>
+        <item>#8C9EFF</item>
+        <item>#536DFE</item>
+        <item>#3D5AFE</item>
+        <item>#304FFE</item>
+        <item>#E0F7FA</item>
+        <item>#B2EBF2</item>
+        <item>#80DEEA</item>
+        <item>#4DD0E1</item>
+        <item>#26C6DA</item>
+        <item>#00BCD4</item>
+        <item>#00ACC1</item>
+        <item>#0097A7</item>
+        <item>#00838F</item>
+        <item>#006064</item>
+        <item>#84FFFF</item>
+        <item>#18FFFF</item>
+        <item>#00E5FF</item>
+        <item>#00B8D4</item>
+        <item>#F1F8E9</item>
+        <item>#DCEDC8</item>
+        <item>#C5E1A5</item>
+        <item>#AED581</item>
+        <item>#9CCC65</item>
+        <item>#8BC34A</item>
+        <item>#7CB342</item>
+        <item>#689F38</item>
+        <item>#558B2F</item>
+        <item>#33691E</item>
+        <item>#CCFF90</item>
+        <item>#B2FF59</item>
+        <item>#76FF03</item>
+        <item>#64DD17</item>
+        <item>#FFF8E1</item>
+        <item>#FFECB3</item>
+        <item>#FFE082</item>
+        <item>#FFD54F</item>
+        <item>#FFCA28</item>
+        <item>#FFC107</item>
+        <item>#FFB300</item>
+        <item>#FFA000</item>
+        <item>#FF8F00</item>
+        <item>#FF6F00</item>
+        <item>#FFE57F</item>
+        <item>#FFD740</item>
+        <item>#FFC400</item>
+        <item>#FFAB00</item>
+        <item>#EFEBE9</item>
+        <item>#D7CCC8</item>
+        <item>#BCAAA4</item>
+        <item>#A1887F</item>
+        <item>#8D6E63</item>
+        <item>#795548</item>
+        <item>#6D4C41</item>
+        <item>#5D4037</item>
+        <item>#4E342E</item>
+        <item>#3E2723</item>
+        <item>#F3E5F5</item>
+        <item>#E1BEE7</item>
+        <item>#CE93D8</item>
+        <item>#BA68C8</item>
+        <item>#AB47BC</item>
+        <item>#9C27B0</item>
+        <item>#8E24AA</item>
+        <item>#7B1FA2</item>
+        <item>#6A1B9A</item>
+        <item>#4A148C</item>
+        <item>#EA80FC</item>
+        <item>#E040FB</item>
+        <item>#D500F9</item>
+        <item>#AA00FF</item>
+        <item>#E3F2FD</item>
+        <item>#BBDEFB</item>
+        <item>#90CAF9</item>
+        <item>#64B5F6</item>
+        <item>#42A5F5</item>
+        <item>#2196F3</item>
+        <item>#1E88E5</item>
+        <item>#1976D2</item>
+        <item>#1565C0</item>
+        <item>#0D47A1</item>
+        <item>#82B1FF</item>
+        <item>#448AFF</item>
+        <item>#2979FF</item>
+        <item>#2962FF</item>
+        <item>#E0F2F1</item>
+        <item>#B2DFDB</item>
+        <item>#80CBC4</item>
+        <item>#4DB6AC</item>
+        <item>#26A69A</item>
+        <item>#009688</item>
+        <item>#00897B</item>
+        <item>#00796B</item>
+        <item>#00695C</item>
+        <item>#004D40</item>
+        <item>#A7FFEB</item>
+        <item>#64FFDA</item>
+        <item>#1DE9B6</item>
+        <item>#00BFA5</item>
+        <item>#F9FBE7</item>
+        <item>#F0F4C3</item>
+        <item>#E6EE9C</item>
+        <item>#DCE775</item>
+        <item>#D4E157</item>
+        <item>#CDDC39</item>
+        <item>#C0CA33</item>
+        <item>#AFB42B</item>
+        <item>#9E9D24</item>
+        <item>#827717</item>
+        <item>#F4FF81</item>
+        <item>#EEFF41</item>
+        <item>#C6FF00</item>
+        <item>#AEEA00</item>
+        <item>#FFF3E0</item>
+        <item>#FFE0B2</item>
+        <item>#FFCC80</item>
+        <item>#FFB74D</item>
+        <item>#FFA726</item>
+        <item>#FF9800</item>
+        <item>#FB8C00</item>
+        <item>#F57C00</item>
+        <item>#EF6C00</item>
+        <item>#E65100</item>
+        <item>#FFD180</item>
+        <item>#FFAB40</item>
+        <item>#FF9100</item>
+        <item>#FF6D00</item>
+    </array>
+</resources>

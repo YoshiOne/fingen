@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2015.
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?listDividerBackground"
+    android:id="@+id/layoutFilterHeader">
+
+
+    <ImageButton
+        android:id="@+id/buttonDelete"
+        android:paddingTop="@dimen/vertical_spacimg"
+        android:paddingBottom="@dimen/vertical_spacimg"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_close_blue"
+        android:background="?listDividerBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/caption"
+        style="@style/ListDividerText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:background="?listDividerBackground"
+        android:ellipsize="end"
+        android:paddingStart="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/toggleButtonExclude"
+        app:layout_constraintStart_toEndOf="@+id/buttonDelete"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Filter name" />
+
+    <Switch
+        android:id="@+id/switch_enabled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:background="?listDividerBackground"
+        android:theme="@style/SwitchTheme"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ToggleButton
+        android:id="@+id/toggleButtonExclude"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/selector_toggle_button"
+        android:checked="true"
+        android:textColor="@color/color_toggle_text"
+        android:textOff="@string/ttl_exclude"
+        android:textOn="@string/ttl_exclude"
+        android:textSize="@dimen/text_size_micro"
+        app:layout_constraintBottom_toBottomOf="@+id/switch_enabled"
+        app:layout_constraintEnd_toStartOf="@+id/switch_enabled"
+        app:layout_constraintTop_toTopOf="@+id/switch_enabled" />
+</android.support.constraint.ConstraintLayout>

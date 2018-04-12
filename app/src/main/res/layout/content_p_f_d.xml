@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="@dimen/vertical_spacimg"
+    android:paddingBottom="@dimen/vertical_spacimg"
+    android:elevation="1dp"
+    android:background="?listItemBackground"
+    android:id="@+id/Header"
+    tools:showIn="@layout/fragment_budget">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/ent_plan"
+        android:id="@+id/textViewPlan"
+        android:layout_weight="1"
+        android:textSize="@dimen/text_size_small"
+        android:fontFamily="sans-serif-light"
+        android:textStyle="normal"
+        android:textColor="?android:textColor"
+        android:gravity="start" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/ent_fact"
+        android:id="@+id/textViewFact"
+        android:layout_weight="1"
+        android:textSize="@dimen/text_size_small"
+        android:fontFamily="sans-serif-light"
+        android:textStyle="normal"
+        android:textColor="?android:textColor"
+        android:gravity="center" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/ent_difference"
+        android:id="@+id/textViewDif"
+        android:layout_weight="1"
+        android:textSize="@dimen/text_size_small"
+        android:fontFamily="sans-serif-light"
+        android:textStyle="normal"
+        android:textColor="?android:textColor"
+        android:gravity="end" />
+</LinearLayout>

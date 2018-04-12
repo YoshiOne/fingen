@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="DROPBOX_APP_KEY" translatable="false">vwkqvsnd67bz8jm</string>
+    <!--<string name="app_name" translatable="false">Fingen</string>-->
+    <string name="web_client_id" translatable="false">74268970763-ib3pfrlr833dbs2bcq23oil43qna3q9t.apps.googleusercontent.com</string>
+    <string name="ttl_license" translatable="false">Unless required by applicable law or agreed to in writing, this software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied, including, without limitation, any warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE.\n\n
+    In no event and under no legal theory, whether in tort (including negligence), contract, or otherwise, unless required by applicable law or agreed to in writing, shall the authors of this software be liable to You for damages, including any direct, indirect, special, incidental, or consequential damages of any character arising out of the use or inability to use the software (including but not limited to damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses)</string>
+</resources>

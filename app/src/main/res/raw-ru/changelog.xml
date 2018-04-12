@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelog bulletedList="true">
+    <changelogversion versionName="2.2.3.1" changeDate=">2018.03.22">
+        <changelogtext>В отчетах можно отключить сокращение подписей значений.</changelogtext>
+        <changelogtext>Отображение сумм прихода и расхода для счетов можно отключить в настройках.</changelogtext>
+        <changelogtext>Настройка "Компактный режим просмотра" распространяется на список счетов.</changelogtext>
+        <changelogtext>Исправлена проблема с мягким знаком в быстром поиске.</changelogtext>
+        <changelogtext>Исправлена проблема с исключающим фильтром.</changelogtext>
+        <changelogtext>Исправлено отображение долгов с длинными названиями.</changelogtext>
+        <changelogtext>Из бюджета исключены суммы по закрытым счетам.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.2.2" changeDate=">2018.02.25">
+        <changelogtext>Исправлена ошибка.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.2" changeDate=">2018.02.22">
+        <changelogtext>К транзакции теперь можно привязать список товаров.</changelogtext>
+        <changelogtext>Остканируйте чек, и список товаров автоматически скачается с сервера ФНС (РФ), либо создайте список вручную.</changelogtext>
+        <changelogtext>Каждому товару можно задать отдельную категорию и проект (сплит).</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.1.2" changeDate=">2018.02.07">
+        <changelogtext>Временно отключена фнкция "Задать вопрос".</changelogtext>
+        <changelogtext>[FIXED] Массовое редактирование транзакций.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.1.1" changeDate=">2018.01.29">
+        <changelogtext>[FIXED] Отображение сумм в долгах.</changelogtext>
+        <changelogtext>[FIXED] Обработка переводов при создании через шаблон.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.1" changeDate=">2018.01.23">
+        <changelogtext>Чтение QR-кодов с чеков (РФ). Считываются сумма и дата. Запоминается номер кассы и с ним связывается получатель. Можно создать новую транзакцию из чека, либо считать чек в уже имеющуюся. Данные о покупке с сервера ФНС пока не загружаются (в будущем). Подробнее в справке.</changelogtext>
+        <changelogtext>В списке транзакций теперь видны проекты.</changelogtext>
+        <changelogtext>Проектам можно задавать цвета.</changelogtext>
+        <changelogtext>В настройках можно задать Подразделение по умолчанию.</changelogtext>
+        <changelogtext>В долгах отображается больше информации.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.0.4" changeDate=">2018.01.16">
+        <changelogtext>Небольшие улучшения и исправление ошибок.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.0.3" changeDate=">2018.01.14">
+        <changelogtext>Добавлены исключающие фильтры.</changelogtext>
+        <changelogtext>Теперь можно экспортировать в CSV только выделенные транзакции (новый пункт в меню действий для выделенных транзакций).</changelogtext>
+        <changelogtext>Новый диалог выбора файлов для импорта/экспорта.</changelogtext>
+    </changelogversion>
+    <!--(87)-->
+    <changelogversion versionName="2.0.2" changeDate=">2017.12.29">
+        <changelogtext>Уменьшен размер элемента в списке транзакций (теперь их больше входит на экран).</changelogtext>
+        <changelogtext>Новая настройка "Транзакции" → "Компактный режим просмотра" позволяет вместить их еще больше.</changelogtext>
+    </changelogversion>
+    <!--(86)-->
+    <changelogversion versionName="2.0.1" changeDate=">2017.12.27">
+        <changelogtext>Исправлены некоторые недочеты, выявленные в новом дизайне.</changelogtext>
+    </changelogversion>
+    <!--(85)-->
+    <changelogversion versionName="2.0" changeDate=">2017.12.26">
+        <changelogtext>Новый дизайн.</changelogtext>
+        <changelogtext>Новый калькулятор.</changelogtext>
+        <changelogtext>Возможность настройки отображения круговой диаграммы (PRO).</changelogtext>
+        <changelogtext>Множество других изменений.</changelogtext>
+    </changelogversion>
+    <!--(80)-->
+    <changelogversion versionName="1.4.1" changeDate=">2017.11.11">
+        <changelogtext>Поиск по комментариям.</changelogtext>
+        <changelogtext>При выделении транзакций, показывается их количество и сумма.</changelogtext>
+        <changelogtext>Настройка "Добавлять кредитный лимит к балансу" в свойствах Отправителя позволяет корректно распознавать баланс кредитных карт, например, Сбербанка.</changelogtext>
+        <changelogtext>Немного изменена работа с дропбоксом.</changelogtext>
+        <changelogtext>Географические координаты транзакции выгружаются в CSV.</changelogtext>
+        <changelogtext>Новая настройка "Скрывать панель с суммами".</changelogtext>
+        <changelogtext>Свайпы по полям даты и времени в редакторе транзакций меняют изменяют значения на 1 день и час соответственно.</changelogtext>
+        <changelogtext>Вместо контестного меню списка фильтров теперь кнопки в заголовке каждого фильтра.</changelogtext>
+        <changelogtext>При удалении последнего элемента из фильтра, сам фильтр тоже удаляется.</changelogtext>
+        <changelogtext>Кнопки редактирования и удаления фильтров.</changelogtext>
+        <changelogtext>Исправлен отклик фильтра суммы на выключатель.</changelogtext>
+        <changelogtext>Исправлено скакание курсора при редактировании сумм в фильтре.</changelogtext>
+        <changelogtext>Исправлены уведомления на Oreo.</changelogtext>
+    </changelogversion>
+    <!--(80)-->
+    <changelogversion versionName="1.4" changeDate=">2017.11.03">
+        <changelogtext>Массовое редактирование транзакций.</changelogtext>
+		<changelogtext>Быстрая фильтрация и выделение транзакций через контекстное меню.</changelogtext>
+		<changelogtext>Кнопки переключения типа транзакции: Платеж/Перевод. Можно отключить в настройках.</changelogtext>
+        <changelogtext>Исчезла возможность отключения автоматического резервного копирования. Теперь резервные копии делаются по умолчанию в промежуток с 1 ночи до 6 утра (по усмотрению системы).</changelogtext>
+        <changelogtext>[Android 6+] При первом запуске выводится диалог с предложением дать права для к карте памяти, так как это необходимо для резервного копирования.</changelogtext>
+    </changelogversion>
+    <!--(77)-->
+    <changelogversion versionName="1.3.5" changeDate=">2017.03.10">
+		<changelogtext>Небольшие исправления и улучшения.</changelogtext>
+    </changelogversion>
+    <!--(76)-->
+    <changelogversion versionName="1.3.4" changeDate=">2017.02.28">
+		<changelogtext>Исправлена ошибка, при которой иногда неправильно отображался баланс счета после разделения транзакции.</changelogtext>
+    </changelogversion>
+    <!--(75)-->
+    <changelogversion versionName="1.3.3" changeDate=">2017.02.26">
+		<changelogtext>Исправлена пара мелких багов.</changelogtext>
+    </changelogversion>
+    <!--(74)-->
+    <changelogversion versionName="1.3.2" changeDate=">2017.02.23">
+		<changelogtext>Исправлены ошибки, обнаруженные после крайнего крупного обновления.</changelogtext>
+    </changelogversion>
+    <!--(72)-->
+    <changelogversion versionName="1.3.1" changeDate=">2017.02.21">
+		<changelogtext>Исправлена ошибка, приводящая к падению программы при редактировании порядка вкладок на главном экране.</changelogtext>
+    </changelogversion>
+    <!--(71)-->
+    <changelogversion versionName="1.3" changeDate=">2017.02.20">
+		<changelogtext>Проведена большая работа по оптимизации приложения. Решены проблемы с быстродействием на больших базах.</changelogtext>
+		<changelogtext>Отображение текущих балансов обоих счетов, участвующих в переводе.</changelogtext>
+		<changelogtext>В раздел "О программе" добавлена кнопка "Перестроить БД".</changelogtext>
+		<changelogtext>В системное уведомление о создании новой транзакции из смс добавлена кнопка редактирования транзакции.</changelogtext>
+		<changelogtext>В шапке главного экрана появилась кнопка быстрого перехода ко входящим смс со счетчиком необработанных сообщений.</changelogtext>
+		<changelogtext>Новая настройка "Действие при нажатии на счет": показать список транзакций (по умолчанию) или создать новую транзакцию по счету.</changelogtext>
+		<changelogtext>Контекстное меню списка "Сводка", через которое можно быстро построить отчет по нужному временному интервалу.</changelogtext>
+		<changelogtext>Минимальная версия андроида необходимая для работы приложения теперь 4.1 (API 16).</changelogtext>
+    </changelogversion>
+    <!--(68)-->
+    <changelogversion versionName="1.2.1" changeDate=">2017.02.01">
+        <changelogtext>Исправлено отображение суммы за прошлый месяц в сводке.</changelogtext>
+        <changelogtext>Многострочное поле ввода комментария к транзакции.</changelogtext>
+        <changelogtext>Сообщения содержащие только одно слово автоматически игнорируются.</changelogtext>
+    </changelogversion>
+    <!--(67)-->
+    <changelogversion versionName="1.2" changeDate=">2017.01.27">
+        <changelogtext>Можно указать начальную сумму долга; теперь обязательно нужно указывать валюту долга; добавлены значки долгов; закрытые долги отображаются в конце списка и не видны в редакторе транзакции; при нажатии на долг появляется меню с действиями, аналогичное кредитам.</changelogtext>
+        <changelogtext>Теперь обязательно нужно указывать валюту долга.</changelogtext>
+        <changelogtext>Значки долгов.</changelogtext>
+        <changelogtext>Закрытые долги отображаются в конце списка и не видны в редакторе транзакции.</changelogtext>
+        <changelogtext>При нажатии на долг появляется меню с действиями, аналогичное кредитам.</changelogtext>
+        <changelogtext>Кнопка поиска в списке транзакций перенесена на нижнюю выдвижную панель.</changelogtext>
+        <changelogtext>Кардинально ускорен процесс импорта CSV-файлов.</changelogtext>
+        <changelogtext>Изменен и дополнен формат выгружаемого файла CSV.</changelogtext>
+        <changelogtext>Добавлен новый пункт в меню "Дополнительно" - "Импорт CSV Fingen". Позволяет загрузить выгруженные приложением CSV-файлы.</changelogtext>
+        <changelogtext>Расширенный импорт CSV корректно считывает текстовые файлы выгруженные из Cash Ogranizer.</changelogtext>
+        <changelogtext>При создании отправителя смс, появилась возможность выбрать номер телефона из уже полученных сообщений.</changelogtext>
+        <changelogtext>В контекстном меню элементов бюджета добавлен пункт "Показать транзакции" (по выбранной категории).</changelogtext>
+        <changelogtext>Теперь при добавлении категории в бюджет нельзя указать сумму без валюты. Выбранная валюта запоминается.</changelogtext>
+    </changelogversion>
+    <!--(64)-->
+    <changelogversion versionName="1.1.2" changeDate=">2016.12.28">
+        <changelogtext>Исправлены ошибки.</changelogtext>
+    </changelogversion>
+    <!--(63)-->
+    <changelogversion versionName="1.1.1" changeDate=">2016.12.22">
+        <changelogtext>Исправлены ошибки.</changelogtext>
+    </changelogversion>
+    <!--(62)-->
+    <changelogversion versionName="1.1" changeDate=">2016.12.20">
+        <changelogtext>Внедрены наборы счетов. Потяните вверх нижнюю панель в списке счетов для добавления набора или переключения между ними. Все суммы и транзакции отображаются только для счетов, включенных в набор.</changelogtext>
+        <changelogtext>Отображение баланса счета после каждой транзакции.</changelogtext>
+        <changelogtext>Закрытые счета теперь не учитываются в балансе. Транзакции по ним так же не отображаются за исключением переводов между открытыми и закрытыми счетами.</changelogtext>
+        <changelogtext>При нажатии на счет в списке "Счета" или на период в списке "Сводка", открывается список соответствующих элементу транзакций. Редактирование доступно через контекстное меню.</changelogtext>
+        <changelogtext>Убрана плавающая кнопка создания счета из списка счетов. Вместо нее появилась кнопка "Новый счет" на выдвигаемой части нижней панели списка счетов.</changelogtext>
+        <changelogtext>Настройка порядка вкладок на главном экране. Настройки теперь сгруппированы по разным экранам.</changelogtext>
+        <changelogtext>Ярлыки быстрого создания транзакций (вызываются длинным нажатием на значок приложения, должны поддерживаться ланчером).</changelogtext>
+        <changelogtext>Возвращена возможность удалять транзакции через контекстное меню.</changelogtext>
+        <changelogtext>В разделе "Резервное копирование и восстановление" отображается дата и время последнего успешного сохранения в Dropbox.</changelogtext>
+        <changelogtext>Добавлена настройка "Разворачивать вложенные списки". Если она включена, то списки со вложенными элементами будут развернуты при открытии.</changelogtext>
+        <changelogtext>Теперь корректно отображаются суммы при увеличении размера шрифта в системе.</changelogtext>
+        <changelogtext>Увеличена производительность в разделе "Бюджет".</changelogtext>
+        <changelogtext>[font color=#4CAF50](ИСПРАВЛЕНО)[/font] неправильная сумма в списке транзакций при добавленном но отключенном фильтре по счету.</changelogtext>
+        <changelogtext>[font color=#4CAF50](ИСПРАВЛЕНО)[/font] неправильное отображение дат в заголовках списка транзакций.</changelogtext>
+    </changelogversion>
+    <!--(58)-->
+    <changelogversion versionName="1.0.1" changeDate=">2016.11.23">
+        <changelogtext>Исправлены ошибки при распознавании сумм в некоторых смс.</changelogtext>
+    </changelogversion>
+    <!--(57)-->
+    <changelogversion versionName="1.0.0" changeDate=">2016.11.19">
+        <changelogtext>Исправлены некоторые ошибки.</changelogtext>
+    </changelogversion>
+    <!--(53)-->
+    <changelogversion versionName="0.9.9" changeDate=">2016.11.14">
+        <changelogtext>Новая вкладка "Сводка" отображает статистику прихода/расхода средств по временным периодам (день, неделя, месяц, год). Выбрать элементы списка можно в настройках.</changelogtext>
+        <changelogtext>Теперь можно вручную задать порядок отображения валют.</changelogtext>
+        <changelogtext>Появилась настройка "Пропускать дубликаты" при импорте CSV-файлов.</changelogtext>
+        <changelogtext>Исправлена ошибка возникающая при указании получателя транзакции в момент создания соответствующего маркера.</changelogtext>
+        <changelogtext>Исправлена ошибка, возникавшая при попытке изменить категорию кредита.</changelogtext>
+        <changelogtext>Другие исправления и улучшения.</changelogtext>
+    </changelogversion>
+    <!--(50)-->
+    <changelogversion versionName="0.9.8" changeDate=">2016.11.03">
+        <changelogtext>Появилась возможность загружать резервные копии в Dropbox и восстанавливаться прямо из него.</changelogtext>
+        <changelogtext>Получатели, Проекты, Подразделения и Местоположения теперь многоуровневые. Работают аналогично категориям.</changelogtext>
+        <changelogtext>Можно отфильтровать транзакции для которых не указаны параметры (например, все транзакции без категории). Для этого нужно создать новый фильтр и выбрать элемент "-".</changelogtext>
+        <changelogtext>Защита архивов с резервными копиями паролем.</changelogtext>
+        <changelogtext>Теперь можно задавать дату и время транзакции при создании через интент.</changelogtext>
+    </changelogversion>
+    <!--(47)-->
+    <changelogversion versionName="0.9.7" changeDate=">2016.10.20">
+        <changelogtext>При запуске приложения теперь показывается заставка вместо пустого экрана.</changelogtext>
+        <changelogtext>Пункт "Коррекция баланса" в контекстном меню счета.</changelogtext>
+        <changelogtext>Выбор шаблона теперь происходит через экран управления шаблонами, а не через простой список.</changelogtext>
+        <changelogtext>Все текстовые поля с выпадающими списками (spinners) заменены на диалоги.</changelogtext>
+        <changelogtext>Заменен компонент отображения полей ввода.</changelogtext>
+        <changelogtext>Заменен компонент быстрой прокрутки списков.</changelogtext>
+        <changelogtext>Исправлены некоторые ошибки</changelogtext>
+    </changelogversion>
+    <!--(42)-->
+    <changelogversion versionName="0.9.6" changeDate=">2016.10.06">
+        <changelogtext>Исправлены ошибки, небольшие визуальные изменения</changelogtext>
+    </changelogversion>
+    <!--(39)-->
+    <changelogversion versionName="0.9.5" changeDate=">2016.9.30">
+        <changelogtext>В резделителях списка транзакций теперь отображается день недели.</changelogtext>
+        <changelogtext>При проверке смс на пригодность к автоматическому созданию транзакции, условия "Получатель" и "Категория" не применяются к переводам.</changelogtext>
+        <changelogtext>Транзакции для которых определено местоположение отмечаются значком в списке.</changelogtext>
+        <changelogtext>Название категории в элементе списка транзакций перенесено на отдельную строку и теперь не перекрывается с именем счета при длинных именах счета или категории.</changelogtext>
+        <changelogtext>Из контекстного меню списка транзакций убраны пункты "Удалить" и "Удалить все". Данные операции можно выполнить выделив нужные транзакции и выбрав действие "Удалить выделенное".</changelogtext>
+        <changelogtext>При создании транзакции через интент, если указан шаблон, то параметр "type" (если он указан) не принимается во внимание. Тип берется из шаблона.</changelogtext>
+        <changelogtext>Изменен алгоритм удаления транзакций. Если раньше они удалялись без подтверждения и можно было их восстановить в течение некоторого времени, то теперь удаляются после подтверждения без возможности.</changelogtext>
+        <changelogtext>Настройка стиля выбора получателя для транзакции: выпадающий список при вводе имени, либо вывод списка получателей в отдельном окне.</changelogtext>
+        <changelogtext>Настройка длины пин-кода (4-8 цифр). Изменение возможно только при отключенной защите.</changelogtext>
+        <changelogtext>Изменен формат отображения переводов с списке транзакций (был "Счет1 -> Счет2", стал "⇒ Счет2").</changelogtext>
+        <changelogtext>Улучшено отображение темной темы.</changelogtext>
+        <changelogtext>При формировании отчетов по категориям теперь не учитываются переводы.</changelogtext>
+        <changelogtext>Исправлены ошибки при построении отчетов</changelogtext>
+        <changelogtext>Исправлена ошибка при копировании бюджета.</changelogtext>
+    </changelogversion>
+    <!--(35)-->
+    <changelogversion versionName="0.9.4" changeDate=">2016.8.03">
+        <changelogtext>Все маркеры смс типа "Отправитель" были преобразованы в объекты "Отправитель". Создание и редактирование отправителей доступно через меню "Справочники". У отправителей, помимо имени, есть 2 свойства: "Позиция суммы" и "Позиция баланса". Эти свойства отвечают за нахождение суммы транзакции и баланса счета в тексте смс. По умолчанию равны 1 и 2 соответственно, т.е. первое вхождение это сумма, второе - баланс.</changelogtext>
+        <changelogtext>Реализован альтернативный вариант управления долгами. Прежний вариант теперь называется "Кредиты". Новый вариант не требует заведения отдельного счета, просто укажите в свойствах транзакции, что она относится к какому-либо долгу. Сумма долга, это сумма всех относящихся к нему транзакций. Если сумма меньше нуля, значит должны вы, если больше нуля, значит должны вам. В отличие от кредитов, долги не учитываются в бюджете и нет возможности учитывать оплату процентов.</changelogtext>
+        <changelogtext>Появилась возможность делать ярлыки для шаблонов на рабочий стол. Просто поместите виджет Fingen 1x1 на рабочий стол и выберите нужный шаблон.</changelogtext>
+        <changelogtext>В редакторе транзакций скрыты по умолчанию некоторые поля. Нажмите "Ещё" для их отображения.</changelogtext>
+    </changelogversion>
+    <!--(31)-->
+    <changelogversion versionName="0.9.3" changeDate=">2016.07.26">
+        <changelogtext>Добавлена возможность строить графические отчеты (Потяните вверх нижнюю панель на вкладке "Транзакции"). Функция платная, купить можно в разделе "PRO функции" в главном меню. Поддержите развитие программы, купите графики за символическую цену!</changelogtext>
+        <changelogtext>Исправлена ошибка, из-за которой программа иногда вылетала при нажатии системной кнопки "Назад"</changelogtext>
+        <changelogtext>Исправлена ошибка, из-за которой не создавались транзакции из таскера через Send intent</changelogtext>
+    </changelogversion>
+    <!--(27)-->
+    <changelogversion versionName="0.9.1" changeDate=">2016.07.06">
+        <changelogtext>Сделан быстрый поиск транзакций в списке на вкладке "Транзакции" главного экрана. Поиск ведется по названиям счетов, категорий, получателей, местоположений, проектов, подразделений и комментариям</changelogtext>
+        <changelogtext>Исправлены ошибки</changelogtext>
+    </changelogversion>
+    <!--(25)-->
+    <changelogversion versionName="0.8.7" changeDate=">2016.06.07">
+        <changelogtext>При создании транзакций через интент, появилась возможность указать шаблон (параметр "template")</changelogtext>
+        <changelogtext>Доработан инструмент расширенного импорта CSV. Появилась возможность пропускать строки в начале файла.</changelogtext>
+        <changelogtext>Появилась возможность отсортировать категории.</changelogtext>
+    </changelogversion>
+    <!--(24)-->
+    <changelogversion versionName="0.8.6" changeDate=">2016.06.02">
+        <changelogtext>Добавлено отображение подразделения в списке транзакций и соответствующий фильтр.</changelogtext>
+        <changelogtext>Появилась новая настройка "Условия для автоматического создания", она определяет минимальный набор извлеченной информации (Счет, Сумма, Получатель или Категория), который необходим, чтобы программа создала из сообщения транзакцию не помещая его во входящие.</changelogtext>
+        <changelogtext>Исправлена ошибка, при которой невозможно было зайти в раздел Шаблоны на некоторых системах.</changelogtext>
+    </changelogversion>
+    <!--(23)-->
+    <changelogversion versionName="0.8.5" changeDate=">2016.05.31">
+        <changelogtext>Добавлен новый параметр транзакции - "Подразделение". Его можно использовать для учета того, кто совершал платеж, если несколько лиц имеют доступ к одному счету.</changelogtext>
+        <changelogtext>Появилась возможность выделения нескольких транзакций. Для выделения транзакции нажимайте на значок ее типа (стрелка) в списке.</changelogtext>
+        <changelogtext>На данном этапе доступна только одна массовая операция с выделенными транзакциями - удаление.</changelogtext>
+        <changelogtext>Изменена раскладка калькулятора, добавлена кнопка "00". Теперь калькулятор понимает выражения вида "X + Y %".</changelogtext>
+        <changelogtext>Суммы переводов между счетами теперь отображаются без знака минус</changelogtext>
+        <changelogtext>Исправлена ошибка, при которой баланс счета, выводимый в списке, мог отличаться на несколько копеек от актуального</changelogtext>
+    </changelogversion>
+    <!--(22)-->
+    <changelogversion versionName="0.8.4" changeDate=">2016.05.22">
+        <changelogtext>Добавлен настраиваемый импорт CSV. Теперь можно загружать файлы разной структуры и указывать поля из которых загружать сущности. См. раздел "Импорт/Экспорт" справки.</changelogtext>
+        <changelogtext>В списке транзакций теперь отображаются комментарии</changelogtext>
+        <changelogtext>В список транзакций добавлена всплывающая кнопка "Быстро прокрутить наверх"</changelogtext>
+        <changelogtext>Исправлена ошибка с потерей начальных нулей в последних 4-х цифрах номера карты и некоторые другие</changelogtext>
+    </changelogversion>
+    <!--(21)-->
+    <changelogversion versionName="0.8.2" changeDate=">2016.05.14">
+        <changelogtext>Сделан перевод на английский язык. Если вы хотите перевести приложение на свой язык, напишите мне, это не сложный процесс.</changelogtext>
+        <changelogtext>Программа стала доступна для всех регионов Google Play</changelogtext>
+        <changelogtext>В главном меню добавился пункт "Справка".</changelogtext>
+        <changelogtext>Добавлена возможность принять интент (например, из Таскера) с параметрами транзакции и создать ее в фоновом режиме или открыть в редакторе</changelogtext>
+        <changelogtext>Дубликаты транзакций теперь создаются с текущим временем</changelogtext>
+        <changelogtext>Теперь можно создавать шаблоны с не заполненными полями. В этом случае транзакция будет открыта в редакторе перед сохранением</changelogtext>
+    </changelogversion>
+    <!--(19)-->
+    <changelogversion versionName="0.8.1" changeDate=">2016.05.07">
+        <changelogtext>Добавлена возможность выбора темы (светлая/темная). Меняется в меню "Настройки"</changelogtext>
+        <changelogtext>Появилась возможность задать местоположение в шаблоне</changelogtext>
+        <changelogtext>В контекстном меню списка транзакций появились пункты "Дублировать" и "Создать шаблон"</changelogtext>
+        <changelogtext>Теперь можно создавать бюджет на основе фактических трат за прошедшие месяцы</changelogtext>
+        <changelogtext>В бюджете появилось контекстное меню, через которое можно скопировать или создать бюджет для отдельной категории</changelogtext>
+        <changelogtext>Исправлены ошибки</changelogtext>
+    </changelogversion>
+    <!--(18)-->
+    <changelogversion versionName="0.8" changeDate=">2016.05.02">
+    <changelogtext>Добавлена возможность блокировки запуска программы пин-кодом или отпечатком пальца</changelogtext>
+    <changelogtext>В контекстном меню списков Категории и Долги появился пункт "Показать транзакции"</changelogtext>
+    <changelogtext>Добавлен экран "О программе". Здесь можно узнать версию и посмотреть список изменений.</changelogtext>
+    <changelogtext>Теперь предложение скорректировать баланс счета на основе баланса из смс выдается только если считанный из смс баланс актуален</changelogtext>
+    <changelogtext>Появился альтернативный способ создать маркер смс на основе выделенного текста - кнопка плюс, справа от текста сообщения</changelogtext>
+    <changelogtext>Изменена иконка уведомления</changelogtext>
+    <changelogtext>Мелкие исправления и улучшения</changelogtext>
+    </changelogversion>
+    <!--(17) 0.7.2-->
+    <changelogversion versionName="0.7.2" changeDate=">2016.04.28">
+    <changelogtext>Налажена работа с новой системой выдачи разрешений Android (Marshmallow+)</changelogtext>
+    <changelogtext>Появилась настройка "Показывать долговые счета". Если ее выключить, то счета привязанные к долгу, не будут показываться в общем списке и будут видны только в разделе "Долги"</changelogtext>
+    <changelogtext>В контекстном меню списков Категории, Получатели, Долги, Места и Проекты появился пункт "Показать транзакции"</changelogtext>
+    <changelogtext>В справочниках появилась возможность быстрого поиска</changelogtext>
+    <changelogtext>Добавлена возможность создания транзакции путем разбора текста из буфера обмена (кнопка на панели инструментов экрана "Входящие")</changelogtext>
+    </changelogversion>
+    <!--(16) 0.7-->
+    <changelogversion versionName="0.7" changeDate=">2016.04.24">
+    <changelogtext>Добавлена возможность разделять транзакции (контекстое меню списка транзакций -> "Разделить")</changelogtext>
+    <changelogtext>В контекстном меню списка счетов появился пункт "Показать транзакции". При нажатии ставится фильтр на выбранный счет и перелистывается на вкладку "Транзакции"</changelogtext>
+    <changelogtext>В списке транзакций показывается полное имя категории, включая родителей</changelogtext>
+    <changelogtext>Добавлены различные иконки счетов (зависят от типа счета). Суммы на счете с нулевым балансом теперь рисуется серым</changelogtext>
+    <changelogtext>Добавлены кнопки удаления категории и проекта в редакторе транзакций</changelogtext>
+    <changelogtext>Если не указана сумма в шаблоне, то при создании транзакции из этого шаблона, будет открыт редактор для ввода суммы</changelogtext>
+    <changelogtext>Исправлена ошибка неверного отображения дат в списке транзакций</changelogtext>
+    <changelogtext>Устранена невозможность открыть экран "Бюджет" на устройствах с ICS</changelogtext>
+    <changelogtext>Исправлены ошибки</changelogtext>
+    </changelogversion>
+    <!--(15) 0.6.5-->
+    <changelogversion versionName="0.6.5" changeDate=">2016.04.20">
+    <changelogtext>Добавлена возможность задать вопрос автору прямо из программы (Главное меню -> "Задать вопрос"). Буду стараться отвечать сам или перенаправлять в FAQ, который сейчас плавно формируется</changelogtext>
+    <changelogtext>Сделана настройка "Автоматически определять местоположение". Определяет будет ли программа автоматически определять местоположение транзакции</changelogtext>
+    <changelogtext>Минимальная версия API понижена с 16 до 15 (андроид 4.0.3)</changelogtext>
+    <changelogtext>2 новых требуемых разрешения: "Получать данные из интернета" и "Отключение спящего режима". Необходимы для получения сообщений от поддержки.</changelogtext>
+    <changelogtext>Добавлен индикатор наличия новых сообщений и необработанных смс (оранжевая точка на кнопке вызова главного меню)</changelogtext>
+    <changelogtext>Добавлена кнопка удаления местоположения в редакторе транзакций</changelogtext>
+    <changelogtext>Добавлено контекстное меню списка фильтров, через которое можно их редактировать и удалять</changelogtext>
+    <changelogtext>Исправлена ошибка, при которой периодически не работала плавающая кнопка создания нового счета</changelogtext>
+    <changelogtext>Исправлена ошибка, при которой программа иногда падала во время применения фильтра категорий</changelogtext>
+    <changelogtext>Исправлена ошибка, при которой программа падала при нажатии на заголовок кнопки создания маркера смс</changelogtext>
+    <changelogtext>Исправлена ошибка отрисовки иконки сообщения в списке транзакций на Lollipop+</changelogtext>
+    <changelogtext>Список счетов в редакторе транзакций теперь отсортирован по алфавиту</changelogtext>
+    <changelogtext>Много мелких исправлений</changelogtext>
+    </changelogversion>
+    <!--(14) 0.6-->
+    <changelogversion versionName="0.6" changeDate=">2016.04.15">
+    <changelogtext>Внедрены местоположения</changelogtext>
+    <changelogtext>Для определения местоположения программа требует новое разрешение - ACCESS_FINE_LOCATION</changelogtext>
+    </changelogversion>
+    <!--(13) 0.5.5-->
+    <changelogversion versionName="0.5.5" changeDate=">2016.04.13">
+    <changelogtext>Теперь транзакции в списке делятся по дням</changelogtext>
+    <changelogtext>Добавлены виджеты быстрого создания прихода, расхода, перевода</changelogtext>
+    <changelogtext>Исправлены ошибки</changelogtext>
+    </changelogversion>
+    <!--(12) 0.5.-->
+    <changelogversion versionName="0.5.3" changeDate=">2016.04.10">
+    <changelogtext>В редакторе транзакций теперь показывается полное название категории, включая её родителей</changelogtext>
+    <changelogtext>Исправлены баги при разборе смс</changelogtext>
+    <changelogtext>Исправлен баг с ограничением обменного курса двумя знаками после</changelogtext>
+    </changelogversion>
+    <!--(11) 0.5.2-->
+    <changelogversion versionName="0.5.2" changeDate=">2016.04.08">
+    <changelogtext>Внедрены проекты.</changelogtext>
+    <changelogtext>Фильтры транзакций теперь запоминаются и не слетают при закрытии списка транзакций.</changelogtext>
+    <changelogtext>Исправлены ошибки</changelogtext>
+    </changelogversion>
+    <!--(10) 0.5.1-->
+    <changelogversion versionName="0.5.1" changeDate=">2016.04.07">
+    <changelogtext>Внедрены шаблоны. Управление через меню справочники, создание транзакций из шаблона - плавающая кнопка списка транзакций.</changelogtext>
+    <changelogtext>При импорте из csv теперь валюты создаются автоматически</changelogtext>
+    <changelogtext>Исправлена ошибка, при которой некорректно импортировались CSV файлы, в которых были переводы между счетами с разными валютами</changelogtext>
+    <changelogtext>Исправлена ошибка, из-за которой нельзя было вставить текст в поля ввода из буфера обмена</changelogtext>
+    </changelogversion>
+    <!--(9)	0.5-->
+    <changelogversion versionName="0.5" changeDate="2016.04.04">
+    <changelogtext>Добавлена возможность управления долгами</changelogtext>
+    <changelogtext>Бюджет</changelogtext>
+    <changelogtext>При вычислении общей суммы на вкладке "Счета" теперь учитывается начальная сумма счета</changelogtext>
+    <changelogtext>Добавлено свойство счета "Кредитный лимит". В списке счетов показывается сколько процентов кредитного лимита осталось</changelogtext>
+    <changelogtext>Теперь, при импорте csv, транзакции проверяются на дубликаты</changelogtext>
+    <changelogtext>Загружается комментарий из csv</changelogtext>
+    <changelogtext>При создании транзакции, теперь нет суммы по умолчанию равной нулю.</changelogtext>
+    </changelogversion>
+    <!--(8) 0.4-->
+    <changelogversion versionName="0.4" changeDate="2016.02.29">
+    <changelogtext>Реализован импорт уже пришедших смс (Кнопка "Импорт" на тулбаре списка входящих смс)</changelogtext>
+    <changelogtext>Новое требуемое разрешение READ_SMS, необходимо для импорта сообщений.</changelogtext>
+    <changelogtext>Раздел "Необработанные СМС" переименован во "Входящие"</changelogtext>
+    <changelogtext>Возможность сортировки счетов (настройка через контекстное меню списка счетов)</changelogtext>
+    <changelogtext>Исправлены ошибки</changelogtext>
+    </changelogversion>
+    <!--(7) 0.3.3-->
+    <changelogversion versionName="0.3.3" changeDate="2016.02.20">
+    <changelogtext>Исправлены ошибки</changelogtext>
+    </changelogversion>
+    <!--(6) 0.3.2-->
+    <changelogversion versionName="0.3.2" changeDate="2016.02.18">
+    <changelogtext>Улучшена производительность</changelogtext>
+    <changelogtext>Исправлены ошибки</changelogtext>
+    </changelogversion>
+    <!--(5)	0.3.1-->
+    <changelogversion versionName="0.3.1" changeDate="2016.02.12">
+    <changelogtext>Извлечение баланса счета из смс и предложение создать корректировку, если он отличается от хранимого в БД</changelogtext>
+    <changelogtext>Функция автоматического вычисления суммы транзакции, если она происходит не в валюте счета (например, списываются доллары с рублевой карты)</changelogtext>
+    </changelogversion>>
+    <!--(4) 0.3 (2016.02.10)-->
+    <changelogversion versionName="0.3" changeDate="2016.02.10">
+    <changelogtext>Добавлен функционал резервного копирования и восстановления (Главное меню -> Дополнительно -> Резервное копирование). Можно сделать резервную копию вручную, либо настроить ежедневный бэкап по расписанию</changelogtext>
+    <changelogtext>Экспорт данных в CSV (Главное меню -> Дополнительно -> Экспорт данных)</changelogtext>
+    <changelogtext>Исправлена ошибка при парсинге некоторых смс (в том числе от Альфа-Банка)</changelogtext>
+    <changelogtext>появился новый permission - Запуск при включении устройства. Нужен для работы автоматического резервного копирования.</changelogtext>
+    <changelogtext>Небольшие изменения в оформлении</changelogtext>
+    </changelogversion>
+    <!--(3) 0.2 (2016.02.02)-->
+    <changelogversion versionName="0.2" changeDate="2016.02.02">
+    <changelogtext>Добавлен калькулятор в поля редактирования сумм</changelogtext>
+    <changelogtext>Добавлен диалог выбора валюты из предустановленных в системе (кнопка "Валюты по умолчанию" в диалоге создания валюты)</changelogtext>
+    <changelogtext>Переработан внешний вид меню Справочники и Дополнительно</changelogtext>
+    <changelogtext>Исправлено отображение разделителей в списках на Lollipop+</changelogtext>
+    <changelogtext>Сделан запрос на удаление вложенных категорий при удалении родительской</changelogtext>
+    <changelogtext>Исправлена ошибка при проверке имени отправителя смс</changelogtext>
+    <changelogtext>Исправлена ошибка, возникавшая при поиске в списке</changelogtext>
+    </changelogversion>
+    <!--(2) 0.1.1 (2016.01.20)-->
+    <changelogversion versionName="0.1.1" changeDate="2016.01.20">
+    <changelogtext>Добавлен диалог импорта данных в формате CSV (Главное меню -> Дополнительно -> Импорт данных). Пока что принимает только CSV, выгруженную Financisto</changelogtext>
+    <changelogtext>Добавлена справка для экранов редактирования счета и транзакции (Вызов кнопкой на тулбаре)</changelogtext>
+    <changelogtext>Добавлена кнопка Домой на тулбары экранов</changelogtext>
+    <changelogtext>Мелкие доработки и исправление ошибок</changelogtext>
+    </changelogversion>>
+    <!--(1) 0.1 (2016.01.05)-->
+    <changelogversion versionName="0.1" changeDate="2016.01.05">
+    <changelogtext>Первая публичная версия</changelogtext>
+    </changelogversion>
+</changelog>

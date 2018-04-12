@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<notices>
+    <notice>
+        <name>PermissionsDispatcher</name>
+        <url>http://hotchemi.github.io/PermissionsDispatcher/</url>
+        <copyright>Shintaro Katafuchi, Marcel Schnelle, Yoshinori Isogai</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>MaterialDrawer</name>
+        <url>https://github.com/mikepenz/MaterialDrawer</url>
+        <copyright>Mike Penz</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>FloatingActionButton</name>
+        <url>https://github.com/Clans/FloatingActionButton</url>
+        <copyright>Dmytro Tarianyk</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Material DateTime Picker</name>
+        <url>https://github.com/wdullaer/MaterialDateTimePicker</url>
+        <copyright>Wouter Dullaert</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Material Preference</name>
+        <url>https://github.com/consp1racy/android-support-preference</url>
+        <copyright>Eugen Pechanec</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>MaterialScrollBar</name>
+        <url>https://github.com/krimin-killr21/MaterialScrollBar</url>
+        <copyright>Turing Technologies</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Lobsterpicker</name>
+        <url>https://github.com/LarsWerkman/Lobsterpicker</url>
+        <copyright>Marie Schweiz and Lars Werkman</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Android NumberProgressBar</name>
+        <url>https://github.com/daimajia/NumberProgressBar</url>
+        <copyright>Moo Droid</copyright>
+        <license>MIT License</license>
+    </notice>
+    <notice>
+        <name>Header-decor</name>
+        <url>https://github.com/edubarr/header-decor</url>
+        <copyright>Eduardo Barrenechea</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>LicensesDialog</name>
+        <url>https://github.com/PSDev/LicensesDialog</url>
+        <copyright>Philip Schiffer</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>LolliPin</name>
+        <url>https://github.com/OrangeGangsters/LolliPin</url>
+        <copyright>OrangeGangsters</copyright>
+        <license>MIT License</license>
+    </notice>
+    <notice>
+        <name>Butter Knife</name>
+        <url>http://jakewharton.github.io/butterknife/</url>
+        <copyright>Jake Wharton</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>EventBus for Android</name>
+        <url>https://greenrobot.github.io/EventBus/</url>
+        <copyright>Markus Junginger, greenrobot</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+</notices>

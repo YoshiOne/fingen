@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?listItemBackground"
+    android:foreground="?attr/selectableItemBackground">
+
+    <eu.davidea.flipview.FlipView
+        android:id="@+id/drag_handle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:inAnimation="@anim/grow_from_middle_x_axis"
+        android:outAnimation="@anim/grow_from_middle_x_axis"
+        android:padding="16dp"
+        app:checked="false"
+        app:enableInitialAnimation="false"
+        app:frontBackgroundColor="@android:color/transparent"
+        app:frontImage="@drawable/ic_drag"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:rearBackgroundColor="@android:color/transparent" />
+
+    <ImageView
+        android:id="@+id/color_tag"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/circle"
+        android:scaleType="center"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/drag_handle"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/textViewModelName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/expandableIndicator"
+        app:layout_constraintStart_toEndOf="@+id/color_tag"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Parent Parent"
+        style="@style/StyleTextPrimary" />
+
+    <FrameLayout
+        android:id="@+id/spaceBottom"
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:layout_weight="1"
+        android:background="@color/lightListDividerColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/drag_handle" />
+
+    <ImageView
+        android:id="@+id/expandableIndicator"
+        style="@style/ListItemIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:clickable="true"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription"
+        tools:src="@drawable/ic_expand_more" />
+
+</android.support.constraint.ConstraintLayout>

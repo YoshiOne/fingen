@@ -1,0 +1,12 @@
+*.iml
+gradlew
+gradlew.bat
+local.properties
+gradle
+build
+/.idea
+.gradle
+/captures/*.li
+/keystore.properties
+/yoshione.jks
+/google-services.json

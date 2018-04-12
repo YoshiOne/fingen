@@ -1,0 +1,57 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.yoshione.fingen.ActivitySmsList">
+
+        <com.yoshione.fingen.widgets.ContextMenuRecyclerView
+            android:id="@+id/recycler_view"
+            style="@style/FastScrollRecyclerVew"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/fab"
+        style="@style/FabStyle"/>
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fabMenu"
+        style="@style/FabMenuStyle"
+        fab:menu_fab_label="@string/act_create_marker">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/buttonAddAccountMarker"
+            style="@style/FabMenuButtonsStyle"
+            android:src="@drawable/ic_account_white"
+            fab:fab_label="@string/ent_account" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/buttonAddCabbageMarker"
+            style="@style/FabMenuButtonsStyle"
+            android:src="@drawable/ic_currencies_white"
+            fab:fab_label="@string/ent_currency" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/buttonAddTrTypeMarker"
+            style="@style/FabMenuButtonsStyle"
+            android:src="@drawable/ic_transfer_white"
+            fab:fab_label="@string/ent_type" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/buttonAddPayeeMarker"
+            style="@style/FabMenuButtonsStyle"
+            android:src="@drawable/ic_payes_white"
+            fab:fab_label="@string/ent_payee" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/buttonAddIgnoreMarker"
+            style="@style/FabMenuButtonsStyle"
+            android:src="@drawable/ic_block_white"
+            fab:fab_label="@string/ent_skip" />
+    </com.github.clans.fab.FloatingActionMenu>
+
+</RelativeLayout>

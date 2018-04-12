@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="budgetPositiveColor" format="color" />
+    <attr name="budgetNegativeColor" format="color" />
+    <attr name="listItemBackground" format="color" />
+    <attr name="listDividerBackground" format="color" />
+    <attr name="windowBackground" format="color" />
+    <attr name="vertical_spacimg_tr_list" format="dimension" />
+    <attr name="vertical_spacimg_tr_list_half" format="dimension" />
+</resources>

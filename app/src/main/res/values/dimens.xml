@@ -1,0 +1,60 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="activity_margin">8dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fg_list_item_height_large">72dp</dimen>
+    <dimen name="fg_list_item_height_medium">56dp</dimen>
+    <dimen name="fg_list_item_height_small">48dp</dimen>
+
+    <dimen name="list_item_content_padding">8dp</dimen>
+
+    <dimen name="icon_size">18dp</dimen>
+    <dimen name="icon_size_large">56dp</dimen>
+
+    <!--
+Refer to App Widget Documentation for margin information
+http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
+    -->
+    <dimen name="toolbar_height">48dp</dimen>
+    <dimen name="widget_margin">8dp</dimen>
+
+    <dimen name="vertical_spacimg">8dp</dimen>
+    <dimen name="vertical_spacimg_half">4dp</dimen>
+    <!--<dimen name="vertical_spacimg_tr_list">2dp</dimen>-->
+
+
+    <dimen name="material_drawer_width">240dp</dimen>
+    <dimen name="material_drawer_padding">0dp</dimen>
+    <!-- Definition for the primary item -->
+    <dimen name="material_drawer_item_primary">44dp</dimen>
+    <dimen name="material_drawer_item_primary_icon">48dp</dimen>
+    <dimen name="material_drawer_item_primary_icon_padding">0dp</dimen>
+    <dimen name="material_drawer_item_primary_icon_padding_right">0dp</dimen>
+    <dimen name="material_drawer_item_primary_text">14sp</dimen>
+    <dimen name="material_drawer_item_primary_description">14.5sp</dimen>
+    <dimen name="material_drawer_item_secondary_description">12sp</dimen>
+
+
+    <!-- Text size -->
+    <dimen name="text_size_pico">9sp</dimen>
+    <dimen name="text_size_micro">11.5sp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_normal">16.5sp</dimen>
+    <dimen name="text_size_big">19sp</dimen>
+    <dimen name="text_size_giant">21.5sp</dimen>
+    <dimen name="text_size_calculator">20sp</dimen>
+
+
+
+
+    <!--<dimen name="text_size_micro">8.5sp</dimen>-->
+    <!--<dimen name="text_size_small">11sp</dimen>-->
+    <!--<dimen name="text_size_normal">13.5sp</dimen>-->
+    <!--<dimen name="text_size_big">15.5sp</dimen>-->
+    <!--<dimen name="text_size_giant">17sp</dimen>-->
+    <!--<dimen name="text_size_calculator">20sp</dimen>-->
+
+
+</resources>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+
+    <style name="AppTheme.OperationCalculatorText" parent="@style/TextAppearance.AppCompat.Headline">
+        <item name="android:padding">8dp</item>
+        <item name="android:gravity">end</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="AppTheme.InputCalculatorText" parent="Base.V7.Widget.AppCompat.EditText">
+        <item name="android:focusable">false</item>
+        <item name="android:inputType">none</item>
+        <item name="android:cursorVisible">false</item>
+        <item name="android:enabled">false</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:textSize">56sp</item>
+        <item name="android:gravity">end</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="PadButtonStyle" parent="Base.Widget.AppCompat.Button.Borderless">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:foreground">?android:selectableItemBackground</item>
+    </style>
+
+    <style name="PadButtonStyle.Numeric">
+        <item name="android:textSize">15sp</item>
+        <item name="android:background">@color/pad_numeric_background_color</item>
+        <item name="android:textColor">@color/colorInversePrimaryText</item>
+    </style>
+
+    <style name="PadButtonStyle.Numeric.Danger">
+        <item name="android:background">@color/colorDangerButton</item>
+    </style>
+
+    <style name="PadButtonStyle.Numeric.Operator">
+        <item name="android:background">@color/pad_operator_background_color</item>
+    </style>
+
+    <style name="PadButtonStyle.Numeric.Finish">
+        <item name="android:background">@color/colorPrimaryButton</item>
+    </style>
+
+    <style name="PadButtonStyle.Numeric.Green">
+        <item name="android:background">@color/colorSuccessButton</item>
+    </style>
+
+</resources>

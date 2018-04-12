@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_copy_plan"
+        android:title="@string/act_copy_budget"
+        android:orderInCategory="100"
+        />
+    <item
+        android:id="@+id/action_create_from_fact"
+        android:title="@string/act_create_from_fact"
+        android:orderInCategory="100"
+        />
+    <item
+        android:id="@+id/action_show_transactions"
+        android:title="@string/act_show_transactions"
+        android:orderInCategory="100"
+        />
+</menu>

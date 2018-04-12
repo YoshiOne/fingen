@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?listItemBackground">
+
+    <ImageView
+        android:id="@+id/imageViewIcon"
+        android:layout_width="56dp"
+        android:layout_height="0dp"
+        android:scaleType="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_credit_card_gray"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/textViewName"
+        style="@style/StyleTextPrimary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Debt nameewfjewjfewfj oijfewjfweoifjewf444444444444444" />
+
+    <TextView
+        android:id="@+id/textViewOweMe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/positive_color"
+        android:textSize="@dimen/text_size_micro"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewName"
+        tools:text="200 000 ₽" />
+
+    <TextView
+        android:id="@+id/textViewOweMeTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="@dimen/text_size_micro"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewOweMe"
+        app:layout_constraintEnd_toStartOf="@+id/textViewOweMe"
+        app:layout_constraintTop_toTopOf="@+id/textViewOweMe"
+        android:text="@string/ttl_i_lent" />
+
+    <TextView
+        android:id="@+id/textViewIOwe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/negative_color"
+        android:textSize="@dimen/text_size_micro"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewOweMe"
+        tools:text="-100 000 ₽" />
+
+    <TextView
+        android:id="@+id/textViewIOweTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="@dimen/text_size_micro"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewIOwe"
+        app:layout_constraintEnd_toStartOf="@+id/textViewIOwe"
+        app:layout_constraintTop_toTopOf="@+id/textViewIOwe"
+        android:text="@string/ttl_i_borrewed" />
+
+    <TextView
+        android:id="@+id/textViewAccountTotal"
+        style="@style/StyleTextAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/positive_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewIOwe"
+        tools:text="100 000 ₽" />
+
+    <TextView
+        android:id="@+id/textViewTotalTitle"
+        style="@style/StyleTextAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewAccountTotal"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAccountTotal"
+        app:layout_constraintTop_toTopOf="@+id/textViewAccountTotal"
+        android:text="@string/ttl_total_I_owe" />
+
+    <FrameLayout
+        android:id="@+id/spaceBottom"
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:layout_weight="1"
+        android:layout_marginTop="4dp"
+        android:background="@color/lightListDividerColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewIcon"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAccountTotal"/>
+
+    <FrameLayout
+        android:id="@+id/spaceBottomFinal"
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:layout_weight="1"
+        android:layout_marginTop="4dp"
+        android:background="@color/lightListDividerColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAccountTotal" />
+
+</android.support.constraint.ConstraintLayout>

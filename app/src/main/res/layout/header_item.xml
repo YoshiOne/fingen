@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    style="@style/StyleListItemTransationsNormal">
+
+    <FrameLayout
+        android:id="@+id/spaceTop"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_weight="1"
+        android:background="@color/lightListDividerColor" />
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Header Item"
+        style="@style/ListDividerText"
+        android:paddingTop="?vertical_spacimg_tr_list"
+        android:paddingBottom="?vertical_spacimg_tr_list"/>
+
+    <FrameLayout
+        android:id="@+id/spaceBottom"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_weight="1"
+        android:background="@color/lightListDividerColor" />
+</LinearLayout>

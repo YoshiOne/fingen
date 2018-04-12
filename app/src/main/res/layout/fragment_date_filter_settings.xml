@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RadioGroup
+        android:id="@+id/radioGroupModifier"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <RadioButton
+            android:id="@+id/radioButtonDateRangeCurrent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:padding="8dp"
+            android:text="@string/ent_date_range_current" />
+
+        <RadioButton
+            android:id="@+id/radioButtonDateRangeLast"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:padding="8dp"
+            android:text="@string/ent_date_range_past" />
+
+        <RadioButton
+            android:id="@+id/radioButtonDateRangeCurrentAndLast"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:padding="8dp"
+            android:text="@string/ent_date_range_current_and_past" />
+    </RadioGroup>
+
+    <RadioGroup
+        android:id="@+id/radioGroupRange"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroupModifier">
+
+        <RadioButton
+            android:id="@+id/radioButtonDateRangeDay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:padding="8dp"
+            android:text="@string/ent_date_range_day" />
+
+        <RadioButton
+            android:id="@+id/radioButtonDateRangeWeek"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:padding="8dp"
+            android:text="@string/ent_date_range_week" />
+
+        <RadioButton
+            android:id="@+id/radioButtonDateRangeMonth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:padding="8dp"
+            android:text="@string/ent_date_range_month" />
+
+        <RadioButton
+            android:id="@+id/radioButtonDateRangeYear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:padding="8dp"
+            android:text="@string/ent_date_range_year" />
+    </RadioGroup>
+
+</android.support.constraint.ConstraintLayout>

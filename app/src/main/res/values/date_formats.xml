@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="date_format_sql" translatable="false">yyyy-MM-dd HH:mm:ss</string>
+    <string name="date_format_sql_wo_seconds" translatable="false">yyyy-MM-dd HH:mm</string>
+    <string name="date_format_date" translatable="false">dd MMM yyyy</string>
+    <string name="date_format_time" translatable="false">HH:mm:ss</string>
+    <string name="date_format_time_short" translatable="false">HH:mm</string>
+</resources>

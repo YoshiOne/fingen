@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2015.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_edit"
+        android:title="@string/act_edit"
+        android:orderInCategory="100"
+        />
+    <item
+        android:id="@+id/action_delete"
+        android:title="@string/act_delete"
+        android:orderInCategory="100"
+        />
+</menu>

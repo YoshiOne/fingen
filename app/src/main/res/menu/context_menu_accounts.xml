@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2015.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_add"
+        android:title="@string/act_add"
+        android:orderInCategory="100"
+        />
+    <item
+        android:id="@+id/action_edit"
+        android:title="@string/act_edit"
+        android:orderInCategory="100"
+        />
+    <item
+        android:id="@+id/action_delete"
+        android:title="@string/act_delete"
+        android:orderInCategory="100"
+        />
+    <item
+        android:id="@+id/action_show_transactions"
+        android:title="@string/act_show_transactions"
+        android:orderInCategory="100"
+        />
+    <item
+        android:id="@+id/action_balance_adjustment"
+        android:title="@string/act_balance_adjustment"
+        android:orderInCategory="100"
+        />
+    <item
+        android:id="@+id/action_sort"
+        android:title="@string/act_sort"
+        android:orderInCategory="100"
+        />
+    <item
+        android:id="@+id/action_drag_mode"
+        android:title="@string/act_drag_mode"
+        android:orderInCategory="100"
+        />
+</menu>

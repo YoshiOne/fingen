@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?listItemBackground"
+    style="@style/StyleListItemTransationsNormal">
+
+    <ImageView
+        android:id="@+id/imageViewDestAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:src="@drawable/ic_dest_account"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewPayee"
+        app:layout_constraintStart_toEndOf="@+id/flipViewIcon"
+        app:layout_constraintTop_toTopOf="@+id/textViewPayee"
+        tools:ignore="ContentDescription" />
+
+    <eu.davidea.flipview.FlipView
+        android:id="@+id/flipViewIcon"
+        android:layout_width="56dp"
+        android:layout_height="0dp"
+        android:clickable="true"
+        android:inAnimation="@anim/grow_from_middle_x_axis"
+        android:outAnimation="@anim/grow_from_middle_x_axis"
+        app:checked="false"
+        app:enableInitialAnimation="false"
+        app:frontBackgroundColor="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:rearBackgroundColor="@android:color/transparent"
+        app:rearImageAnimationDelay="100"
+        tools:frontImage="@drawable/ic_expense"
+        tools:ignore="KeyboardInaccessibleWidget">
+
+    </eu.davidea.flipview.FlipView>
+
+    <TextView
+        android:id="@+id/textViewDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:ellipsize="marquee"
+        android:fontFamily="sans-serif-light"
+        android:singleLine="true"
+        android:textColor="@color/gray_text"
+        android:textSize="@dimen/text_size_small"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutTagView"
+        tools:text="@tools:sample/date/hhmm" />
+
+    <TextView
+        android:id="@+id/textViewAccountBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:ellipsize="marquee"
+        android:fontFamily="sans-serif-medium"
+        android:singleLine="true"
+        android:textSize="@dimen/text_size_micro"
+        android:textStyle="normal"
+        app:layout_constraintStart_toEndOf="@+id/flipViewIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="-1000 RUB" />
+
+    <ImageView
+        android:id="@+id/imageViewChevronRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_chevron_right"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewAccountBalance"
+        app:layout_constraintStart_toEndOf="@+id/textViewAccountBalance"
+        app:layout_constraintTop_toTopOf="@+id/textViewAccountBalance"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/textViewDestAccountBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:ellipsize="marquee"
+        android:fontFamily="sans-serif-medium"
+        android:singleLine="true"
+        android:textSize="@dimen/text_size_micro"
+        android:textStyle="normal"
+        app:layout_constraintStart_toEndOf="@+id/imageViewChevronRight"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="-1000 RUB" />
+
+    <TextView
+        android:id="@+id/textViewAccount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:ellipsize="marquee"
+        android:fontFamily="sans-serif-light"
+        android:singleLine="true"
+        android:textColor="?android:textColor"
+        android:textSize="@dimen/text_size_small"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAmount"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/flipViewIcon"
+        app:layout_constraintTop_toBottomOf="@+id/layoutTagView"
+        tools:text="Account" />
+
+    <TextView
+        android:id="@+id/textViewPayee"
+        style="@style/StyleTextPrimary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:ellipsize="end"
+        android:maxLines="1"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAmount"
+        app:layout_constraintStart_toEndOf="@+id/imageViewDestAccount"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAccount"
+        tools:text="Payee (Location)" />
+
+    <TextView
+        android:id="@+id/textViewComment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
+        android:maxLines="1"
+        android:textColor="@color/light_gray_text"
+        android:textSize="@dimen/text_size_small"
+        android:textStyle="normal"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/flipViewIcon"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAmount"
+        tools:text="@tools:sample/full_names" />
+
+    <com.yoshione.fingen.tag.TagView
+        android:id="@+id/layoutTagView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:gravity="end"
+        android:clickable="false"
+        android:focusable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewDestAccountBalance"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_height="16dp"
+        tools:background="@color/blue_color">
+
+
+    </com.yoshione.fingen.tag.TagView>
+
+    <TextView
+        android:id="@+id/textViewAmount"
+        style="@style/StyleTextAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAccount"
+        tools:text="-3 000.00 ₽"
+        tools:textColor="@color/negative_color" />
+
+    <LinearLayout
+        android:id="@+id/iconsContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewDate"
+        app:layout_constraintEnd_toStartOf="@+id/textViewDate"
+        app:layout_constraintTop_toTopOf="@+id/textViewDate">
+
+        <ImageView
+            android:id="@+id/imageViewHasProducts"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_product_blue"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/imageViewHasQR"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_scan_qr_blue"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/imageViewAutoCreated"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_sms_blue"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/imageViewHasLocation"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_location"
+            tools:ignore="ContentDescription" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/spaceBottom"
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:layout_weight="1"
+        android:background="@color/lightListDividerColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/flipViewIcon"
+        app:layout_constraintTop_toBottomOf="@id/textViewComment" />
+
+</android.support.constraint.ConstraintLayout>

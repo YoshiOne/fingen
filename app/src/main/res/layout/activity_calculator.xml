@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/calculator_input_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/toolbr"
+        layout="@layout/common_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/developing_operation_inputText"
+        style="@style/AppTheme.OperationCalculatorText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/toolbr" />
+
+    <com.yoshione.fingen.calc.NumericEditText
+        android:id="@+id/number_inputText"
+        style="@style/AppTheme.InputCalculatorText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/developing_operation_inputText"
+        android:cursorVisible="false"
+        android:text="0" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/clear_button"
+                style="@style/PadButtonStyle.Numeric.Danger"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="C" />
+
+            <Button
+                android:id="@+id/seven_button"
+                style="@style/PadButtonStyle.Numeric"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="7" />
+
+            <Button
+                android:id="@+id/four_button"
+                style="@style/PadButtonStyle.Numeric"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="4" />
+
+            <Button
+                android:id="@+id/one_button"
+                style="@style/PadButtonStyle.Numeric"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1" />
+
+            <Button
+                android:id="@+id/zero_button"
+                style="@style/PadButtonStyle.Numeric"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/divider_button"
+                style="@style/PadButtonStyle.Numeric.Operator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="÷" />
+
+            <Button
+                android:id="@+id/eight_button"
+                style="@style/PadButtonStyle.Numeric"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="8" />
+
+            <Button
+                android:id="@+id/five_button"
+                style="@style/PadButtonStyle.Numeric"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="5" />
+
+            <Button
+                android:id="@+id/two_button"
+                style="@style/PadButtonStyle.Numeric"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="2" />
+
+            <Button
+                android:id="@+id/two_zero_button"
+                style="@style/PadButtonStyle.Numeric"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="00" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/multiplication_button"
+                style="@style/PadButtonStyle.Numeric.Operator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="x" />
+
+            <Button
+                android:id="@+id/nine_button"
+                style="@style/PadButtonStyle.Numeric"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="9" />
+
+            <Button
+                android:id="@+id/six_button"
+                style="@style/PadButtonStyle.Numeric"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="6" />
+
+            <Button
+                android:id="@+id/three_button"
+                style="@style/PadButtonStyle.Numeric"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="3" />
+
+            <Button
+                android:id="@+id/point_button"
+                style="@style/PadButtonStyle.Numeric"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="." />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/delete_button"
+                style="@style/PadButtonStyle.Numeric.Operator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="DEL" />
+
+            <Button
+                android:id="@+id/subtraction_button"
+                style="@style/PadButtonStyle.Numeric.Operator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="-" />
+
+            <Button
+                android:id="@+id/sum_button"
+                style="@style/PadButtonStyle.Numeric.Operator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="+" />
+
+            <Button
+                android:id="@+id/equal_button"
+                style="@style/PadButtonStyle.Numeric.Green"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="="
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/submit_button"
+                style="@style/PadButtonStyle.Numeric.Finish"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:text="DONE" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
