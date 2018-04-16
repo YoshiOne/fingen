@@ -211,8 +211,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeLight"/>
         <activity
-            android:name=".ActivityEditLocation"
-            android:screenOrientation="portrait"
+            android:name=".ActivityEditLocation2"
             android:theme="@style/AppThemeLight"/>
         <activity
             android:name=".ActivityAbout"
@@ -281,19 +280,15 @@
             android:theme="@style/AppThemeLight"
             android:noHistory="true"/>
 
-        <uses-library
-            android:name="com.google.android.maps"
-            android:required="true"/>
-
         <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
+            android:name="com.google.android.geo.API_KEY"
             android:value="${mapsApiKey}"/>
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"/>
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="${fabricApiKey}"/>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

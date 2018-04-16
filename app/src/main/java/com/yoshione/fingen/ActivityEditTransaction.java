@@ -370,12 +370,12 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
             amountEditor.setFocus();
         }
 
-        if (allowUpdateLocation) {
-            startDetectCoords();
-        }
-
         forceUpdateLocation = transaction.getID() < 0;
         allowUpdateLocation = preferences.getBoolean("detect_locations", false) & forceUpdateLocation & (srcTransaction == null);
+
+        if (allowUpdateLocation) {
+            ActivityEditTransactionPermissionsDispatcher.startDetectCoordsWithPermissionCheck(this);
+        }
 
         if (transaction.getTransactionType() != Transaction.TRANSACTION_TYPE_TRANSFER) {
             mLastTrType = transaction.getTransactionType();
