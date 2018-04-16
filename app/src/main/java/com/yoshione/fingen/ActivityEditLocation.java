@@ -21,9 +21,9 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
+//import com.google.android.gms.location.LocationListener;
+//import com.google.android.gms.location.LocationRequest;
+//import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -50,10 +50,10 @@ import permissions.dispatcher.RuntimePermissions;
  * a
  */
 @RuntimePermissions
-public class ActivityEditLocation extends ToolbarActivity implements
+public class ActivityEditLocation extends ToolbarActivity /*implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener*/ {
     //    private static final String TAG = "ActivityEditLocation";
     /*
      * Define a request code to send to Google Play services This code is
@@ -199,10 +199,10 @@ public class ActivityEditLocation extends ToolbarActivity implements
                         && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
                     map.setMyLocationEnabled(true);
-                    mGoogleApiClient = new GoogleApiClient.Builder(this)
-                            .addApi(LocationServices.API)
-                            .addConnectionCallbacks(this)
-                            .addOnConnectionFailedListener(this).build();
+//                    mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                            .addApi(LocationServices.API)
+//                            .addConnectionCallbacks(this)
+//                            .addOnConnectionFailedListener(this).build();
                     connectClient();
                 }
             }
@@ -303,55 +303,55 @@ public class ActivityEditLocation extends ToolbarActivity implements
     }
 
 
-    @Override
+//    @Override
     public void onConnected(@Nullable Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 // Display the connection status
             if (this.location.isUndefined()) {
-                Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-                if (location != null) {
-                    Toast.makeText(this, "GPS location was found!", Toast.LENGTH_SHORT).show();
-                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    this.location.setLat(location.getLatitude());
-                    this.location.setLon(location.getLongitude());
-                    addLocationMarker(false);
-                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
-                    map.animateCamera(cameraUpdate);
-                } else {
-                    Toast.makeText(this, "Current location was null, enable GPS on emulator!", Toast.LENGTH_SHORT).show();
-                }
+//                Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+//                if (location != null) {
+//                    Toast.makeText(this, "GPS location was found!", Toast.LENGTH_SHORT).show();
+//                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+//                    this.location.setLat(location.getLatitude());
+//                    this.location.setLon(location.getLongitude());
+//                    addLocationMarker(false);
+//                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
+//                    map.animateCamera(cameraUpdate);
+//                } else {
+//                    Toast.makeText(this, "Current location was null, enable GPS on emulator!", Toast.LENGTH_SHORT).show();
+//                }
             }
             startLocationUpdates();
         }
     }
 
     private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            LocationRequest locationRequest = new LocationRequest();
-            locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-            long UPDATE_INTERVAL = 60000;
-            locationRequest.setInterval(UPDATE_INTERVAL);
-            long FASTEST_INTERVAL = 5000;
-            locationRequest.setFastestInterval(FASTEST_INTERVAL);
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
-                    locationRequest, this);
-        }
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+//                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//            LocationRequest locationRequest = new LocationRequest();
+//            locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+//            long UPDATE_INTERVAL = 60000;
+//            locationRequest.setInterval(UPDATE_INTERVAL);
+//            long FASTEST_INTERVAL = 5000;
+//            locationRequest.setFastestInterval(FASTEST_INTERVAL);
+//            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
+//                    locationRequest, this);
+//        }
     }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
+//
+//    @Override
+//    public void onConnectionSuspended(int i) {
+//
+//    }
+//
+//    @Override
+//    public void onLocationChanged(Location location) {
+//
+//    }
+//
+//    @Override
+//    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+//
+//    }
 }

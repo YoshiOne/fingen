@@ -280,7 +280,7 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
                         AbstractModelManager.editNestedModelNameViaDialog(child, getActivity(), null);
                         break;
                     case IAbstractModel.MODEL_TYPE_LOCATION:
-                        Intent intent = new Intent(getActivity(), ActivityEditLocation.class);
+                        Intent intent = new Intent(getActivity(), ActivityEditLocation2.class);
                         intent.putExtra("location", child);
                         startActivity(intent);
                         break;
@@ -297,7 +297,7 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
                         AbstractModelManager.editNestedModelNameViaDialog(model, getActivity(), null);
                         break;
                     case IAbstractModel.MODEL_TYPE_LOCATION:
-                        Intent intent = new Intent(getActivity(), ActivityEditLocation.class);
+                        Intent intent = new Intent(getActivity(), ActivityEditLocation2.class);
                         intent.putExtra("location", model);
                         startActivity(intent);
                         break;
@@ -469,7 +469,7 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
                             SenderManager.showEditDialog(new Sender(), Objects.requireNonNull(getActivity()).getSupportFragmentManager(), getActivity());
                             break;
                         case IAbstractModel.MODEL_TYPE_LOCATION:
-                            Intent intent = new Intent(getActivity(), ActivityEditLocation.class);
+                            Intent intent = new Intent(getActivity(), ActivityEditLocation2.class);
                             intent.putExtra("location", new Location());
                             startActivity(intent);
                             break;
@@ -499,7 +499,7 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
                                         public void OnOkClick(IAbstractModel parent) {
                                             Location location = new Location();
                                             location.setParentID(parent.getID());
-                                            Intent intent = new Intent(getActivity(), ActivityEditLocation.class);
+                                            Intent intent = new Intent(getActivity(), ActivityEditLocation2.class);
                                             intent.putExtra("location", location);
                                             startActivity(intent);
                                         }
