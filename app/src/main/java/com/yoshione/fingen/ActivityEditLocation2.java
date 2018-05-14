@@ -2,32 +2,22 @@ package com.yoshione.fingen;
 
 import android.Manifest;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
-import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Menu;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.airbnb.android.airmapview.AirMapMarker;
 import com.airbnb.android.airmapview.AirMapView;
-import com.airbnb.android.airmapview.AirMapViewTypes;
-import com.airbnb.android.airmapview.DefaultAirMapViewBuilder;
-import com.airbnb.android.airmapview.MapType;
 import com.airbnb.android.airmapview.listeners.OnCameraChangeListener;
 import com.airbnb.android.airmapview.listeners.OnCameraMoveListener;
 import com.airbnb.android.airmapview.listeners.OnInfoWindowClickListener;
@@ -37,7 +27,6 @@ import com.airbnb.android.airmapview.listeners.OnMapInitializedListener;
 import com.airbnb.android.airmapview.listeners.OnMapMarkerClickListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.yoshione.fingen.dao.LocationsDAO;
-import com.yoshione.fingen.fts.models.FtsResponse;
 import com.yoshione.fingen.widgets.ToolbarActivity;
 
 import butterknife.BindView;
@@ -49,7 +38,8 @@ import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
-import retrofit2.Call;
+
+//import permissions.dispatcher.RuntimePermissions;
 
 /**
  * Created by slv on 07.03.2016.
@@ -66,16 +56,10 @@ public class ActivityEditLocation2 extends ToolbarActivity implements OnCameraCh
     @BindView(R.id.map)
     AirMapView map;
     private com.yoshione.fingen.model.Location location;
-    private DefaultAirMapViewBuilder mapViewBuilder;
-
 
     private double lat = 0;
     private double lon = 0;
-    private int accuracy = 0;
-    private String provider = "";
     private LocationManager locationManager;
-//    private boolean forceUpdateLocation = false;
-    private Call<FtsResponse> mFtsResponseCall;
     private final LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(android.location.Location location) {
@@ -83,8 +67,6 @@ public class ActivityEditLocation2 extends ToolbarActivity implements OnCameraCh
                 return;
             lat = location.getLatitude();
             lon = location.getLongitude();
-            accuracy = Math.round(location.getAccuracy());
-            provider = location.getProvider();
             updateLocationOnMap();
         }
 
@@ -103,8 +85,6 @@ public class ActivityEditLocation2 extends ToolbarActivity implements OnCameraCh
 
         }
     };
-//    private boolean allowUpdateLocation;
-    AirMapMarker mMarker;
 
     @Override
     protected int getLayoutResourceId() {
@@ -156,48 +136,39 @@ public class ActivityEditLocation2 extends ToolbarActivity implements OnCameraCh
             }
         });
 
-        mapViewBuilder = new DefaultAirMapViewBuilder(this);
-
         map.setOnMapClickListener(this);
         map.setOnCameraChangeListener(this);
         map.setOnCameraMoveListener(this);
         map.setOnMarkerClickListener(this);
         map.setOnMapInitializedListener(this);
         map.setOnInfoWindowClickListener(this);
-        map.initialize(getSupportFragmentManager());
-//
-        new Handler().postDelayed(new Runnable() {
+        map.setOnMapInitializedListener(new OnMapInitializedListener() {
             @Override
-            public void run() {
+            public void onMapInitialized() {
                 map.setMyLocationEnabled(true);
+                map.setMyLocationButtonEnabled(true);
+                if (location != null && !location.isUndefined()) {
+                    LatLng latLng = new LatLng(location.getLat(), location.getLon());
+                    map.clearMarkers();
+                    addMarker(latLng);
+                    map.setCenterZoom(latLng, 16);
+                }
+
             }
-        }, 2000);
+        });
+        map.initialize(getSupportFragmentManager());
     }
 
     @Override
     public void onResume() {
         super.onResume();
-//        preferences = android.preference.PreferenceManager.getDefaultSharedPreferences(this);
-
-//        forceUpdateLocation = location.getID() < 0;
-//        allowUpdateLocation = preferences.getBoolean("detect_locations", false) & forceUpdateLocation;
-
-        if (location.getID() < 0) {
-            ActivityEditLocation2PermissionsDispatcher.startDetectCoordsWithPermissionCheck(this);
-        }
+        ActivityEditLocation2PermissionsDispatcher.startDetectCoordsWithPermissionCheck(this);
     }
 
     @Override
     protected void onPause() {
         removeUpdates();
         super.onPause();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        menu.findItem(R.id.action_go_home).setVisible(false);
-        return true;
     }
 
     @Override
@@ -263,7 +234,12 @@ public class ActivityEditLocation2 extends ToolbarActivity implements OnCameraCh
 
     @Override
     public void onMapClick(LatLng latLng) {
-        removeUpdates();
+        if (latLng != null) {
+            removeUpdates();
+            location.setLat(latLng.latitude);
+            location.setLon(latLng.longitude);
+            addMarker(latLng);
+        }
     }
 
     @Override
@@ -281,7 +257,16 @@ public class ActivityEditLocation2 extends ToolbarActivity implements OnCameraCh
 
     }
 
-    //<editor-fold desc="Permission dispatcher" defaultstate="collapsed">
+    private void addMarker(LatLng latLng) {
+        map.clearMarkers();
+        location.setLat(latLng.latitude);
+        location.setLon(latLng.longitude);
+        map.addMarker(new AirMapMarker.Builder()
+                .position(latLng)
+                .iconId(R.mipmap.icon_location_pin)
+                .build());
+    }
+
     @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
     void startDetectCoords() {
         if (location.getID() < 0) {
@@ -301,29 +286,17 @@ public class ActivityEditLocation2 extends ToolbarActivity implements OnCameraCh
 
     @OnShowRationale({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
     void showRationaleForContact(PermissionRequest request) {
-        // NOTE: Show a rationale to explain why the permission is needed, e.g. with a dialog.
-        // Call proceed() or cancel() on the provided PermissionRequest to continue or abort
         showRationaleDialog(R.string.msg_permission_location_rationale, request);
     }
 
     @OnPermissionDenied({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
     void onLocationDenied() {
-        // NOTE: Deal with a denied permission, e.g. by showing specific UI
-        // or disabling certain functionality
         Toast.makeText(this, R.string.msg_permission_location_denied, Toast.LENGTH_SHORT).show();
     }
 
     @OnNeverAskAgain({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
     void onLocationNeverAskAgain() {
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-//                & ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            preferences.edit().putBoolean("detect_locations", false).apply();
-//        } else {
-//            allowUpdateLocation = true;
-//        }
-//        if (!allowUpdateLocation) {
-//            Toast.makeText(this, R.string.msg_permission_location_never_askagain, Toast.LENGTH_SHORT).show();
-//        }
+
     }
 
     private void showRationaleDialog(@StringRes int messageResId, final PermissionRequest request) {
@@ -344,5 +317,4 @@ public class ActivityEditLocation2 extends ToolbarActivity implements OnCameraCh
                 .setMessage(messageResId)
                 .show();
     }
-    //</editor-fold>
 }
