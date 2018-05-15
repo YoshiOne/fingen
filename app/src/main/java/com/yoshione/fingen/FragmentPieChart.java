@@ -23,6 +23,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.formatter.DefaultValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IPieDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
@@ -60,6 +61,8 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
     TextView mTextViewSelected;
     @BindView(R.id.imageViewColor)
     ImageView mImageViewColor;
+    private FgLargeValuesFormatter largeValuesFormatter;
+    private NormalValuesFormatter mormalValuesFormatter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,6 +79,9 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
         mFab.setOnClickListener(new EntityChartFabOnClickListener(mPieChart, getActivity()));
 
         setupPieChart();
+
+        largeValuesFormatter = new FgLargeValuesFormatter();
+        mormalValuesFormatter = new NormalValuesFormatter();
 
         return view;
     }
@@ -108,6 +114,26 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
     public void onResume() {
         super.onResume();
         updateChart(true);
+    }
+
+    private String formatValue(float value) {
+        if (isShrinkValues()) {
+            return largeValuesFormatter.makePretty(value);
+        } else {
+            return mormalValuesFormatter.getFormattedValue(value);
+        }
+    }
+
+    private ValueFormatter getValueFormatter() {
+        if (isShrinkValues()) {
+            return largeValuesFormatter;
+        } else {
+            return mormalValuesFormatter;
+        }
+    }
+
+    private boolean isShrinkValues() {
+        return android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(FgConst.PREF_SHRINK_CHART_LABELS, true);
     }
 
     void updateChart(boolean animate) {
@@ -170,6 +196,7 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
         ArrayList<String> xVals = new ArrayList<>();
         ArrayList<IAbstractModel> models = new ArrayList<>();
         BigDecimal val;
+        BigDecimal totalSum = BigDecimal.ZERO;
         int i = 0;
         for (BaseNode node : tree.getChildren()) {
             switch (reportBuilder.getActiveShowIndex()) {
@@ -182,6 +209,7 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
                 default:
                     val = BigDecimal.ZERO;
             }
+            totalSum = totalSum.add(val);
             if (val.compareTo(BigDecimal.ZERO) != 0) {
                 models.add(node.getModel());
             }
@@ -266,14 +294,12 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
             data.setValueFormatter(new PercentFormatter());
         } else {
             mPieChart.setUsePercentValues(false);
-            if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(FgConst.PREF_SHRINK_CHART_LABELS, true)) {
-                data.setValueFormatter(new FgLargeValuesFormatter());
-            } else {
-                data.setValueFormatter(new NormalValuesFormatter());
-            }
+            data.setValueFormatter(getValueFormatter());
         }
         data.setValueTextSize(11f);
         mPieChart.setData(data);
+        String s = String.format("%s:\n%s", getString(R.string.ent_total), formatValue(totalSum.floatValue()));
+        mPieChart.setCenterText(s);
 
         mImageViewColor.setVisibility(View.INVISIBLE);
         mTextViewSelected.setVisibility(View.INVISIBLE);
