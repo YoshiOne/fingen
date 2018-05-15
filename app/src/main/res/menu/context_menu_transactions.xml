@@ -25,7 +25,7 @@
         android:orderInCategory="100"
         />
     <item
-        android:id="@+id/action_dulpicate"
+        android:id="@+id/action_duplicate"
         android:title="@string/act_duplicate"
         android:orderInCategory="100"
         />

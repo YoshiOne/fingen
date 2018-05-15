@@ -8,11 +8,10 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Animatable;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +19,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -40,7 +40,6 @@ import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import android.util.Log;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.yoshione.fingen.adapter.AdapterFilters;
 import com.yoshione.fingen.adapter.AdapterTransactions;
@@ -178,9 +177,11 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         mSumsLoaded = false;
-        Intent intent = getActivity().getIntent();
-        if (intent.getBooleanExtra(FgConst.LOCK_SLIDINGUP_PANEL, false) & !BuildConfig.DEBUG) {
-            mSlidingLayoutTransactions.setEnabled(false);
+        if (getActivity() != null) {
+            Intent intent = getActivity().getIntent();
+            if (intent.getBooleanExtra(FgConst.LOCK_SLIDINGUP_PANEL, false) & !BuildConfig.DEBUG) {
+                mSlidingLayoutTransactions.setEnabled(false);
+            }
         }
 
         mTransactionsDAO = TransactionsDAO.getInstance(getActivity());
@@ -316,9 +317,10 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     }
 
     private void initFabMenu() {
-        Context context = getActivity();
-        mFabGoTop.setImageDrawable(getActivity().getDrawable(R.drawable.ic_arrow_up_white));
-        fabMenuSelection.getMenuIconView().setImageDrawable(getActivity().getDrawable(R.drawable.ic_check_circle_white));
+        if (getActivity() != null) {
+            mFabGoTop.setImageDrawable(getActivity().getDrawable(R.drawable.ic_arrow_up_white));
+            fabMenuSelection.getMenuIconView().setImageDrawable(getActivity().getDrawable(R.drawable.ic_check_circle_white));
+        }
         fabMenuSelection.hideMenu(false);
         isInSelectionMode = false;
 
@@ -380,21 +382,27 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 sb.append(";");
             }
         }
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        preferences.edit().putString("filters", sb.toString()).apply();
+        if (getActivity() != null) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            preferences.edit().putString("filters", sb.toString()).apply();
+        }
     }
 
     private boolean CreateFilterListFromIntent() {
-        Intent intent = getActivity().getIntent();
+        if (getActivity() != null) {
+            Intent intent = getActivity().getIntent();
 
-        ArrayList<AbstractFilter> filters = intent.getParcelableArrayListExtra("filter_list");
+            ArrayList<AbstractFilter> filters = intent.getParcelableArrayListExtra("filter_list");
 
-        if (filters == null || filters.isEmpty()) {
-            return false;
+            if (filters == null || filters.isEmpty()) {
+                return false;
+            } else {
+                adapterFilters.setFilterList(filters);
+                onFilterChange(false);
+                return true;
+            }
         } else {
-            adapterFilters.setFilterList(filters);
-            onFilterChange(false);
-            return true;
+            return false;
         }
     }
 
@@ -499,7 +507,9 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     public void onTransactionItemClick(Transaction transaction) {
         Intent intent = new Intent(getActivity(), ActivityEditTransaction.class);
         intent.putExtra("transaction", transaction);
-        getActivity().startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+        if (getActivity() != null) {
+            getActivity().startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+        }
     }
 
     @SuppressLint("DefaultLocale")
@@ -535,6 +545,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         mButtonAddFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (getActivity() == null) return;
                 AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
                 builderSingle.setTitle(getActivity().getResources().getString(R.string.ttl_new_filter));
 
@@ -607,7 +618,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
     }
@@ -821,14 +832,12 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 }
                 break;
             }
-            case R.id.action_dulpicate: {
+            case R.id.action_duplicate: {
                 Transaction transaction = new Transaction(mTransactionsDAO.getTransactionByID(info.id));
                 transaction.setDateTime(new Date());
-                try {
-                    mTransactionsDAO.createModel(transaction);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                Intent intent = new Intent(getActivity(), ActivityEditTransaction.class);
+                intent.putExtra("transaction", transaction);
+                getActivity().startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
                 break;
             }
             case R.id.action_create_template: {
