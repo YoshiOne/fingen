@@ -68,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.BindView;
 
@@ -417,6 +418,16 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
                 }
                 break;
             }
+            case R.id.action_show_report:
+                Account acc = AccountsDAO.getInstance(getActivity()).getAccountByID(info.id);
+                AccountFilter filter = new AccountFilter(0);
+                filter.addAccount(acc.getID());
+                ArrayList<AbstractFilter> filters = new ArrayList<>();
+                filters.add(filter);
+                Intent intent = new Intent(getActivity(), ActivityReports.class);
+                intent.putParcelableArrayListExtra("filter_list", filters);
+                startActivity(intent);
+                break;
             case R.id.action_balance_adjustment: {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 final Account account = AccountsDAO.getInstance(getActivity()).getAccountByID(info.id);

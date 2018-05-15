@@ -25,6 +25,11 @@
         android:orderInCategory="100"
         />
     <item
+        android:id="@+id/action_show_report"
+        android:title="@string/act_show_report"
+        android:orderInCategory="100"
+        />
+    <item
         android:id="@+id/action_balance_adjustment"
         android:title="@string/act_balance_adjustment"
         android:orderInCategory="100"

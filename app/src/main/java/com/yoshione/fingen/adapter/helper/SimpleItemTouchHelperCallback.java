@@ -36,6 +36,8 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
     private Integer mFrom = null;
     private Integer mTo = null;
 
+    private boolean isItemViewSwipeEnabled = false;
+
     private static final float ALPHA_FULL = 1.0f;
 
     private final ItemTouchHelperAdapter mAdapter;
@@ -49,9 +51,13 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
         return false;
     }
 
+    public void setItemViewSwipeEnabled(boolean itemViewSwipeEnabled) {
+        isItemViewSwipeEnabled = itemViewSwipeEnabled;
+    }
+
     @Override
     public boolean isItemViewSwipeEnabled() {
-        return false;
+        return isItemViewSwipeEnabled;
     }
 
     @Override
@@ -92,7 +98,7 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int i) {
         // Notify the adapter of the dismissal
-        mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
+        mAdapter.onItemSwypeRight(viewHolder.getAdapterPosition());
     }
 
     @Override

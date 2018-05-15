@@ -144,7 +144,7 @@ public class AdapterEditorConstructor extends RecyclerView.Adapter implements It
     }
 
     @Override
-    public void onItemDismiss(int position) {
+    public void onItemSwypeRight(int position) {
 
     }
 

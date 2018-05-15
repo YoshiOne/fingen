@@ -58,6 +58,6 @@ public interface ItemTouchHelperAdapter {
      * @see RecyclerView.ViewHolder#getAdapterPosition()
      */
     @SuppressWarnings("EmptyMethod")
-    void onItemDismiss(int position);
+    void onItemSwypeRight(int position);
 
 }

@@ -323,7 +323,7 @@ public class AdapterTreeModel extends RecyclerView.Adapter implements ItemTouchH
     }
 
     @Override
-    public void onItemDismiss(int position) {
+    public void onItemSwypeRight(int position) {
 
     }
 

@@ -108,7 +108,7 @@ public class AdapterTabOrder extends RecyclerView.Adapter implements ItemTouchHe
     }
 
     @Override
-    public void onItemDismiss(int position) {
+    public void onItemSwypeRight(int position) {
 
     }
 
