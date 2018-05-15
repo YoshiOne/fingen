@@ -106,17 +106,11 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
 
     private void setupBarChart() {
         mBarChart.setDrawBarShadow(false);
-
         mBarChart.setDrawValueAboveBar(true);
-
         mBarChart.setDescription("");
-
         mBarChart.setMaxVisibleValueCount(Integer.MAX_VALUE);
-
         mBarChart.setPinchZoom(false);
-
         mBarChart.setDrawGridBackground(false);
-
         mBarChart.setOnChartValueSelectedListener(this);
         mBarChart.setHighlightPerDragEnabled(false);
 
@@ -133,15 +127,13 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
         yl.setDrawAxisLine(true);
         yl.setDrawGridLines(true);
         yl.setGridLineWidth(0.3f);
-        yl.setAxisMinValue(0f); // this replaces setStartAtZero(true)
-//        yl.setValueFormatter(valuesFormatter);
+        yl.setAxisMinValue(0f);
         yl.setTextColor(textColor);
 
         YAxis yr = mBarChart.getAxisRight();
         yr.setDrawAxisLine(true);
         yr.setDrawGridLines(false);
-        yr.setAxisMinValue(0f); // this replaces setStartAtZero(true)
-//        yr.setValueFormatter(valuesFormatter);
+        yr.setAxisMinValue(0f);
         yr.setTextColor(textColor);
 
         mBarChart.getLegend().setEnabled(false);
@@ -234,7 +226,6 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
         int i = 0;
         ArrayList<BarEntry> yVals = new ArrayList<>();
         ArrayList<String> xVals = new ArrayList<>();
-
         BarEntry barEntry;
         IAbstractModel model;
         for (BaseNode node : tree.getChildren()) {
@@ -332,21 +323,12 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
     @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         ReportBuilder reportBuilder = ReportBuilder.getInstance(getActivity());
-//        int dataInd = PreferenceManager.getDefaultSharedPreferences(mActivityReports).getInt("report_data", 0);
-//        switch (dataInd) {
-//            case ActivityReports.DATA_CATEGORY:
-//            case ActivityReports.DATA_PAYEE:
-//            case ActivityReports.DATA_PROJECT:
-//            case ActivityReports.DATA_DEPARTMENT:
-//            case ActivityReports.DATA_LOCATION:
                 IAbstractModel model = (IAbstractModel) e.getData();
                 if (AbstractModelManager.getAllChildren(model, getActivity()).size() > 0) {
                     reportBuilder.setParentID(model.getID());
                     updateChart();
                     return;
                 }
-//                break;
-//        }
         CabbageFormatter cabbageFormatter = null;
         try {
             cabbageFormatter = new CabbageFormatter(reportBuilder.getActiveCabbage());

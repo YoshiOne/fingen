@@ -130,6 +130,26 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
         return view;
     }
 
+    private boolean isShrinkValues() {
+        return PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(FgConst.PREF_SHRINK_CHART_LABELS, true);
+    }
+
+    private String formatValue(float value) {
+        if (isShrinkValues()) {
+            return largeValuesFormatter.makePretty(value);
+        } else {
+            return mormalValuesFormatter.getFormattedValue(value);
+        }
+    }
+
+    private ValueFormatter getValueFormatter() {
+        if (isShrinkValues()) {
+            return largeValuesFormatter;
+        } else {
+            return mormalValuesFormatter;
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -144,15 +164,10 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
 
     private void setupBarChart() {
         mBarChart.setDrawBarShadow(false);
-
         mBarChart.setDrawValueAboveBar(true);
-
         mBarChart.setDescription("");
-
         mBarChart.setMaxVisibleValueCount(Integer.MAX_VALUE);
-
         mBarChart.setPinchZoom(false);
-
         mBarChart.setDrawGridBackground(false);
         mBarChart.setOnChartValueSelectedListener(this);
         mBarChart.setHighlightPerDragEnabled(false);
@@ -160,7 +175,7 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
         int textColor = ColorUtils.getTextColor(getActivity());
 
         XAxis xl = mBarChart.getXAxis();
-        xl.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xl.setPosition(XAxis.XAxisPosition.BOTTOM_INSIDE);
         xl.setDrawAxisLine(true);
         xl.setDrawGridLines(true);
         xl.setGridLineWidth(0.3f);
@@ -180,18 +195,6 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
         yr.setTextColor(textColor);
 
         mBarChart.getLegend().setEnabled(false);
-    }
-
-    private boolean isShrinkValues() {
-        return android.preference.PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(FgConst.PREF_SHRINK_CHART_LABELS, true);
-    }
-
-    private ValueFormatter getValueFormatter() {
-        if (isShrinkValues()) {
-            return largeValuesFormatter;
-        } else {
-            return mormalValuesFormatter;
-        }
     }
 
     private Pair<ArrayList<IBarDataSet>, ArrayList<String>> getDatasetsInAndEx(List<DateEntry> entries) {
@@ -235,6 +238,8 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
         ArrayList<IBarDataSet> dataSets = new ArrayList<>();
         dataSets.add(setIncome);
         dataSets.add(setExpense);
+
+        mBarChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
         return new Pair<>(dataSets, xVals);
     }
 
@@ -252,7 +257,8 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
             barEntry = new BarEntry(sum.abs().floatValue(), i);
             barEntry.setData(getPairDates(entry.getDate()));
             yValsSum.add(barEntry);
-            xVals.add(df.format(entry.getDate()));
+//            xVals.add(df.format(entry.getDate()));
+            xVals.add(String.format("%s (%s)", df.format(entry.getDate()), formatValue(sum.abs().floatValue())));
             if (sum.compareTo(BigDecimal.ZERO) >= 0) {
                 colors.add(ContextCompat.getColor(Objects.requireNonNull(getActivity()), R.color.positive_color));
             } else {
@@ -271,6 +277,7 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
 
         ArrayList<IBarDataSet> dataSets = new ArrayList<>();
         dataSets.add(setSum);
+        mBarChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM_INSIDE);
         return new Pair<>(dataSets, xVals);
     }
 
@@ -280,44 +287,28 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
         ArrayList<String> xVals = new ArrayList<>();
         DateFormat df = ReportBuilder.getInstance(getActivity()).getDateFormatter();
         BarEntry barEntry;
+        BigDecimal value;
 
         for (DateEntry entry : entries) {
-            if (expense) {
-                if (entry.getExpense().compareTo(BigDecimal.ZERO) > 0) {
-                    barEntry = new BarEntry(entry.getExpense().setScale(2, RoundingMode.HALF_EVEN).floatValue(), i);
-                    barEntry.setData(getPairDates(entry.getDate()));
-                    yVals.add(barEntry);
-                    xVals.add(df.format(entry.getDate()));
-                    i++;
-                }
-            } else {
-                if (entry.getIncome().compareTo(BigDecimal.ZERO) > 0) {
-                    barEntry = new BarEntry(entry.getIncome().setScale(2, RoundingMode.HALF_EVEN).floatValue(), i);
-                    barEntry.setData(getPairDates(entry.getDate()));
-                    yVals.add(barEntry);
-                    xVals.add(df.format(entry.getDate()));
-                    i++;
-                }
+            value = (expense ? entry.getExpense() : entry.getIncome()).setScale(2, RoundingMode.HALF_EVEN);
+            if (value.compareTo(BigDecimal.ZERO) > 0) {
+                barEntry = new BarEntry(value.floatValue(), i);
+                barEntry.setData(getPairDates(entry.getDate()));
+                yVals.add(barEntry);
+                xVals.add(String.format("%s (%s)", df.format(entry.getDate()), formatValue(value.floatValue())));
+                i++;
             }
         }
 
-        BarDataSet set;
-        if (expense) {
-            set = new BarDataSet(yVals, getString(R.string.ent_outcome));
-            set.setColor(ContextCompat.getColor(Objects.requireNonNull(getActivity()), R.color.negative_color));
-            set.setValueFormatter(getValueFormatter());
-        } else {
-            set = new BarDataSet(yVals, getString(R.string.ent_income));
-            set.setColor(ContextCompat.getColor(Objects.requireNonNull(getActivity()), R.color.positive_color));
-            set.setValueFormatter(getValueFormatter());
-        }
-
-        int textColor = ColorUtils.getTextColor(getActivity());
-        set.setValueTextColor(textColor);
+        BarDataSet set = new BarDataSet(yVals, getString(expense ? R.string.ent_outcome : R.string.ent_income));
+        set.setColor(ContextCompat.getColor(getActivity(), expense ? R.color.negative_color : R.color.positive_color));
+        set.setValueFormatter(getValueFormatter());
+        set.setValueTextColor(ColorUtils.getTextColor(getActivity()));
         set.setDrawValues(mDrawBarLabels);
 
         ArrayList<IBarDataSet> dataSets = new ArrayList<>();
         dataSets.add(set);
+        mBarChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM_INSIDE);
         return new Pair<>(dataSets, xVals);
     }
 
