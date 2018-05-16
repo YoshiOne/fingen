@@ -32,7 +32,7 @@ import com.github.angads25.filepicker.model.DialogConfigs;
 import com.yoshione.fingen.adapter.AdapterColumnIndex;
 import com.yoshione.fingen.interfaces.IProgressEventsListener;
 import com.yoshione.fingen.model.EntityToFieldLink;
-import com.yoshione.fingen.utils.CsvImporter;
+import com.yoshione.fingen.csv.CsvImporter;
 import com.yoshione.fingen.utils.FileUtils;
 import com.yoshione.fingen.utils.IconGenerator;
 import com.yoshione.fingen.utils.ImportParams;

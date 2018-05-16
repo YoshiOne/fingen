@@ -199,18 +199,6 @@ public class AdapterProducts extends RecyclerView.Adapter {
                 mTagView.addTag(tag);
             }
             //</editor-fold>
-//            long categoryID = productEntry.getCategoryID() < 0 ? transaction.getCategoryID() : productEntry.getCategoryID();
-//            if (categoryID >= 0) {
-//                mTextViewCategoryName.setVisibility(View.VISIBLE);
-//                Category category = CategoriesDAO.getInstance(activity).getCategoryByID(categoryID);
-//                mTextViewCategoryName.setText(category.getFullName());
-//                mTextViewCategoryName.setVisibility(View.VISIBLE);
-//                mTextViewCategoryName.setBackgroundResource(R.drawable.rounded_corner);
-//                mTextViewCategoryName.setTextColor(ColorUtils.ContrastColor(category.getColor()));
-//                ((GradientDrawable) mTextViewCategoryName.getBackground()).setColor(category.getColor());
-//            } else {
-//                mTextViewCategoryName.setVisibility(View.GONE);
-//            }
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

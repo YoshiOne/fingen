@@ -1,4 +1,4 @@
-package com.yoshione.fingen.utils;
+package com.yoshione.fingen.csv;
 
 import android.content.Context;
 import android.util.SparseArray;

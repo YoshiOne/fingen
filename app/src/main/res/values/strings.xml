@@ -1278,6 +1278,10 @@
     <string name="ttl_select_export_dir" formatted="false">Select file or directory</string>
 
     <!-- 17. Import & Export -->
+    <!-- Titles -->
+    <string name="ttl_export_products" formatted="false">Export products</string>
+
+    <!-- 17. Import & Export -->
     <!-- Errors -->
     <string name="err_set_dir" formatted="false">Please select file or directory</string>
 

@@ -1278,6 +1278,10 @@
     <string name="ttl_select_export_dir" formatted="false">Выберите файл или каталог</string>
 
     <!-- 17. Import & Export -->
+    <!-- Titles -->
+    <string name="ttl_export_products" formatted="false">Выгружать товары</string>
+
+    <!-- 17. Import & Export -->
     <!-- Errors -->
     <string name="err_set_dir" formatted="false">Пожалуйста выберите файл или каталог</string>
 

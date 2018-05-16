@@ -1,4 +1,4 @@
-package com.yoshione.fingen.utils;
+package com.yoshione.fingen.csv;
 
 /*
  Created by slv on 23.10.2015.
@@ -22,6 +22,7 @@ import com.yoshione.fingen.dao.CategoriesDAO;
 import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.dao.LocationsDAO;
 import com.yoshione.fingen.dao.PayeesDAO;
+import com.yoshione.fingen.dao.ProductsDAO;
 import com.yoshione.fingen.dao.ProjectsDAO;
 import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
@@ -35,8 +36,12 @@ import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.model.Category;
 import com.yoshione.fingen.model.Location;
 import com.yoshione.fingen.model.Payee;
+import com.yoshione.fingen.model.ProductEntry;
 import com.yoshione.fingen.model.Project;
 import com.yoshione.fingen.model.Transaction;
+import com.yoshione.fingen.utils.DateTimeFormatter;
+import com.yoshione.fingen.utils.ImportParams;
+import com.yoshione.fingen.utils.PrefUtils;
 
 import org.mozilla.universalchardet.UniversalDetector;
 
@@ -52,6 +57,7 @@ import java.util.Arrays;
 import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import au.com.bytecode.opencsv.CSV;
@@ -68,6 +74,28 @@ public class CsvImporter {
             ',',//запятая
             ' '//пробел
     };
+    private static final  String CN_ID = "id";
+    private static final  String CN_DATE = "date";
+    private static final  String CN_TIME = "time";
+    private static final  String CN_ACCOUNT = "account";
+    private static final  String CN_AMOUNT = "amount";
+    private static final  String CN_CURRENCY = "currency";
+    private static final  String CN_TYPE = "type";
+    private static final  String CN_EXRATE = "exrate";
+    private static final  String CN_CATEGORY = "category";
+    private static final  String CN_PAYEE = "payee";
+    private static final  String CN_LOCATION = "location";
+    private static final  String CN_PROJECT = "project";
+    private static final  String CN_DEPARTMENT = "department";
+    private static final  String CN_NOTE = "note";
+    private static final  String CN_LON = "lon";
+    private static final  String CN_LAT = "lat";
+    private static final  String CN_FN = "fn";
+    private static final  String CN_FD = "fd";
+    private static final  String CN_FP = "fp";
+    private static final  String CN_PRODUCT = "product";
+    private static final  String CN_PRICE = "price";
+    private static final  String CN_QUANTITY = "quantity";
     private static final String sDateFormats[] = {
             "yyyy-MM-dd HH:mm:ss",
             "MM/dd/yyyy HH:mm:ss",
@@ -112,8 +140,8 @@ public class CsvImporter {
         this.mCsvImportProgressChangeListener = mCsvImportProgressChangeListener;
     }
 
-    @SuppressLint("SimpleDateFormat")
-    public void saveCSV(final List<Transaction> transactions) {
+    @SuppressLint({"SimpleDateFormat", "UseSparseArrays"})
+    public void saveCSV(final List<Transaction> transactions, final boolean splitProducts) {
         final CSV csv = CSV
                 .separator(mSeparator)  // delimiter of fields
                 .quote(mQuote)      // quote character
@@ -125,23 +153,14 @@ public class CsvImporter {
         csv.write(mFileName, new CSVWriteProc() {
             @Override
             public void process(CSVWriter out) {
-                out.writeNext("date", "time", "account", "amount", "currency", "type", "exrate", "category", "payee", "location", "project", "department", "note", "lon", "lat");
-                String date;
-                String time;
-                String account;
-                String amount;
-                String type;
-                String exrate;
-                String currency;
+                if (!splitProducts) {
+                    out.writeNext(CN_ID, CN_DATE, CN_TIME, CN_ACCOUNT, CN_AMOUNT, CN_CURRENCY, CN_TYPE, CN_EXRATE, CN_CATEGORY, CN_PAYEE, CN_LOCATION, CN_PROJECT, CN_DEPARTMENT, CN_NOTE, CN_LON, CN_LAT, CN_FN, CN_FD, CN_FP);
+                } else {
+                    out.writeNext(CN_ID, CN_DATE, CN_TIME, CN_ACCOUNT, CN_AMOUNT, CN_CURRENCY, CN_TYPE, CN_EXRATE, CN_PRODUCT, CN_PRICE, CN_QUANTITY, CN_CATEGORY, CN_PAYEE, CN_LOCATION, CN_PROJECT, CN_DEPARTMENT, CN_NOTE, CN_LON, CN_LAT, CN_FN, CN_FD, CN_FP);
+                }
+                String id, date, time, account, amount, currency, type, exrate, category, payee, location, project, department, note, lon, lat, fn, fd, fp;
+                String product, price, quantity, productCategory, productProject;
                 int decimalCount;
-                String category;
-                String payee;
-                String location;
-                String project;
-                String department;
-                String note;
-                String lon;
-                String lat;
                 HashMap<Long, String> categoriesNameCache = new HashMap<>();
                 HashMap<Long, String> payeesNameCache = new HashMap<>();
                 HashMap<Long, String> projectsNameCache = new HashMap<>();
@@ -161,6 +180,7 @@ public class CsvImporter {
                 mCurrentRow = 0;
                 try {
                     for (Transaction transaction : transactions) {
+                        id = String.valueOf(transaction.getID());
                         date = dateFormat.format(transaction.getDateTime());
                         time = timeFormat.format(transaction.getDateTime());
 
@@ -223,14 +243,24 @@ public class CsvImporter {
                             department = department.replaceAll("\\\\", ":");
                             departmentsNameCache.put(transaction.getDepartmentID(), department);
                         }
+                        fn = String.valueOf(transaction.getFN());
+                        fd = String.valueOf(transaction.getFD());
+                        fp = String.valueOf(transaction.getFP());
 
                         amount = transaction.getAmount().setScale(decimalCount, RoundingMode.HALF_EVEN).toString();
                         exrate = String.valueOf(transaction.getExchangeRate().doubleValue());
                         note = transaction.getComment();
+                        product = "undefined";
+                        price = "0";
+                        quantity = "0";
 
                         if (transaction.getDestAccountID() >= 0) {
                             type = "Transfer Out";
-                            out.writeNext(date, time, account, amount, currency, type, exrate, category, payee, location, project, department, note, lon, lat);
+                            if (!splitProducts) {
+                                out.writeNext(date, time, account, amount, currency, type, exrate, category, payee, location, project, department, note, lon, lat, fn, fd, fp);
+                            } else {
+                                out.writeNext(id, date, time, account, amount, currency, type, exrate, product, price, quantity, category, payee, location, project, department, note, lon, lat, fn, fd, fp);
+                            }
                             type = "Transfer In";
                             if (accountsNameCache.containsKey(transaction.getDestAccountID())) {
                                 account = accountsNameCache.get(transaction.getDestAccountID());
@@ -247,10 +277,58 @@ public class CsvImporter {
                                 cabbagesDecimalCountCache.put(transaction.getDestAccountID(), decimalCount);
                             }
                             amount = transaction.getDestAmount().setScale(decimalCount, RoundingMode.HALF_EVEN).toString();
-                            out.writeNext(date, time, account, amount, currency, type, exrate, category, payee, location, project, department, note, lon, lat);
+                            if (!splitProducts) {
+                                out.writeNext(date, time, account, amount, currency, type, exrate, category, payee, location, project, department, note, lon, lat, fn, fd, fp);
+                            } else {
+                                out.writeNext(id, date, time, account, amount, currency, type, exrate, product, price, quantity, category, payee, location, project, department, note, lon, lat, fn, fd, fp);
+                            }
                         } else {
                             type = transaction.getAmount().compareTo(BigDecimal.ZERO) > 0 ? "Income" : "Expense";
-                            out.writeNext(date, time, account, amount, currency, type, exrate, category, payee, location, project, department, note, lon, lat);
+                            if (splitProducts) {
+                                if (transaction.getProductEntries().size() > 0) {
+                                    for (ProductEntry productEntry : transaction.getProductEntries()) {
+                                        product = ProductsDAO.getInstance(mContext).getProductByID(productEntry.getProductID()).getName();
+                                        if (productEntry.getCategoryID() >= 0) {
+                                            if (categoriesNameCache.containsKey(productEntry.getCategoryID())) {
+                                                productCategory = categoriesNameCache.get(productEntry.getCategoryID());
+                                            } else {
+                                                productCategory = CategoriesDAO.getInstance(mContext).getCategoryByID(productEntry.getCategoryID()).getFullName();
+                                                productCategory = productCategory.replaceAll("\\\\", ":");
+                                                categoriesNameCache.put(productEntry.getCategoryID(), productCategory);
+                                            }
+                                        } else{
+                                            productCategory = category;
+                                        }
+
+                                        if (productEntry.getProjectID() >= 0) {
+                                            if (projectsNameCache.containsKey(productEntry.getProjectID())) {
+                                                productProject = projectsNameCache.get(productEntry.getProjectID());
+                                            } else {
+                                                productProject = ProjectsDAO.getInstance(mContext).getProjectByID(productEntry.getProjectID()).getFullName();
+                                                productProject = productProject.replaceAll("\\\\", ":");
+                                                projectsNameCache.put(productEntry.getProjectID(), productProject);
+                                            }
+                                        } else {
+                                            productProject = project;
+                                        }
+                                        amount = productEntry.getPrice().multiply(productEntry.getQuantity()).setScale(decimalCount, RoundingMode.HALF_EVEN).toString();
+                                        price = productEntry.getPrice().setScale(decimalCount, RoundingMode.HALF_EVEN).toString();
+                                        quantity = productEntry.getQuantity().toString();
+                                        out.writeNext(id, date, time, account, amount, currency, type, exrate, product, price, quantity, productCategory, payee, location, productProject, department, note, lon, lat, fn, fd, fp);
+                                    }
+                                    if (transaction.getResidue().compareTo(BigDecimal.ZERO) != 0) {
+                                        product = "undefined";
+                                        price = transaction.getResidue().setScale(decimalCount, RoundingMode.HALF_EVEN).toString();
+                                        amount = price;
+                                        quantity = "1";
+                                        out.writeNext(id, date, time, account, amount, currency, type, exrate, product, price, quantity, category, payee, location, project, department, note, lon, lat, fn, fd, fp);
+                                    }
+                                } else {
+                                    out.writeNext(id, date, time, account, amount, currency, type, exrate, product, price, quantity, category, payee, location, project, department, note, lon, lat, fn, fd, fp);
+                                }
+                            } else {
+                                out.writeNext(date, time, account, amount, currency, type, exrate, category, payee, location, project, department, note, lon, lat, fn, fd, fp);
+                            }
                         }
                         mCurrentRow++;
                         if (mCsvImportProgressChangeListener != null) {
@@ -262,7 +340,6 @@ public class CsvImporter {
                     if (mCsvImportProgressChangeListener != null) {
                         mCsvImportProgressChangeListener.onOperationComplete(IProgressEventsListener.CODE_ERROR);
                     }
-//                    return;
                 }
             }
         });
@@ -285,7 +362,6 @@ public class CsvImporter {
         final CsvImportCache payeesCache = new CsvImportCache(IAbstractModel.MODEL_TYPE_PAYEE, mContext);
         final CsvImportCache projectsCache = new CsvImportCache(IAbstractModel.MODEL_TYPE_PROJECT, mContext);
         final CsvImportCache locationsCache = new CsvImportCache(IAbstractModel.MODEL_TYPE_LOCATION, mContext);
-
 
         mCount = 0;
 //        Debug.startMethodTracing("loadFinancistoCSV");
@@ -329,15 +405,13 @@ public class CsvImporter {
                                 return;
                             }
                             if (cabbage.getID() < 0) {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                    cabbage = CabbageManager.createFromCode(values[4], mContext);
-                                    if (cabbage != null) {
-                                        try {
-                                            cabbage = (Cabbage) CabbagesDAO.getInstance(mContext).createModel(cabbage);
-                                            cabbagesCache.add(cabbage.getCode().hashCode(), cabbage);
-                                        } catch (Exception e) {
-                                            return;
-                                        }
+                                cabbage = CabbageManager.createFromCode(values[4], mContext);
+                                if (cabbage != null) {
+                                    try {
+                                        cabbage = (Cabbage) CabbagesDAO.getInstance(mContext).createModel(cabbage);
+                                        cabbagesCache.add(cabbage.getCode().hashCode(), cabbage);
+                                    } catch (Exception e) {
+                                        return;
                                     }
                                 }
                             }
@@ -596,6 +670,13 @@ public class CsvImporter {
 
         try {
 
+            HashMap<String, CsvColumn> columns = new HashMap<>();
+            List<String> columnNames = Arrays.asList(CN_DATE, CN_TIME, CN_ACCOUNT, CN_AMOUNT, CN_CURRENCY, CN_TYPE, CN_EXRATE, CN_CATEGORY, CN_PAYEE, CN_LOCATION, CN_PROJECT, CN_DEPARTMENT, CN_NOTE, CN_LON, CN_LAT, CN_FN, CN_FD,CN_FP);
+            List<String> csvCaptions = loadColumnsFromCSV();
+            for (String columnName : columnNames) {
+                columns.put(columnName, new CsvColumn(columnName, csvCaptions.indexOf(columnName)));
+            }
+
             csv.read(mFileName, new CSVReadProc() {
                 @Override
                 public void procRow(int i, String... values) {
@@ -607,9 +688,9 @@ public class CsvImporter {
 
             mCurrentRow = 0;
 //            date time account amount currency type exrate category payee location project department note
-            ImportParams params = new ImportParams(0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 5, true);
-            params.setDateFormat("yyyy-MM-dd HH:mm:ss");
-            FingenCsvImportProc fingenCsvImportProc = new FingenCsvImportProc(params, transaction, skipDuplicates, transactionList, caches);
+//            ImportParams params = new ImportParams(0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 5, true);
+//            params.setDateFormat("yyyy-MM-dd HH:mm:ss");
+            @SuppressLint("SimpleDateFormat") FingenCsvImportProc fingenCsvImportProc = new FingenCsvImportProc(columns, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), transaction, skipDuplicates, transactionList, caches);
 
             final SQLiteDatabase database = DBHelper.getInstance(mContext).getDatabase();
             database.beginTransaction();
@@ -884,15 +965,17 @@ public class CsvImporter {
     }
 
     private class FingenCsvImportProc implements CSVReadProc {
-        private final ImportParams mParams;
         private final Transaction mTransaction;
         private final TransactionsDAO transactionsDAO;
         boolean mSkipDuplicates;
         List<IAbstractModel> mTransactionList;
         CsvCachesSet mCaches;
+        HashMap<String, CsvColumn> mColumns;
+        DateFormat mDateFormat;
 
-        FingenCsvImportProc(ImportParams params, Transaction transaction, boolean skipDuplicates, List<IAbstractModel> transactionList, CsvCachesSet caches) {
-            mParams = params;
+        FingenCsvImportProc(HashMap<String, CsvColumn> columns, DateFormat dateFormat, Transaction transaction, boolean skipDuplicates, List<IAbstractModel> transactionList, CsvCachesSet caches) {
+            mColumns = columns;
+            mDateFormat = dateFormat;
             mTransaction = transaction;
             mSkipDuplicates = skipDuplicates;
             mTransactionList = transactionList;
@@ -903,63 +986,65 @@ public class CsvImporter {
         @Override
         public void procRow(int i, String... vls) {
             Log.d(TAG, "Start import row " + String.valueOf(i));
-//            if (vls[mParams.amount].equals("33128.25")) {
-//                Log.d(TAG, "1486");
-//            }
-            if (mParams.hasHeader & i == 0) return;
 
-//            List<String> vls = Arrays.asList(values);
+            if (i == 0) return;
 
             if (vls.length == 1 && vls[0].isEmpty()) return;
 
             if (!mTransaction.isTransactionOpened()) {
                 //Date/Time
                 try {
-                    mTransaction.setDateTime(parseDateTime(vls, mParams.date, mParams.time, mParams.getDateFormat()));
+                    mTransaction.setDateTime(parseDateTime(vls, mColumns.get(CN_DATE).getIndex(), mColumns.get(CN_TIME).getIndex(), mDateFormat));
                 } catch (ParseException e) {
                     mTransaction.setDateTime(new Date());
                 }
                 mTransaction.setDestAccountID(-1);
                 //Payee
                 try {
-                    mTransaction.setPayeeID(parseNestedModel(mCaches.getPayeesCache(), vls, mParams.payee, IAbstractModel.MODEL_TYPE_PAYEE, PayeesDAO.getInstance(mContext), mContext).getID());
+                    mTransaction.setPayeeID(parseNestedModel(mCaches.getPayeesCache(), vls, mColumns.get(CN_PAYEE).getIndex(), IAbstractModel.MODEL_TYPE_PAYEE, PayeesDAO.getInstance(mContext), mContext).getID());
                 } catch (Exception e) {
                     mTransaction.setPayeeID(-1);
                 }
                 //Category
                 try {
-                    mTransaction.setCategoryID(parseNestedModel(mCaches.getCategoriesCache(), vls, mParams.category, IAbstractModel.MODEL_TYPE_CATEGORY, CategoriesDAO.getInstance(mContext), mContext).getID());
+                    mTransaction.setCategoryID(parseNestedModel(mCaches.getCategoriesCache(), vls, mColumns.get(CN_CATEGORY).getIndex(), IAbstractModel.MODEL_TYPE_CATEGORY, CategoriesDAO.getInstance(mContext), mContext).getID());
                 } catch (Exception e) {
                     mTransaction.setCategoryID(-1);
                 }
                 //Project
                 try {
-                    mTransaction.setProjectID(parseNestedModel(mCaches.getProjectsCache(), vls, mParams.project, IAbstractModel.MODEL_TYPE_PROJECT, ProjectsDAO.getInstance(mContext), mContext).getID());
+                    mTransaction.setProjectID(parseNestedModel(mCaches.getProjectsCache(), vls, mColumns.get(CN_PROJECT).getIndex(), IAbstractModel.MODEL_TYPE_PROJECT, ProjectsDAO.getInstance(mContext), mContext).getID());
                 } catch (Exception e) {
                     mTransaction.setProjectID(-1);
                 }
                 //Department
                 try {
-                    mTransaction.setDepartmentID(parseNestedModel(mCaches.getDepartmentsCache(), vls, mParams.department, IAbstractModel.MODEL_TYPE_DEPARTMENT, DepartmentsDAO.getInstance(mContext), mContext).getID());
+                    mTransaction.setDepartmentID(parseNestedModel(mCaches.getDepartmentsCache(), vls, mColumns.get(CN_DEPARTMENT).getIndex(), IAbstractModel.MODEL_TYPE_DEPARTMENT, DepartmentsDAO.getInstance(mContext), mContext).getID());
                 } catch (Exception e) {
                     mTransaction.setDepartmentID(-1);
                 }
                 //Location
                 try {
-                    mTransaction.setLocationID(parseNestedModel(mCaches.getLocationsCache(), vls, mParams.location, IAbstractModel.MODEL_TYPE_LOCATION, LocationsDAO.getInstance(mContext), mContext).getID());
+                    mTransaction.setLocationID(parseNestedModel(mCaches.getLocationsCache(), vls, mColumns.get(CN_LOCATION).getIndex(), IAbstractModel.MODEL_TYPE_LOCATION, LocationsDAO.getInstance(mContext), mContext).getID());
                 } catch (Exception e) {
                     mTransaction.setLocationID(-1);
                 }
+                //FTS
+                if (mColumns.get(CN_FN).isExists()) {
+                    mTransaction.setFN(Long.valueOf(vls[mColumns.get(CN_FN).getIndex()]));
+                    mTransaction.setFD(Long.valueOf(vls[mColumns.get(CN_FD).getIndex()]));
+                    mTransaction.setFP(Long.valueOf(vls[mColumns.get(CN_FP).getIndex()]));
+                }
                 //Comment
-                mTransaction.setComment(parseComment(vls, mParams.comment));
+                mTransaction.setComment(parseComment(vls, mColumns.get(CN_NOTE).getIndex()));
                 //Amount
                 mTransaction.setExchangeRate(BigDecimal.ONE);
                 mTransaction.setAmount(BigDecimal.ZERO, Transaction.TRANSACTION_TYPE_EXPENSE);
-                mTransaction.setAmount(parseAmount(vls, mParams.amount), Transaction.TRANSACTION_TYPE_UNDEFINED);
+                mTransaction.setAmount(parseAmount(vls, mColumns.get(CN_AMOUNT).getIndex()), Transaction.TRANSACTION_TYPE_UNDEFINED);
                 mTransaction.setID(-1);
                 Cabbage cabbage;
                 try {
-                    cabbage = parseCabbage(mCaches.getCabbagesCache(), vls, mParams.currency, mContext);
+                    cabbage = parseCabbage(mCaches.getCabbagesCache(), vls, mColumns.get(CN_CURRENCY).getIndex(), mContext);
                 } catch (Exception e) {
                     return;
                 }
@@ -967,24 +1052,24 @@ public class CsvImporter {
                     return;
                 }
                 try {
-                    mTransaction.setAccountID(parseAccount(mCaches.getAccountsCache(), vls, mParams.account, cabbage.getID(), mContext).getID());
+                    mTransaction.setAccountID(parseAccount(mCaches.getAccountsCache(), vls, mColumns.get(CN_ACCOUNT).getIndex(), cabbage.getID(), mContext).getID());
                 } catch (Exception e) {
                     return;
                 }
             }
 
-            if (vls[mParams.type].toLowerCase().equals("transfer out")) {
+            if (vls[mColumns.get(CN_TYPE).getIndex()].toLowerCase().equals("transfer out")) {
                 mTransaction.setTransactionOpened(true);
             } else {
                 if (mTransaction.isTransactionOpened()) {
                     Cabbage cabbage;
                     try {
-                        cabbage = parseCabbage(mCaches.getCabbagesCache(), vls, mParams.currency, mContext);
+                        cabbage = parseCabbage(mCaches.getCabbagesCache(), vls,mColumns.get(CN_CURRENCY).getIndex(), mContext);
                     } catch (Exception e) {
                         return;
                     }
                     try {
-                        mTransaction.setDestAccountID(parseAccount(mCaches.getAccountsCache(), vls, mParams.account, cabbage.getID(), mContext).getID());
+                        mTransaction.setDestAccountID(parseAccount(mCaches.getAccountsCache(), vls, mColumns.get(CN_ACCOUNT).getIndex(), cabbage.getID(), mContext).getID());
                     } catch (Exception e) {
                         return;
                     }
@@ -1152,5 +1237,6 @@ public class CsvImporter {
 
         return mIsValidDateFormat;
     }
+
     //</editor-fold>
 }

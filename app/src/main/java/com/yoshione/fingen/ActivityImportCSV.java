@@ -20,13 +20,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.daimajia.numberprogressbar.NumberProgressBar;
-import com.github.angads25.filepicker.controller.DialogSelectionListener;
 import com.github.angads25.filepicker.model.DialogConfigs;
-import com.github.angads25.filepicker.model.DialogProperties;
-import com.github.angads25.filepicker.view.FilePickerDialog;
+
 import android.util.Log;
 import com.yoshione.fingen.interfaces.IProgressEventsListener;
-import com.yoshione.fingen.utils.CsvImporter;
+import com.yoshione.fingen.csv.CsvImporter;
 import com.yoshione.fingen.utils.FileUtils;
 import com.yoshione.fingen.widgets.ToolbarActivity;
 

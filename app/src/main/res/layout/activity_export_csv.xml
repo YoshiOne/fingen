@@ -54,6 +54,13 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/ent_file_name"
                 android:inputType="textMultiLine"/>
+
+            <CheckBox
+                android:id="@+id/checkBoxExportProducts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ttl_export_products" />
         </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>

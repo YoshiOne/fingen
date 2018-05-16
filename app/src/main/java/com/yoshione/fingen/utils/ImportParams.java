@@ -10,23 +10,45 @@ import java.text.SimpleDateFormat;
  *
  */
 public class ImportParams {
-    public final int date;//
-    public final int time;//
-    public final int account;//
-    public final int amount;
-    public final int currency;//
-    public final int category;//
-    public final int payee;//
-    public final int location;
-    public final int project;
-    public final int department;
-    public final int comment;//
-    public final int type;//
+    public int date;//
+    public int time;//
+    public int account;//
+    public int amount;
+    public int currency;//
+    public int category;//
+    public int payee;//
+    public int location;
+    public int project;
+    public int department;
+    public int comment;//
+    public int type;//
+    public int fn;//
+    public int fd;//
+    public int fp;//
     private DateFormat dateFormat;
     public final boolean hasHeader;
 
+    public ImportParams() {
+        this.date = -1;
+        this.time = -1;
+        this.account = -1;
+        this.amount = -1;
+        this.currency = -1;
+        this.category = -1;
+        this.payee = -1;
+        this.location = -1;
+        this.project = -1;
+        this.department = -1;
+        this.comment = -1;
+        this.hasHeader = true;
+        this.type = -1;
+        this.fn = -1;
+        this.fd = -1;
+        this.fp = -1;
+    }
+
     public ImportParams(int date, int time, int account, int amount, int currency, int category,
-                        int payee, int location, int project, int department, int comment, int type, boolean hasHeader) {
+                        int payee, int location, int project, int department, int comment, int type, int fn, int fd, int fp, boolean hasHeader) {
         this.date = date;
         this.time = time;
         this.account = account;
@@ -40,6 +62,9 @@ public class ImportParams {
         this.comment = comment;
         this.hasHeader = hasHeader;
         this.type = type;
+        this.fn = fn;
+        this.fd = fd;
+        this.fp = fp;
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -47,7 +72,7 @@ public class ImportParams {
         this.dateFormat = new SimpleDateFormat(dateFormat);
     }
 
-    DateFormat getDateFormat() {
+    public DateFormat getDateFormat() {
         return dateFormat;
     }
 }

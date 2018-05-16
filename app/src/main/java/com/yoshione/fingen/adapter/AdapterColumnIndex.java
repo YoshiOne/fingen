@@ -249,7 +249,7 @@ public class AdapterColumnIndex extends RecyclerView.Adapter {
             }
         }
 
-        return new ImportParams(date, time, account, amount, currency, category, payee, location, project, department, comment, -1, true);
+        return new ImportParams(date, time, account, amount, currency, category, payee, location, project, department, comment, -1, -1, -1, -1, true);
     }
 
     static class ColumnIndexViewHolder extends RecyclerView.ViewHolder {

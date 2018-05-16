@@ -16,15 +16,17 @@ import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.github.angads25.filepicker.model.DialogConfigs;
+import com.yoshione.fingen.csv.CsvImporter;
 import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IProgressEventsListener;
 import com.yoshione.fingen.model.Transaction;
-import com.yoshione.fingen.utils.CsvImporter;
 import com.yoshione.fingen.utils.FileUtils;
 import com.yoshione.fingen.widgets.ToolbarActivity;
 
@@ -62,6 +64,8 @@ public class ActivityExportCSV extends ToolbarActivity implements IProgressEvent
     TextInputLayout mTextInputLayoutDir;
     @BindView(R.id.textInputLayoutFileName)
     TextInputLayout mTextInputLayoutFileName;
+    @BindView(R.id.checkBoxExportProducts)
+    CheckBox mCheckBoxExportProducts;
     private int mCurrentProgress;
 
     @Override
@@ -85,10 +89,17 @@ public class ActivityExportCSV extends ToolbarActivity implements IProgressEvent
         mCurrentProgress = 0;
         handler = new UpdateProgressHandler();
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ActivityExportCSV.this);
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ActivityExportCSV.this);
 
         mEditTextDirectory.setText(preferences.getString("export_dir", ""));
         mEditTextFileName.setText(preferences.getString("export_file", ""));
+        mCheckBoxExportProducts.setChecked(preferences.getBoolean("export_products", false));
+        mCheckBoxExportProducts.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                preferences.edit().putBoolean("export_products", b).apply();
+            }
+        });
     }
 
     @Override
@@ -176,7 +187,7 @@ public class ActivityExportCSV extends ToolbarActivity implements IProgressEvent
                 } catch (Exception e) {
                     transactions = new ArrayList<>();
                 }
-                csvImporter.saveCSV(transactions);
+                csvImporter.saveCSV(transactions, mCheckBoxExportProducts.isChecked());
             }
         });
         t.start();
