@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.3 beta 2" changeDate=">2018.05.16">
+        <changelogtext>Для установки и запуска приложения больше не требуется наличие сервисов Google Play.</changelogtext>
+        <changelogtext>В CSV выгружаются параметры чека ФН, ФД, ФП.</changelogtext>
+        <changelogtext>При экспорте CSV появилась опция "Экспорт товаров", при ее выборе, транзакции, имеющие товары, разбиваются на несколько строк в соответсвии со списком товаров. Каждому товару указывается своя цена, категория и проект.</changelogtext>
+        <changelogtext>В центре круговой диаграммы отображается общая сумма.</changelogtext>
+        <changelogtext>В контекстном меню счета появился пункт "Показать отчет".</changelogtext>
+        <changelogtext>На графиках по датам подписываются значения сумм.</changelogtext>
+        <changelogtext>При дублировании транзакции ее дубликат сразу открывается для редактирования.</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.2.3.1" changeDate=">2018.03.22">
         <changelogtext>В отчетах можно отключить сокращение подписей значений.</changelogtext>
         <changelogtext>Отображение сумм прихода и расхода для счетов можно отключить в настройках.</changelogtext>

@@ -282,6 +282,10 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
                     menuInflater.inflate(R.menu.context_menu_accounts_sets, menu);
                     break;
             }
+            MenuItem item = menu.findItem(R.id.action_show_report);
+            if (getActivity() != null && getActivity() instanceof ActivityMain) {
+                item.setVisible(((ActivityMain) getActivity()).mReportsPurchased);
+            }
         }
     }
 
