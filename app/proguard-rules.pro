@@ -101,5 +101,6 @@
 -keep public class com.evernote.android.job.v14.PlatformAlarmReceiver
 -keep public class com.evernote.android.job.JobBootReceiver
 -keep public class com.evernote.android.job.JobRescheduleService
+-keep public class com.evernote.android.job.gcm.PlatformGcmService
 
 -keep class android.support.v7.widget.SearchView { *; }
