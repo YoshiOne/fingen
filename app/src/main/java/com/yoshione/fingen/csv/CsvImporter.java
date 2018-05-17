@@ -7,9 +7,6 @@ package com.yoshione.fingen.csv;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-
-import io.requery.android.database.sqlite.SQLiteDatabase;
-
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -57,13 +54,13 @@ import java.util.Arrays;
 import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import au.com.bytecode.opencsv.CSV;
 import au.com.bytecode.opencsv.CSVReadProc;
 import au.com.bytecode.opencsv.CSVWriteProc;
 import au.com.bytecode.opencsv.CSVWriter;
+import io.requery.android.database.sqlite.SQLiteDatabase;
 
 public class CsvImporter {
     private static final String TAG = "CsvImporter";
@@ -114,7 +111,7 @@ public class CsvImporter {
     private char mQuote = '"';
     private int mCount = 0;
     private int mCurrentRow = 0;
-    private int mSkipLines = 0;
+    private int mSkipLines;
     private String mCharset = "UTF-8";
     private IProgressEventsListener mCsvImportProgressChangeListener;
     private String mHeaders[];
@@ -154,7 +151,7 @@ public class CsvImporter {
             @Override
             public void process(CSVWriter out) {
                 if (!splitProducts) {
-                    out.writeNext(CN_ID, CN_DATE, CN_TIME, CN_ACCOUNT, CN_AMOUNT, CN_CURRENCY, CN_TYPE, CN_EXRATE, CN_CATEGORY, CN_PAYEE, CN_LOCATION, CN_PROJECT, CN_DEPARTMENT, CN_NOTE, CN_LON, CN_LAT, CN_FN, CN_FD, CN_FP);
+                    out.writeNext(CN_DATE, CN_TIME, CN_ACCOUNT, CN_AMOUNT, CN_CURRENCY, CN_TYPE, CN_EXRATE, CN_CATEGORY, CN_PAYEE, CN_LOCATION, CN_PROJECT, CN_DEPARTMENT, CN_NOTE, CN_LON, CN_LAT, CN_FN, CN_FD, CN_FP);
                 } else {
                     out.writeNext(CN_ID, CN_DATE, CN_TIME, CN_ACCOUNT, CN_AMOUNT, CN_CURRENCY, CN_TYPE, CN_EXRATE, CN_PRODUCT, CN_PRICE, CN_QUANTITY, CN_CATEGORY, CN_PAYEE, CN_LOCATION, CN_PROJECT, CN_DEPARTMENT, CN_NOTE, CN_LON, CN_LAT, CN_FN, CN_FD, CN_FP);
                 }
@@ -772,20 +769,17 @@ public class CsvImporter {
 //            cabbage = CabbagesDAO.getInstance(context).getCabbageByCode(code);
             cabbage = cache.getCabbageByCode(code);
             if (cabbage.getID() < 0) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    List<Currency> currencies = new ArrayList<>();
-                    currencies.addAll(Currency.getAvailableCurrencies());
-                    for (Currency currency : currencies) {
-                        if (currency.getCurrencyCode().equals(code)) {
-                            cabbage.setCode(code);
-                            cabbage.setDecimalCount(2);
-                            cabbage.setName(currency.getDisplayName());
-                            cabbage.setSimbol(currency.getSymbol());
-                            try {
-                                cabbage = (Cabbage) CabbagesDAO.getInstance(context).createModel(cabbage);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                List<Currency> currencies = new ArrayList<>(Currency.getAvailableCurrencies());
+                for (Currency currency : currencies) {
+                    if (currency.getCurrencyCode().equals(code)) {
+                        cabbage.setCode(code);
+                        cabbage.setDecimalCount(2);
+                        cabbage.setName(currency.getDisplayName());
+                        cabbage.setSimbol(currency.getSymbol());
+                        try {
+                            cabbage = (Cabbage) CabbagesDAO.getInstance(context).createModel(cabbage);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -881,7 +875,7 @@ public class CsvImporter {
                 mTransaction.setDateTime(new Date());
             }
             //Account
-            Cabbage cabbage = null;
+            Cabbage cabbage;
             try {
                 cabbage = parseCabbage(mCaches.getCabbagesCache(), vls, mParams.currency, mContext);
             } catch (Exception e) {

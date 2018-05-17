@@ -40,8 +40,8 @@ android {
         applicationId "com.yoshione.fingen"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 105
-        versionName "2.3 beta 2"
+        versionCode 106
+        versionName "2.3"
         resValue "string", "app_name", "Fingen"
         resValue "string", "inAppLicenseKey", keystoreProperties["inAppLicenseKey"]
         resValue "string", "inAppLicenseSalt", keystoreProperties["inAppLicenseSalt"]

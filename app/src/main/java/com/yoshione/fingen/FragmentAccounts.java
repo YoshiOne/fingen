@@ -283,8 +283,12 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
                     break;
             }
             MenuItem item = menu.findItem(R.id.action_show_report);
-            if (getActivity() != null && getActivity() instanceof ActivityMain) {
-                item.setVisible(((ActivityMain) getActivity()).mReportsPurchased);
+            if (item != null) {
+                if (getActivity() != null && getActivity() instanceof ActivityMain) {
+                    item.setVisible(((ActivityMain) getActivity()).mReportsPurchased);
+                } else {
+                    item.setVisible(false);
+                }
             }
         }
     }
