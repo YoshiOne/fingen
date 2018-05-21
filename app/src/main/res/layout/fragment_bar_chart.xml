@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<RelativeLayout
-    android:layout_width="match_parent"
+<android.support.constraint.ConstraintLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -12,9 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <com.github.clans.fab.FloatingActionButton
-        android:id="@+id/fab"
+    <LinearLayout
+        android:id="@+id/fabLayout"
         android:visibility="invisible"
-        android:src="@drawable/ic_list_white"
-        style="@style/FabStyle"/>
-</RelativeLayout>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/FabMenuRootButtonLayout">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:gravity="center_vertical"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_list_white" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

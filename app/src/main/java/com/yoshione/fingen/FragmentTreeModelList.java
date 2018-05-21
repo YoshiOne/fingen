@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,13 +17,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
 import com.yoshione.fingen.adapter.AdapterTreeModel;
 import com.yoshione.fingen.adapter.helper.OnStartDragListener;
 import com.yoshione.fingen.adapter.helper.SimpleItemTouchHelperCallback;
@@ -46,6 +46,7 @@ import com.yoshione.fingen.model.Location;
 import com.yoshione.fingen.model.Project;
 import com.yoshione.fingen.model.Sender;
 import com.yoshione.fingen.utils.BaseNode;
+import com.yoshione.fingen.utils.FabMenuController;
 import com.yoshione.fingen.widgets.ContextMenuRecyclerView;
 import com.yoshione.fingen.widgets.FgLinearLayoutManager;
 
@@ -69,8 +70,6 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
 
     @BindView(R.id.recycler_view)
     ContextMenuRecyclerView mRecyclerView;
-    @BindView(R.id.fabMenu)
-    FloatingActionMenu fabMenu;
 
     AdapterTreeModel adapter;
     @BindView(R.id.fabAddModel)
@@ -78,13 +77,25 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
     @BindView(R.id.fabAddNestedModel)
     FloatingActionButton fabAddNestedModel;
     Unbinder unbinder;
+    @BindView(R.id.fabBGLayout)
+    View mFabBGLayout;
+    @BindView(R.id.fabAddModelLayout)
+    LinearLayout mFabAddModelLayout;
+    @BindView(R.id.fabAddNestedModelLayout)
+    LinearLayout mFabAddNestedModelLayout;
+    @BindView(R.id.fabMenuButtonRoot)
+    FloatingActionButton mFabMenuButtonRoot;
+    @BindView(R.id.fabMenuButtonRootLayout)
+    LinearLayout mFabMenuButtonRootLayout;
     private ItemTouchHelper mItemTouchHelper;
     private String mFilter = "";
     private IAbstractModel mInputModel;
     private IAdapterEventsListener mAdapterEventsListener;
     private boolean mAddUndefined;
+    FabMenuController mFabMenuController;
 
     public static FragmentTreeModelList newInstance(IAbstractModel model, HashSet<Long> checkedIDs, int viewMode) {
+//        R.layout.fragment_tree_model_list
         FragmentTreeModelList frag = new FragmentTreeModelList();
         Bundle args = new Bundle();
         args.putParcelable("model", model);
@@ -118,20 +129,18 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
         unbinder = ButterKnife.bind(this, view);
 
         mInputModel = Objects.requireNonNull(getArguments()).getParcelable("model");
-
         FabMenuItemClickListener fabMenuItemClickListener = new FabMenuItemClickListener();
-        fabAddModel.setImageDrawable(Objects.requireNonNull(getActivity()).getDrawable(R.drawable.ic_category_white));
-        fabAddModel.setOnClickListener(fabMenuItemClickListener);
         switch (mInputModel.getModelType()) {
             case IAbstractModel.MODEL_TYPE_CABBAGE:
             case IAbstractModel.MODEL_TYPE_SENDER:
-                fabAddNestedModel.setVisibility(View.GONE);
+                mFabMenuButtonRoot.setOnClickListener(fabMenuItemClickListener);
                 break;
             default:
+                mFabMenuController = new FabMenuController(mFabMenuButtonRoot, mFabBGLayout, getActivity(), mFabAddNestedModelLayout, mFabAddModelLayout);
+                fabAddModel.setOnClickListener(fabMenuItemClickListener);
                 fabAddNestedModel.setImageDrawable(getActivity().getDrawable(R.drawable.ic_categories_white));
                 fabAddNestedModel.setOnClickListener(fabMenuItemClickListener);
         }
-        fabMenu.setClosedOnTouchOutside(true);
 
         adapter = new AdapterTreeModel(getActivity(), this, this);
         adapter.setmAdapterEventsListener(mAdapterEventsListener);
@@ -154,9 +163,9 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
                 super.onScrolled(recyclerView, dx, dy);
                 if (Math.abs(dy) > 4) {
                     if (dy > 0) {
-                        fabMenu.hideMenu(true);
+                        mFabMenuButtonRootLayout.setVisibility(View.GONE);
                     } else {
-                        fabMenu.showMenu(true);
+                        mFabMenuButtonRootLayout.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -335,7 +344,7 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
                             public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
                                 IAbstractModel model1 = dao.getModelById(model.getID());
                                 if (model.getClass().equals(Category.class)) {
-                                    ((Category)model1).setColor(selectedColor);
+                                    ((Category) model1).setColor(selectedColor);
                                     try {
                                         CategoriesDAO categoriesDAO1 = CategoriesDAO.getInstance(FragmentTreeModelList.this.getActivity());
                                         categoriesDAO1.createCategory((Category) model1, getActivity());
@@ -454,6 +463,7 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.fabAddModel:
+                case R.id.fabMenuButtonRoot:
                     switch (mInputModel.getModelType()) {
                         case IAbstractModel.MODEL_TYPE_CATEGORY:
                         case IAbstractModel.MODEL_TYPE_PAYEE:
@@ -507,7 +517,9 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
                     }
                     break;
             }
-            fabMenu.close(false);
+            if (mFabMenuController != null) {
+                mFabMenuController.closeFABMenu();
+            }
         }
     }
 

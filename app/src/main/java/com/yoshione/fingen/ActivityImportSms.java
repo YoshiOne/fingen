@@ -2,6 +2,8 @@ package com.yoshione.fingen;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,24 +12,22 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.daimajia.numberprogressbar.NumberProgressBar;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
-import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 import com.yoshione.fingen.dao.SendersDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IProgressEventsListener;
 import com.yoshione.fingen.model.Sender;
 import com.yoshione.fingen.utils.DateTimeFormatter;
-import com.yoshione.fingen.utils.IconGenerator;
 import com.yoshione.fingen.utils.RequestCodes;
 import com.yoshione.fingen.utils.SmsImporter;
 import com.yoshione.fingen.widgets.ToolbarActivity;
@@ -60,7 +60,7 @@ public class ActivityImportSms extends ToolbarActivity implements IProgressEvent
     private final static int HANDLER_OPERATION_COMPLETE = 3;
 
     @BindView(R.id.progressbar)
-    NumberProgressBar progressbar;
+    ProgressBar progressbar;
     @BindView(R.id.editTextSender)
     EditText editTextSender;
     @BindView(R.id.editTextStartDate)
@@ -83,7 +83,8 @@ public class ActivityImportSms extends ToolbarActivity implements IProgressEvent
     private Date mEndDate;
     private int mTimeType;
     private Sender mSender;
-    private static final NumberProgressBar[] progressbarArr = {null};
+    private static final ProgressBar[] progressbarArr = {null};
+    int dateType;
 
     @Override
     protected int getLayoutResourceId() {
@@ -166,29 +167,19 @@ public class ActivityImportSms extends ToolbarActivity implements IProgressEvent
                 break;
         }
         calendar.setTime(mStartDate);
-        DatePickerDialog dpd = DatePickerDialog.newInstance(
+        dateType = view.getId();
+        new DatePickerDialog(this,
                 this,
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
-        );
-        Bundle bundle = new Bundle();
-        bundle.putInt("id", view.getId());
-        dpd.setArguments(bundle);
-
-
-        int theme = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("theme", "0"));
-        dpd.setThemeDark(theme == ActivityMain.THEME_DARK);
-        dpd.vibrate(false);
-        dpd.dismissOnPause(false);
-        dpd.show(getFragmentManager(), "Datepickerdialog");
+        ).show();
     }
 
     @Override
-    public void onDateSet(DatePickerDialog datePickerDialog, int i, int i1, int i2) {
-        int id = datePickerDialog.getArguments().getInt("id");
+    public void onDateSet(DatePicker datePickerDialog, int i, int i1, int i2) {
         Calendar calendar = Calendar.getInstance();
-        switch (id) {
+        switch (dateType) {
             case R.id.editTextStartDate:
                 calendar.setTime(mStartDate);
                 calendar.set(i, i1, i2);
@@ -214,22 +205,17 @@ public class ActivityImportSms extends ToolbarActivity implements IProgressEvent
                 calendar.setTime(mEndDate);
                 break;
         }
-        TimePickerDialog tpd = TimePickerDialog.newInstance(
+        new TimePickerDialog(this,
                 this,
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE),
                 DateTimeFormatter.is24(this)
-        );
+        ).show();
         mTimeType = view.getId();
-        int theme = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("theme", "0"));
-        tpd.setThemeDark(theme == ActivityMain.THEME_DARK);
-        tpd.vibrate(false);
-        tpd.dismissOnPause(false);
-        tpd.show(getFragmentManager(), "Timepickerdialog");
     }
 
     @Override
-    public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         Calendar calendar = Calendar.getInstance();
         switch (mTimeType) {
             case R.id.editTextStartTime:

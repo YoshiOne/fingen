@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:sothree="http://schemas.android.com/apk/res-auto"
     android:id="@+id/sliding_layout"
     android:layout_width="match_parent"
@@ -30,46 +30,106 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/p_f_d" />
 
-        <com.github.clans.fab.FloatingActionMenu
-            android:id="@+id/fabMenu"
-            style="@style/FabMenuStyle">
+        <View
+            android:id="@+id/fabBGLayout"
+            style="@style/FabMenuBackground" />
 
-            <com.github.clans.fab.FloatingActionButton
+        <LinearLayout
+            android:id="@+id/fabAddModelLayout"
+            style="@style/FabMenuButtonChildLayout"
+            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
+            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
+            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/act_add_category" />
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fabAddModel"
-                style="@style/FabMenuButtonsStyle"
+                style="@style/FabMenuButtonChild"
+                app:srcCompat="@drawable/ic_category_white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fabAddDebtLayout"
+            style="@style/FabMenuButtonChildLayout"
+            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
+            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
+            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                fab:fab_label="@string/act_add_category" />
-
-            <com.github.clans.fab.FloatingActionButton
+                android:text="@string/act_add_credit" />
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fabAddDebt"
-                style="@style/FabMenuButtonsStyle"
+                style="@style/FabMenuButtonChild"
+                app:srcCompat="@drawable/ic_debt_white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fabCopyBudgetLayout"
+            style="@style/FabMenuButtonChildLayout"
+            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
+            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
+            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                fab:fab_label="@string/act_add_credit" />
-
-            <com.github.clans.fab.FloatingActionButton
+                android:text="@string/act_copy_budget" />
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fabCopyBudget"
-                style="@style/FabMenuButtonsStyle"
+                style="@style/FabMenuButtonChild"
+                app:srcCompat="@drawable/ic_copy_white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fabCreateFromFactLayout"
+            style="@style/FabMenuButtonChildLayout"
+            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
+            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
+            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                fab:fab_label="@string/act_copy_budget" />
-
-            <com.github.clans.fab.FloatingActionButton
+                android:text="@string/act_create_from_fact" />
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fabCreateFromFact"
-                style="@style/FabMenuButtonsStyle"
+                style="@style/FabMenuButtonChild"
+                app:srcCompat="@drawable/ic_create_budget_from_fact_white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fabClearBudgetLayout"
+            style="@style/FabMenuButtonChildLayout"
+            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
+            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
+            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                fab:fab_label="@string/act_create_from_fact" />
-
-            <com.github.clans.fab.FloatingActionButton
+                android:text="@string/act_clear_budget" />
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fabClearBudget"
-                style="@style/FabMenuButtonsStyle"
+                style="@style/FabMenuButtonChild"
+                app:srcCompat="@drawable/ic_trash_white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fabMenuButtonRootLayout"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:visibility="visible"
+            style="@style/FabMenuRootButtonLayout">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabMenuButtonRoot"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                fab:fab_label="@string/act_clear_budget" />
-
-        </com.github.clans.fab.FloatingActionMenu>
+                android:layout_gravity="bottom|end"
+                android:gravity="center_vertical"
+                app:fabSize="normal"
+                app:srcCompat="@drawable/ic_menu_white" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/imageViewPullMe"

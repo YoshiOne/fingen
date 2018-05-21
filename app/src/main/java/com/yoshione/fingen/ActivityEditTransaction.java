@@ -3,6 +3,8 @@ package com.yoshione.fingen;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -39,6 +41,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -46,11 +49,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
-import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 import com.yoshione.fingen.adapter.AdapterProducts;
 import com.yoshione.fingen.dao.AccountsDAO;
 import com.yoshione.fingen.dao.CategoriesDAO;
@@ -120,7 +122,6 @@ import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_SELECT_MODEL;
 import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_TUNE_EDITOR;
-
 
 /**
  * Created by slv on 20.08.2015.
@@ -1778,35 +1779,26 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     public void onDateClick(View view) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(transaction.getDateTime());
-        DatePickerDialog dpd = DatePickerDialog.newInstance(
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(transaction.getDateTime());
-                        calendar.set(year, monthOfYear, dayOfMonth);
-                        transaction.setDateTime(calendar.getTime());
-                        initDateTimeButtons();
-                    }
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-        );
-        int theme = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("theme", "0"));
-        dpd.setThemeDark(theme == ActivityMain.THEME_DARK);
-        dpd.vibrate(false);
-        dpd.dismissOnPause(false);
-        dpd.show(getFragmentManager(), "Datepickerdialog");
+        new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(transaction.getDateTime());
+                calendar.set(year, monthOfYear, dayOfMonth);
+                transaction.setDateTime(calendar.getTime());
+                initDateTimeButtons();
+            }
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+        .show();
     }
 
     public void onTimeClick(View view) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(transaction.getDateTime());
-        TimePickerDialog tpd = TimePickerDialog.newInstance(
+        new TimePickerDialog(this,
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
-                    public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
+                    public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTime(transaction.getDateTime());
                         calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), hourOfDay, minute);
@@ -1817,12 +1809,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE),
                 DateTimeFormatter.is24(this)
-        );
-        int theme = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("theme", "0"));
-        tpd.setThemeDark(theme == ActivityMain.THEME_DARK);
-        tpd.vibrate(false);
-        tpd.dismissOnPause(false);
-        tpd.show(getFragmentManager(), "Timepickerdialog");
+        ).show();
     }
     //</editor-fold>
 

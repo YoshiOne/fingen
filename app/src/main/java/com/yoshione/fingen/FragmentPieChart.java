@@ -7,21 +7,21 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.github.clans.fab.FloatingActionButton;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.formatter.DefaultValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
@@ -61,11 +61,14 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
     TextView mTextViewSelected;
     @BindView(R.id.imageViewColor)
     ImageView mImageViewColor;
+    @BindView(R.id.fabLayout)
+    LinearLayout mFabLayout;
     private FgLargeValuesFormatter largeValuesFormatter;
     private NormalValuesFormatter mormalValuesFormatter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+//        R.layout.fragment_pie_chart
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -306,7 +309,7 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
 
         if (animate) {
             mPieChart.animateY(1000, Easing.EasingOption.EaseInOutQuad);
-            mFab.hide(false);
+            mFabLayout.setVisibility(View.GONE);
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -320,9 +323,9 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
         } else {
             mPieChart.invalidate();
             if (mPieChart.getHighlighted() == null) {
-                mFab.hide(false);
+                mFabLayout.setVisibility(View.GONE);
             } else {
-                mFab.show(false);
+                mFabLayout.setVisibility(View.VISIBLE);
             }
         }
 
@@ -331,12 +334,12 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
     @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         ReportBuilder reportBuilder = ReportBuilder.getInstance(getActivity());
-                IAbstractModel model = (IAbstractModel) e.getData();
-                if (AbstractModelManager.getAllChildren(model, getActivity()).size() > 0) {
-                    reportBuilder.setParentID(model.getID());
-                    updateChart(true);
-                    return;
-                }
+        IAbstractModel model = (IAbstractModel) e.getData();
+        if (AbstractModelManager.getAllChildren(model, getActivity()).size() > 0) {
+            reportBuilder.setParentID(model.getID());
+            updateChart(true);
+            return;
+        }
         CabbageFormatter cabbageFormatter = null;
         try {
             cabbageFormatter = new CabbageFormatter(reportBuilder.getActiveCabbage());
@@ -350,14 +353,14 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
         bgShape.setColor(dataSet.getColor(dataSet.getEntryIndex(e)));
         mTextViewSelected.setText(s);
 
-        mFab.show(true);
+        mFabLayout.setVisibility(View.VISIBLE);
         mImageViewColor.setVisibility(View.VISIBLE);
         mTextViewSelected.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onNothingSelected() {
-        mFab.hide(true);
+        mFabLayout.setVisibility(View.GONE);
         mImageViewColor.setVisibility(View.INVISIBLE);
         mTextViewSelected.setVisibility(View.INVISIBLE);
     }

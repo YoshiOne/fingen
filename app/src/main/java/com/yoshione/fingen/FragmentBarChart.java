@@ -2,15 +2,16 @@ package com.yoshione.fingen;
 
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.github.clans.fab.FloatingActionButton;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -51,6 +52,8 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
     Unbinder unbinder;
     @BindView(R.id.fab)
     FloatingActionButton mFab;
+    @BindView(R.id.fabLayout)
+    LinearLayout mFabLayout;
 
     private FgLargeValuesFormatter largeValuesFormatter;
     private NormalValuesFormatter mormalValuesFormatter;
@@ -314,9 +317,9 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
         mBarChart.highlightValues(null);
 
         if (mBarChart.getHighlighted() == null) {
-            mFab.hide(false);
+            mFabLayout.setVisibility(View.GONE);
         } else {
-            mFab.show(false);
+            mFabLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -337,12 +340,12 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
         }
         String s = String.format("%s %s", e.getData().toString(), cabbageFormatter.format(new BigDecimal(e.getVal())));
         Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
-        mFab.show(true);
+        mFabLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onNothingSelected() {
-        mFab.hide(true);
+        mFabLayout.setVisibility(View.GONE);
     }
 
 }

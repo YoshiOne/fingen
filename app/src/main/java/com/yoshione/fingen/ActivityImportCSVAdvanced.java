@@ -24,10 +24,10 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.yoshione.fingen.adapter.AdapterColumnIndex;
 import com.yoshione.fingen.interfaces.IProgressEventsListener;
@@ -60,12 +60,12 @@ public class ActivityImportCSVAdvanced extends ToolbarActivity implements IProgr
     private final static int HANDLER_OPERATION_SHOW = 1;
     private final static int HANDLER_OPERATION_UPDATE = 2;
     private final static int HANDLER_OPERATION_TOAST = 3;
-    private static final NumberProgressBar[] numberProgressBarArr = new NumberProgressBar[]{null};
+    private static final ProgressBar[] ProgressBarArr = new ProgressBar[]{null};
     private static final Activity[] activityArr = new Activity[]{null};
     @BindView(R.id.editTextFileName)
     EditText editTextFileName;
     @BindView(R.id.progressbar)
-    NumberProgressBar progressbar;
+    ProgressBar progressbar;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
     @BindView(R.id.textView3)
@@ -98,7 +98,7 @@ public class ActivityImportCSVAdvanced extends ToolbarActivity implements IProgr
         progressbar.setProgress(0);
         mCurrentProgress = 0;
         handler = new UpdateProgressHandler();
-        numberProgressBarArr[0] = progressbar;
+        ProgressBarArr[0] = progressbar;
         activityArr[0] = this;
 
         editTextFileName.setInputType(InputType.TYPE_NULL);
@@ -322,10 +322,10 @@ public class ActivityImportCSVAdvanced extends ToolbarActivity implements IProgr
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case HANDLER_OPERATION_SHOW:
-                    numberProgressBarArr[0].setVisibility(View.VISIBLE);
+                    ProgressBarArr[0].setVisibility(View.VISIBLE);
                     break;
                 case HANDLER_OPERATION_UPDATE:
-                    numberProgressBarArr[0].setProgress(msg.arg1);
+                    ProgressBarArr[0].setProgress(msg.arg1);
                     break;
                 case HANDLER_OPERATION_HIDE:
                     break;

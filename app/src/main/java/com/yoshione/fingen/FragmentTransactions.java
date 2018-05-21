@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,8 +39,6 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.yoshione.fingen.adapter.AdapterFilters;
 import com.yoshione.fingen.adapter.AdapterTransactions;
@@ -68,6 +67,7 @@ import com.yoshione.fingen.model.BaseModel;
 import com.yoshione.fingen.model.StringIntItem;
 import com.yoshione.fingen.model.Template;
 import com.yoshione.fingen.model.Transaction;
+import com.yoshione.fingen.utils.FabMenuController;
 import com.yoshione.fingen.utils.PrefUtils;
 import com.yoshione.fingen.utils.RequestCodes;
 import com.yoshione.fingen.utils.ScreenUtils;
@@ -81,6 +81,8 @@ import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import ca.barrenechea.widget.recyclerview.decoration.StickyHeaderDecoration;
 
 import static android.app.Activity.RESULT_OK;
@@ -106,8 +108,6 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     SwitchCompat switchAllFilters;
     @BindView(R.id.recycler_view_filters)
     ContextMenuRecyclerView recyclerViewFilters;
-    @BindView(R.id.fabMenuSelection)
-    FloatingActionMenu fabMenuSelection;
     @BindView(R.id.fabGoTop)
     FloatingActionButton mFabGoTop;
     @BindView(R.id.fabSelectAll)
@@ -145,12 +145,30 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     @BindView(R.id.buttonClearfilters)
     Button mButtonClearFilters;
     boolean isNewVersion = false;
+    @BindView(R.id.fabSelectAllLayout)
+    LinearLayout mFabSelectAllLayout;
+    @BindView(R.id.fabUnselectAllLayout)
+    LinearLayout mFabUnselectAllLayout;
+    @BindView(R.id.fabEditSelectedLayout)
+    LinearLayout mFabEditSelectedLayout;
+    @BindView(R.id.fabExportSelectedLayout)
+    LinearLayout mFabExportSelectedLayout;
+    @BindView(R.id.fabDeleteSelectedLayout)
+    LinearLayout mFabDeleteSelectedLayout;
+    @BindView(R.id.fabMenuButtonRoot)
+    FloatingActionButton mFabMenuButtonRoot;
+    @BindView(R.id.fabMenuButtonRootLayout)
+    LinearLayout mFabMenuButtonRootLayout;
+    Unbinder unbinder;
+    @BindView(R.id.fabBGLayout)
+    View mFabBGLayout;
     private AdapterTransactions adapter;
     private int contextMenuTarget = -1;
     private boolean isInSelectionMode;
     private TransactionsDAO mTransactionsDAO;
     private StickyHeaderDecoration stickyHeaderDecoration;
     private boolean mSumsLoaded;
+    FabMenuController mFabMenuController;
 
     public static FragmentTransactions newInstance(String forceUpdateParam, int layoutID) {
         FragmentTransactions fragment = new FragmentTransactions();
@@ -293,6 +311,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             });
         }
 
+        unbinder = ButterKnife.bind(this, view);
         return view;
     }
 
@@ -302,7 +321,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         registerForContextMenu(recyclerViewFilters);
 
         initFabMenu();
-        mTextViewSelectedCount.setVisibility(isInSelectionMode? View.VISIBLE : View.GONE);
+        mTextViewSelectedCount.setVisibility(isInSelectionMode ? View.VISIBLE : View.GONE);
 
     }
 
@@ -317,11 +336,9 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     }
 
     private void initFabMenu() {
-        if (getActivity() != null) {
-            mFabGoTop.setImageDrawable(getActivity().getDrawable(R.drawable.ic_arrow_up_white));
-            fabMenuSelection.getMenuIconView().setImageDrawable(getActivity().getDrawable(R.drawable.ic_check_circle_white));
-        }
-        fabMenuSelection.hideMenu(false);
+        mFabMenuController = new FabMenuController(mFabMenuButtonRoot, mFabBGLayout, getActivity(),
+                mFabDeleteSelectedLayout, mFabExportSelectedLayout, mFabEditSelectedLayout, mFabUnselectAllLayout, mFabSelectAllLayout);
+        mFabMenuButtonRootLayout.setVisibility(View.GONE);
         isInSelectionMode = false;
 
         FabMenuSelectionItemClickListener fabMenuSelectionItemClickListener = new FabMenuSelectionItemClickListener();
@@ -341,8 +358,6 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             }
         });
 
-        fabMenuSelection.setClosedOnTouchOutside(true);
-
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -351,10 +366,10 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 LinearLayoutManager layoutManager = ((LinearLayoutManager) recyclerView.getLayoutManager());
                 int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
                 if (firstVisiblePosition < 10) {
-                    mFabGoTop.hide(true);
+                    mFabGoTop.setVisibility(View.GONE);
                 } else {
                     if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("show_tr_go_top_button", true)) {
-                        mFabGoTop.show(true);
+                        mFabGoTop.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -454,7 +469,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                     case IAbstractModel.MODEL_TYPE_DEPARTMENT:
                     case IAbstractModel.MODEL_TYPE_SIMPLEDEBT:
                         try {
-                            TransactionsDAO.getInstance(getActivity()).bulkUpdateEntity(data.getStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS),model, true);
+                            TransactionsDAO.getInstance(getActivity()).bulkUpdateEntity(data.getStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS), model, true);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -519,13 +534,13 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    fabMenuSelection.showMenu(true);
+                    mFabMenuButtonRootLayout.setVisibility(View.VISIBLE);
                 }
             }, 200);
             mTextViewSelectedCount.setVisibility(View.VISIBLE);
-            mTextViewSelectedCount.setText(String.format("%d %s", selectedCount,getString(R.string.ttl_selected)));
+            mTextViewSelectedCount.setText(String.format("%d %s", selectedCount, getString(R.string.ttl_selected)));
         } else {
-            fabMenuSelection.hideMenu(true);
+            mFabMenuButtonRootLayout.setVisibility(View.GONE);
             mTextViewSelectedCount.setVisibility(View.GONE);
             mTextViewSelectedCount.setText("");
         }
@@ -1071,6 +1086,12 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         adapter.setLoaded();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
     private class FabMenuSelectionItemClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -1171,7 +1192,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                     break;
                 }
             }
-            fabMenuSelection.close(true);
+            mFabMenuController.closeFABMenu();
         }
     }
 

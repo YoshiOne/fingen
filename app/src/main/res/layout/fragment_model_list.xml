@@ -1,57 +1,120 @@
-<RelativeLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="com.yoshione.fingen.ActivitySmsList">
 
-        <com.yoshione.fingen.widgets.ContextMenuRecyclerView
-            android:id="@+id/recycler_view"
-            style="@style/FastScrollRecyclerVew"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+    <com.yoshione.fingen.widgets.ContextMenuRecyclerView
+        android:id="@+id/recycler_view"
+        style="@style/FastScrollRecyclerVew"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
+    <View
+        android:id="@+id/fabBGLayout"
+        style="@style/FabMenuBackground" />
 
-    <com.github.clans.fab.FloatingActionButton
-        android:id="@+id/fab"
-        style="@style/FabStyle"/>
-
-    <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/fabMenu"
-        style="@style/FabMenuStyle"
-        fab:menu_fab_label="@string/act_create_marker">
-
-        <com.github.clans.fab.FloatingActionButton
+    <LinearLayout
+        android:id="@+id/buttonAddAccountMarkerLayout"
+        style="@style/FabMenuButtonChildLayout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintTop_toTopOf="@+id/fabMenuButtonRootLayout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ent_account" />
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/buttonAddAccountMarker"
-            style="@style/FabMenuButtonsStyle"
-            android:src="@drawable/ic_account_white"
-            fab:fab_label="@string/ent_account" />
+            style="@style/FabMenuButtonChild"
+            app:srcCompat="@drawable/ic_account_white" />
+    </LinearLayout>
 
-        <com.github.clans.fab.FloatingActionButton
+    <LinearLayout
+        android:id="@+id/buttonAddCabbageMarkerLayout"
+        style="@style/FabMenuButtonChildLayout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintTop_toTopOf="@+id/fabMenuButtonRootLayout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ent_currency" />
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/buttonAddCabbageMarker"
-            style="@style/FabMenuButtonsStyle"
-            android:src="@drawable/ic_currencies_white"
-            fab:fab_label="@string/ent_currency" />
+            style="@style/FabMenuButtonChild"
+            app:srcCompat="@drawable/ic_currencies_white" />
+    </LinearLayout>
 
-        <com.github.clans.fab.FloatingActionButton
+    <LinearLayout
+        android:id="@+id/buttonAddTrTypeMarkerLayout"
+        style="@style/FabMenuButtonChildLayout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintTop_toTopOf="@+id/fabMenuButtonRootLayout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ent_type" />
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/buttonAddTrTypeMarker"
-            style="@style/FabMenuButtonsStyle"
-            android:src="@drawable/ic_transfer_white"
-            fab:fab_label="@string/ent_type" />
+            style="@style/FabMenuButtonChild"
+            app:srcCompat="@drawable/ic_transfer_white" />
+    </LinearLayout>
 
-        <com.github.clans.fab.FloatingActionButton
+    <LinearLayout
+        android:id="@+id/buttonAddPayeeMarkerLayout"
+        style="@style/FabMenuButtonChildLayout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintTop_toTopOf="@+id/fabMenuButtonRootLayout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ent_payee" />
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/buttonAddPayeeMarker"
-            style="@style/FabMenuButtonsStyle"
-            android:src="@drawable/ic_payes_white"
-            fab:fab_label="@string/ent_payee" />
+            style="@style/FabMenuButtonChild"
+            app:srcCompat="@drawable/ic_payes_white" />
+    </LinearLayout>
 
-        <com.github.clans.fab.FloatingActionButton
+    <LinearLayout
+        android:id="@+id/buttonAddIgnoreMarkerLayout"
+        style="@style/FabMenuButtonChildLayout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintTop_toTopOf="@+id/fabMenuButtonRootLayout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ent_skip" />
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/buttonAddIgnoreMarker"
-            style="@style/FabMenuButtonsStyle"
-            android:src="@drawable/ic_block_white"
-            fab:fab_label="@string/ent_skip" />
-    </com.github.clans.fab.FloatingActionMenu>
+            style="@style/FabMenuButtonChild"
+            app:srcCompat="@drawable/ic_block_white" />
+    </LinearLayout>
 
-</RelativeLayout>
+    <LinearLayout
+        android:id="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/FabMenuRootButtonLayout">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabMenuButtonRoot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:gravity="center_vertical"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_add_white" />
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

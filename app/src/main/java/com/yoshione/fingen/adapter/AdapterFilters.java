@@ -6,6 +6,7 @@ package com.yoshione.fingen.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -22,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
@@ -30,7 +32,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.yoshione.fingen.ActivityMain;
 import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.FragmentDateFilterEdit;
@@ -598,6 +599,7 @@ public class AdapterFilters extends RecyclerView.Adapter {
         EditText buttonEndDate;
         @BindView(R.id.button_more)
         ImageButton buttonMore;
+        int dateType;
 
         DateRangeFilterViewHolder(View v) {
             super(v);
@@ -646,10 +648,10 @@ public class AdapterFilters extends RecyclerView.Adapter {
         }
 
         @Override
-        public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(((DateRangeFilter) getFilter()).getmStartDate());
-            switch (view.getArguments().getInt("DateType")) {
+            switch (dateType) {
                 case 0:
                     calendar.set(year, monthOfYear, dayOfMonth, 0, 0, 0);
                     ((DateRangeFilter) getFilter()).setmStartDate(calendar.getTime());
@@ -685,19 +687,13 @@ public class AdapterFilters extends RecyclerView.Adapter {
                         break;
                 }
 
-                com.wdullaer.materialdatetimepicker.date.DatePickerDialog dpd = com.wdullaer.materialdatetimepicker.date.DatePickerDialog.newInstance(
+                DatePickerDialog dpd = new DatePickerDialog(mActivity,
                         vh,
                         calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
                 );
-                int theme = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(mActivity).getString("theme", "0"));
-                dpd.setThemeDark(theme == ActivityMain.THEME_DARK);
-                dpd.vibrate(false);
-                dpd.dismissOnPause(false);
-                Bundle args = new Bundle();
-                args.putInt("DateType", id);
-                dpd.setArguments(args);
+                dateType = id;
 
-                dpd.show(mActivity.getFragmentManager(), "Datepickerdialog");
+                dpd.show();
             }
         }
 

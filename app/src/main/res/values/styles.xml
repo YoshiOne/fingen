@@ -8,6 +8,7 @@
     <style name="AppThemeLight" parent="MaterialDrawerTheme.Light">
         <item name="android:windowBackground">@color/lightGrayBackground</item>
         <item name="windowBackground">@color/lightGrayBackground</item>
+        <item name="windowBackgroundInverse">@color/fg_black_color</item>
         <item name="listItemBackground">@color/fg_white_color</item>
         <item name="listDividerBackground">@color/lightGrayBackground</item>
         <item name="windowActionBar">false</item>
@@ -20,6 +21,7 @@
         <item name="android:textColor">@color/fg_black_color</item>
         <item name="android:textColorSecondary">@color/lightColorSecondaryText</item>
         <item name="android:textColorPrimary">@color/lightColorPrimaryText</item>
+        <item name="textColorInverse">@color/fg_white_color</item>
 
         <item name="alertDialogTheme">@style/AppTheme.Dialog.Light</item>
         <item name="dialogTheme">@style/AppTheme.Dialog.Light</item>
@@ -45,6 +47,7 @@
     <style name="AppThemeDark" parent="MaterialDrawerTheme">
         <item name="android:windowBackground">@color/fg_black_color</item>
         <item name="windowBackground">@color/fg_black_color</item>
+        <item name="windowBackgroundInverse">@color/lightGrayBackground</item>
         <item name="listItemBackground">@color/darkGrayBackground</item>
         <item name="listDividerBackground">@color/fg_black_color</item>
         <item name="windowNoTitle">true</item>
@@ -56,6 +59,7 @@
         <item name="android:textColor">@color/fg_white_color</item>
         <item name="android:textColorSecondary">@color/darkColorSecondaryText</item>
         <item name="android:textColorPrimary">@color/darkColorPrimaryText</item>
+        <item name="textColorInverse">@color/fg_black_color</item>
 
         <item name="alertDialogTheme">@style/AppTheme.Dialog.Dark</item>
         <item name="dialogTheme">@style/AppTheme.Dialog.Dark</item>
@@ -129,54 +133,6 @@
 
     <style name="ColoredButton" parent="Widget.AppCompat.ImageButton">
         <item name="colorButtonNormal">@color/ColorAccent</item>
-    </style>
-
-    <style name="FabMenuButtonsStyle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="fab_size">mini</item>
-        <item name="fab_showAnimation">@anim/jump_from_down</item>
-        <item name="fab_hideAnimation">@anim/jump_to_down</item>
-        <item name="fab_shadowColor">#444</item>
-        <item name="fab_colorNormal">@color/blue_color</item>
-        <item name="fab_colorPressed">@color/blue_color</item>
-        <item name="fab_colorRipple">@color/color_ripple</item>
-        <item name="android:scaleType">centerInside</item>
-    </style>
-
-    <style name="FabMenuStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:layout_alignParentEnd">true</item>
-        <item name="android:layout_alignParentRight">true</item>
-        <item name="android:paddingBottom">@dimen/fab_margin</item>
-        <item name="android:paddingLeft">@dimen/fab_margin</item>
-        <item name="android:paddingRight">@dimen/fab_margin</item>
-        <item name="menu_backgroundColor">#ccffffff</item>
-        <item name="menu_colorNormal">@color/blue_color</item>
-        <item name="menu_colorPressed">@color/blue_color</item>
-        <item name="menu_colorRipple">@color/color_ripple</item>
-        <item name="menu_labels_ellipsize">end</item>
-        <item name="menu_labels_singleLine">true</item>
-        <item name="menu_fab_show_animation">@anim/jump_from_down</item>
-        <item name="menu_fab_hide_animation">@anim/jump_to_down</item>
-    </style>
-
-    <style name="FabStyle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:layout_alignParentRight">true</item>
-        <item name="android:layout_alignParentEnd">true</item>
-        <item name="android:layout_marginBottom">@dimen/fab_margin</item>
-        <item name="android:layout_marginRight">@dimen/fab_margin</item>
-        <item name="fab_shadowColor">#444</item>
-        <item name="fab_colorNormal">@color/ColorAccent</item>
-        <item name="fab_colorPressed">@color/ColorAccent</item>
-        <item name="fab_colorRipple">@color/color_ripple</item>
-        <item name="fab_showAnimation">@anim/jump_from_down</item>
-        <item name="fab_hideAnimation">@anim/jump_to_down</item>
     </style>
 
     <style name="ActivitySettingsTheme" parent="AppTheme">
@@ -327,5 +283,48 @@
         <item name="android:inputType">number</item>
         <item name="android:textSize">10sp</item>
         <item name="android:selectAllOnFocus">true</item>
+    </style>
+
+    <style name="FabMenuButtonChild">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:tint">@android:color/white</item>
+        <item name="fabSize">mini</item>
+    </style>
+
+    <style name="FabMenuButtonChildLayout">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">?textColorInverse</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="FabMenuBackground">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">?windowBackground</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="FabMenuRootButtonLayout">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">32dp</item>
+        <item name="android:layout_marginEnd">32dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:visibility">visible</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:clipToPadding">false</item>
+    </style>
+
+    <style name="Widget.ProgressBar.Horizontal.Thin" parent="Widget.AppCompat.ProgressBar.Horizontal" >
+        <item name="android:minHeight">3dp</item>
+        <item name="android:maxHeight">3dp</item>
+        <item name="android:progressDrawable">@drawable/progress_horizontal</item>
     </style>
 </resources>

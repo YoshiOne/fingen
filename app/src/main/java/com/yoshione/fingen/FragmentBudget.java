@@ -1,7 +1,6 @@
 package com.yoshione.fingen;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Animatable;
@@ -10,28 +9,24 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.Toast;
 
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
-import android.util.Log;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.yoshione.fingen.adapter.AdapterBudget;
 import com.yoshione.fingen.classes.ListSumsByCabbage;
@@ -58,11 +53,9 @@ import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.model.Category;
 import com.yoshione.fingen.model.Credit;
 import com.yoshione.fingen.utils.CNode;
-import com.yoshione.fingen.utils.IconGenerator;
+import com.yoshione.fingen.utils.FabMenuController;
 import com.yoshione.fingen.utils.RequestCodes;
-import com.yoshione.fingen.utils.ScreenUtils;
 import com.yoshione.fingen.widgets.ContextMenuRecyclerView;
-import com.yoshione.fingen.widgets.ToolbarActivity;
 
 import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
@@ -90,8 +83,6 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
     RecyclerView recyclerViewSummary;
     @BindView(R.id.layoutSummaryTable)
     TableLayout layoutSumTable;
-//    @BindView(R.id.imageViewFilterSumIcon)
-//    ImageView imageViewFilterSumIcon;
     @BindView(R.id.fabAddModel)
     FloatingActionButton fabAddCategory;
     @BindView(R.id.fabAddDebt)
@@ -102,12 +93,26 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
     FloatingActionButton fabCreateFromFact;
     @BindView(R.id.fabClearBudget)
     FloatingActionButton fabClearBudget;
-    @BindView(R.id.fabMenu)
-    FloatingActionMenu fabMenu;
     @BindView(R.id.sliding_layout)
     SlidingUpPanelLayout mSlidingUpPanelLayout;
     @BindView(R.id.imageViewPullMe)
     ImageView mImageViewPullMe;
+    @BindView(R.id.fabBGLayout)
+    View mFabBGLayout;
+    @BindView(R.id.fabAddModelLayout)
+    LinearLayout mFabAddModelLayout;
+    @BindView(R.id.fabAddDebtLayout)
+    LinearLayout mFabAddDebtLayout;
+    @BindView(R.id.fabCopyBudgetLayout)
+    LinearLayout mFabCopyBudgetLayout;
+    @BindView(R.id.fabCreateFromFactLayout)
+    LinearLayout mFabCreateFromFactLayout;
+    @BindView(R.id.fabClearBudgetLayout)
+    LinearLayout mFabClearBudgetLayout;
+    @BindView(R.id.fabMenuButtonRoot)
+    FloatingActionButton mFabMenuButtonRoot;
+    @BindView(R.id.fabMenuButtonRootLayout)
+    LinearLayout mFabMenuButtonRootLayout;
     private AdapterBudget adapterSummary;
     private ListSumsByCabbage ioSums;
     private boolean isIoSumsLoaded;
@@ -116,9 +121,10 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
     private int mYear;
     private int mMonth;
     private Unbinder unbinder;
-//    private static final AdapterBudget[] adapterBudgetArr = new AdapterBudget[]{null, null};
+    FabMenuController mFabMenuController;
 
     public static FragmentBudget newInstance(int year, int month) {
+//        R.layout.fragment_budget;
         FragmentBudget frag = new FragmentBudget();
         Bundle args = new Bundle();
         args.putInt("year", year);
@@ -213,13 +219,8 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
     }
 
     private void initFabMenu() {
-        Context context = getActivity();
-        fabMenu.getMenuIconView().setImageDrawable(getActivity().getDrawable(R.drawable.ic_menu_white));
-        fabAddCategory.setImageDrawable(context.getDrawable(R.drawable.ic_category_white));
-        fabAddDebt.setImageDrawable(getActivity().getDrawable(R.drawable.ic_debt_white));
-        fabCopyBudget.setImageDrawable(getActivity().getDrawable(R.drawable.ic_copy_white));
-        fabCreateFromFact.setImageDrawable(getActivity().getDrawable(R.drawable.ic_create_budget_from_fact_white));
-        fabClearBudget.setImageDrawable(getActivity().getDrawable(R.drawable.ic_trash_white));
+        mFabMenuController = new FabMenuController(mFabMenuButtonRoot, mFabBGLayout, getActivity(),
+                mFabClearBudgetLayout, mFabCreateFromFactLayout, mFabCopyBudgetLayout, mFabAddDebtLayout, mFabAddModelLayout);
 
         FabMenuItemClickListener fabMenuItemClickListener = new FabMenuItemClickListener();
         fabAddCategory.setOnClickListener(fabMenuItemClickListener);
@@ -228,17 +229,15 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
         fabCreateFromFact.setOnClickListener(fabMenuItemClickListener);
         fabClearBudget.setOnClickListener(fabMenuItemClickListener);
 
-        fabMenu.setClosedOnTouchOutside(true);
-
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (Math.abs(dy) > 4) {
                     if (dy > 0) {
-                        fabMenu.hideMenu(true);
+                        mFabMenuButtonRootLayout.setVisibility(View.GONE);
                     } else {
-                        fabMenu.showMenu(true);
+                        mFabMenuButtonRootLayout.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -758,7 +757,7 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
                     builder.show();
                     break;
             }
-            fabMenu.close(false);
+            mFabMenuController.closeFABMenu();
         }
     }
 

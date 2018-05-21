@@ -716,8 +716,8 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
         } else if (fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentTransactions.class) & (mSlidingUpTransactions != null &&
                 (mSlidingUpTransactions.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || mSlidingUpTransactions.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED))) {
             mSlidingUpTransactions.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-        } else if (fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentTransactions.class) && fragmentTransactions.fabMenuSelection != null && fragmentTransactions.fabMenuSelection.isOpened()) {
-            fragmentTransactions.fabMenuSelection.close(true);
+        } else if (fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentTransactions.class) && fragmentTransactions.mFabMenuController.isFABOpen()) {
+            fragmentTransactions.mFabMenuController.closeFABMenu();
         } else if (fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentTransactions.class) && fragmentTransactions.mCardViewSearch != null && fragmentTransactions.mCardViewSearch.getVisibility() == View.VISIBLE) {
             fragmentTransactions.hideSearchView();
         } else if (fragmentAccounts != null && fragmentAccounts.adapter != null && fragmentAccounts.adapter.ismDragMode()) {

@@ -19,12 +19,12 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.daimajia.numberprogressbar.NumberProgressBar
+        <ProgressBar
             android:id="@+id/progressbar"
+            style="@style/Widget.ProgressBar.Horizontal.Thin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
-            app:progress_reached_color="@color/ColorAccent"/>
+            android:visibility="invisible" />
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/textInputLayoutDir"

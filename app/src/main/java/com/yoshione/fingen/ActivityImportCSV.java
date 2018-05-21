@@ -17,9 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.github.angads25.filepicker.model.DialogConfigs;
 
 import android.util.Log;
@@ -48,12 +48,12 @@ public class ActivityImportCSV extends ToolbarActivity implements IProgressEvent
     private final static int HANDLER_OPERATION_SHOW = 1;
     private final static int HANDLER_OPERATION_UPDATE = 2;
     private final static int HANDLER_OPERATION_TOAST = 3;
-    private static final NumberProgressBar[] numberProgressBarArr = new NumberProgressBar[]{null};
+    private static final ProgressBar[] numberProgressBarArr = new ProgressBar[]{null};
     private static final Activity[] activityArr = new Activity[]{null};
     @BindView(R.id.editTextFileName)
     EditText editTextFileName;
     @BindView(R.id.progressbar)
-    NumberProgressBar progressbar;
+    ProgressBar progressbar;
     @BindView(R.id.switchCompatSkipDuplicates)
     SwitchCompat mSwitchCompatSkipDuplicates;
     UpdateProgressHandler handler;

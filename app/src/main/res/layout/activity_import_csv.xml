@@ -13,12 +13,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <com.daimajia.numberprogressbar.NumberProgressBar
+    <ProgressBar
         android:id="@+id/progressbar"
+        style="@style/Widget.ProgressBar.Horizontal.Thin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
-        app:progress_reached_color="@color/ColorAccent"/>
+        android:visibility="invisible" />
 
     <include
         layout="@layout/widget_file_selector"

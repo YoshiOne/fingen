@@ -2,6 +2,7 @@ package com.yoshione.fingen;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
@@ -9,8 +10,8 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
-import com.github.clans.fab.FloatingActionButton;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -57,6 +58,8 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
     Unbinder unbinder;
     @BindView(R.id.fab)
     FloatingActionButton mFab;
+    @BindView(R.id.fabLayout)
+    LinearLayout mFabLayout;
     private FgLargeValuesFormatter largeValuesFormatter;
     private NormalValuesFormatter mormalValuesFormatter;
 //    public MyMarkerView mMyMarkerView;
@@ -64,6 +67,7 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
     @SuppressWarnings("unchecked")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+//        R.layout.fragment_bar_chart
 
         View view = inflater.inflate(R.layout.fragment_bar_chart, container, false);
         unbinder = ButterKnife.bind(this, view);
@@ -356,9 +360,9 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
         mBarChart.highlightValues(null);
 
         if (mBarChart.getHighlighted() == null) {
-            mFab.hide(false);
+            mFabLayout.setVisibility(View.GONE);
         } else {
-            mFab.show(false);
+            mFabLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -385,11 +389,11 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
 
     @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
-        mFab.show(true);
+        mFabLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onNothingSelected() {
-        mFab.hide(true);
+        mFabLayout.setVisibility(View.GONE);
     }
 }

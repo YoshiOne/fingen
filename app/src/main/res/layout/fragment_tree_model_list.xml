@@ -1,6 +1,6 @@
-<RelativeLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,27 +11,70 @@
         android:id="@+id/recycler_view"
         style="@style/FastScrollRecyclerVew"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        app:fastScrollEnabled="true"
+        app:fastScrollHorizontalThumbDrawable="@drawable/thumb_drawable"
+        app:fastScrollHorizontalTrackDrawable="@drawable/line_drawable"
+        app:fastScrollVerticalThumbDrawable="@drawable/thumb_drawable"
+        app:fastScrollVerticalTrackDrawable="@drawable/line_drawable"/>
 
-    <com.github.clans.fab.FloatingActionMenu
-        style="@style/FabMenuStyle"
-        android:id="@+id/fabMenu"
-        fab:menu_fab_label="@string/act_create">
+    <View
+        android:id="@+id/fabBGLayout"
+        style="@style/FabMenuBackground" />
 
-        <com.github.clans.fab.FloatingActionButton
+    <LinearLayout
+        android:id="@+id/fabAddModelLayout"
+        style="@style/FabMenuButtonChildLayout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintTop_toTopOf="@+id/fabMenuButtonRootLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ent_item" />
+
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabAddModel"
+            style="@style/FabMenuButtonChild"
+            app:srcCompat="@drawable/ic_category_white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fabAddNestedModelLayout"
+        style="@style/FabMenuButtonChildLayout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintTop_toTopOf="@+id/fabMenuButtonRootLayout">
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_label="@string/ent_item"
-            style="@style/FabMenuButtonsStyle" />
+            android:text="@string/ent_nested_item" />
 
-        <com.github.clans.fab.FloatingActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabAddNestedModel"
+            style="@style/FabMenuButtonChild"
+            app:srcCompat="@drawable/ic_categories_white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/FabMenuRootButtonLayout">
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabMenuButtonRoot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_label="@string/ent_nested_item"
-            style="@style/FabMenuButtonsStyle" />
+            android:layout_gravity="bottom|end"
+            android:gravity="center_vertical"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_add_white" />
+    </LinearLayout>
 
-    </com.github.clans.fab.FloatingActionMenu>
-
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

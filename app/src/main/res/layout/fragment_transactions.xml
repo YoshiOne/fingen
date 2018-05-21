@@ -71,54 +71,7 @@
             android:layout_marginStart="0dp"
             tools:listitem="@layout/list_item_transactions_2"/>
 
-        <com.github.clans.fab.FloatingActionMenu
-            android:id="@+id/fabMenuSelection"
-            style="@style/FabMenuStyle"
-            app:menu_fab_label="@string/ttl_selection">
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fabSelectAll"
-                style="@style/FabMenuButtonsStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_select_all_white"
-                app:fab_label="@string/act_select_all" />
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fabUnselectAll"
-                style="@style/FabMenuButtonsStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_unselect_all_white"
-                app:fab_label="@string/act_unselect_all" />
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fabEditSelected"
-                style="@style/FabMenuButtonsStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_edit_white"
-                app:fab_label="@string/act_edit_selected" />
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fabExportSelected"
-                style="@style/FabMenuButtonsStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_export_white"
-                app:fab_label="@string/ent_export_selected" />
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fabDeleteSelected"
-                style="@style/FabMenuButtonsStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_trash_white"
-                app:fab_label="@string/act_delete_selected" />
-
-        </com.github.clans.fab.FloatingActionMenu>
-
-        <com.github.clans.fab.FloatingActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabGoTop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -126,10 +79,8 @@
             android:layout_marginBottom="@dimen/fab_margin"
             android:layout_marginStart="@dimen/fab_margin"
             android:visibility="gone"
-            style="@style/FabMenuButtonsStyle"
-            app:fab_hideAnimation="@anim/jump_to_down"
-            app:fab_showAnimation="@anim/jump_from_down"
-            app:fab_size="mini"/>
+            app:fabSize="mini"
+            app:srcCompat = "@drawable/ic_arrow_up_white"/>
 
         <TextView
             android:id="@+id/textViewSelectedCount"
@@ -149,7 +100,108 @@
             android:layout_centerHorizontal="true"
             android:src="@drawable/pull_me_animated"
             android:visibility="visible" />
+<!--=============================================================================================-->
+        <View
+            android:id="@+id/fabBGLayout"
+            style="@style/FabMenuBackground" />
 
+        <LinearLayout
+            android:id="@+id/fabSelectAllLayout"
+            style="@style/FabMenuButtonChildLayout"
+            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
+            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
+            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/act_select_all" />
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabSelectAll"
+                style="@style/FabMenuButtonChild"
+                app:srcCompat="@drawable/ic_select_all_white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fabUnselectAllLayout"
+            style="@style/FabMenuButtonChildLayout"
+            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
+            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
+            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/act_unselect_all" />
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabUnselectAll"
+                style="@style/FabMenuButtonChild"
+                app:srcCompat="@drawable/ic_unselect_all_white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fabEditSelectedLayout"
+            style="@style/FabMenuButtonChildLayout"
+            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
+            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
+            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/act_edit_selected" />
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabEditSelected"
+                style="@style/FabMenuButtonChild"
+                app:srcCompat="@drawable/ic_edit_white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fabExportSelectedLayout"
+            style="@style/FabMenuButtonChildLayout"
+            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
+            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
+            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ent_export_selected" />
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabExportSelected"
+                style="@style/FabMenuButtonChild"
+                app:srcCompat="@drawable/ic_export_white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fabDeleteSelectedLayout"
+            style="@style/FabMenuButtonChildLayout"
+            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
+            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
+            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/act_delete_selected" />
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabDeleteSelected"
+                style="@style/FabMenuButtonChild"
+                app:srcCompat="@drawable/ic_trash_white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fabMenuButtonRootLayout"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:visibility="visible"
+            style="@style/FabMenuRootButtonLayout">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabMenuButtonRoot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:gravity="center_vertical"
+                app:fabSize="normal"
+                app:srcCompat="@drawable/ic_check_circle_white" />
+        </LinearLayout>
+<!--=============================================================================================-->
     </RelativeLayout>
 
     <!-- SLIDING LAYOUT -->

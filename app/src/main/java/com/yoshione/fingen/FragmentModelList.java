@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -20,9 +21,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
 import com.yoshione.fingen.adapter.AdapterAbstractModel;
 import com.yoshione.fingen.dao.AbstractDAO;
 import com.yoshione.fingen.dao.BaseDAO;
@@ -39,6 +39,7 @@ import com.yoshione.fingen.model.Product;
 import com.yoshione.fingen.model.SimpleDebt;
 import com.yoshione.fingen.model.SmsMarker;
 import com.yoshione.fingen.model.Template;
+import com.yoshione.fingen.utils.FabMenuController;
 import com.yoshione.fingen.utils.SmsParser;
 import com.yoshione.fingen.widgets.ContextMenuRecyclerView;
 
@@ -59,10 +60,6 @@ public class FragmentModelList extends Fragment {
 
     @BindView(R.id.recycler_view)
     ContextMenuRecyclerView mRecyclerView;
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
-    @BindView(R.id.fabMenu)
-    FloatingActionMenu fabMenu;
     @BindView(R.id.buttonAddAccountMarker)
     FloatingActionButton mButtonAddAccountMarker;
     @BindView(R.id.buttonAddCabbageMarker)
@@ -73,10 +70,27 @@ public class FragmentModelList extends Fragment {
     FloatingActionButton mButtonAddPayeeMarker;
     @BindView(R.id.buttonAddIgnoreMarker)
     FloatingActionButton mButtonAddIgnoreMarker;
+    @BindView(R.id.fabBGLayout)
+    View mFabBGLayout;
+    @BindView(R.id.buttonAddAccountMarkerLayout)
+    LinearLayout mButtonAddAccountMarkerLayout;
+    @BindView(R.id.buttonAddCabbageMarkerLayout)
+    LinearLayout mButtonAddCabbageMarkerLayout;
+    @BindView(R.id.buttonAddTrTypeMarkerLayout)
+    LinearLayout mButtonAddTrTypeMarkerLayout;
+    @BindView(R.id.buttonAddPayeeMarkerLayout)
+    LinearLayout mButtonAddPayeeMarkerLayout;
+    @BindView(R.id.buttonAddIgnoreMarkerLayout)
+    LinearLayout mButtonAddIgnoreMarkerLayout;
+    @BindView(R.id.fabMenuButtonRoot)
+    FloatingActionButton mFabMenuButtonRoot;
+    @BindView(R.id.fabMenuButtonRootLayout)
+    LinearLayout mFabMenuButtonRootLayout;
     private IAbstractModel mInputModel;
     private ModelListEventListener mModelListEventListener;
     private AdapterAbstractModel adapter;
     Unbinder unbinder;
+    FabMenuController mFabMenuController;
 
     void setmFilter(String mFilter) {
         this.mFilter = mFilter;
@@ -85,6 +99,7 @@ public class FragmentModelList extends Fragment {
     private String mFilter = "";
 
     public static FragmentModelList newInstance(IAbstractModel model, int requestCode) {
+//        R.layout.fragment_model_list
         FragmentModelList frag = new FragmentModelList();
         Bundle args = new Bundle();
         args.putParcelable("model", model);
@@ -130,35 +145,30 @@ public class FragmentModelList extends Fragment {
             case IAbstractModel.MODEL_TYPE_SIMPLEDEBT:
             case IAbstractModel.MODEL_TYPE_TEMPLATE:
             case IAbstractModel.MODEL_TYPE_PRODUCT:
-                fab.setVisibility(View.VISIBLE);
-                fabMenu.setVisibility(View.GONE);
-                fab.setOnClickListener(new View.OnClickListener() {
+                mFabMenuButtonRoot.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         FragmentModelList.this.editModel(null);
                     }
                 });
-                fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_add_white));
-                mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                    @Override
-                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                        super.onScrolled(recyclerView, dx, dy);
-                        if (Math.abs(dy) > 4) {
-                            if (dy > 0) {
-                                fab.hide(true);
-                            } else {
-                                fab.show(true);
-                            }
-                        }
-                    }
-                });
                 break;
             case IAbstractModel.MODEL_TYPE_SMSMARKER:
-                fab.setVisibility(View.GONE);
-                fabMenu.setVisibility(View.VISIBLE);
                 initFabMenu();
                 break;
         }
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (Math.abs(dy) > 4) {
+                    if (dy > 0) {
+                        mFabMenuButtonRootLayout.setVisibility(View.GONE);
+                    } else {
+                        mFabMenuButtonRootLayout.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
 
         return view;
     }
@@ -170,21 +180,9 @@ public class FragmentModelList extends Fragment {
     }
 
     private void initFabMenu() {
-
-        fabMenu.setClosedOnTouchOutside(true);
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (Math.abs(dy) > 4) {
-                    if (dy > 0) {
-                        fabMenu.hideMenu(true);
-                    } else {
-                        fabMenu.showMenu(true);
-                    }
-                }
-            }
-        });
+        mFabMenuController = new FabMenuController(mFabMenuButtonRoot, mFabBGLayout, getActivity(),
+                mButtonAddIgnoreMarkerLayout, mButtonAddPayeeMarkerLayout, mButtonAddTrTypeMarkerLayout,
+                mButtonAddCabbageMarkerLayout, mButtonAddAccountMarkerLayout);
 
         FabMenuOnClickListener fabMenuOnClickListener = new FabMenuOnClickListener();
 
@@ -373,7 +371,7 @@ public class FragmentModelList extends Fragment {
                 }
                 SmsMarkerManager.showEditdialog((SmsMarker) abstractModel, getActivity().getSupportFragmentManager(),
                         null, getActivity());
-                fabMenu.close(true);
+                mFabMenuController.closeFABMenu();
                 break;
             }
             case IAbstractModel.MODEL_TYPE_CREDIT: {

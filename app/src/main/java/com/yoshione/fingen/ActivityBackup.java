@@ -11,18 +11,21 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,14 +36,12 @@ import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.FullAccount;
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
-import android.util.Log;
 import com.yoshione.fingen.dropbox.DropboxClient;
 import com.yoshione.fingen.dropbox.UploadTask;
 import com.yoshione.fingen.dropbox.UserAccountTask;
 import com.yoshione.fingen.interfaces.IOnComplete;
 import com.yoshione.fingen.utils.DateTimeFormatter;
+import com.yoshione.fingen.utils.FabMenuController;
 import com.yoshione.fingen.utils.FileUtils;
 import com.yoshione.fingen.widgets.ToolbarActivity;
 
@@ -76,8 +77,8 @@ public class ActivityBackup extends ToolbarActivity {
     FloatingActionButton fabRestore;
     @BindView(R.id.fabRestoreFromDropbox)
     FloatingActionButton fabRestoreFromDropbox;
-    @BindView(R.id.fabMenu)
-    FloatingActionMenu fabMenu;
+    @BindView(R.id.fabMenuButtonRoot)
+    FloatingActionButton fabMenuButtonRoot;
     @BindView(R.id.switchCompatEnablePasswordProtection)
     SwitchCompat mSwitchCompatEnablePasswordProtection;
     @BindView(R.id.editTextPassword)
@@ -90,9 +91,18 @@ public class ActivityBackup extends ToolbarActivity {
     TextView mTextViewLastBackupToDropbox;
     @BindView(R.id.buttonLogoutFromDropbox)
     Button mButtonLogoutFromDropbox;
+    @BindView(R.id.fabBGLayout)
+    View fabBGLayout;
+    @BindView(R.id.fabBackupLayout)
+    LinearLayout mFabBackupLayout;
+    @BindView(R.id.fabRestoreLayout)
+    LinearLayout mFabRestoreLayout;
+    @BindView(R.id.fabRestoreFromDropboxLayout)
+    LinearLayout mFabRestoreFromDropboxLayout;
 
     private SharedPreferences prefs;
     private UpdateRwHandler mHandler;
+    private FabMenuController mFabMenuController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,7 +176,7 @@ public class ActivityBackup extends ToolbarActivity {
                 }
             }
         });
-        mButtonLogoutFromDropbox.setVisibility(token == null? View.GONE : View.VISIBLE);
+        mButtonLogoutFromDropbox.setVisibility(token == null ? View.GONE : View.VISIBLE);
         mButtonLogoutFromDropbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -241,34 +251,38 @@ public class ActivityBackup extends ToolbarActivity {
         }).execute();
     }
 
-
     private void initFabMenu() {
-        fabBackup.setImageDrawable(getDrawable(R.drawable.ic_backup_white));
+        mFabMenuController = new FabMenuController(fabMenuButtonRoot, fabBGLayout, this, mFabBackupLayout, mFabRestoreLayout, mFabRestoreFromDropboxLayout);
         fabBackup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ActivityBackupPermissionsDispatcher.backupDBWithPermissionCheck((ActivityBackup) v.getContext());
-                fabMenu.close(true);
+                mFabMenuController.closeFABMenu();
             }
         });
-        fabRestore.setImageDrawable(getDrawable(R.drawable.ic_restore_white));
         fabRestore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ActivityBackupPermissionsDispatcher.restoreDBWithPermissionCheck((ActivityBackup) v.getContext());
-                fabMenu.close(true);
+                mFabMenuController.closeFABMenu();
             }
         });
-        fabRestoreFromDropbox.setImageDrawable(getDrawable(R.drawable.ic_dropbox_white));
         fabRestoreFromDropbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ActivityBackupPermissionsDispatcher.restoreDBFromDropboxWithPermissionCheck((ActivityBackup) v.getContext());
-                fabMenu.close(true);
+                mFabMenuController.closeFABMenu();
             }
         });
-        fabMenu.setClosedOnTouchOutside(true);
-        fabMenu.getMenuIconView().setImageDrawable(getDrawable(R.drawable.ic_backup_and_restore_white));
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mFabMenuController.isFABOpen()) {
+            mFabMenuController.closeFABMenu();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})

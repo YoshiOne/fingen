@@ -29,6 +29,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import com.yoshione.fingen.dao.SendersDAO;
@@ -38,7 +39,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import biz.kasual.materialnumberpicker.MaterialNumberPicker;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -158,20 +158,13 @@ public class FragmentSenderEdit extends DialogFragment {
         int colorBgnd = ta.getColor(0, Color.TRANSPARENT);
         int colorText = ta.getColor(1, Color.BLACK);
         ta.recycle();
-        final MaterialNumberPicker numberPicker;
+        final NumberPicker numberPicker;
         switch (view.getId()) {
             case R.id.editTextAmountPos:
-                 numberPicker = new MaterialNumberPicker.Builder(getActivity())
-                        .minValue(1)
-                        .maxValue(10)
-                        .defaultValue(mSender.getAmountPos()+1)
-                        .backgroundColor(colorBgnd)
-                        .separatorColor(Color.TRANSPARENT)
-                        .textColor(colorText)
-                        .textSize(20)
-                        .enableFocusability(false)
-                        .wrapSelectorWheel(true)
-                        .build();
+                numberPicker = new NumberPicker(getActivity());
+                numberPicker.setMinValue(1);
+                numberPicker.setMaxValue(10);
+                numberPicker.setValue(mSender.getAmountPos() + 1);
                 new AlertDialog.Builder(getActivity())
                         .setTitle(getActivity().getString(R.string.ent_amount_pos))
                         .setView(numberPicker)
@@ -185,17 +178,10 @@ public class FragmentSenderEdit extends DialogFragment {
                         .show();
                 break;
             case R.id.editTextBalancePos:
-                numberPicker = new MaterialNumberPicker.Builder(getActivity())
-                        .minValue(1)
-                        .maxValue(10)
-                        .defaultValue(mSender.getBalancePos()+1)
-                        .backgroundColor(colorBgnd)
-                        .separatorColor(Color.TRANSPARENT)
-                        .textColor(colorText)
-                        .textSize(20)
-                        .enableFocusability(false)
-                        .wrapSelectorWheel(true)
-                        .build();
+                numberPicker = new NumberPicker(getActivity());
+                numberPicker.setMinValue(1);
+                numberPicker.setMaxValue(10);
+                numberPicker.setValue(mSender.getBalancePos() + 1);
                 new AlertDialog.Builder(getActivity())
                         .setTitle(getActivity().getString(R.string.ent_balance_pos))
                         .setView(numberPicker)

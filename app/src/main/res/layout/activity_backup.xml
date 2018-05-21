@@ -1,125 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:fitsSystemWindows="true"
-              android:orientation="vertical"
-              tools:context="com.yoshione.fingen.ActivityBackup">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.yoshione.fingen.ActivityBackup">
 
     <include
+        android:id="@+id/include2"
         layout="@layout/common_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:fab="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <TextView
+        android:id="@+id/textViewAutoBackupInfo"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/activity_margin"
-        android:fitsSystemWindows="true">
+        android:text="@string/ttl_auto_backup_info"
+        app:layout_constraintTop_toBottomOf="@id/include2">
+    </TextView>
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/switchCompatEnablePasswordProtection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_margin"
+        android:text="@string/ttl_enable_backup_password_protection"
+        app:layout_constraintTop_toBottomOf="@id/textViewAutoBackupInfo"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/textInputLayoutPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_margin"
+        app:passwordToggleEnabled="false"
+        app:layout_constraintTop_toBottomOf="@id/switchCompatEnablePasswordProtection">
+
+        <EditText
+            android:id="@+id/editTextPassword"
+            style="@style/EditableEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/ent_password"
+            android:inputType="textPassword"
+            tools:text="******" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/textInputLayoutDropboxAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textInputLayoutPassword"
+        android:layout_margin="@dimen/activity_margin"
+        app:passwordToggleEnabled="false"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutPassword">
+
+        <EditText
+            android:id="@+id/editTextDropboxAccount"
+            style="@style/NotEditableEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/ttl_dropbox_account"
+            android:inputType="textNoSuggestions" />
 
         <TextView
-            android:id="@+id/textInputLayoutBackupTime"
+            android:id="@+id/textViewLastBackupToDropbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            tools:text="TextView" />
+
+        <Button
+            android:id="@+id/buttonLogoutFromDropbox"
+            style="@android:style/Widget.Material.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ttl_auto_backup_info"
-            android:layout_margin="@dimen/activity_margin">
+            android:layout_weight="1"
+            android:text="@string/act_logout_from_dropbox"
+            android:visibility="gone" />
+    </android.support.design.widget.TextInputLayout>
 
-        </TextView>
+    <View
+        android:id="@+id/fabBGLayout"
+        style="@style/FabMenuBackground" />
 
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/switchCompatEnablePasswordProtection"
-            android:layout_width="match_parent"
+    <LinearLayout
+        android:id="@+id/fabBackupLayout"
+        style="@style/FabMenuButtonChildLayout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintTop_toTopOf="@+id/fabMenuButtonRootLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textInputLayoutBackupTime"
-            android:layout_margin="@dimen/activity_margin"
-            android:text="@string/ttl_enable_backup_password_protection"
-            />
+            android:text="@string/act_backup" />
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/textInputLayoutPassword"
-            android:layout_width="match_parent"
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabBackup"
+            style="@style/FabMenuButtonChild"
+            app:srcCompat="@drawable/ic_backup_white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fabRestoreLayout"
+        style="@style/FabMenuButtonChildLayout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintTop_toTopOf="@+id/fabMenuButtonRootLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/switchCompatEnablePasswordProtection"
-            android:layout_margin="@dimen/activity_margin"
-            app:passwordToggleEnabled="false">
+            android:text="@string/act_restore" />
 
-            <EditText
-                android:id="@+id/editTextPassword"
-                style="@style/EditableEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/ent_password"
-                android:inputType="textPassword"
-                tools:text="******"/>
-        </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabRestore"
+            style="@style/FabMenuButtonChild"
+            app:srcCompat="@drawable/ic_restore_white" />
+    </LinearLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/textInputLayoutDropboxAccount"
-            android:layout_width="match_parent"
+    <LinearLayout
+        android:id="@+id/fabRestoreFromDropboxLayout"
+        style="@style/FabMenuButtonChildLayout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintTop_toTopOf="@+id/fabMenuButtonRootLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textInputLayoutPassword"
-            android:layout_margin="@dimen/activity_margin"
-            app:passwordToggleEnabled="false">
+            android:text="@string/act_restore_from_dropbox" />
 
-            <EditText
-                android:id="@+id/editTextDropboxAccount"
-                style="@style/NotEditableEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/ttl_dropbox_account"
-                android:inputType="textNoSuggestions"/>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabRestoreFromDropbox"
+            style="@style/FabMenuButtonChild"
+            app:srcCompat="@drawable/ic_dropbox_white" />
+    </LinearLayout>
 
-            <TextView
-                tools:text="TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textViewLastBackupToDropbox"
-                android:layout_weight="1"/>
+    <LinearLayout
+        android:id="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/FabMenuRootButtonLayout">
 
-            <Button
-                android:id="@+id/buttonLogoutFromDropbox"
-                style="@android:style/Widget.Material.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/act_logout_from_dropbox"
-                android:visibility="gone" />
-        </android.support.design.widget.TextInputLayout>
 
-        <com.github.clans.fab.FloatingActionMenu
-            android:id="@+id/fabMenu"
-            style="@style/FabMenuStyle"
-            fab:menu_fab_label="">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabMenuButtonRoot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:gravity="center_vertical"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_backup_and_restore_white" />
+    </LinearLayout>
 
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fabBackup"
-                style="@style/FabMenuButtonsStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                fab:fab_label="@string/act_backup"/>
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fabRestore"
-                style="@style/FabMenuButtonsStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                fab:fab_label="@string/act_restore"/>
-
-            <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/fabRestoreFromDropbox"
-                style="@style/FabMenuButtonsStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                fab:fab_label="@string/act_restore_from_dropbox"/>
-
-        </com.github.clans.fab.FloatingActionMenu>
-    </RelativeLayout>
-
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

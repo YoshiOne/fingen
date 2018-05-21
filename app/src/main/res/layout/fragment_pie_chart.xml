@@ -41,14 +41,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.github.clans.fab.FloatingActionButton
-        android:id="@+id/fab"
-        style="@style/FabStyle"
-        android:layout_marginBottom="32dp"
-        android:layout_marginEnd="32dp"
-        android:src="@drawable/ic_list_white"
+    <LinearLayout
+        android:id="@+id/fabLayout"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/FabMenuRootButtonLayout">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:gravity="center_vertical"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_list_white" />
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
