@@ -6,7 +6,9 @@ package com.yoshione.fingen;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,6 +27,7 @@ import com.yoshione.fingen.backup.BackupJobCreator;
 import com.yoshione.fingen.backup.BackupTestJobCreator;
 import com.yoshione.fingen.fts.FtsApi;
 import com.yoshione.fingen.interfaces.ISyncAnimMethods;
+import com.yoshione.fingen.receivers.CustomIntentReceiver;
 import com.yoshione.fingen.widgets.CustomPinActivity;
 
 import java.io.IOException;
@@ -55,6 +58,7 @@ public class FGApplication extends Application implements ISyncAnimMethods {
     // View held by Popup
     public LinearLayout mLinearLayout;
     ImageView mImageView;
+    CustomIntentReceiver mCustomIntentReceiver;
 
     public AlertDialog getDialog() {
         return mDialog;
@@ -124,6 +128,7 @@ public class FGApplication extends Application implements ISyncAnimMethods {
                 .client(okHttpClient)
                 .build();
         sFtsApi = retrofit.create(FtsApi.class);
+        mCustomIntentReceiver = new CustomIntentReceiver();
     }
 
     @Override
@@ -187,6 +192,10 @@ public class FGApplication extends Application implements ISyncAnimMethods {
                     }
                 }
             }, 100L);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                unregisterReceiver(mCustomIntentReceiver);
+            }
         }
 
         @Override
@@ -199,6 +208,12 @@ public class FGApplication extends Application implements ISyncAnimMethods {
             mAppPaused = false;
             // Now, one activity is running
             numOfRunning++;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                IntentFilter intentFilter = new IntentFilter();
+                intentFilter.addAction("com.yoshione.fingen.intent.action.CREATE_TRANSACTION");
+                registerReceiver(mCustomIntentReceiver, intentFilter);
+            }
         }
 
         @Override

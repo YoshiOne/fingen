@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
-    <changelogversion versionName="2.3" changeDate=">2018.05.17">
+    <changelogversion versionName="2.3.2" changeDate=">2018.05.21">
         <changelogtext>Для установки и запуска приложения больше не требуется наличие сервисов Google Play.</changelogtext>
         <changelogtext>В CSV выгружаются параметры чека ФН, ФД, ФП.</changelogtext>
         <changelogtext>При экспорте CSV появилась опция "Экспорт товаров", при ее выборе, транзакции, имеющие товары, разбиваются на несколько строк в соответсвии со списком товаров. Каждому товару указывается своя цена, категория и проект.</changelogtext>
