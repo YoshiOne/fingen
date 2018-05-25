@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.3.3" changeDate=">2018.05.25">
+        <changelogtext>Если при загрузке чека поле получатель было пустое, то оно заполнится названием магазина из чека.</changelogtext>
+        <changelogtext>В главном меню вернулись кнопки "Справка" и "Задать вопрос".</changelogtext>
+        <changelogtext>[font color=#4CAF50](FIXED)[/font] баг с вылетами на android 8.</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.3.2" changeDate=">2018.05.21">
         <changelogtext>Для установки и запуска приложения больше не требуется наличие сервисов Google Play.</changelogtext>
         <changelogtext>В CSV выгружаются параметры чека ФН, ФД, ФП.</changelogtext>

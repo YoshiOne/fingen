@@ -194,7 +194,11 @@ public class FGApplication extends Application implements ISyncAnimMethods {
             }, 100L);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                unregisterReceiver(mCustomIntentReceiver);
+                try {
+                    unregisterReceiver(mCustomIntentReceiver);
+                } catch (Exception e) {
+                    Log.d(TAG, "Can't unregister receiver");
+                }
             }
         }
 

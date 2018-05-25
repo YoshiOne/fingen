@@ -1336,7 +1336,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
             updateControlsState();
             IDownloadProductsListener downloadProductsListener = new IDownloadProductsListener() {
                 @Override
-                public void onDownload(List<ProductEntry> productEntries) {
+                public void onDownload(List<ProductEntry> productEntries, String payeeName) {
                     spinAnim.cancel();
                     spinAnim.reset();
                     mLayoutLoadingProducts.setVisibility(View.GONE);
@@ -1345,6 +1345,9 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     getIntent().removeExtra("load_products");
                     mTryDownloadAgain = true;
                     fillProductList();
+                    if ((viewPager.getCurrentItem() == 0) && mPayeeName.isEmpty()) {
+                        setPayeeName(payeeName);
+                    }
                 }
 
                 @Override

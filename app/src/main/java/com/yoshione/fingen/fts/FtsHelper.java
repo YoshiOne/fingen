@@ -59,8 +59,7 @@ public class FtsHelper {
             @Override
             public void onResponse(@NonNull Call<FtsResponse> call, @NonNull Response<FtsResponse> response) {
                 if (response.body() != null) {
-                    List<Item> items = new ArrayList<>();
-                    items.addAll(response.body().getDocument().getReceipt().getItems());
+                    List<Item> items = new ArrayList<>(response.body().getDocument().getReceipt().getItems());
                     List<ProductEntry> productEntries = new ArrayList<ProductEntry>();
                     ProductsDAO productsDAO = ProductsDAO.getInstance(context);
                     Product product;
@@ -91,7 +90,7 @@ public class FtsHelper {
                             productEntry.setProductID(product.getID());
                             productEntries.add(productEntry);
                         }
-                        downloadProductsListener.onDownload(productEntries);
+                        downloadProductsListener.onDownload(productEntries, response.body().getDocument().getReceipt().getUser());
                     }
                 }
             }

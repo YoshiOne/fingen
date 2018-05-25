@@ -9,7 +9,7 @@ import java.util.List;
  */
 
 public interface IDownloadProductsListener {
-    public void onDownload(List<ProductEntry> productEntries);
+    public void onDownload(List<ProductEntry> productEntries, String payeeName);
 
     public void onFailure(Throwable t);
 }

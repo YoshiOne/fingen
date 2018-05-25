@@ -10,6 +10,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -134,7 +135,7 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
     private static final int DRAWER_ITEM_ID_ADDITIONAL = 7;
     private static final int DRAWER_ITEM_ID_SETTINGS = 8;
     private static final int DRAWER_ITEM_ID_SUPPORT = 9;
-//    private static final int DRAWER_ITEM_ID_HELP = 11;
+    private static final int DRAWER_ITEM_ID_HELP = 11;
     private static final int DRAWER_ITEM_ID_ABOUT = 10;
     private static final int DRAWER_ITEM_ID_PRO = 12;
     private final List<Fragment> fragments = new ArrayList<>();
@@ -580,8 +581,8 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
                         new PrimaryDrawerItem().withName(R.string.ent_pro_features).withIcon(getIcon(R.drawable.ic_drawer_pro))
                                 .withIconColor(ContextCompat.getColor(this, R.color.ColorMain)).withIdentifier(DRAWER_ITEM_ID_PRO),
                         new PrimaryDrawerItem().withName(R.string.ent_settings).withIcon(getIcon(R.drawable.ic_drawer_settings)).withIdentifier(DRAWER_ITEM_ID_SETTINGS),
-//                        new PrimaryDrawerItem().withName(R.string.ent_help).withIcon(getIcon(R.drawable.ic_drawer_help)).withIdentifier(DRAWER_ITEM_ID_HELP),
-//                        new PrimaryDrawerItem().withName(R.string.act_ask_question).withIcon(getIcon(R.drawable.ic_drawer_support)).withIdentifier(DRAWER_ITEM_ID_SUPPORT),
+                        new PrimaryDrawerItem().withName(R.string.ent_help).withIcon(getIcon(R.drawable.ic_drawer_help)).withIdentifier(DRAWER_ITEM_ID_HELP),
+                        new PrimaryDrawerItem().withName(R.string.act_ask_question).withIcon(getIcon(R.drawable.ic_drawer_support)).withIdentifier(DRAWER_ITEM_ID_SUPPORT),
                         new PrimaryDrawerItem().withName(R.string.ent_about).withIcon(getIcon(R.drawable.ic_drawer_about)).withIdentifier(DRAWER_ITEM_ID_ABOUT)
                 )
                 .withOnDrawerListener(new Drawer.OnDrawerListener() {
@@ -641,12 +642,21 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
                                     ActivityMain.this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_OPEN_PREFERENCES);
                                     break;
                                 }
-//                                case DRAWER_ITEM_ID_HELP: {
-//                                    break;
-//                                }
-//                                case DRAWER_ITEM_ID_SUPPORT: {
-//                                    break;
-//                                }
+                                case DRAWER_ITEM_ID_HELP: {
+                                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://faq.fingen-app.com/"));
+                                    startActivity(browserIntent);
+                                    break;
+                                }
+                                case DRAWER_ITEM_ID_SUPPORT: {
+                                    intent = new Intent(Intent.ACTION_SEND);
+                                    intent.setType("message/rfc822");
+                                    intent.putExtra(Intent.EXTRA_EMAIL,  new String[] {"support@fingen-app.com"});
+                                    intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.ttl_email_subject));
+                                    intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.ttl_email_body));
+
+                                    startActivity(Intent.createChooser(intent, "Send Email"));
+                                    break;
+                                }
                                 case DRAWER_ITEM_ID_ABOUT: {
                                     intent = new Intent(ActivityMain.this, ActivityAbout.class);
                                     ActivityMain.this.startActivity(intent);

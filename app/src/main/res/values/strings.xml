@@ -255,6 +255,14 @@
 
     <!-- 1. General -->
     <!-- Titles -->
+    <string name="ttl_email_subject" formatted="false">Question about Fingen app</string>
+
+    <!-- 1. General -->
+    <!-- Titles -->
+    <string name="ttl_email_body" formatted="false">Write your question</string>
+
+    <!-- 1. General -->
+    <!-- Titles -->
     <string name="ttl_billing_error" formatted="false">Server connection error (code %s)</string>
 
     <!-- 1. General -->
