@@ -223,7 +223,7 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
             tree.getChildren().add(0, undefined);
         }
         if (!mFilter.isEmpty()) {
-            tree.applyFilter(mFilter);
+            tree.applyFilter(mFilter, adapter.mExpandMap);
         }
         adapter.setTree(tree);
         adapter.notifyDataSetChanged();

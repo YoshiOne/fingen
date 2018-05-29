@@ -54,7 +54,7 @@ public class AdapterTreeModel extends RecyclerView.Adapter implements ItemTouchH
     private final OnStartDragListener mDragStartListener;
     private final Context mContext;
     private BaseNode mTree;
-    private HashMap<Long, Boolean> mExpandMap;
+    public HashMap<Long, Boolean> mExpandMap;
     private IAdapterEventsListener mAdapterEventsListener;
     private IUpdateTreeListsEvents mUpdateListsEvents;
     private int offset16;

@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -208,22 +209,24 @@ public class BaseNode implements IAbstractNode, Comparable<BaseNode> {
         throw new Exception();
     }
 
-    private void filterFromChildToParent(String filter) {
+    private void filterFromChildToParent(String filter, HashMap<Long, Boolean> expandMap) {
 
         if (mChildren.size() == 0) {
             if (!getModel().getName().toLowerCase().contains(filter.toLowerCase())) {
                 mParent.mChildren.remove(this);
+            } else {
+                expandMap.put(mParent.getModel().getID(), true);
             }
         }
 
         if (mParent == null) return;
 
         if (mParent.getModel() != null) {
-            mParent.filterFromChildToParent(filter);
+            mParent.filterFromChildToParent(filter, expandMap);
         }
     }
 
-    public void applyFilter(String filter) {
+    public void applyFilter(String filter, HashMap<Long, Boolean> expandMap) {
         boolean clear = true;
         for (BaseNode node : getFlatChildrenList()) {
             if (node.getModel().getName().toLowerCase().contains(filter.toLowerCase())) {
@@ -234,9 +237,10 @@ public class BaseNode implements IAbstractNode, Comparable<BaseNode> {
         if (clear) {
             clear();
         } else {
+//            expandMap.put(getModel().getID(), true);
             for (BaseNode node : getFlatChildrenList()) {
                 if (node.mChildren.size() == 0) {
-                    node.filterFromChildToParent(filter);
+                    node.filterFromChildToParent(filter, expandMap);
                 }
             }
         }
