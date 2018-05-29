@@ -5,10 +5,13 @@
 package com.yoshione.fingen.filters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 
 import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.utils.LocaleUtils;
 
@@ -18,7 +21,6 @@ import java.util.HashSet;
 
 /**
  * Created by slv on 05.11.2015.
- *
  */
 public class DateRangeFilter extends AbstractFilter implements Parcelable {
     public static final int DATE_RANGE_DAY = Calendar.DAY_OF_MONTH;
@@ -29,76 +31,75 @@ public class DateRangeFilter extends AbstractFilter implements Parcelable {
     public static final int DATE_RANGE_MODIFIER_CURRENT = 0;
     public static final int DATE_RANGE_MODIFIER_LAST = 1;
     public static final int DATE_RANGE_MODIFIER_CURRENTAND_LAST = 2;
+    public static final Creator<DateRangeFilter> CREATOR = new Creator<DateRangeFilter>() {
+        @Override
+        public DateRangeFilter createFromParcel(Parcel source) {
+            return new DateRangeFilter(source);
+        }
 
+        @Override
+        public DateRangeFilter[] newArray(int size) {
+            return new DateRangeFilter[size];
+        }
+    };
     private Boolean mEnabled;
     private Date mStartDate;
     private Date mEndDate;
-
     private long mId;
     private boolean mInverted;
+    private int mFirstDayOfWeek;
 
-    @Override
-    public boolean isInverted() {
-        return mInverted;
-    }
-
-    @Override
-    public void setInverted(boolean inverted) {
-        mInverted = inverted;
-    }
-
-    @Override
-    public long getId() {
-        return mId;
-    }
-
-    @Override
-    public void setId(long id) {
-        mId = id;
-    }
-
-
-    public DateRangeFilter(long id, Context context){
+    public DateRangeFilter(long id, Context context) {
         mId = id;
         mEnabled = true;
-        setRange(DATE_RANGE_MONTH,DATE_RANGE_MODIFIER_CURRENT, context);
+        setRange(DATE_RANGE_MONTH, DATE_RANGE_MODIFIER_CURRENT, context);
     }
 
-    public void setRangeByMonth(int year, int month, Context context) {
-        Calendar c = Calendar.getInstance(LocaleUtils.getLocale(context));
-        c.set(year,month,1,0,0,0);
-        mStartDate = c.getTime();
-        c.set(year,month,c.getActualMaximum(Calendar.DAY_OF_MONTH),23,59,59);
-        mEndDate = c.getTime();
+    protected DateRangeFilter(Parcel in) {
+        this.mEnabled = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        long tmpMStartDate = in.readLong();
+        this.mStartDate = tmpMStartDate == -1 ? null : new Date(tmpMStartDate);
+        long tmpMEndDate = in.readLong();
+        this.mEndDate = tmpMEndDate == -1 ? null : new Date(tmpMEndDate);
+        this.mId = in.readLong();
+        this.mInverted = in.readByte() != 0;
     }
 
-    public void setRange(int range, int modifier, Context context){
-        mStartDate = getRangeStart(range,modifier, context);
-        mEndDate = getRangeEnd(range,modifier, context);
+    private static int getFirstDayOfWeek(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String s = preferences.getString(FgConst.PREF_FIRST_DAY_OF_WEEK, FgConst.PREF_VALUE_MONDAY);
+        if (s.equals(FgConst.PREF_VALUE_MONDAY)) {
+            return Calendar.MONDAY;
+        } else if (s.equals(FgConst.PREF_VALUE_SUNDAY)) {
+            return Calendar.SUNDAY;
+        } else {
+            return Calendar.MONDAY;
+        }
     }
 
-    public static Date getRangeStart(int inputRange, int modifier, Context context){
+    public static Date getRangeStart(int inputRange, int modifier, Context context) {
         int range = Calendar.HOUR_OF_DAY;
-        switch (inputRange){
-            case DATE_RANGE_DAY : {
+        switch (inputRange) {
+            case DATE_RANGE_DAY: {
                 range = Calendar.HOUR_OF_DAY;
                 break;
             }
-            case DATE_RANGE_MONTH : {
+            case DATE_RANGE_MONTH: {
                 range = Calendar.DAY_OF_MONTH;
                 break;
             }
-            case DATE_RANGE_YEAR : {
+            case DATE_RANGE_YEAR: {
                 range = Calendar.MONTH;
                 break;
             }
-            case DATE_RANGE_WEEK : {
+            case DATE_RANGE_WEEK: {
                 range = Calendar.DAY_OF_WEEK;
                 break;
             }
         }
 
         Calendar c = Calendar.getInstance(LocaleUtils.getLocale(context));
+        c.setFirstDayOfWeek(getFirstDayOfWeek(context));
         if (range != Calendar.DAY_OF_WEEK) {
             if (range == Calendar.DAY_OF_MONTH) {
                 c.set(range, 1);
@@ -119,12 +120,12 @@ public class DateRangeFilter extends AbstractFilter implements Parcelable {
         c.set(Calendar.MILLISECOND, 0);
 
         switch (modifier) {
-            case DATE_RANGE_MODIFIER_CURRENTAND_LAST :
-            case DATE_RANGE_MODIFIER_LAST : {
+            case DATE_RANGE_MODIFIER_CURRENTAND_LAST:
+            case DATE_RANGE_MODIFIER_LAST: {
                 if (range != Calendar.DAY_OF_WEEK) {
                     c.add(inputRange, -1);
                 } else {
-                    c.add(Calendar.DAY_OF_WEEK,-7);
+                    c.add(Calendar.DAY_OF_WEEK, -7);
                 }
                 break;
             }
@@ -132,35 +133,36 @@ public class DateRangeFilter extends AbstractFilter implements Parcelable {
         return c.getTime();
     }
 
-    public static Date getRangeEnd(int inputRange, int modifier, Context context){
+    public static Date getRangeEnd(int inputRange, int modifier, Context context) {
         int range = Calendar.HOUR_OF_DAY;
-        switch (inputRange){
-            case DATE_RANGE_DAY : {
+        switch (inputRange) {
+            case DATE_RANGE_DAY: {
                 range = Calendar.HOUR_OF_DAY;
                 break;
             }
-            case DATE_RANGE_MONTH : {
+            case DATE_RANGE_MONTH: {
                 range = Calendar.DAY_OF_MONTH;
                 break;
             }
-            case DATE_RANGE_YEAR : {
+            case DATE_RANGE_YEAR: {
                 range = Calendar.MONTH;
                 break;
             }
-            case DATE_RANGE_WEEK : {
+            case DATE_RANGE_WEEK: {
                 range = Calendar.DAY_OF_WEEK;
                 break;
             }
         }
 
         Calendar c = Calendar.getInstance(LocaleUtils.getLocale(context));
+        c.setFirstDayOfWeek(getFirstDayOfWeek(context));
 
         switch (modifier) {
-            case DATE_RANGE_MODIFIER_LAST : {
+            case DATE_RANGE_MODIFIER_LAST: {
                 if (range != Calendar.DAY_OF_WEEK) {
                     c.add(inputRange, -1);
                 } else {
-                    c.add(Calendar.DAY_OF_WEEK,-7);
+                    c.add(Calendar.DAY_OF_WEEK, -7);
                 }
                 break;
             }
@@ -185,8 +187,46 @@ public class DateRangeFilter extends AbstractFilter implements Parcelable {
     }
 
     @Override
+    public boolean isInverted() {
+        return mInverted;
+    }
+
+    @Override
+    public void setInverted(boolean inverted) {
+        mInverted = inverted;
+    }
+
+    @Override
+    public long getId() {
+        return mId;
+    }
+
+    @Override
+    public void setId(long id) {
+        mId = id;
+    }
+
+    public void setRangeByMonth(int year, int month, Context context) {
+        Calendar c = Calendar.getInstance(LocaleUtils.getLocale(context));
+        c.set(year, month, 1, 0, 0, 0);
+        mStartDate = c.getTime();
+        c.set(year, month, c.getActualMaximum(Calendar.DAY_OF_MONTH), 23, 59, 59);
+        mEndDate = c.getTime();
+    }
+
+    public void setRange(int range, int modifier, Context context) {
+        mStartDate = getRangeStart(range, modifier, context);
+        mEndDate = getRangeEnd(range, modifier, context);
+    }
+
+    @Override
     public Boolean getEnabled() {
         return mEnabled;
+    }
+
+    @Override
+    public void setEnabled(Boolean enabled) {
+        mEnabled = enabled;
     }
 
     public Date getmStartDate() {
@@ -203,11 +243,6 @@ public class DateRangeFilter extends AbstractFilter implements Parcelable {
 
     public void setmEndDate(Date mEndDate) {
         this.mEndDate = mEndDate;
-    }
-
-    @Override
-    public void setEnabled(Boolean enabled) {
-        mEnabled = enabled;
     }
 
     @Override
@@ -268,26 +303,4 @@ public class DateRangeFilter extends AbstractFilter implements Parcelable {
         dest.writeLong(this.mId);
         dest.writeByte(this.mInverted ? (byte) 1 : (byte) 0);
     }
-
-    protected DateRangeFilter(Parcel in) {
-        this.mEnabled = (Boolean) in.readValue(Boolean.class.getClassLoader());
-        long tmpMStartDate = in.readLong();
-        this.mStartDate = tmpMStartDate == -1 ? null : new Date(tmpMStartDate);
-        long tmpMEndDate = in.readLong();
-        this.mEndDate = tmpMEndDate == -1 ? null : new Date(tmpMEndDate);
-        this.mId = in.readLong();
-        this.mInverted = in.readByte() != 0;
-    }
-
-    public static final Creator<DateRangeFilter> CREATOR = new Creator<DateRangeFilter>() {
-        @Override
-        public DateRangeFilter createFromParcel(Parcel source) {
-            return new DateRangeFilter(source);
-        }
-
-        @Override
-        public DateRangeFilter[] newArray(int size) {
-            return new DateRangeFilter[size];
-        }
-    };
 }

@@ -107,6 +107,7 @@ public class FragmentSettings extends XpPreferenceFragment implements ICanPressB
         bindPreferenceSummaryToValue(findPreference("payee_selection_style"));
         bindPreferenceSummaryToValue(findPreference("pin_length"));
         bindPreferenceSummaryToValue(findPreference(FgConst.PREF_DEFAULT_DEPARTMENT));
+        bindPreferenceSummaryToValue(findPreference(FgConst.PREF_FIRST_DAY_OF_WEEK));
         findPreference("enable_pin_lock").setOnPreferenceChangeListener(sCheckBoxPreferenceChangeListener);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());

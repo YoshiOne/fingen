@@ -45,6 +45,9 @@ public class FgConst {
     public static final String PREF_FTS_DO_NOT_SHOW_AGAIN = "fts_do_not_show_again";
     public static final String PREF_FTS_CREDENTIALS = "fts_credentials";
     public static final String PREF_SHOW_INCOME_EXPENSE_FOR_ACCOUNTS = "show_income_expense_for_accounts";
+    public static final String PREF_FIRST_DAY_OF_WEEK = "first_day_of_week";
+    public static final String PREF_VALUE_MONDAY = "monday";
+    public static final String PREF_VALUE_SUNDAY = "sunday";
     //</editor-fold>
 
     //<editor-fold Intent actions

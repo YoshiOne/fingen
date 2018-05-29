@@ -170,6 +170,14 @@
     <string name="ent_sms_body" formatted="false">Текст SMS</string>
 
     <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_monday" formatted="false">Понедельник</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_sunday" formatted="false">Воскресенье</string>
+
+    <!-- 1. General -->
     <!-- Actions -->
     <string name="act_create" formatted="false">Создать</string>
 
@@ -1464,6 +1472,10 @@
     <!-- 20. Settings -->
     <!-- General -->
     <string name="pref_enable_scan_qr" formatted="false">Вкл. сканер чеков</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_first_day_of_week" formatted="false">Первый день недели</string>
 
     <!-- 20. Settings -->
     <!-- General -->

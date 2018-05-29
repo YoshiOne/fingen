@@ -20,6 +20,12 @@
             android:defaultValue="0"
             android:entries="@array/pref_theme_titles"
             android:entryValues="@array/pref_theme_values"/>
+        <ListPreference
+            android:key="first_day_of_week"
+            android:title="@string/pref_first_day_of_week"
+            android:defaultValue="monday"
+            android:entries="@array/pref_fdw_titles"
+            android:entryValues="@array/pref_fdw_values"/>
         <SwitchPreference
             android:defaultValue="false"
             android:key="compact_view_mode"

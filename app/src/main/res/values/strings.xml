@@ -170,6 +170,14 @@
     <string name="ent_sms_body" formatted="false">SMS body</string>
 
     <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_monday" formatted="false">Monday</string>
+
+    <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_sunday" formatted="false">Sunday</string>
+
+    <!-- 1. General -->
     <!-- Actions -->
     <string name="act_create" formatted="false">New</string>
 
@@ -1464,6 +1472,10 @@
     <!-- 20. Settings -->
     <!-- General -->
     <string name="pref_enable_scan_qr" formatted="false">Enable scan QR</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_first_day_of_week" formatted="false">First day of week</string>
 
     <!-- 20. Settings -->
     <!-- General -->

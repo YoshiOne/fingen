@@ -57,6 +57,15 @@
         <item>1</item>
     </string-array>
 
+    <string-array name="pref_fdw_titles" translatable="false">
+        <item>@string/ent_monday</item>
+        <item>@string/ent_sunday</item>
+    </string-array>
+    <string-array name="pref_fdw_values" translatable="false">
+        <item>monday</item>
+        <item>sunday</item>
+    </string-array>
+
     <string-array name="pref_account_click_actions_titles" translatable="false">
         <item>@string/pref_title_account_click_action_list</item>
         <item>@string/pref_title_account_click_action_new</item>
