@@ -830,25 +830,62 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         builderSingle.show();
     }
 
+    private void selectPayeeForMarker(final int markerType, final String selectedText) {
+        if (!checkPayeeAndCreateIfNecessary(true)) {
+            PayeeManager.ShowSelectPayeeDialog(ActivityEditTransaction.this, new PayeeManager.OnSelectPayeeListener() {
+                @Override
+                public void OnSelectPayee(Payee selectedPayee) {
+                    transaction.setPayeeID(selectedPayee.getID());
+                    setPayeeName(selectedPayee.getName());
+                    ActivityEditTransaction.this.createSmsMarker(markerType, selectedText);
+                }
+            });
+        } else {
+            ActivityEditTransaction.this.createSmsMarker(markerType, selectedText);
+        }
+    }
+
     private void createSmsMarker(final int markerType, final String selectedText) {
         SmsMarker smsMarker = null;
 
         switch (markerType) {
             case SmsParser.MARKER_TYPE_PAYEE: {
                 if (transaction.getPayeeID() < 0) {
-                    if (!checkPayeeAndCreateIfNecessary(true)) {
-                        PayeeManager.ShowSelectPayeeDialog(this, new PayeeManager.OnSelectPayeeListener() {
-                            @Override
-                            public void OnSelectPayee(Payee selectedPayee) {
-                                transaction.setPayeeID(selectedPayee.getID());
-                                setPayeeName(selectedPayee.getName());
-                                ActivityEditTransaction.this.createSmsMarker(markerType, selectedText);
-                            }
-                        });
-                        return;
+                    if (mPayeeName.isEmpty()) {
+                        new AlertDialog.Builder(this)
+                                .setNegativeButton(R.string.act_create, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        PayeesDAO payeesDAO = PayeesDAO.getInstance(ActivityEditTransaction.this);
+                                        Payee payee = new Payee();
+                                        payee.setName(selectedText);
+                                        try {
+                                            payee = (Payee) payeesDAO.createModel(payee);
+                                            transaction.setPayeeID(payee.getID());
+                                            setPayeeName(payee.getName());
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                        ActivityEditTransaction.this.createSmsMarker(markerType, selectedText);
+                                    }
+                                })
+                                .setPositiveButton(R.string.act_select, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        selectPayeeForMarker(markerType, selectedText);
+                                    }
+                                })
+                                .setCancelable(false)
+                                .setMessage(String.format(getString(R.string.ttl_create_new_payee_from_marker), selectedText))
+                                .show();
+                    } else {
+                        selectPayeeForMarker(markerType, selectedText);
                     }
+                    return;
                 }
-                smsMarker = new SmsMarker(-1, SmsParser.MARKER_TYPE_PAYEE, String.valueOf(transaction.getPayeeID()), selectedText);
+                if (transaction.getPayeeID() >= 0) {
+                    smsMarker = new SmsMarker(-1, SmsParser.MARKER_TYPE_PAYEE, String.valueOf(transaction.getPayeeID()), selectedText);
+                }
                 break;
             }
             case SmsParser.MARKER_TYPE_DESTACCOUNT: {

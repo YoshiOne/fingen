@@ -183,6 +183,10 @@
 
     <!-- 1. General -->
     <!-- Actions -->
+    <string name="act_select" formatted="false">Select</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
     <string name="act_add" formatted="false">Add</string>
 
     <!-- 1. General -->
@@ -620,6 +624,10 @@
     <!-- 4. Payees -->
     <!-- Titles -->
     <string name="ttl_edit_payee" formatted="false">Edit payee/payer</string>
+
+    <!-- 4. Payees -->
+    <!-- Titles -->
+    <string name="ttl_create_new_payee_from_marker" formatted="false">Create new payee/payer %s or select existing?</string>
 
     <!-- 5. Categories -->
     <!-- Entities -->
