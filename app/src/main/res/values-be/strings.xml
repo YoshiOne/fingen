@@ -593,6 +593,14 @@
     <!-- Errors -->
     <string name="err_specify_account" formatted="false">Укажите счет списания</string>
 
+    <!-- 3. Transactions -->
+    <!-- Errors -->
+    <string name="err_exrate_zero" formatted="false">Обменный курс не может быть равен нулю.</string>
+
+    <!-- 3. Transactions -->
+    <!-- Errors -->
+    <string name="err_exrate_one" formatted="false">Обменный курс равен единице. Вы уверены?</string>
+
     <!-- 4. Payees -->
     <!-- Entities -->
     <string name="ent_payee" formatted="false">Получатель</string>

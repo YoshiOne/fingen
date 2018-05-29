@@ -593,6 +593,14 @@
     <!-- Errors -->
     <string name="err_specify_account" formatted="false">You must specify account</string>
 
+    <!-- 3. Transactions -->
+    <!-- Errors -->
+    <string name="err_exrate_zero" formatted="false">Exchange rate can\'t be zero</string>
+
+    <!-- 3. Transactions -->
+    <!-- Errors -->
+    <string name="err_exrate_one" formatted="false">Exchange rate is ONE. Are you shure?</string>
+
     <!-- 4. Payees -->
     <!-- Entities -->
     <string name="ent_payee" formatted="false">Payee</string>

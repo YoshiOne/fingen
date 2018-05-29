@@ -380,11 +380,6 @@ public class Transaction extends BaseModel implements IAbstractModel {
         this.mTransactionOpened = mTransactionOpened;
     }
 
-    public boolean isValid() {
-        return (getExchangeRate().compareTo(BigDecimal.ZERO) != 0)
-                & mAccountID >= 0;
-    }
-
     public List<ProductEntry> getProductEntries() {
         return mProductEntries;
     }

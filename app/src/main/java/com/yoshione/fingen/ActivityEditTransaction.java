@@ -137,6 +137,10 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     private static final int FRAGMENT_PAYEE = 0;
     private static final int FRAGMENT_DEST_ACCOUNT = 1;
     private static final int FRAGMENTS_COUNT = 2;
+    private static final int ERR_EXRATE_ZERO = 1;
+    private static final int ERR_EXRATE_ONE = 2;
+    private static final int ERR_EMPTY_SRC_ACCOUNT = 3;
+    private static final int ERR_EMPTY_CATEGORY = 4;
     private static final String SHOWCASE_ID = "Edit transaction showcase";
     //</editor-fold>
     private final List<Fragment> fragments = new ArrayList<>();
@@ -241,6 +245,8 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     ConstraintLayout mLayoutLoadingProducts;
     @BindView(R.id.imageButtonInvertExRate)
     ImageButton mImageButtonInvertExRate;
+    @BindView(R.id.layoutExchangeRate)
+    RelativeLayout mLayoutExchangeRate;
     private OnDestAmountChangeListener onDestAmountChangeListener;
     private OnExRateTextChangedListener onExRateTextChangedListener;
     private FragmentPayee fragmentPayee;
@@ -553,6 +559,20 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         }
     }
 
+    public int validateTransaction() {
+        Account src = TransactionManager.getSrcAccount(transaction, this);
+        Account dst = TransactionManager.getDestAccount(transaction, this);
+        if (transaction.getAccountID() < 0) {
+            return ERR_EMPTY_SRC_ACCOUNT;
+        } else if (dst.getID() >= 0 & src.getCabbageId() != dst.getCabbageId() & transaction.getExchangeRate().compareTo(BigDecimal.ZERO) == 0) {
+            return ERR_EXRATE_ZERO;
+        } else if (dst.getID() >= 0 & src.getCabbageId() != dst.getCabbageId() & transaction.getExchangeRate().compareTo(BigDecimal.ONE) == 0) {
+            return ERR_EXRATE_ONE;
+        } else {
+            return 0;
+        }
+    }
+
     @OnClick(R.id.buttonSaveTransaction)
     public void onSaveClick() {
 
@@ -561,6 +581,8 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 if (transaction.getDestAccountID() > 0) {
                     transaction.setDestAccountID(-1);
                     initViewPagerPayee();
+                    transaction.setExchangeRate(BigDecimal.ONE);
+                    initExRate();
                 }
                 break;
             case 1:
@@ -582,81 +604,36 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         //endregion
 
         if (template == null) {
-            if (transaction.isValid()) {
-                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putLong("last_account_id", transaction.getAccountID()).apply();
-
-                //Если транзакция создается из смс, удаляем ее
-                deleteSrcSms();
-
-                //если явно не указано местоположение, пытаемся получить координаты. Если не удается явно задаем 0
-                checkLocation();
-
-                transaction.setAutoCreated(false);
-                TransactionsDAO transactionsDAO = TransactionsDAO.getInstance(getApplicationContext());
-                try {
-                    transaction = (Transaction) transactionsDAO.createModel(transaction);
-                } catch (Exception e) {
-                    Toast.makeText(this, R.string.msg_error_on_write_to_db, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (srcTransaction != null) {
-                    editSrcTransaction();
-                    Intent result = new Intent();
-                    result.putExtra("src_transaction", transactionsDAO.getTransactionByID(srcTransaction.getID()));
-                    try {
-                        srcTransaction = (Transaction) transactionsDAO.createModel(srcTransaction);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    result.putExtra("split1", srcTransaction);
-                    result.putExtra("split2", transaction);
-                    setResult(RESULT_OK, result);
-                } else {
-                    if (!(getIntent().getBooleanExtra("EXIT", false))) {
-                        setResult(RESULT_OK);
-                    }
-                }
-
-                if (mCredit != null) {
-                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-                    switch (credit_action) {
-                        case Credit.DEBT_ACTION_BORROW:
-                        case Credit.DEBT_ACTION_TAKE:
-                            preferences.edit().putLong("credit_dest_account", transaction.getDestAccountID()).apply();
-                            break;
-                        case Credit.DEBT_ACTION_GRANT:
-                        case Credit.DEBT_ACTION_REPAY:
-                            preferences.edit().putLong("credit_src_account", transaction.getAccountID()).apply();
-                            break;
-                    }
-                    if (credit_action == Credit.DEBT_ACTION_REPAY | credit_action == Credit.DEBT_ACTION_TAKE) {
-                        showDebtPercentsDialog(mCredit, credit_action, transaction);
-                    } else {
-                        finish();
-                    }
-                } else {
-                    BigDecimal balanceError = BigDecimal.ZERO;
-                    if (sms != null) {
-                        if (transactionsDAO.isTransactionLastForAccount(transaction)) {
-                            Account account = AccountsDAO.getInstance(getApplicationContext()).getAccountByID(transaction.getAccountID());
-                            balanceError = new SmsParser(sms, this).checkBalance(account);
-                        }
-                    }
-                    if (balanceError.compareTo(BigDecimal.ZERO) != 0) {
-                        showCorrectBalanceDialog(balanceError);
-                    } else {
-                        finish();
-                        if (getIntent().getBooleanExtra("EXIT", false)) {
-                            this.finishAffinity();
-                        }
-                    }
-                }
-            } else {
-                if (transaction.getAccountID() < 0) {
+            switch (validateTransaction()) {
+                case 0:
+                    saveTransaction();
+                    break;
+                case ERR_EMPTY_SRC_ACCOUNT:
                     textInputLayoutAccount.setError(getString(R.string.err_specify_account));
-                }
-                Toast.makeText(ActivityEditTransaction.this, getResources().getString(R.string.msg_invalid_data_in_fields), Toast.LENGTH_SHORT).show();
+                    break;
+                case ERR_EXRATE_ZERO:
+                    mTextInputLayoutExchangeRate.setError(getString(R.string.err_exrate_zero));
+                    break;
+                case ERR_EXRATE_ONE:
+                    new AlertDialog.Builder(this)
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            })
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    saveTransaction();
+                                }
+                            })
+                            .setCancelable(false)
+                            .setMessage(getString(R.string.err_exrate_one))
+                            .show();
+                    break;
+                default:
+                    Toast.makeText(ActivityEditTransaction.this, getResources().getString(R.string.msg_invalid_data_in_fields), Toast.LENGTH_SHORT).show();
             }
         } else {
             //Находимся в режиме редактирования шаблона
@@ -671,6 +648,78 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 finish();
             } else {
                 Toast.makeText(ActivityEditTransaction.this, getResources().getString(R.string.msg_invalid_data_in_fields), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void saveTransaction() {
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putLong("last_account_id", transaction.getAccountID()).apply();
+
+        //Если транзакция создается из смс, удаляем ее
+        deleteSrcSms();
+
+        //если явно не указано местоположение, пытаемся получить координаты. Если не удается явно задаем 0
+        checkLocation();
+
+        transaction.setAutoCreated(false);
+        TransactionsDAO transactionsDAO = TransactionsDAO.getInstance(getApplicationContext());
+        try {
+            transaction = (Transaction) transactionsDAO.createModel(transaction);
+        } catch (Exception e) {
+            Toast.makeText(this, R.string.msg_error_on_write_to_db, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (srcTransaction != null) {
+            editSrcTransaction();
+            Intent result = new Intent();
+            result.putExtra("src_transaction", transactionsDAO.getTransactionByID(srcTransaction.getID()));
+            try {
+                srcTransaction = (Transaction) transactionsDAO.createModel(srcTransaction);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            result.putExtra("split1", srcTransaction);
+            result.putExtra("split2", transaction);
+            setResult(RESULT_OK, result);
+        } else {
+            if (!(getIntent().getBooleanExtra("EXIT", false))) {
+                setResult(RESULT_OK);
+            }
+        }
+
+        if (mCredit != null) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            switch (credit_action) {
+                case Credit.DEBT_ACTION_BORROW:
+                case Credit.DEBT_ACTION_TAKE:
+                    preferences.edit().putLong("credit_dest_account", transaction.getDestAccountID()).apply();
+                    break;
+                case Credit.DEBT_ACTION_GRANT:
+                case Credit.DEBT_ACTION_REPAY:
+                    preferences.edit().putLong("credit_src_account", transaction.getAccountID()).apply();
+                    break;
+            }
+            if (credit_action == Credit.DEBT_ACTION_REPAY | credit_action == Credit.DEBT_ACTION_TAKE) {
+                showDebtPercentsDialog(mCredit, credit_action, transaction);
+            } else {
+                finish();
+            }
+        } else {
+            BigDecimal balanceError = BigDecimal.ZERO;
+            if (sms != null) {
+                if (transactionsDAO.isTransactionLastForAccount(transaction)) {
+                    Account account = AccountsDAO.getInstance(getApplicationContext()).getAccountByID(transaction.getAccountID());
+                    balanceError = new SmsParser(sms, this).checkBalance(account);
+                }
+            }
+            if (balanceError.compareTo(BigDecimal.ZERO) != 0) {
+                showCorrectBalanceDialog(balanceError);
+            } else {
+                finish();
+                if (getIntent().getBooleanExtra("EXIT", false)) {
+                    this.finishAffinity();
+                }
             }
         }
     }
@@ -747,15 +796,16 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
             Account dstAccount = TransactionManager.getDestAccount(transaction, this);
 
             if ((srcAccount.getCabbageId() != dstAccount.getCabbageId()) & (dstAccount.getID() >= 0)) {
-                mTextInputLayoutExchangeRate.setVisibility(View.VISIBLE);
+                mLayoutExchangeRate.setVisibility(View.VISIBLE);
             } else {
-                mTextInputLayoutExchangeRate.setVisibility(View.GONE);
+                mLayoutExchangeRate.setVisibility(View.GONE);
             }
             Cabbage dstCabbage = AccountManager.getCabbage(dstAccount, this);
             destAmountEditor.setScale(dstCabbage.getDecimalCount());
             Cabbage srcCabbage = AccountManager.getCabbage(srcAccount, this);
             String s;
-            if (onExRateTextChangedListener != null) edExchangeRate.removeTextChangedListener(onExRateTextChangedListener);
+            if (onExRateTextChangedListener != null)
+                edExchangeRate.removeTextChangedListener(onExRateTextChangedListener);
             if (!isExRateInverted) {
                 s = String.format("%s/%s", srcCabbage.getCode(), dstCabbage.getCode());
                 edExchangeRate.setText(String.valueOf(transaction.getExchangeRate().doubleValue()));
@@ -763,11 +813,12 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 s = String.format("%s/%s", dstCabbage.getCode(), srcCabbage.getCode());
                 edExchangeRate.setText(String.valueOf(BigDecimal.ONE.divide(transaction.getExchangeRate(), RoundingMode.HALF_EVEN).doubleValue()));
             }
-            if (onExRateTextChangedListener != null) edExchangeRate.addTextChangedListener(onExRateTextChangedListener);
+            if (onExRateTextChangedListener != null)
+                edExchangeRate.addTextChangedListener(onExRateTextChangedListener);
             String hint = String.format("%s %s", getString(R.string.ent_exchange_rate), s);
             mTextInputLayoutExchangeRate.setHint(hint);
         } else {
-            mTextInputLayoutExchangeRate.setVisibility(View.GONE);
+            mLayoutExchangeRate.setVisibility(View.GONE);
         }
         destAmountEditor.setVisibility(mTextInputLayoutExchangeRate.getVisibility());
 
