@@ -79,16 +79,6 @@ public class TransactionManager {
                 cf.format(transaction.getAmount()));
     }
 
-    public static String transactionToStringWithDate(Transaction transaction, Context context){
-        AccountsDAO accountsDAO = AccountsDAO.getInstance(context);
-        PayeesDAO payeesDAO = PayeesDAO.getInstance(context);
-        Account account = accountsDAO.getAccountByID(transaction.getAccountID());
-        CabbageFormatter cf = new CabbageFormatter(AccountManager.getCabbage(account, context));
-        DateTimeFormatter df = DateTimeFormatter.getInstance(context);
-        return String.format("%s, %s, %s, %s", df.getDateShortString(transaction.getDateTime()), account.getName(), payeesDAO.getPayeeByID(transaction.getPayeeID()).getName(),
-                cf.format(transaction.getAmount()));
-    }
-
     public static Transaction templateToTransaction(Template template, Context context) {
         Transaction transaction = new Transaction(PrefUtils.getDefDepID(context));
         transaction.setAccountID(template.getAccountID());

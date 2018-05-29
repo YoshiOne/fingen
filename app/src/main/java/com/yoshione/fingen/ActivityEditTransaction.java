@@ -75,6 +75,7 @@ import com.yoshione.fingen.managers.AccountManager;
 import com.yoshione.fingen.managers.PayeeManager;
 import com.yoshione.fingen.managers.SmsMarkerManager;
 import com.yoshione.fingen.managers.TransactionManager;
+import com.yoshione.fingen.managers.TransferManager;
 import com.yoshione.fingen.model.Account;
 import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.model.Category;
@@ -1512,7 +1513,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
             @Override
             public void OnAmountChange(BigDecimal newAmount, int newType) {
                 transaction.setAmount(newAmount, newType);
-                destAmountEditor.setAmount(transaction.getDestAmount());
+                destAmountEditor.setAmount(TransferManager.getDestAmount(transaction));
                 if (newType != Transaction.TRANSACTION_TYPE_TRANSFER) {
                     mLastTrType = newType;
                 }
@@ -2069,7 +2070,8 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     private class OnDestAmountChangeListener implements AmountEditor.OnAmountChangeListener {
         @Override
         public void OnAmountChange(BigDecimal newAmount, int newType) {
-            transaction.setDestAmount(newAmount);
+//            transaction.setDestAmount(newAmount);
+            transaction.setExchangeRate(TransferManager.getExRate(transaction, newAmount));
             edExchangeRate.removeTextChangedListener(onExRateTextChangedListener);
             edExchangeRate.setText(String.valueOf(transaction.getExchangeRate().doubleValue()));
             edExchangeRate.addTextChangedListener(onExRateTextChangedListener);
@@ -2088,7 +2090,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 double rate = Double.valueOf(s.toString());
                 transaction.setExchangeRate(new BigDecimal(rate));
                 destAmountEditor.mOnAmountChangeListener = null;
-                destAmountEditor.setAmount(transaction.getDestAmount());
+                destAmountEditor.setAmount(TransferManager.getDestAmount(transaction));
                 destAmountEditor.mOnAmountChangeListener = onDestAmountChangeListener;
             } catch (NumberFormatException nfe) {
                 //Todo уведомлять пользователя о том, что число некорректно

@@ -3,7 +3,6 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-
 import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
@@ -15,27 +14,32 @@ import java.util.List;
 
 /**
  * Created by slv on 14.08.2015.
- *
  */
 public class Transaction extends BaseModel implements IAbstractModel {
     public static final String TAG = "com.yoshione.fingen.Model.Transaction";
-
-    public static final int EXRATE_DIRECTION_1SRC_XDEST = 0;
-//    public static final int EXRATE_DIRECTION_1DEST_XSRC = 1;
 
     public static final int TRANSACTION_TYPE_INCOME = 1;
     public static final int TRANSACTION_TYPE_EXPENSE = -1;
     public static final int TRANSACTION_TYPE_TRANSFER = 0;
     public static final int TRANSACTION_TYPE_UNDEFINED = -8;
+    public static final Creator<Transaction> CREATOR = new Creator<Transaction>() {
+        @Override
+        public Transaction createFromParcel(Parcel source) {
+            return new Transaction(source);
+        }
+
+        @Override
+        public Transaction[] newArray(int size) {
+            return new Transaction[size];
+        }
+    };
     public int headerPosition = 0;
-    //    private long mId = -1;
     private Date mDateTime;
     private long mAccountID;
     private long mDestAccountID;
     private long mPayeeID;
     private long mCategoryID;
     private BigDecimal mAmount;
-    private BigDecimal mDestAmount;
     private BigDecimal mFromAccountBalance;
     private BigDecimal mToAccountBalance;
     private long mProjectID;
@@ -49,12 +53,10 @@ public class Transaction extends BaseModel implements IAbstractModel {
     private String mFile;
     private boolean mTransactionOpened = false;
     private BigDecimal mExchangeRate;
-    private int mExRateDirection;
     private int mTransactionType;
     private boolean mSelected;
     private boolean mAutoCreated;
     private boolean isExRateEvalDisabled = false;
-    private boolean isDestAmountEvalDisabled = false;
     private boolean isDayFirst = false;
     private boolean isDayLast = false;
     private long mFN;
@@ -69,7 +71,6 @@ public class Transaction extends BaseModel implements IAbstractModel {
         this.mPayeeID = -1;
         this.mCategoryID = -1;
         this.mAmount = BigDecimal.ZERO;
-        this.mDestAmount = BigDecimal.ZERO;
         this.mFromAccountBalance = BigDecimal.ZERO;
         this.mToAccountBalance = BigDecimal.ZERO;
         this.mExchangeRate = BigDecimal.ONE;
@@ -79,7 +80,6 @@ public class Transaction extends BaseModel implements IAbstractModel {
         this.mComment = "";
         this.mFile = "";
         this.mDestAccountID = -1;
-        this.mExRateDirection = EXRATE_DIRECTION_1SRC_XDEST;
         this.mAutoCreated = false;
         this.mTransactionType = TRANSACTION_TYPE_EXPENSE;
         this.mLat = 0d;
@@ -103,8 +103,6 @@ public class Transaction extends BaseModel implements IAbstractModel {
         mFromAccountBalance = src.getFromAccountBalance();
         mToAccountBalance = src.getToAccountBalance();
         mExchangeRate = new BigDecimal(src.getExchangeRate().doubleValue());
-        mExRateDirection = src.getExRateDirection();
-        evalDestAmount();
         mProjectID = src.getProjectID();
         mSimpleDebtID = src.getSimpleDebtID();
         mLocationID = src.getLocationID();
@@ -125,6 +123,41 @@ public class Transaction extends BaseModel implements IAbstractModel {
         for (ProductEntry entry : src.getProductEntries()) {
             mProductEntries.add(new ProductEntry(-1, entry.getProductID(), entry.getQuantity(), entry.getPrice(), entry.getCategoryID(), entry.getProjectID(), getID()));
         }
+    }
+
+    protected Transaction(Parcel in) {
+        super(in);
+        this.headerPosition = in.readInt();
+        long tmpMDateTime = in.readLong();
+        this.mDateTime = tmpMDateTime == -1 ? null : new Date(tmpMDateTime);
+        this.mAccountID = in.readLong();
+        this.mDestAccountID = in.readLong();
+        this.mPayeeID = in.readLong();
+        this.mCategoryID = in.readLong();
+        this.mAmount = (BigDecimal) in.readSerializable();
+        this.mFromAccountBalance = (BigDecimal) in.readSerializable();
+        this.mToAccountBalance = (BigDecimal) in.readSerializable();
+        this.mProjectID = in.readLong();
+        this.mSimpleDebtID = in.readLong();
+        this.mDepartmentID = in.readLong();
+        this.mLocationID = in.readLong();
+        this.mLat = in.readDouble();
+        this.mLon = in.readDouble();
+        this.mAccuracy = in.readInt();
+        this.mComment = in.readString();
+        this.mFile = in.readString();
+        this.mTransactionOpened = in.readByte() != 0;
+        this.mExchangeRate = (BigDecimal) in.readSerializable();
+        this.mTransactionType = in.readInt();
+        this.mSelected = in.readByte() != 0;
+        this.mAutoCreated = in.readByte() != 0;
+        this.isExRateEvalDisabled = in.readByte() != 0;
+        this.isDayFirst = in.readByte() != 0;
+        this.isDayLast = in.readByte() != 0;
+        this.mFN = in.readLong();
+        this.mFD = in.readLong();
+        this.mFP = in.readLong();
+        this.mProductEntries = in.createTypedArrayList(ProductEntry.CREATOR);
     }
 
     public BigDecimal getFromAccountBalance() {
@@ -167,81 +200,6 @@ public class Transaction extends BaseModel implements IAbstractModel {
     @Override
     public long getID() {
         return super.getID();
-    }
-
-    private void evalDestAmount() {
-        if (!isDestAmountEvalDisabled) {
-            isExRateEvalDisabled = true;
-            if (mExchangeRate.compareTo(BigDecimal.ONE) == 0) {
-                setDestAmount(mAmount);
-            } else {
-                switch (mExRateDirection) {
-                    case EXRATE_DIRECTION_1SRC_XDEST: {
-                        setDestAmount(getAmount().multiply(getExchangeRate()));
-                        break;
-                    }
-//                    case EXRATE_DIRECTION_1DEST_XSRC: {
-//                        if (mExchangeRate.compareTo(BigDecimal.ZERO) != 0) {
-//                            setDestAmount(getAmount().divide(getExchangeRate(), 2, BigDecimal.ROUND_HALF_EVEN));
-//                        } else {
-//                            setDestAmount(getAmount());
-//                        }
-//                        break;
-//                    }
-                    default: {
-                        setDestAmount(getAmount());
-                        break;
-                    }
-                }
-            }
-        }
-        isDestAmountEvalDisabled = false;
-    }
-
-    private void evalExRate() {
-        if (!isExRateEvalDisabled) {
-            isDestAmountEvalDisabled = true;
-            switch (mExRateDirection) {
-                case EXRATE_DIRECTION_1SRC_XDEST: {
-                    if (getAmount().compareTo(BigDecimal.ZERO) != 0 && mAccountID != mDestAccountID) {
-                        BigDecimal untrim = getDestAmount().divide(getAmount(), 15, BigDecimal.ROUND_HALF_EVEN);
-                        BigDecimal trim = trimExRate(untrim, getAmount(), getDestAmount());
-
-                        setExchangeRate(trim);
-                    } else {
-                        setExchangeRate(BigDecimal.ONE);
-                    }
-                    break;
-                }
-//                case EXRATE_DIRECTION_1DEST_XSRC: {
-//                    setExchangeRate(getAmount().multiply(getDestAmount()));
-//                    break;
-//                }
-                default: {
-                    setExchangeRate(BigDecimal.ONE);
-                    break;
-                }
-            }
-        }
-        isExRateEvalDisabled = false;
-    }
-
-    private BigDecimal trimExRate(BigDecimal untrim, BigDecimal src, BigDecimal dst) {
-        BigDecimal cur;
-        BigDecimal prev = new BigDecimal(String.valueOf(untrim.doubleValue()));
-        BigDecimal trim = new BigDecimal(String.valueOf(untrim.doubleValue()));
-        int scale = untrim.scale();
-        while (scale >= 0) {
-            trim = untrim.setScale(scale, RoundingMode.HALF_EVEN);
-            cur = src.multiply(trim).setScale(2, RoundingMode.HALF_EVEN);
-            if (cur.compareTo(dst) != 0) {
-                trim = prev;
-                break;
-            }
-            prev = new BigDecimal(trim.doubleValue());
-            scale--;
-        }
-        return trim;
     }
 
     public boolean isSelected() {
@@ -324,16 +282,6 @@ public class Transaction extends BaseModel implements IAbstractModel {
                 mTransactionType = (mAmount.compareTo(BigDecimal.ZERO) < 0) ? TRANSACTION_TYPE_EXPENSE : TRANSACTION_TYPE_INCOME;
             }
         }
-        evalDestAmount();
-    }
-
-    public BigDecimal getDestAmount() {
-        return mDestAmount;
-    }
-
-    public void setDestAmount(BigDecimal mDestAmount) {
-        this.mDestAmount = mDestAmount.abs();
-        evalExRate();
     }
 
     public long getProjectID() {
@@ -399,15 +347,6 @@ public class Transaction extends BaseModel implements IAbstractModel {
 
     public void setExchangeRate(BigDecimal mExchangeRate) {
         this.mExchangeRate = mExchangeRate.abs();
-        evalDestAmount();
-    }
-
-    private int getExRateDirection() {
-        return mExRateDirection;
-    }
-
-    public void setExRateDirection(int mExRateDirection) {
-        this.mExRateDirection = mExRateDirection;
     }
 
     public int getTransactionType() {
@@ -456,9 +395,9 @@ public class Transaction extends BaseModel implements IAbstractModel {
 
     public BigDecimal getResidue() {
         if (getProductEntries().isEmpty()) return BigDecimal.ZERO;
-        BigDecimal residue = new BigDecimal(getAmount().doubleValue()).setScale(2,RoundingMode.HALF_EVEN);
+        BigDecimal residue = new BigDecimal(getAmount().doubleValue()).setScale(2, RoundingMode.HALF_EVEN);
         for (ProductEntry entry : mProductEntries) {
-            residue = residue.subtract(entry.getPrice().multiply(entry.getQuantity())).setScale(2,RoundingMode.HALF_EVEN);
+            residue = residue.subtract(entry.getPrice().multiply(entry.getQuantity())).setScale(2, RoundingMode.HALF_EVEN);
         }
         return residue;
     }
@@ -514,10 +453,6 @@ public class Transaction extends BaseModel implements IAbstractModel {
         return null;
     }
 
-//    public boolean isDayFirst() {
-//        return isDayFirst;
-//    }
-
     public void setDayFirst(boolean dayFirst) {
         isDayFirst = dayFirst;
     }
@@ -569,7 +504,6 @@ public class Transaction extends BaseModel implements IAbstractModel {
         dest.writeLong(this.mPayeeID);
         dest.writeLong(this.mCategoryID);
         dest.writeSerializable(this.mAmount);
-        dest.writeSerializable(this.mDestAmount);
         dest.writeSerializable(this.mFromAccountBalance);
         dest.writeSerializable(this.mToAccountBalance);
         dest.writeLong(this.mProjectID);
@@ -583,12 +517,10 @@ public class Transaction extends BaseModel implements IAbstractModel {
         dest.writeString(this.mFile);
         dest.writeByte(this.mTransactionOpened ? (byte) 1 : (byte) 0);
         dest.writeSerializable(this.mExchangeRate);
-        dest.writeInt(this.mExRateDirection);
         dest.writeInt(this.mTransactionType);
         dest.writeByte(this.mSelected ? (byte) 1 : (byte) 0);
         dest.writeByte(this.mAutoCreated ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isExRateEvalDisabled ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.isDestAmountEvalDisabled ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isDayFirst ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isDayLast ? (byte) 1 : (byte) 0);
         dest.writeLong(this.mFN);
@@ -596,54 +528,4 @@ public class Transaction extends BaseModel implements IAbstractModel {
         dest.writeLong(this.mFP);
         dest.writeTypedList(this.mProductEntries);
     }
-
-    protected Transaction(Parcel in) {
-        super(in);
-        this.headerPosition = in.readInt();
-        long tmpMDateTime = in.readLong();
-        this.mDateTime = tmpMDateTime == -1 ? null : new Date(tmpMDateTime);
-        this.mAccountID = in.readLong();
-        this.mDestAccountID = in.readLong();
-        this.mPayeeID = in.readLong();
-        this.mCategoryID = in.readLong();
-        this.mAmount = (BigDecimal) in.readSerializable();
-        this.mDestAmount = (BigDecimal) in.readSerializable();
-        this.mFromAccountBalance = (BigDecimal) in.readSerializable();
-        this.mToAccountBalance = (BigDecimal) in.readSerializable();
-        this.mProjectID = in.readLong();
-        this.mSimpleDebtID = in.readLong();
-        this.mDepartmentID = in.readLong();
-        this.mLocationID = in.readLong();
-        this.mLat = in.readDouble();
-        this.mLon = in.readDouble();
-        this.mAccuracy = in.readInt();
-        this.mComment = in.readString();
-        this.mFile = in.readString();
-        this.mTransactionOpened = in.readByte() != 0;
-        this.mExchangeRate = (BigDecimal) in.readSerializable();
-        this.mExRateDirection = in.readInt();
-        this.mTransactionType = in.readInt();
-        this.mSelected = in.readByte() != 0;
-        this.mAutoCreated = in.readByte() != 0;
-        this.isExRateEvalDisabled = in.readByte() != 0;
-        this.isDestAmountEvalDisabled = in.readByte() != 0;
-        this.isDayFirst = in.readByte() != 0;
-        this.isDayLast = in.readByte() != 0;
-        this.mFN = in.readLong();
-        this.mFD = in.readLong();
-        this.mFP = in.readLong();
-        this.mProductEntries = in.createTypedArrayList(ProductEntry.CREATOR);
-    }
-
-    public static final Creator<Transaction> CREATOR = new Creator<Transaction>() {
-        @Override
-        public Transaction createFromParcel(Parcel source) {
-            return new Transaction(source);
-        }
-
-        @Override
-        public Transaction[] newArray(int size) {
-            return new Transaction[size];
-        }
-    };
 }

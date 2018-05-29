@@ -27,6 +27,7 @@ import com.yoshione.fingen.interfaces.IProgressEventsListener;
 import com.yoshione.fingen.managers.AccountManager;
 import com.yoshione.fingen.managers.CabbageManager;
 import com.yoshione.fingen.managers.TransactionManager;
+import com.yoshione.fingen.managers.TransferManager;
 import com.yoshione.fingen.model.Account;
 import com.yoshione.fingen.model.BaseModel;
 import com.yoshione.fingen.model.Cabbage;
@@ -273,7 +274,7 @@ public class CsvImporter {
                                 cabbagesNameCache.put(transaction.getDestAccountID(), currency);
                                 cabbagesDecimalCountCache.put(transaction.getDestAccountID(), decimalCount);
                             }
-                            amount = transaction.getDestAmount().setScale(decimalCount, RoundingMode.HALF_EVEN).toString();
+                            amount = TransferManager.getDestAmount(transaction).setScale(decimalCount, RoundingMode.HALF_EVEN).toString();
                             if (!splitProducts) {
                                 out.writeNext(date, time, account, amount, currency, type, exrate, category, payee, location, project, department, note, lon, lat, fn, fd, fp);
                             } else {
@@ -560,7 +561,8 @@ public class CsvImporter {
                         } else {
                             if (transaction.isTransactionOpened()) {
                                 transaction.setDestAccountID(account.getID());
-                                transaction.setDestAmount(BigDecimal.valueOf(Double.valueOf(values[3])));
+//                                transaction.setDestAmount(BigDecimal.valueOf(Double.valueOf(values[3])));
+                                transaction.setExchangeRate(TransferManager.getExRate(transaction, BigDecimal.valueOf(Double.valueOf(values[3]))));
                             } else {
                                 transaction.setID(-1);
                                 transaction.setDestAccountID(-1);
@@ -1068,7 +1070,7 @@ public class CsvImporter {
                         return;
                     }
                     //Сумма транзакции, если входящий перевод
-                    mTransaction.setDestAmount(parseAmount(vls, 3));
+                    mTransaction.setExchangeRate(TransferManager.getExRate(mTransaction, parseAmount(vls, 3)));
                 }
                 mTransaction.setTransactionOpened(false);
                 if (mTransaction.getAccountID() >= 0 && mTransaction.getAmount().compareTo(BigDecimal.ZERO) != 0) {

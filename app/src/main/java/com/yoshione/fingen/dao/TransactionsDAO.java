@@ -21,6 +21,7 @@ import com.yoshione.fingen.filters.FilterListHelper;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.managers.FilterManager;
+import com.yoshione.fingen.managers.TransferManager;
 import com.yoshione.fingen.model.Account;
 import com.yoshione.fingen.model.Category;
 import com.yoshione.fingen.model.DateEntry;
@@ -127,7 +128,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
     private void updateBalanceForTransaction(Transaction t, int mult, boolean revert) {
         updateBalance(revert, t.getAmount().doubleValue(), mult, t.getAccountID(), t.getID(), t.getDateTime().getTime());
         if (t.getDestAccountID() >= 0) {
-            updateBalance(revert, t.getDestAmount().doubleValue(), mult, t.getDestAccountID(), t.getID(), t.getDateTime().getTime());
+            updateBalance(revert, TransferManager.getDestAmount(t).doubleValue(), mult, t.getDestAccountID(), t.getID(), t.getDateTime().getTime());
         }
     }
 
