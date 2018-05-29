@@ -404,6 +404,7 @@ public class FragmentModelList extends Fragment {
                 Intent intent = new Intent(getActivity(), ActivityEditTransaction.class);
                 intent.putExtra("template", abstractModel);
                 intent.putExtra("transaction", TransactionManager.templateToTransaction((Template) abstractModel, getActivity()));
+                intent.putExtra("focus_to_amount", true);
                 startActivity(intent);
 //                fabMenu.close(true);
                 break;

@@ -101,6 +101,7 @@ public class AmountEditor extends LinearLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         EventBus.getDefault().register(this);
+//        setFocus();
     }
 
     @Override
@@ -239,8 +240,9 @@ public class AmountEditor extends LinearLayout {
     }
 
     public void setFocus() {
-        edAmountCents.requestFocus();
+//        edAmountCents.requestFocus();
         edAmount.requestFocus();
+        edAmount.selectAll();
     }
 
     private void init(Context context) {
@@ -370,7 +372,7 @@ public class AmountEditor extends LinearLayout {
                 edAmount.setText("");
                 edAmountCents.setText("");
             }
-            edAmount.selectAll();
+//            edAmount.selectAll();
         } else {
             edAmount.setText("");
             edAmountCents.setText("");

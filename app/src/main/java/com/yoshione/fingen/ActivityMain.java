@@ -1113,6 +1113,7 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
                 startActivityForResult(intent, RequestCodes.REQUEST_CODE_SCAN_QR);
             } else {
                 Transaction transaction = new Transaction(PrefUtils.getDefDepID(ActivityMain.this));
+                Intent intent = new Intent(ActivityMain.this, ActivityEditTransaction.class);
                 switch (v.getId()) {
                     case R.id.buttonNewIncome:
                         transaction.setTransactionType(Transaction.TRANSACTION_TYPE_INCOME);
@@ -1122,9 +1123,9 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
                         break;
                     case R.id.buttonNewTransfer:
                         transaction.setTransactionType(Transaction.TRANSACTION_TYPE_TRANSFER);
+                        intent.putExtra("focus_to_amount", true);
                         break;
                 }
-                Intent intent = new Intent(ActivityMain.this, ActivityEditTransaction.class);
                 intent.putExtra("transaction", transaction);
                 ActivityMain.this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
             }

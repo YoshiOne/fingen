@@ -367,10 +367,6 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     public void onResume() {
         super.onResume();
 
-        if (getIntent().getBooleanExtra("focus_to_amount", false)) {
-            amountEditor.setFocus();
-        }
-
         forceUpdateLocation = transaction.getID() < 0;
         allowUpdateLocation = preferences.getBoolean("detect_locations", false) & forceUpdateLocation & (srcTransaction == null);
 
@@ -1531,6 +1527,10 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 }
             }
         };
+
+        if (getIntent().getBooleanExtra("focus_to_amount", false)) {
+            amountEditor.setFocus();
+        }
     }
 
     private void initDestAmountEditor() {
