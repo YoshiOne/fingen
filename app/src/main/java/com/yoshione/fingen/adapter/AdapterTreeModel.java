@@ -27,6 +27,7 @@ import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IAdapterEventsListener;
 import com.yoshione.fingen.interfaces.IOrderable;
 import com.yoshione.fingen.interfaces.IUpdateTreeListsEvents;
+import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.utils.BaseNode;
 import com.yoshione.fingen.utils.IconGenerator;
 import com.yoshione.fingen.utils.ScreenUtils;
@@ -151,7 +152,12 @@ public class AdapterTreeModel extends RecyclerView.Adapter implements ItemTouchH
             }
         });
 
-        String modelName = model.getName();
+        String modelName;
+        if (model.getClass().equals(Cabbage.class)) {
+            modelName = model.toString();
+        } else {
+            modelName = model.getName();
+        }
 
         if (node.getNumberOfChildren() == 0) {
             vh.expandableIndicator.setVisibility(View.GONE);

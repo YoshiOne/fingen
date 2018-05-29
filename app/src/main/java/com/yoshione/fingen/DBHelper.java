@@ -626,7 +626,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
         db.execSQL(SQL_CREATE_TABLE_REF_CURRENCIES);
 
         Cabbage cabbage;
-        List<String> codes = Arrays.asList("RUB", "USD", "EUR", "UAH", "BYR", "KZT", "ABC");
+        List<String> codes = Arrays.asList("RUB", "USD", "EUR", "UAH", "BYN", "KZT", "ABC");
         for (String code : codes) {
             cabbage = CabbageManager.createFromCode(code, mContext);
             if (cabbage != null) {

@@ -55,7 +55,7 @@ public class CNode implements Comparable<CNode> {
         mIncome = income;
     }
 
-    public CNode getmParent() {
+    private CNode getmParent() {
         return mParent;
     }
 
