@@ -184,7 +184,8 @@ public class CNode implements Comparable<CNode> {
         ListSumsByCabbage listSumsByCabbage = mCategory.getBudget().getmSums();
         for (int i = 0; i < listSumsByCabbage.getmList().size(); i++) {
             if (listSumsByCabbage.getmList().get(i).getCabbageId() == cabbageId) {
-                listSumsByCabbage.getmList().remove(i);
+                listSumsByCabbage.getmList().get(i).setInPlan(BigDecimal.ZERO);
+                listSumsByCabbage.getmList().get(i).setOutPlan(BigDecimal.ZERO);
                 break;
             }
         }
