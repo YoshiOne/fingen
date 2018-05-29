@@ -99,6 +99,7 @@ import com.yoshione.fingen.widgets.SmsEditText;
 import com.yoshione.fingen.widgets.ToolbarActivity;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -238,6 +239,8 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     TextView mTextViewLoadingProducts;
     @BindView(R.id.layoutLoadingProducts)
     ConstraintLayout mLayoutLoadingProducts;
+    @BindView(R.id.imageButtonInvertExRate)
+    ImageButton mImageButtonInvertExRate;
     private OnDestAmountChangeListener onDestAmountChangeListener;
     private OnExRateTextChangedListener onExRateTextChangedListener;
     private FragmentPayee fragmentPayee;
@@ -287,6 +290,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     };
     private boolean allowUpdateLocation;
     private boolean mIsBtnMorePressed = false;
+    private boolean isExRateInverted = false;
 
     @Override
     protected int getLayoutResourceId() {
@@ -455,7 +459,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_tune_editor :
+            case R.id.action_tune_editor:
                 Intent intent = new Intent(this, ActivityEditorConstructor.class);
                 startActivityForResult(intent, REQUEST_CODE_TUNE_EDITOR);
                 return true;
@@ -740,15 +744,28 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
 
         if (transaction.getTransactionType() == Transaction.TRANSACTION_TYPE_TRANSFER) {
             Account srcAccount = TransactionManager.getSrcAccount(transaction, this);
-            Account destAccount = TransactionManager.getDestAccount(transaction, this);
+            Account dstAccount = TransactionManager.getDestAccount(transaction, this);
 
-            if ((srcAccount.getCabbageId() != destAccount.getCabbageId()) & (destAccount.getID() >= 0)) {
+            if ((srcAccount.getCabbageId() != dstAccount.getCabbageId()) & (dstAccount.getID() >= 0)) {
                 mTextInputLayoutExchangeRate.setVisibility(View.VISIBLE);
             } else {
                 mTextInputLayoutExchangeRate.setVisibility(View.GONE);
             }
-            Cabbage destCabbage = AccountManager.getCabbage(destAccount, this);
-            destAmountEditor.setScale(destCabbage.getDecimalCount());
+            Cabbage dstCabbage = AccountManager.getCabbage(dstAccount, this);
+            destAmountEditor.setScale(dstCabbage.getDecimalCount());
+            Cabbage srcCabbage = AccountManager.getCabbage(srcAccount, this);
+            String s;
+            if (onExRateTextChangedListener != null) edExchangeRate.removeTextChangedListener(onExRateTextChangedListener);
+            if (!isExRateInverted) {
+                s = String.format("%s/%s", srcCabbage.getCode(), dstCabbage.getCode());
+                edExchangeRate.setText(String.valueOf(transaction.getExchangeRate().doubleValue()));
+            } else {
+                s = String.format("%s/%s", dstCabbage.getCode(), srcCabbage.getCode());
+                edExchangeRate.setText(String.valueOf(BigDecimal.ONE.divide(transaction.getExchangeRate(), RoundingMode.HALF_EVEN).doubleValue()));
+            }
+            if (onExRateTextChangedListener != null) edExchangeRate.addTextChangedListener(onExRateTextChangedListener);
+            String hint = String.format("%s %s", getString(R.string.ent_exchange_rate), s);
+            mTextInputLayoutExchangeRate.setHint(hint);
         } else {
             mTextInputLayoutExchangeRate.setVisibility(View.GONE);
         }
@@ -1028,6 +1045,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         outState.putInt("viewpager_current_item", viewPager.getCurrentItem());
         outState.putInt("last_transaction_type", mLastTrType);
         outState.putBoolean("is_button_more_pressed", mIsBtnMorePressed);
+        outState.putBoolean("is_exrate_inverted", isExRateInverted);
     }
 
     @Override
@@ -1047,6 +1065,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         credit_action = savedInstanceState.getInt("credit_action");
         viewPager.setCurrentItem(savedInstanceState.getInt("viewpager_current_item"));
         mIsBtnMorePressed = savedInstanceState.getBoolean("is_button_more_pressed");
+        isExRateInverted = savedInstanceState.getBoolean("is_exrate_inverted");
         mLastTrType = savedInstanceState.getInt("last_transaction_type");
     }
 
@@ -1544,8 +1563,14 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     }
 
     private void initExRate() {
+        mImageButtonInvertExRate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isExRateInverted = !isExRateInverted;
+                updateControlsState();
+            }
+        });
         edExchangeRate.setText(String.valueOf(transaction.getExchangeRate().doubleValue()));
-//        setExRateVisibility(viewPager.getCurrentItem());
         onExRateTextChangedListener = new OnExRateTextChangedListener();
         edExchangeRate.addTextChangedListener(onExRateTextChangedListener);
     }
@@ -1830,7 +1855,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 initDateTimeButtons();
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
-        .show();
+                .show();
     }
 
     public void onTimeClick(View view) {
@@ -2073,7 +2098,13 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
 //            transaction.setDestAmount(newAmount);
             transaction.setExchangeRate(TransferManager.getExRate(transaction, newAmount));
             edExchangeRate.removeTextChangedListener(onExRateTextChangedListener);
-            edExchangeRate.setText(String.valueOf(transaction.getExchangeRate().doubleValue()));
+            BigDecimal visibleExRate;
+            if (!isExRateInverted) {
+                visibleExRate = transaction.getExchangeRate();
+            } else {
+                visibleExRate = BigDecimal.ONE.divide(transaction.getExchangeRate(), RoundingMode.HALF_EVEN);
+            }
+            edExchangeRate.setText(String.valueOf(visibleExRate.doubleValue()));
             edExchangeRate.addTextChangedListener(onExRateTextChangedListener);
         }
     }
@@ -2087,7 +2118,12 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             try {
-                double rate = Double.valueOf(s.toString());
+                double rate;
+                if (!isExRateInverted) {
+                    rate = Double.valueOf(s.toString());
+                } else {
+                    rate = 1d / Double.valueOf(s.toString());
+                }
                 transaction.setExchangeRate(new BigDecimal(rate));
                 destAmountEditor.mOnAmountChangeListener = null;
                 destAmountEditor.setAmount(TransferManager.getDestAmount(transaction));

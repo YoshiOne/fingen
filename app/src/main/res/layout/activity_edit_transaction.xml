@@ -163,20 +163,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" /><!--DestAmount-->
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/textInputLayoutExchangeRate"
+            <RelativeLayout
+                android:id="@+id/layoutExchangeRate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <EditText
-                    android:id="@+id/edit_text_exchange_rate"
-                    style="@style/EditableEditText"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/textInputLayoutExchangeRate"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/ent_exchange_rate"
-                    android:inputType="numberDecimal"
-                    android:selectAllOnFocus="true" />
-            </android.support.design.widget.TextInputLayout>
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/edit_text_exchange_rate"
+                        style="@style/EditableEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/ent_exchange_rate"
+                        android:inputType="numberDecimal"
+                        android:selectAllOnFocus="true" />
+                </android.support.design.widget.TextInputLayout>
+
+                <ImageButton
+                    android:id="@+id/imageButtonInvertExRate"
+                    style="@style/ClearButtonStyle"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    tools:ignore="ContentDescription"
+                    android:src="@drawable/ic_import_export_blue"/>
+            </RelativeLayout><!--ExchangeRate-->
 
             <RelativeLayout
                 android:id="@+id/layoutSms"

@@ -90,7 +90,6 @@ public class TransactionManager {
         transaction.setLocationID(template.getLocationID());
         transaction.setDestAccountID(template.getDestAccountID());
         transaction.setExchangeRate(template.getExchangeRate());
-        transaction.setExRateDirection(Transaction.EXRATE_DIRECTION_1SRC_XDEST);
         transaction.setTransactionType(template.getTrType());
         transaction.setComment(template.getComment());
         return transaction;
