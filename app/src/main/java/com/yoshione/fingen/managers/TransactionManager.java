@@ -18,6 +18,7 @@ import com.yoshione.fingen.dao.PayeesDAO;
 import com.yoshione.fingen.dao.SimpleDebtsDAO;
 import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.model.Account;
+import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.model.Category;
 import com.yoshione.fingen.model.Location;
 import com.yoshione.fingen.model.Payee;
@@ -58,6 +59,14 @@ public class TransactionManager {
     public static Account getDestAccount(Transaction transaction, Context context){
         AccountsDAO accountsDAO = AccountsDAO.getInstance(context);
         return accountsDAO.getAccountByID(transaction.getDestAccountID());
+    }
+
+    public static Cabbage getSrcCabbage(Transaction transaction, Context context) {
+        return AccountManager.getCabbage(AccountsDAO.getInstance(context).getAccountByID(transaction.getAccountID()), context);
+    }
+
+    public static Cabbage getDstCabbage(Transaction transaction, Context context) {
+        return AccountManager.getCabbage(AccountsDAO.getInstance(context).getAccountByID(transaction.getDestAccountID()), context);
     }
 
     public static SimpleDebt getSimpleDebt(Transaction transaction, Context context){

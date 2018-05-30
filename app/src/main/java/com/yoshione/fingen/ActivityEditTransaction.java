@@ -590,6 +590,11 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     transaction.setPayeeID(-1);
                     initViewPagerPayee();
                 }
+                if (TransactionManager.getSrcAccount(transaction, this).getCabbageId() ==
+                        TransactionManager.getDestAccount(transaction, this).getCabbageId()) {
+                    transaction.setExchangeRate(BigDecimal.ONE);
+                    initExRate();
+                }
                 break;
         }
 
@@ -806,6 +811,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
             String s;
             if (onExRateTextChangedListener != null)
                 edExchangeRate.removeTextChangedListener(onExRateTextChangedListener);
+            isExRateInverted = preferences.getBoolean(String.format("%s/%s", srcCabbage.getCode(), dstCabbage.getCode()), false);
             if (!isExRateInverted) {
                 s = String.format("%s/%s", srcCabbage.getCode(), dstCabbage.getCode());
                 edExchangeRate.setText(String.valueOf(transaction.getExchangeRate().doubleValue()));
@@ -820,7 +826,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         } else {
             mLayoutExchangeRate.setVisibility(View.GONE);
         }
-        destAmountEditor.setVisibility(mTextInputLayoutExchangeRate.getVisibility());
+        destAmountEditor.setVisibility(mLayoutExchangeRate.getVisibility());
 
         amountEditor.setType(transaction.getTransactionType());
 
@@ -1618,6 +1624,11 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
             @Override
             public void onClick(View view) {
                 isExRateInverted = !isExRateInverted;
+
+                preferences.edit().putBoolean(String.format("%s/%s",
+                        TransactionManager.getSrcCabbage(transaction, ActivityEditTransaction.this).getCode(),
+                        TransactionManager.getDstCabbage(transaction, ActivityEditTransaction.this).getCode()),
+                        isExRateInverted).apply();
                 updateControlsState();
             }
         });
