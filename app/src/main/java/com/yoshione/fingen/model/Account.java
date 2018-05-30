@@ -249,10 +249,6 @@ public class Account extends BaseModel implements IAbstractModel, IOrderable {
 
     public enum AccountType {atCash, atAccount, atDebtCard, atCreditCard, atActive, atPassive, atOther}
 
-    public boolean isValid() {
-        return mCabbageId >= 0 & !mName.isEmpty();
-    }
-
     @Override
     public String getSearchString() {
         return mName;

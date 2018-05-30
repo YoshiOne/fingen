@@ -453,6 +453,10 @@
     <!-- Errors -->
     <string name="err_specify_account_currency" formatted="false">Укажите валюту счета</string>
 
+    <!-- 2. Accounts -->
+    <!-- Errors -->
+    <string name="err_account_name_must_be_unique" formatted="false">Название счета должно быть уникальным</string>
+
     <!-- 3. Transactions -->
     <!-- Entities -->
     <string name="ent_transaction" formatted="false">Транзакция</string>

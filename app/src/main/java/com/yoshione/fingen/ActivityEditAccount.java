@@ -41,6 +41,9 @@ import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 public class ActivityEditAccount extends ToolbarActivity {
 
 //    private static final String TAG = "ActivityEditAccount";
+    private static final int ERR_EMPTY_ACCOUNT_NAME = 1;
+    private static final int ERR_EMPTY_ACCOUNT_CABBAGE = 2;
+    private static final int ERR_NOT_UNIQUE_ACCOUNT_NAME = 3;
 
     //<editor-fold desc="View bindings">
     @BindView(R.id.editTextName)
@@ -342,27 +345,47 @@ public class ActivityEditAccount extends ToolbarActivity {
 //        layMain.invalidate();
     }
 
+    private int validateAccount() {
+        if (account.getName().isEmpty()) {
+            return ERR_EMPTY_ACCOUNT_NAME;
+        } else if (account.getCabbageId() < 0) {
+            return ERR_EMPTY_ACCOUNT_CABBAGE;
+        } else {
+            try {
+                if (account.getID() < 0 & AccountsDAO.getInstance(this).getModelByName(account.getName()).getID() >= 0) {
+                    return ERR_NOT_UNIQUE_ACCOUNT_NAME;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
+    }
+
     @OnClick(R.id.buttonSaveAccount)
     public void onSaveClick() {
-        if (account.isValid()) {
-            AccountsDAO accountsDAO = AccountsDAO.getInstance(getApplicationContext());
-            try {
-                accountsDAO.createModel(account);
-            } catch (Exception e) {
-                Toast.makeText(this, R.string.msg_error_on_write_to_db, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            finish();
-        } else {
-            if (account.getName().isEmpty()) {
+        switch (validateAccount()) {
+            case ERR_EMPTY_ACCOUNT_NAME:
                 mTextInputLayoutName.setErrorEnabled(true);
                 mTextInputLayoutName.setError(getString(R.string.err_specify_account_name));
-            }
-            if (account.getCabbageId() < 0) {
+                break;
+            case ERR_EMPTY_ACCOUNT_CABBAGE:
                 mTextInputLayoutCabbage.setErrorEnabled(true);
                 mTextInputLayoutCabbage.setError(getString(R.string.err_specify_account_currency));
-            }
-            Toast.makeText(ActivityEditAccount.this, getResources().getString(R.string.msg_invalid_data_in_fields), Toast.LENGTH_SHORT).show();
+                break;
+            case ERR_NOT_UNIQUE_ACCOUNT_NAME:
+                mTextInputLayoutName.setErrorEnabled(true);
+                mTextInputLayoutName.setError(getString(R.string.err_account_name_must_be_unique));
+                break;
+            default:
+                AccountsDAO accountsDAO = AccountsDAO.getInstance(getApplicationContext());
+                try {
+                    accountsDAO.createModel(account);
+                } catch (Exception e) {
+                    Toast.makeText(this, R.string.msg_error_on_write_to_db, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                finish();
         }
     }
 
