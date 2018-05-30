@@ -124,7 +124,7 @@ public class SmsParserTest {
             }
 
             try {
-                sender = (Sender) SendersDAO.getInstance(context).createModel(new Sender(-1, "Bank" + String.valueOf(k), true, "900" + String.valueOf(k), smsTest.mAmountPos, smsTest.mBalancePos, "", false));
+                sender = (Sender) SendersDAO.getInstance(context).createModel(new Sender(-1, "Bank" + String.valueOf(k), true, "900" + String.valueOf(k), smsTest.mAmountPos, smsTest.mBalancePos, "", false, false));
 
                 SmsParser smsParser = new SmsParser(new Sms(1, new Date(), sender.getID(), smsTest.mText), context);
 
