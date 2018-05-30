@@ -10,8 +10,7 @@
 
 # Установка
 
-Клонируйте репозиторий и откройте в Android Studio. Для успешной компиляции необходимо добавить следующие файлы:
-- keystore.properties со следующим содержимым:
+Клонируйте репозиторий и откройте в Android Studio. Для успешной компиляции необходимо добавить файл `keystore.properties` со следующим содержимым:
 
 ```
   keyAlias=  
@@ -24,8 +23,6 @@
   inAppLicenseKey=  
   inAppLicenseSalt=
 ```
-  
-- app\google-services.json
 
 # Автор
 
