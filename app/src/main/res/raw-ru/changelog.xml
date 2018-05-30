@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
-    <changelogversion versionName="2.3.3" changeDate=">2018.05.25">
-        <changelogtext>Если при загрузке чека поле получатель было пустое, то оно заполнится названием магазина из чека.</changelogtext>
-        <changelogtext>В главном меню вернулись кнопки "Справка" и "Задать вопрос".</changelogtext>
-        <changelogtext>[font color=#4CAF50](FIXED)[/font] баг с вылетами на android 8.</changelogtext>
+    <changelogversion versionName="2.4 beta 1" changeDate=">2018.05.30">
+        <changelogtext>Настройка первого дня недели (пн или вск)</changelogtext>
+        <changelogtext>Возможность изменения направления расчета обменного курса (напр, RUB/USD или USD/RUB)</changelogtext>
+        <changelogtext>Имя получателя можно заполнить из текста смс</changelogtext>
+        <changelogtext>В списке валют помимо имени теперь отображаются их код и символ</changelogtext>
+        <changelogtext>Автоматическое раскрытие списков при поиске</changelogtext>
+        <changelogtext>Дополнительные проверки на корректность при сохранении счетов и транзакций</changelogtext>
+        <changelogtext>Исправлено исчезновение строки бюджета при удалении плана</changelogtext>
+        <changelogtext>Исправлена проблема с курсором в редакторе сумм</changelogtext>
     </changelogversion>
     <changelogversion versionName="2.3.2" changeDate=">2018.05.21">
         <changelogtext>Для установки и запуска приложения больше не требуется наличие сервисов Google Play.</changelogtext>
@@ -33,11 +38,11 @@
     </changelogversion>
     <changelogversion versionName="2.1.2" changeDate=">2018.02.07">
         <changelogtext>Временно отключена фнкция "Задать вопрос".</changelogtext>
-        <changelogtext>[FIXED] Массовое редактирование транзакций.</changelogtext>
+        <changelogtext>Исправлено массовое редактирование транзакций.</changelogtext>
     </changelogversion>
     <changelogversion versionName="2.1.1" changeDate=">2018.01.29">
-        <changelogtext>[FIXED] Отображение сумм в долгах.</changelogtext>
-        <changelogtext>[FIXED] Обработка переводов при создании через шаблон.</changelogtext>
+        <changelogtext>Исправлено отображение сумм в долгах.</changelogtext>
+        <changelogtext>Исправлена обработка переводов при создании через шаблон.</changelogtext>
     </changelogversion>
     <changelogversion versionName="2.1" changeDate=">2018.01.23">
         <changelogtext>Чтение QR-кодов с чеков (РФ). Считываются сумма и дата. Запоминается номер кассы и с ним связывается получатель. Можно создать новую транзакцию из чека, либо считать чек в уже имеющуюся. Данные о покупке с сервера ФНС пока не загружаются (в будущем). Подробнее в справке.</changelogtext>
