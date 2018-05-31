@@ -292,40 +292,58 @@ public class SmsParser {
         Matcher matcher;
         AmountMatch amountMatch;
         String body = mSms.getmBody().toLowerCase().replaceAll("\\d{2}\\/\\d{2}\\/\\d{4}", "dd/mm/yyyy");
-        for (int i = 0; i < mCabbageMarkers.size(); i++) {
-            for (int j = 0; j < mCabbageMarkers.get(i).second.size(); j++) {
+        //,(?=[\d,]*\.\d{2}\b)
+        body = body.replaceAll(",(?=[\\d,]*\\.\\d{2}\\b)", "");
+        for (Pair<Long, List<String>> marker : mCabbageMarkers) {
+            if (marker.first != null & marker.second != null && marker.second.size() > 0) {
+                for (String text : marker.second) {
                 /*
                 (?<![\*|\/\d]) - отбрасываем первую группу цифр, если она начинается со звездочки или со слэша
-                -? опциональный минус
-                \s? - опциональный пробел
-                (\d+(,|.| ))+ одна или несколько цифр, с символом в конце (зпт, тчк, пробел), и так несколько раз
-                \d+ должно заканчиваться цифрой
-                \s? потом может быть пробел
-                в конце идет маркер валюты
-                (?=\P{L}|$) после маркера валюты должен быть любой символ НЕ буква (\P{L}) или (|) конец строки ($). Этот символ не включается в результат (?=)
+                далее идут две группы с оператором ИЛИ.
+                1. Маркер валюты после суммы
+                    -? опциональный минус
+                    \s? - опциональный пробел
+                    (\d+(,|.| ))+ одна или несколько цифр, с символом в конце (зпт, тчк, пробел), и так несколько раз
+                    \d+ должно заканчиваться цифрой
+                    \s? потом может быть пробел
+                    в конце идет маркер валюты
+                ИЛИ
+                2. Маркер валюты перед суммой
+                    маркер валюты
+                    \s? - опциональный пробел
+                    -? опциональный минус
+                    \s? - опциональный пробел
+                    (\d+(,|.| ))+ одна или несколько цифр, с символом в конце (зпт, тчк, пробел), и так несколько раз
+                    \d+ должно заканчиваться цифрой
+                    \s? потом может быть пробел
+                (?=\P{L}|$) - в конце должен быть любой символ НЕ буква (\P{L}) или (|) конец строки ($). Этот символ не включается в результат (?=)
+
+                (?<![\*|\/\d])((-?\s?(\d+(,|.| ))*\d+\s?RUR)|(RUR\s?-?\s?(\d+(,|.| ))*\d+\s?))(?=\P{L}|$)
                 */
-                pattern = Pattern.compile("(?<![\\*|\\/\\d])-?\\s?(\\d+(,|.| ))*\\d+\\s?" + mCabbageMarkers.get(i).second.get(j).toLowerCase() + "(?=\\P{L}|$)");
-                matcher = pattern.matcher(body);
-                while (matcher.find()) {
-                    try {
-                        amount = new BigDecimal(Double.parseDouble(unformatNumber(matcher.group())));
-                    } catch (NumberFormatException e) {
-                        amount = BigDecimal.ZERO;
+                    pattern = Pattern.compile("(?<![\\*|\\/\\d])((-?\\s?(\\d+(,|.| ))*\\d+\\s?" + text.toLowerCase() +
+                            ")|(" + text.toLowerCase() + "\\s?-?\\s?(\\d+(,|.| ))*\\d+\\s?))(?=\\P{L}|$)");
+                    matcher = pattern.matcher(body);
+                    while (matcher.find()) {
+                        try {
+                            amount = new BigDecimal(Double.parseDouble(unformatNumber(matcher.group())));
+                        } catch (NumberFormatException e) {
+                            amount = BigDecimal.ZERO;
+                        }
+                        cabbageId = marker.first;
+                        firstAmount = matcher.start();
+                        secondAmount = matcher.end();
+                        currentCabbageMarker = text;
+                        firstCabbage = mSms.getmBody().indexOf(currentCabbageMarker, matcher.start());
+                        secondCabbage = firstCabbage + currentCabbageMarker.length();
+                        amountMatch = new AmountMatch();
+                        amountMatch.setmAmount(amount);
+                        amountMatch.setmFirstCabbage(firstCabbage);
+                        amountMatch.setmSecondCabbage(secondCabbage);
+                        amountMatch.setmFirstAmount(firstAmount);
+                        amountMatch.setmSecondAmount(secondAmount);
+                        amountMatch.setmCabbageId(cabbageId);
+                        matches.add(amountMatch);
                     }
-                    cabbageId = mCabbageMarkers.get(i).first;
-                    firstAmount = matcher.start();
-                    secondAmount = matcher.end();
-                    currentCabbageMarker = mCabbageMarkers.get(i).second.get(j);
-                    firstCabbage = mSms.getmBody().indexOf(currentCabbageMarker, matcher.start());
-                    secondCabbage = firstCabbage + currentCabbageMarker.length();
-                    amountMatch = new AmountMatch();
-                    amountMatch.setmAmount(amount);
-                    amountMatch.setmFirstCabbage(firstCabbage);
-                    amountMatch.setmSecondCabbage(secondCabbage);
-                    amountMatch.setmFirstAmount(firstAmount);
-                    amountMatch.setmSecondAmount(secondAmount);
-                    amountMatch.setmCabbageId(cabbageId);
-                    matches.add(amountMatch);
                 }
             }
         }
