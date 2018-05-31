@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
-    <changelogversion versionName="2.4 beta 1" changeDate=">2018.05.30">
+    <changelogversion versionName="2.4" changeDate=">2018.05.31">
         <changelogtext>New preference "First day of week" (sunday or monday)</changelogtext>
         <changelogtext>Button to invert ExRate in Transaction Editor</changelogtext>
         <changelogtext>Auto create payee from marker, when payee empty</changelogtext>
         <changelogtext>Auto unfold references group when search result hidden</changelogtext>
         <changelogtext>Currency code and symbol to currency caption in reference view</changelogtext>
         <changelogtext>New validations when create accounts and transactions</changelogtext>
+        <changelogtext>Fixed issue with parse SMS sums which has trailing currency marker</changelogtext>
         <changelogtext>Fixed dissapear budget row when clear plan sum</changelogtext>
         <changelogtext>Fixed isuues with cursor and selection in amount editor</changelogtext>
     </changelogversion>

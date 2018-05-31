@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
-    <changelogversion versionName="2.4 beta 1" changeDate=">2018.05.30">
+    <changelogversion versionName="2.4" changeDate=">2018.05.31">
         <changelogtext>Настройка первого дня недели (пн или вск)</changelogtext>
         <changelogtext>Возможность изменения направления расчета обменного курса (напр, RUB/USD или USD/RUB)</changelogtext>
         <changelogtext>Имя получателя можно заполнить из текста смс</changelogtext>
         <changelogtext>В списке валют помимо имени теперь отображаются их код и символ</changelogtext>
         <changelogtext>Автоматическое раскрытие списков при поиске</changelogtext>
         <changelogtext>Дополнительные проверки на корректность при сохранении счетов и транзакций</changelogtext>
+        <changelogtext>Исправлена проблема с разбором сумм у которых валюта указывается перед цифрой</changelogtext>
         <changelogtext>Исправлено исчезновение строки бюджета при удалении плана</changelogtext>
         <changelogtext>Исправлена проблема с курсором в редакторе сумм</changelogtext>
     </changelogversion>
