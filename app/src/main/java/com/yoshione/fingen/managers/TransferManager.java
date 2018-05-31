@@ -18,7 +18,7 @@ public class TransferManager {
     }
 
     public static BigDecimal getExRate(Transaction transaction, BigDecimal destAmount) {
-        if (destAmount.compareTo(BigDecimal.ZERO) != 0 && transaction.getAccountID() != transaction.getDestAccountID()) {
+        if (transaction.getAmount().compareTo(BigDecimal.ZERO) != 0 && transaction.getAccountID() != transaction.getDestAccountID()) {
             BigDecimal untrim = destAmount.divide(transaction.getAmount(), 15, BigDecimal.ROUND_HALF_EVEN);
             return trimExRate(untrim, transaction.getAmount(), destAmount);
         } else {
