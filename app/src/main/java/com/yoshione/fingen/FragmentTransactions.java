@@ -393,6 +393,8 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 sb.append("/");
                 sb.append(filter.getEnabled());
                 sb.append("/");
+                sb.append(filter.isInverted());
+                sb.append("/");
                 sb.append(filter.saveToString());
                 sb.append(";");
             }

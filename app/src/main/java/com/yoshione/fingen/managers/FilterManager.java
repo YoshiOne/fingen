@@ -47,7 +47,7 @@ public class FilterManager {
         try {
             for (String s : filters) {
                 parts = s.split("/");
-                if (parts.length != 4) {
+                if (parts.length != 5) {
                     continue;
                 }
                 long id = Integer.valueOf(parts[0]);
@@ -73,8 +73,9 @@ public class FilterManager {
                     default:
                         continue;
                 }
-                if (filter.loadFromString(parts[3])) {
+                if (filter.loadFromString(parts[4])) {
                     filter.setEnabled(Boolean.valueOf(parts[2]));
+                    filter.setInverted(Boolean.valueOf(parts[3]));
                     filterList.add(filter);
                 }
             }
