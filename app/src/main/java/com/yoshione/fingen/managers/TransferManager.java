@@ -11,9 +11,9 @@ public class TransferManager {
 
     public static BigDecimal getDestAmount(Transaction transaction) {
         if (transaction.getExchangeRate().compareTo(BigDecimal.ONE) == 0) {
-            return transaction.getAmount();
+            return transaction.getAmount().abs();
         } else {
-            return transaction.getAmount().multiply(transaction.getExchangeRate());
+            return transaction.getAmount().multiply(transaction.getExchangeRate()).abs();
         }
     }
 
