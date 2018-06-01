@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.4.1" changeDate=">2018.06.01">
+        <changelogtext>Fix incorrect account balance after delete transfer</changelogtext>
+        <changelogtext>Fix save filter exclude state</changelogtext>
+        <changelogtext>Fix crash when input target sum</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.4" changeDate=">2018.05.31">
         <changelogtext>New preference "First day of week" (sunday or monday)</changelogtext>
         <changelogtext>Button to invert ExRate in Transaction Editor</changelogtext>

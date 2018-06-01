@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.4.1" changeDate=">2018.06.01">
+        <changelogtext>Исправлен некорректный баланс счета после удаления превода</changelogtext>
+        <changelogtext>Исправлено сохранение состояния "Исключая" фильтра</changelogtext>
+        <changelogtext>Исправлено падение при вводе суммы в валюте получателя при пустой исходной сумме</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.4" changeDate=">2018.05.31">
         <changelogtext>Настройка первого дня недели (пн или вск)</changelogtext>
         <changelogtext>Возможность изменения направления расчета обменного курса (напр, RUB/USD или USD/RUB)</changelogtext>
