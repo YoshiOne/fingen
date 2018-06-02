@@ -17,14 +17,14 @@
         android:id="@+id/textInputLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/toolbr">
+        app:layout_constraintTop_toBottomOf="@id/toolbr"
+        android:hint="@string/ent_name">
 
         <EditText
             android:id="@+id/editTextName"
             style="@style/EditableEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/ent_name" />
+            android:layout_height="wrap_content" />
     </android.support.design.widget.TextInputLayout>
 
     <com.airbnb.android.airmapview.AirMapView

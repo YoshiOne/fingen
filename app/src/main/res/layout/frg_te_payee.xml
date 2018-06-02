@@ -10,7 +10,8 @@
         android:id="@+id/textInputLayoutPayee"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_toLeftOf="@+id/imageButtonDeletePayee">
+        android:layout_toLeftOf="@+id/imageButtonDeletePayee"
+        android:hint="@string/ent_payee">
 
         <AutoCompleteTextView
             android:id="@+id/editTextPayee"
@@ -18,7 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:completionThreshold="1"
-            android:hint="@string/ent_payee"
             android:inputType="textNoSuggestions"
             tools:text="Payee"
             />

@@ -31,14 +31,14 @@
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:hint="@string/ent_account">
 
                 <EditText
                     android:id="@+id/textViewAccount"
                     style="@style/NotEditableEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/ent_account"
                     android:inputType="none|textNoSuggestions" />
             </android.support.design.widget.TextInputLayout>
 
@@ -57,14 +57,14 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toStartOf="@+id/imageButtonDeleteCategory">
+                    android:layout_toStartOf="@+id/imageButtonDeleteCategory"
+                    android:hint="@string/ent_category">
 
                     <EditText
                         android:id="@+id/textViewCategory"
                         style="@style/NotEditableEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/ent_category"
                         android:inputType="textMultiLine|textNoSuggestions" />
                 </android.support.design.widget.TextInputLayout>
 
@@ -79,14 +79,14 @@
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:hint="@string/ent_comment">
 
                 <EditText
                     android:id="@+id/editTextComment"
                     style="@style/EditableEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/ent_comment"
                     android:inputType="textCapSentences|textMultiLine" />
             </android.support.design.widget.TextInputLayout>
 

@@ -24,27 +24,27 @@
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:hint="@string/ent_user">
 
                 <EditText
                     android:id="@+id/textViewUser"
                     style="@style/NotEditableEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/ent_user"
                     android:text="@string/act_signin_with_google_account"/>
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:hint="Remote database">
 
                 <EditText
                     android:id="@+id/textViewRemoteAccount"
                     style="@style/EditableEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Remote database"
                     android:text=""/>
             </android.support.design.widget.TextInputLayout>
 

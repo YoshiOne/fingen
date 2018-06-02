@@ -51,14 +51,14 @@
             android:id="@+id/textInputLayoutLines"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/imageButtonDec">
+            android:layout_toLeftOf="@+id/imageButtonDec"
+            android:hint="@string/ttl_skip_lines">
 
             <EditText
                 android:id="@+id/textViewSkipLines"
                 style="@style/NotEditableEditText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/ttl_skip_lines"/>
+                android:layout_height="wrap_content"/>
         </android.support.design.widget.TextInputLayout>
 
         <ImageButton

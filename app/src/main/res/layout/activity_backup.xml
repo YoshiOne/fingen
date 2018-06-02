@@ -39,7 +39,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/activity_margin"
         app:passwordToggleEnabled="false"
-        app:layout_constraintTop_toBottomOf="@id/switchCompatEnablePasswordProtection">
+        app:layout_constraintTop_toBottomOf="@id/switchCompatEnablePasswordProtection"
+        android:hint="@string/ent_password">
 
         <EditText
             android:id="@+id/editTextPassword"
@@ -47,7 +48,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/ent_password"
             android:inputType="textPassword"
             tools:text="******" />
     </android.support.design.widget.TextInputLayout>
@@ -59,7 +59,8 @@
         android:layout_below="@+id/textInputLayoutPassword"
         android:layout_margin="@dimen/activity_margin"
         app:passwordToggleEnabled="false"
-        app:layout_constraintTop_toBottomOf="@id/textInputLayoutPassword">
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutPassword"
+        android:hint="@string/ttl_dropbox_account">
 
         <EditText
             android:id="@+id/editTextDropboxAccount"
@@ -67,7 +68,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/ttl_dropbox_account"
             android:inputType="textNoSuggestions" />
 
         <TextView

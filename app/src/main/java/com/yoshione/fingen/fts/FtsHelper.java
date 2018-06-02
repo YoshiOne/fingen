@@ -97,7 +97,9 @@ public class FtsHelper {
 
             @Override
             public void onFailure(@NonNull Call<FtsResponse> call, @NonNull Throwable t) {
-                Log.d(getClass().getName(), t.getMessage());
+                if (t.getMessage() != null ) {
+                    Log.d(getClass().getName(), t.getMessage());
+                }
                 downloadProductsListener.onFailure(t);
             }
         });

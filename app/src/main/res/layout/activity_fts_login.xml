@@ -35,7 +35,8 @@
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewFtsLoginHtml">
+        app:layout_constraintTop_toBottomOf="@+id/textViewFtsLoginHtml"
+        android:hint="@string/ent_phoneno">
 
         <EditText
             android:id="@+id/editTextPhoneNo"
@@ -43,7 +44,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/ent_phoneno"
             android:inputType="phone"
             tools:text="+7912345678" />
     </android.support.design.widget.TextInputLayout>
@@ -58,7 +58,8 @@
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPhoneNo">
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPhoneNo"
+        android:hint="@string/ent_code_from_sms">
 
         <EditText
             android:id="@+id/editTextCode"
@@ -66,7 +67,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/ent_code_from_sms"
             android:inputType="number"
             tools:text="256483" />
     </android.support.design.widget.TextInputLayout>

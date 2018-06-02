@@ -12,7 +12,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@id/imageButtonDeleteCategory"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:hint="@string/ent_product">
 
         <AutoCompleteTextView
             android:id="@+id/textViewProduct"
@@ -20,7 +21,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:completionThreshold="1"
-            android:hint="@string/ent_product"
             android:inputType="textNoSuggestions"
             tools:text="Зефир Ванильный Каравай глазированный 500гр"/>
     </android.support.design.widget.TextInputLayout>
@@ -40,14 +40,14 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@id/imageButtonDeleteCategory"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutProduct">
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutProduct"
+        android:hint="@string/ent_category">
 
         <EditText
             android:id="@+id/textViewCategory"
             style="@style/NotEditableEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/ent_category"
             android:inputType="textMultiLine|textNoSuggestions"
             tools:text="Быт еда" />
     </android.support.design.widget.TextInputLayout>
@@ -67,14 +67,14 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@id/imageButtonDeleteProject"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCategory">
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCategory"
+        android:hint="@string/ent_project">
 
         <EditText
             android:id="@+id/textViewProject"
             style="@style/NotEditableEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/ent_project"
             android:inputType="textMultiLine|textNoSuggestions"
             tools:text="Быт еда" />
     </android.support.design.widget.TextInputLayout>
@@ -100,7 +100,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@id/imageButtonLess"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/amount_editor">
+        app:layout_constraintTop_toBottomOf="@+id/amount_editor"
+        android:hint="@string/ent_quantity">
 
         <EditText
             android:id="@+id/textViewQuantity"
@@ -109,7 +110,6 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:selectAllOnFocus="true"
-            android:hint="@string/ent_quantity"
             android:inputType="numberDecimal"
             tools:text="1"/>
     </android.support.design.widget.TextInputLayout>

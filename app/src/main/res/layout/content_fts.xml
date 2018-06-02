@@ -14,14 +14,14 @@
         android:layout_marginStart="8dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:hint="@string/ent_fn">
 
         <EditText
             android:id="@+id/textViewFN"
             style="@style/EditableEditText.FtsEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/ent_fn"
             tools:text="8710000100022003" />
     </android.support.design.widget.TextInputLayout>
 
@@ -31,14 +31,14 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/guideline5"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/guideline4">
+        app:layout_constraintStart_toEndOf="@+id/guideline4"
+        android:hint="@string/ent_fd">
 
         <EditText
             android:id="@+id/textViewFD"
             style="@style/EditableEditText.FtsEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/ent_fd"
             tools:text="54813" />
     </android.support.design.widget.TextInputLayout>
 
@@ -48,14 +48,14 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonDownloadReceipt"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/guideline5">
+        app:layout_constraintStart_toEndOf="@+id/guideline5"
+        android:hint="@string/ent_fp">
 
         <EditText
             android:id="@+id/textViewFP"
             style="@style/EditableEditText.FtsEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/ent_fp"
             tools:text="3906717812" />
     </android.support.design.widget.TextInputLayout>
 

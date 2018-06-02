@@ -49,7 +49,8 @@
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2.5">
+            android:layout_weight="2.5"
+            android:hint="@string/ent_currency">
 
             <EditText
                 android:id="@+id/editTextCabbage"
@@ -58,7 +59,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp"
                 android:gravity="left"
-                android:hint="@string/ent_currency"
                 tools:text="RUB" />
         </android.support.design.widget.TextInputLayout>
 
@@ -67,7 +67,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="0dp"
-            android:layout_weight="2">
+            android:layout_weight="2"
+            android:hint="@string/ent_data">
 
             <EditText
                 android:id="@+id/editTextData"
@@ -76,7 +77,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp"
                 android:gravity="left"
-                android:hint="@string/ent_data"
                 tools:text="Категория" />
         </android.support.design.widget.TextInputLayout>
 
@@ -85,7 +85,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:visibility="gone">
+            android:visibility="gone"
+            android:hint="@string/ent_date_range">
 
             <EditText
                 android:id="@+id/editTextDateRange"
@@ -94,14 +95,14 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp"
                 android:gravity="left"
-                android:hint="@string/ent_date_range"
                 tools:text="" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2">
+            android:layout_weight="2"
+            android:hint="@string/ent_show">
 
             <EditText
                 android:id="@+id/editTextShow"
@@ -110,7 +111,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp"
                 android:gravity="left"
-                android:hint="@string/ent_show"
                 tools:text="Расход" />
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>

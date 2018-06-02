@@ -43,7 +43,8 @@
                 android:id="@+id/textInputLayoutAmount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:hint="@string/ent_amount">
 
                 <EditText
                     android:id="@+id/edittext_amount"
@@ -51,7 +52,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    android:hint="@string/ent_amount"
                     android:inputType="numberDecimal"
                     android:selectAllOnFocus="true"
                     tools:text="100" />
@@ -116,13 +116,13 @@
         android:id="@+id/textInputLayoutCabbage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="visible">
+        android:visibility="visible"
+        android:hint="@string/ent_currency" >
 
         <EditText
             android:id="@+id/editTextCabbage"
             style="@style/NotEditableEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/ent_currency" />
+            android:layout_height="wrap_content"/>
     </android.support.design.widget.TextInputLayout>
 </LinearLayout>

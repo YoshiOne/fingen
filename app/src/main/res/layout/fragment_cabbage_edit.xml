@@ -27,26 +27,26 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:hint="@string/ent_name">
 
             <EditText
                 android:id="@+id/edit_text_name"
                 style="@style/EditableEditText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/ent_name"/>
+                android:layout_height="wrap_content"/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:hint="@string/ent_currency_code">
 
             <EditText
                 android:id="@+id/edit_text_code"
                 style="@style/EditableEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/ent_currency_code"
                 android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 android:inputType="textCapCharacters"
                 android:maxLength="3"/>
@@ -54,27 +54,27 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:hint="@string/ent_currency_symbol">
 
             <EditText
                 android:id="@+id/edit_text_symbol"
                 style="@style/EditableEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/ent_currency_symbol"
                 android:inputType="text"/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:hint="@string/ent_currency_scale">
 
             <EditText
                 android:id="@+id/edit_text_scale"
                 style="@style/EditableEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/ent_currency_scale"
                 android:inputType="number"/>
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>

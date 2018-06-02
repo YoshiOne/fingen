@@ -41,7 +41,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:hint="@string/ent_min">
 
             <EditText
                 android:id="@+id/edit_text_min_amount"
@@ -49,7 +50,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:hint="@string/ent_min"
                 android:inputType="numberDecimal"
                 tools:text="0" />
         </android.support.design.widget.TextInputLayout>
@@ -58,7 +58,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:hint="@string/ent_max">
 
             <EditText
                 android:id="@+id/edit_text_max_amount"
@@ -66,7 +67,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:hint="@string/ent_max"
                 android:inputType="numberDecimal"
                 tools:text="0" />
         </android.support.design.widget.TextInputLayout>

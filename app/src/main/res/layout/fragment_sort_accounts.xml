@@ -8,25 +8,25 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:hint="@string/ttl_accounts_sort_type">
 
         <EditText
             android:id="@+id/spinnerSortType"
             style="@style/NotEditableEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/ttl_accounts_sort_type"/>
+            android:layout_height="wrap_content"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:hint="@string/ttl_accounts_sort_order">
 
         <EditText
             android:id="@+id/spinnerSortOrder"
             style="@style/NotEditableEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/ttl_accounts_sort_order"/>
+            android:layout_height="wrap_content"/>
     </android.support.design.widget.TextInputLayout>
 </LinearLayout>

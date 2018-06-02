@@ -153,7 +153,7 @@ public class AdapterColumnIndex extends RecyclerView.Adapter {
         final EntityToFieldLink entityToFieldLink = mEntityToFieldLinkList.get(holder.getAdapterPosition());
 
         final String entity = getEntityName(entityToFieldLink);
-        vh.mSpinnerIndex.setHint(entity);
+//        vh.mSpinnerIndex.setHint(entity);
         vh.mTextInputLayoutSpinnerIndex.setHint(entity);
 
         vh.mSpinnerIndex.setText(entityToFieldLink.getField());

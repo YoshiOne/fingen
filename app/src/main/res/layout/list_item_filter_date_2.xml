@@ -23,14 +23,14 @@
         android:layout_marginStart="8dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/filterHeader">
+        app:layout_constraintTop_toBottomOf="@id/filterHeader"
+        android:hint="@string/ent_start_date">
 
         <EditText
             android:id="@+id/edit_text_start_date"
             style="@style/NotEditableEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/ent_start_date"
             tools:text="18 сентября 2015" />
     </android.support.design.widget.TextInputLayout>
 
@@ -40,14 +40,14 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/button_more"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/filterHeader">
+        app:layout_constraintTop_toBottomOf="@id/filterHeader"
+        android:hint="@string/ent_end_date">
 
         <EditText
             android:id="@+id/edit_text_end_date"
             style="@style/NotEditableEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/ent_end_date"
             tools:text="18 октября 2015" />
     </android.support.design.widget.TextInputLayout>
 

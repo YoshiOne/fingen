@@ -30,14 +30,14 @@
             android:id="@+id/textInputLayoutDir"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?listItemBackground">
+            android:background="?listItemBackground"
+            android:hint="@string/ent_path_to_dir_or_file">
 
             <EditText
                 android:id="@+id/editTextDirectory"
                 style="@style/NotEditableEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/ent_path_to_dir_or_file"
                 android:inputType="textMultiLine"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -45,14 +45,14 @@
             android:id="@+id/textInputLayoutFileName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?listItemBackground">
+            android:background="?listItemBackground"
+            android:hint="@string/ent_file_name">
 
             <EditText
                 android:id="@+id/editTextFileName"
                 style="@style/EditableEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/ent_file_name"
                 android:inputType="textMultiLine"/>
 
             <CheckBox

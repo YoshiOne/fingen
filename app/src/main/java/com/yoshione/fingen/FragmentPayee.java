@@ -140,7 +140,7 @@ public class FragmentPayee extends Fragment {
             edPayee.setOnClickListener(mPayeeOnClickListener);
         }
 
-        edPayee.setHint("");
+//        edPayee.setHint("");
         mTextInputLayoutPayee.setHint(mHint);
 
 //        mImageButtonDeletePayee.setImageDrawable(IconGenerator.getInstance(getActivity()).getDeleteIcon(getActivity()));
@@ -183,7 +183,7 @@ public class FragmentPayee extends Fragment {
     public void setHint(String hint) {
         mHint = hint;
         if (edPayee != null) {
-            edPayee.setHint("");
+//            edPayee.setHint("");
             mTextInputLayoutPayee.setHint(mHint);
         }
     }

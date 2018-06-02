@@ -10,52 +10,52 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:hint="@string/ent_sms_parser_type">
 
         <EditText
             android:id="@+id/editTextType"
             style="@style/NotEditableEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/ent_sms_parser_type"/>
+            android:layout_height="wrap_content"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/textInputLayoutEditTextObject"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:hint="@string/ent_sms_parser_object">
 
         <EditText
             android:id="@+id/editTextObject"
             style="@style/EditableEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/ent_sms_parser_object"/>
+            android:layout_height="wrap_content"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/textInputLayoutTextViewObject"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:hint="@string/ent_sms_parser_object">
 
         <EditText
             android:id="@+id/textViewObject"
             style="@style/NotEditableEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/ent_sms_parser_object"/>
+            android:layout_height="wrap_content"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:hint="@string/ent_sms_parser_value">
 
         <EditText
             android:id="@+id/editTextValue"
             style="@style/EditableEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/ent_sms_parser_value"
             android:inputType="text"/>
     </android.support.design.widget.TextInputLayout>
 

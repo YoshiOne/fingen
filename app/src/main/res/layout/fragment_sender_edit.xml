@@ -21,14 +21,14 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:hint="@string/ent_name">
 
             <EditText
                 android:id="@+id/editTextName"
                 style="@style/EditableEditText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/ent_name"/>
+                android:layout_height="wrap_content"/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.constraint.ConstraintLayout
@@ -45,14 +45,14 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toLeftOf="@+id/imageButtonSelectSender"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0">
+                app:layout_constraintVertical_bias="1.0"
+                android:hint="@string/ent_phoneno">
 
                 <EditText
                     android:id="@+id/editTextPhoneNo"
                     style="@style/EditableEditText"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/ent_phoneno"/>
+                    android:layout_height="wrap_content"/>
             </android.support.design.widget.TextInputLayout>
 
 
@@ -71,26 +71,26 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:hint="@string/ent_amount_pos">
 
             <EditText
                 android:id="@+id/editTextAmountPos"
                 style="@style/NotEditableEditText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/ent_amount_pos"/>
+                android:layout_height="wrap_content"/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:hint="@string/ent_balance_pos">
 
             <EditText
                 android:id="@+id/editTextBalancePos"
                 style="@style/NotEditableEditText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/ent_balance_pos"/>
+                android:layout_height="wrap_content"/>
 
             <CheckBox
                 android:id="@+id/checkBoxAddCreditLimitToBalance"

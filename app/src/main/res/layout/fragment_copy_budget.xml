@@ -7,28 +7,28 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:hint="@string/ent_date_range_year">
 
         <EditText
             android:id="@+id/editTextYear"
             style="@style/EditableEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/ent_date_range_year"
             android:inputType="numberDecimal"
             android:maxLength="4"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:hint="@string/ent_date_range_month">
 
         <EditText
             android:id="@+id/textViewMonth"
             style="@style/NotEditableEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/ent_date_range_month"/>
+            android:layout_height="wrap_content"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.v7.widget.AppCompatCheckBox

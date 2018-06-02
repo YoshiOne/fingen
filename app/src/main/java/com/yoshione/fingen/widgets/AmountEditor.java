@@ -387,7 +387,7 @@ public class AmountEditor extends LinearLayout {
     }
 
     public void setHint(String hint) {
-        edAmount.setHint("");
+//        edAmount.setHint("");
         mTextInputLayoutAmount.setHint(hint);
     }
 

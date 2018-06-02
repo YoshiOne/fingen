@@ -34,7 +34,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/imageButtonClearSearchString"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                android:hint="@string/ent_search">
 
                 <EditText
                     android:id="@+id/editTextSearch"
@@ -42,7 +43,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="0dp"
-                    android:hint="@string/ent_search"
                     android:inputType="textNoSuggestions" />
             </android.support.design.widget.TextInputLayout>
 

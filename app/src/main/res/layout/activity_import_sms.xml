@@ -27,14 +27,14 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:hint="@string/ent_sender">
 
             <EditText
                 android:id="@+id/editTextSender"
                 style="@style/NotEditableEditText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/ent_sender"/>
+                android:layout_height="wrap_content"/>
         </android.support.design.widget.TextInputLayout>
 
         <LinearLayout
@@ -45,7 +45,8 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:hint="@string/ent_start_date">
 
                 <EditText
                     android:id="@+id/editTextStartDate"
@@ -54,7 +55,6 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:gravity="center_horizontal"
-                    android:hint="@string/ent_start_date"
                     android:onClick="onDateClick"
                     tools:text="18 сентября 2015"/>
             </android.support.design.widget.TextInputLayout>
@@ -62,7 +62,8 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2">
+                android:layout_weight="2"
+                android:hint="@string/ent_time">
 
                 <EditText
                     android:id="@+id/editTextStartTime"
@@ -71,7 +72,6 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:gravity="center_horizontal"
-                    android:hint="@string/ent_time"
                     android:onClick="onTimeClick"
                     tools:text="11:51"/>
             </android.support.design.widget.TextInputLayout>
@@ -85,7 +85,8 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:hint="@string/ent_end_date">
 
                 <EditText
                     android:id="@+id/editTextEndDate"
@@ -94,7 +95,6 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:gravity="center_horizontal"
-                    android:hint="@string/ent_end_date"
                     android:onClick="onDateClick"
                     tools:text="18 сентября 2015"/>
             </android.support.design.widget.TextInputLayout>
@@ -102,7 +102,8 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2">
+                android:layout_weight="2"
+                android:hint="@string/ent_time">
 
                 <EditText
                     android:id="@+id/editTextEndTime"
@@ -111,7 +112,6 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:gravity="center_horizontal"
-                    android:hint="@string/ent_time"
                     android:onClick="onTimeClick"
                     tools:text="11:51"/>
             </android.support.design.widget.TextInputLayout>
