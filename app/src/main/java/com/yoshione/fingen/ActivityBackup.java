@@ -403,6 +403,8 @@ public class ActivityBackup extends ToolbarActivity {
         @Override
         public void handleMessage(Message msg) {
             final ActivityBackup activity = mActivity.get();
+            if (activity.isFinishing()) return;
+//            if (activity == null) return;
             switch (msg.what) {
                 case MSG_SHOW_DIALOG:
                     AlertDialog.Builder builderSingle = new AlertDialog.Builder(activity);

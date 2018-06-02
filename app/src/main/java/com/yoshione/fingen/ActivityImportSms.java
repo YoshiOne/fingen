@@ -374,6 +374,7 @@ public class ActivityImportSms extends ToolbarActivity implements IProgressEvent
                 case HANDLER_OPERATION_HIDE:
                     break;
                 case HANDLER_OPERATION_COMPLETE:
+                    if (activityArr[0].isFinishing()) return;
                     AlertDialog.Builder builder = new AlertDialog.Builder(activityArr[0]);
                     builder.setTitle(R.string.ttl_import_complete);
 
