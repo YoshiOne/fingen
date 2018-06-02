@@ -1,16 +1,14 @@
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/FingenDev/Development)
+# Fingen Expense Manager
 
-# Fingen Учет Расходов
-
-Универсальное андроид-приложение для учета доходов и расходов со встроенным парсером смс.
+Universal application for manage revenues and expenses with built-in SMS parser
 
 [Google Play](https://play.google.com/store/apps/details?id=com.yoshione.fingen)
 
 [4PDA](http://4pda.ru/forum/index.php?showtopic=715641)
 
-# Установка
+# Compilation
 
-Клонируйте репозиторий и откройте в Android Studio. Для успешной компиляции необходимо добавить файл `keystore.properties` со следующим содержимым:
+Clone repo and open in Android Studio. Add file `keystore.properties` with following content:
 
 ```
   keyAlias=  
@@ -24,6 +22,6 @@
   inAppLicenseSalt=
 ```
 
-# Автор
+# Author
 
-Sulevi
+YoshiOne
