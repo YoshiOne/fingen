@@ -255,7 +255,7 @@
 
     <!-- 1. General -->
     <!-- Titles -->
-    <string name="ttl_select_action" formatted="false">Select a action</string>
+    <string name="ttl_select_action" formatted="false">Select an action</string>
 
     <!-- 1. General -->
     <!-- Titles -->
@@ -323,7 +323,7 @@
 
     <!-- 2. Accounts -->
     <!-- Entities -->
-    <string name="ent_credit_limit" formatted="false">Limit amount</string>
+    <string name="ent_credit_limit" formatted="false">Credit limit</string>
 
     <!-- 2. Accounts -->
     <!-- Entities -->
@@ -375,7 +375,7 @@
 
     <!-- 2. Accounts -->
     <!-- Account sort types -->
-    <string name="acc_sort_type_custom" formatted="false">By hand</string>
+    <string name="acc_sort_type_custom" formatted="false">Manual</string>
 
     <!-- 2. Accounts -->
     <!-- Account sort types -->
@@ -383,7 +383,7 @@
 
     <!-- 2. Accounts -->
     <!-- Account sort types -->
-    <string name="acc_sort_type_date_last_operation" formatted="false">By date of last operation</string>
+    <string name="acc_sort_type_date_last_operation" formatted="false">By date of the last operation</string>
 
     <!-- 2. Accounts -->
     <!-- Account sort types -->
@@ -399,7 +399,7 @@
 
     <!-- 2. Accounts -->
     <!-- Actions -->
-    <string name="act_drag_mode" formatted="false">"By hand" sort mode</string>
+    <string name="act_drag_mode" formatted="false">Manual accounts ordering</string>
 
     <!-- 2. Accounts -->
     <!-- Actions -->
@@ -419,7 +419,7 @@
 
     <!-- 2. Accounts -->
     <!-- Titles -->
-    <string name="ttl_sort_accounts" formatted="false">Account sorting</string>
+    <string name="ttl_sort_accounts" formatted="false">Accounts ordering</string>
 
     <!-- 2. Accounts -->
     <!-- Titles -->
@@ -431,7 +431,7 @@
 
     <!-- 2. Accounts -->
     <!-- Titles -->
-    <string name="ttl_enter_actual_balance" formatted="false">Enter actual balance</string>
+    <string name="ttl_enter_actual_balance" formatted="false">Enter the actual balance</string>
 
     <!-- 2. Accounts -->
     <!-- Messages -->
@@ -447,11 +447,11 @@
 
     <!-- 2. Accounts -->
     <!-- Errors -->
-    <string name="err_specify_account_name" formatted="false">You must specify name</string>
+    <string name="err_specify_account_name" formatted="false">You must specify the account name</string>
 
     <!-- 2. Accounts -->
     <!-- Errors -->
-    <string name="err_specify_account_currency" formatted="false">You must specify currency of the account</string>
+    <string name="err_specify_account_currency" formatted="false">You must specify the account currency</string>
 
     <!-- 2. Accounts -->
     <!-- Errors -->
@@ -479,7 +479,7 @@
 
     <!-- 3. Transactions -->
     <!-- Entities -->
-    <string name="ent_dest_amount" formatted="false">The amount of the recipient\'s currency</string>
+    <string name="ent_dest_amount" formatted="false">Amount in the recipient currency</string>
 
     <!-- 3. Transactions -->
     <!-- Entities -->
@@ -531,11 +531,11 @@
 
     <!-- 3. Transactions -->
     <!-- Titles -->
-    <string name="ttl_transaction_deleted" formatted="false">The transaction was deleted</string>
+    <string name="ttl_transaction_deleted" formatted="false">Transaction has been deleted</string>
 
     <!-- 3. Transactions -->
     <!-- Titles -->
-    <string name="ttl_transaction_splitted" formatted="false">The transaction was splitted</string>
+    <string name="ttl_transaction_splitted" formatted="false">Transaction has been splitted</string>
 
     <!-- 3. Transactions -->
     <!-- Titles -->
@@ -543,7 +543,7 @@
 
     <!-- 3. Transactions -->
     <!-- Titles -->
-    <string name="ttl_sms_body" formatted="false">Sms body</string>
+    <string name="ttl_sms_body" formatted="false">SMS body</string>
 
     <!-- 3. Transactions -->
     <!-- Titles -->
@@ -559,11 +559,11 @@
 
     <!-- 3. Transactions -->
     <!-- Messages -->
-    <string name="msg_select_marker_text_before" formatted="false">First, select the marker text in the message body</string>
+    <string name="msg_select_marker_text_before" formatted="false">Please select text for the marker in the message body</string>
 
     <!-- 3. Transactions -->
     <!-- Messages -->
-    <string name="msg_confirm_create_correcting_transaction" formatted="false">Account balance differs from that specified in an SMS to %s. Create a correction transaction?</string>
+    <string name="msg_confirm_create_correcting_transaction" formatted="false">Account balance differs from that specified in the SMS by %s. Create the correction transaction?</string>
 
     <!-- 3. Transactions -->
     <!-- Messages -->
@@ -571,7 +571,7 @@
 
     <!-- 3. Transactions -->
     <!-- Messages -->
-    <string name="msg_confirm_delete_selected_transactions" formatted="false">Delete selected transactions?</string>
+    <string name="msg_confirm_delete_selected_transactions" formatted="false">Delete the selected transactions?</string>
 
     <!-- 3. Transactions -->
     <!-- Messages -->
@@ -579,7 +579,7 @@
 
     <!-- 3. Transactions -->
     <!-- Notifications -->
-    <string name="notif_ticker_transaction_auto_created" formatted="false">The transaction created</string>
+    <string name="notif_ticker_transaction_auto_created" formatted="false">Transaction created</string>
 
     <!-- 3. Transactions -->
     <!-- Notifications -->
@@ -587,23 +587,23 @@
 
     <!-- 3. Transactions -->
     <!-- Notifications -->
-    <string name="notif_create_correcting_transaction_caption" formatted="false">Account balance differs from that specified in an SMS</string>
+    <string name="notif_create_correcting_transaction_caption" formatted="false">Account balance differs from that specified in the SMS</string>
 
     <!-- 3. Transactions -->
     <!-- Notifications -->
-    <string name="notif_create_correcting_transaction" formatted="false">Account %s balance differs from that specified in an SMS to %s. Press to adjust.</string>
+    <string name="notif_create_correcting_transaction" formatted="false">Account %s balance differs from that specified in the SMS by %s. Press to adjust.</string>
 
     <!-- 3. Transactions -->
     <!-- Errors -->
-    <string name="err_specify_account" formatted="false">You must specify account</string>
+    <string name="err_specify_account" formatted="false">You must specify the account to be debited</string>
 
     <!-- 3. Transactions -->
     <!-- Errors -->
-    <string name="err_exrate_zero" formatted="false">Exchange rate can\'t be zero</string>
+    <string name="err_exrate_zero" formatted="false">Exchange rate cannot be zero</string>
 
     <!-- 3. Transactions -->
     <!-- Errors -->
-    <string name="err_exrate_one" formatted="false">Exchange rate is ONE. Are you shure?</string>
+    <string name="err_exrate_one" formatted="false">Exchange rate is ONE. Are you sure?</string>
 
     <!-- 4. Payees -->
     <!-- Entities -->
@@ -639,7 +639,7 @@
 
     <!-- 4. Payees -->
     <!-- Titles -->
-    <string name="ttl_create_new_payee_from_marker" formatted="false">Create new payee/payer %s or select existing?</string>
+    <string name="ttl_create_new_payee_from_marker" formatted="false">Create the new payee/payer %s or select an existing one?</string>
 
     <!-- 5. Categories -->
     <!-- Entities -->
@@ -715,11 +715,11 @@
 
     <!-- 6. Currencies -->
     <!-- Entities -->
-    <string name="ent_currency_symbol" formatted="false">Symbols for display</string>
+    <string name="ent_currency_symbol" formatted="false">Symbols to display</string>
 
     <!-- 6. Currencies -->
     <!-- Entities -->
-    <string name="ent_currency_scale" formatted="false">A number of simbols after comma</string>
+    <string name="ent_currency_scale" formatted="false">Number of digits after decimal point</string>
 
     <!-- 6. Currencies -->
     <!-- Titles -->
@@ -727,7 +727,7 @@
 
     <!-- 6. Currencies -->
     <!-- Titles -->
-    <string name="ttl_new_currency" formatted="false">New cuurency</string>
+    <string name="ttl_new_currency" formatted="false">New currency</string>
 
     <!-- 6. Currencies -->
     <!-- Titles -->
@@ -795,7 +795,7 @@
 
     <!-- 8. Locations -->
     <!-- Messages -->
-    <string name="msg_permission_location_rationale" formatted="false">Location permission is nedded to detect transaction coordinates. Click Next, and allow access to location data.</string>
+    <string name="msg_permission_location_rationale" formatted="false">Location permission is nedded to obtain transaction coordinates. Click Next, and allow access to location data.</string>
 
     <!-- 8. Locations -->
     <!-- Messages -->
@@ -867,7 +867,7 @@
 
     <!-- 10. SMS Markers -->
     <!-- Titles -->
-    <string name="ttl_select_text_to_add_marker" formatted="false">SelectText to add marker</string>
+    <string name="ttl_select_text_to_add_marker" formatted="false">Select text to add marker</string>
 
     <!-- 10. SMS Markers -->
     <!-- Messages -->
@@ -875,7 +875,7 @@
 
     <!-- 10. SMS Markers -->
     <!-- Messages -->
-    <string name="msg_select_marker_type" formatted="false">Select type of marker</string>
+    <string name="msg_select_marker_type" formatted="false">Select the type of marker</string>
 
     <!-- 11. Credits -->
     <!-- Entities -->
@@ -899,7 +899,7 @@
 
     <!-- 11. Credits -->
     <!-- Messages -->
-    <string name="msg_confirmation_create_credit_percent_transaction" formatted="false">Create a transaction with the payment of interest on the loan?</string>
+    <string name="msg_confirmation_create_credit_percent_transaction" formatted="false">Create a transaction with payment of interest on the loan?</string>
 
     <!-- 11. Debts -->
     <!-- Entities -->
@@ -959,7 +959,7 @@
 
     <!-- 11. Debts -->
     <!-- Titles -->
-    <string name="ttl_total_owe_me" formatted="false">Total owe me:</string>
+    <string name="ttl_total_owe_me" formatted="false">Total owed to me:</string>
 
     <!-- 11. Debts -->
     <!-- Titles -->
@@ -1019,15 +1019,15 @@
 
     <!-- 12. SMS -->
     <!-- Messages -->
-    <string name="msg_permission_read_sms_denied" formatted="false">Access messages permission was denid</string>
+    <string name="msg_permission_read_sms_denied" formatted="false">Access messages permission was denied</string>
 
     <!-- 12. SMS -->
     <!-- Messages -->
-    <string name="msg_permission_read_sms_never_askagain" formatted="false">Access messages permission was denid</string>
+    <string name="msg_permission_read_sms_never_askagain" formatted="false">Access messages permission was denied</string>
 
     <!-- 12. SMS -->
     <!-- Messages -->
-    <string name="msg_permission_recieve_sms_rationale" formatted="false">SMS markers or senders were created, but message receiving not allowed. Click Next and allow work with messaging.</string>
+    <string name="msg_permission_recieve_sms_rationale" formatted="false">SMS markers or senders were created, but message receiving is not allowed. Click Next and allow work with messaging.</string>
 
     <!-- 12. SMS -->
     <!-- Errors -->
@@ -1103,11 +1103,11 @@
 
     <!-- 15. Budget -->
     <!-- Entities -->
-    <string name="ent_budget_total_start" formatted="false">Total sum on start of month</string>
+    <string name="ent_budget_total_start" formatted="false">Total sum at the beginning of the month</string>
 
     <!-- 15. Budget -->
     <!-- Entities -->
-    <string name="ent_budget_total_end" formatted="false">Total sum on finish of month</string>
+    <string name="ent_budget_total_end" formatted="false">Total sum at the end of the month</string>
 
     <!-- 15. Budget -->
     <!-- Entities -->
@@ -1119,15 +1119,15 @@
 
     <!-- 15. Budget -->
     <!-- Entities -->
-    <string name="ent_budget_total_io_for_month" formatted="false">Total sum for month</string>
+    <string name="ent_budget_total_io_for_month" formatted="false">Total sum for the month</string>
 
     <!-- 15. Budget -->
     <!-- Entities -->
-    <string name="ent_budget_total_borrow" formatted="false">Total borrow</string>
+    <string name="ent_budget_total_borrow" formatted="false">Total borrowed</string>
 
     <!-- 15. Budget -->
     <!-- Entities -->
-    <string name="ent_budget_total_repay" formatted="false">Total repay</string>
+    <string name="ent_budget_total_repay" formatted="false">Total repaid</string>
 
     <!-- 15. Budget -->
     <!-- Entities -->
@@ -1171,7 +1171,7 @@
 
     <!-- 15. Budget -->
     <!-- Messages -->
-    <string name="msg_dialog_clear_budget" formatted="false">Clear plan on current month?</string>
+    <string name="msg_dialog_clear_budget" formatted="false">Clear plan for the current month?</string>
 
     <!-- 16. Backup & Restore -->
     <!-- Entities -->
@@ -1223,15 +1223,15 @@
 
     <!-- 16. Backup & Restore -->
     <!-- Titles -->
-    <string name="ttl_auto_backup_info" formatted="false">Backups are creates automatically and stores on the memory card in the Fingen/\Backup</string>
+    <string name="ttl_auto_backup_info" formatted="false">Backups are created automatically and stored to the memory card in Fingen/\Backup</string>
 
     <!-- 16. Backup & Restore -->
     <!-- Messages -->
-    <string name="msg_confirm_restore_db" formatted="false">Restore the database from a file? The program will be restarted.</string>
+    <string name="msg_confirm_restore_db" formatted="false">Restore database from the file? The program will be restarted.</string>
 
     <!-- 16. Backup & Restore -->
     <!-- Messages -->
-    <string name="msg_permission_rw_external_storage_rationale" formatted="false">External storage access permission nedded to backup and restore DB. Click Next, and allow access to external storage.</string>
+    <string name="msg_permission_rw_external_storage_rationale" formatted="false">External storage access permission is needed to backup and restore DB. Click Next, and allow access to external storage.</string>
 
     <!-- 16. Backup & Restore -->
     <!-- Messages -->
@@ -1299,7 +1299,7 @@
 
     <!-- 17. Import & Export -->
     <!-- Titles -->
-    <string name="ttl_set_fields_links" formatted="false">Specify fields from file that corresponding Fingen entities</string>
+    <string name="ttl_set_fields_links" formatted="false">Please map file fields to Fingen entities</string>
 
     <!-- 17. Import & Export -->
     <!-- Titles -->
@@ -1327,7 +1327,7 @@
 
     <!-- 17. Import & Export -->
     <!-- Messages -->
-    <string name="msg_permission_write_external_storage_rationale" formatted="false">External storage access permission nedded to import/export data. Click Next, and allow access to external storage.</string>
+    <string name="msg_permission_write_external_storage_rationale" formatted="false">External storage access permission is needed to import/export data. Click Next, and allow access to external storage.</string>
 
     <!-- 17. Import & Export -->
     <!-- Messages -->
@@ -1339,7 +1339,7 @@
 
     <!-- 17. Import & Export -->
     <!-- Messages -->
-    <string name="msg_permission_read_external_storage_rationale" formatted="false">External storage access permission nedded to import/export data. Click Next, and allow access to external storage.</string>
+    <string name="msg_permission_read_external_storage_rationale" formatted="false">External storage access permission is needed to import/export data. Click Next, and allow access to external storage.</string>
 
     <!-- 17. Import & Export -->
     <!-- Messages -->
@@ -1359,7 +1359,7 @@
 
     <!-- 17. Import & Export -->
     <!-- Messages -->
-    <string name="msg_import_complete_ok" formatted="false">Import comlete</string>
+    <string name="msg_import_complete_ok" formatted="false">Import complete</string>
 
     <!-- 17. Import & Export -->
     <!-- Messages -->
@@ -1375,11 +1375,11 @@
 
     <!-- 18. Pin lock -->
     <!-- Titles -->
-    <string name="pin_code_forgot_text" formatted="false">Forgot you PIN?</string>
+    <string name="pin_code_forgot_text" formatted="false">Forgot your PIN?</string>
 
     <!-- 18. Pin lock -->
     <!-- Titles -->
-    <string name="pin_code_step_disable" formatted="false">Disable protection\nEnter your current PIN</string>
+    <string name="pin_code_step_disable" formatted="false">Disabling protection\nEnter your current PIN</string>
 
     <!-- 18. Pin lock -->
     <!-- Titles -->
@@ -1403,11 +1403,11 @@
 
     <!-- 18. Pin lock -->
     <!-- Messages -->
-    <string name="pin_code_fingerprint_success" formatted="false">Fingerprint recognized</string>
+    <string name="pin_code_fingerprint_success" formatted="false">Fingerprint is recognized</string>
 
     <!-- 18. Pin lock -->
     <!-- Messages -->
-    <string name="pin_code_fingerprint_not_recognized" formatted="false">Fingerprint not recognized. Try again</string>
+    <string name="pin_code_fingerprint_not_recognized" formatted="false">Fingerprint is not recognized. Try again</string>
 
     <!-- 19. About -->
     <!-- Settings -->
@@ -1459,7 +1459,7 @@
 
     <!-- 20. Settings -->
     <!-- General -->
-    <string name="pref_title_start_tab" formatted="false">Start tab</string>
+    <string name="pref_title_start_tab" formatted="false">Starting tab</string>
 
     <!-- 20. Settings -->
     <!-- General -->
@@ -1491,7 +1491,7 @@
 
     <!-- 20. Settings -->
     <!-- General -->
-    <string name="pref_enable_scan_qr" formatted="false">Enable scan QR</string>
+    <string name="pref_enable_scan_qr" formatted="false">Enable QR scanning</string>
 
     <!-- 20. Settings -->
     <!-- General -->
@@ -1543,15 +1543,15 @@
 
     <!-- 20. Settings -->
     <!-- Work with SMS -->
-    <string name="pref_title_auto_create_prerequisites" formatted="false">Autocreate prerequisites</string>
+    <string name="pref_title_auto_create_prerequisites" formatted="false">Autocreation Prerequisites</string>
 
     <!-- 20. Settings -->
     <!-- Work with SMS -->
-    <string name="pref_summary_auto_create_transaction_on_full_set_of_patterns" formatted="false">In the presence of markers specified in autocreate prerequisites</string>
+    <string name="pref_summary_auto_create_transaction_on_full_set_of_patterns" formatted="false">If all markers specified in "Autocreation Prerequisites" are found in the SMS</string>
 
     <!-- 20. Settings -->
     <!-- Work with SMS -->
-    <string name="pref_title_check_actual_balance_in_sms" formatted="false">Compare account balance with balance in SMS</string>
+    <string name="pref_title_check_actual_balance_in_sms" formatted="false">Compare account balance with the balance in SMS</string>
 
     <!-- 20. Settings -->
     <!-- Work with SMS -->
@@ -1583,7 +1583,7 @@
 
     <!-- 20. Settings -->
     <!-- Security -->
-    <string name="toast_pin_turn_off_pinlock_before_change_pin_length" formatted="false">Disable PIN protection before change PIN length</string>
+    <string name="toast_pin_turn_off_pinlock_before_change_pin_length" formatted="false">Please disable PIN protection before changing PIN length</string>
 
     <!-- 20. Settings -->
     <!-- Transaction editor -->
@@ -1603,11 +1603,11 @@
 
     <!-- 20. Settings -->
     <!-- Transaction editor -->
-    <string name="pref_title_payee_autocomplete" formatted="false">Autocomplete list</string>
+    <string name="pref_title_payee_autocomplete" formatted="false">Autocompletion list</string>
 
     <!-- 20. Settings -->
     <!-- Transaction editor -->
-    <string name="pref_title_payee_window" formatted="false">Standalone window</string>
+    <string name="pref_title_payee_window" formatted="false">Stand-alone window</string>
 
     <!-- 20. Settings -->
     <!-- Transaction editor -->
@@ -1615,7 +1615,7 @@
 
     <!-- 21. Help -->
     <!-- Edit transaction -->
-    <string name="hlp_tr_editor_intro" formatted="false">On this screen you can change the properties of a transaction. A transaction is any movement of your money (income, expense or transfer)</string>
+    <string name="hlp_tr_editor_intro" formatted="false">On this screen you can change transaction properties. A transaction is any movement of your money (income, expense or transfer)</string>
 
     <!-- 21. Help -->
     <!-- Edit transaction -->
@@ -1627,51 +1627,51 @@
 
     <!-- 21. Help -->
     <!-- Edit transaction -->
-    <string name="hlp_tr_editor_account_income" formatted="false">Select an account, which receives funds</string>
+    <string name="hlp_tr_editor_account_income" formatted="false">Select the account that receives funds</string>
 
     <!-- 21. Help -->
     <!-- Edit transaction -->
-    <string name="hlp_tr_editor_account_outcome_or_transfer" formatted="false">Please select the account from which the funds are debited</string>
+    <string name="hlp_tr_editor_account_outcome_or_transfer" formatted="false">Select the account from which the funds are debited</string>
 
     <!-- 21. Help -->
     <!-- Edit transaction -->
-    <string name="hlp_tr_editor_account_transfer" formatted="false">Select an account, which receives funds</string>
+    <string name="hlp_tr_editor_account_transfer" formatted="false">Select the account that receives funds</string>
 
     <!-- 21. Help -->
     <!-- Edit transaction -->
-    <string name="hlp_tr_editor_payee_outcome" formatted="false">Enter the payee. Swipe left to go to the transfer mode between your accounts</string>
+    <string name="hlp_tr_editor_payee_outcome" formatted="false">Enter the payee name. Swipe left to go to the transfer mode </string>
 
     <!-- 21. Help -->
     <!-- Edit transaction -->
-    <string name="hlp_tr_editor_payee_income" formatted="false">Enter the payer. Swipe left to go to the transfer mode between your accounts</string>
+    <string name="hlp_tr_editor_payee_income" formatted="false">Enter the payer name. Swipe left to go to the transfer mode</string>
 
     <!-- 21. Help -->
     <!-- Edit transaction -->
-    <string name="hlp_tr_editor_dest_account" formatted="false">Select an account for depositing funds. Swipe right to go to the income/expense mode</string>
+    <string name="hlp_tr_editor_dest_account" formatted="false">Select the account for depositing funds. Swipe right to go to the income/expense mode</string>
 
     <!-- 21. Help -->
     <!-- Edit transaction -->
-    <string name="hlp_tr_editor_category" formatted="false">Choose category of transaction from list</string>
+    <string name="hlp_tr_editor_category" formatted="false">Choose the transaction category from list</string>
 
     <!-- 21. Help -->
     <!-- Edit transaction -->
-    <string name="hlp_tr_editor_amount" formatted="false">Enter the amount of the transaction</string>
+    <string name="hlp_tr_editor_amount" formatted="false">Enter transaction amount </string>
 
     <!-- 21. Help -->
     <!-- Edit transaction -->
-    <string name="hlp_tr_editor_amount_sign" formatted="false">Change the type of transaction - Income/Expense</string>
+    <string name="hlp_tr_editor_amount_sign" formatted="false">Change transaction type - Income/Expense</string>
 
     <!-- 21. Help -->
     <!-- Edit transaction -->
-    <string name="hlp_tr_editor_amount_dest_account" formatted="false">When transferring funds between accounts in different currencies, it is displayed in the currency of the sum of the destination account. When you edit amount it automatically changes currency exchange rate</string>
+    <string name="hlp_tr_editor_amount_dest_account" formatted="false">When transferring funds between accounts in different currencies, destination account currency is used for this field. Editing the field will result in automatic exchange rate change.</string>
 
     <!-- 21. Help -->
     <!-- Edit transaction -->
-    <string name="hlp_tr_editor_exchange_rate" formatted="false">If you change the exchange rate, will automatically change the amount in the currency of the destination account</string>
+    <string name="hlp_tr_editor_exchange_rate" formatted="false">Currency exchange rate change will result in automatic change of the sum in destination account currency</string>
 
     <!-- 21. Help -->
     <!-- Edit account -->
-    <string name="hlp_account_editor_intro" formatted="false">На этом экране изменяются свойства счета</string>
+    <string name="hlp_account_editor_intro" formatted="false">This screen is for editing account properties</string>
 
     <!-- 21. Help -->
     <!-- Edit account -->
@@ -1679,19 +1679,19 @@
 
     <!-- 21. Help -->
     <!-- Edit account -->
-    <string name="hlp_account_editor_type" formatted="false">Select the type of account</string>
+    <string name="hlp_account_editor_type" formatted="false">Select the account type </string>
 
     <!-- 21. Help -->
     <!-- Edit account -->
-    <string name="hlp_account_editor_currency" formatted="false">Click to call currency choice dialog. In the same dialog you can create a new currency</string>
+    <string name="hlp_account_editor_currency" formatted="false">Click to select currency. In the same dialog you can create a new currency</string>
 
     <!-- 21. Help -->
     <!-- Edit account -->
-    <string name="hlp_account_editor_emitent" formatted="false">Enter the name of the bank (not necessarily)</string>
+    <string name="hlp_account_editor_emitent" formatted="false">Enter the bank name (optional)</string>
 
     <!-- 21. Help -->
     <!-- Edit account -->
-    <string name="hlp_account_editor_last4digits" formatted="false">Enter the last 4 digits of the card number (not required)</string>
+    <string name="hlp_account_editor_last4digits" formatted="false">Enter the last 4 digits of the card number (optional)</string>
 
     <!-- 21. Help -->
     <!-- Edit account -->
@@ -1703,7 +1703,7 @@
 
     <!-- 21. Help -->
     <!-- Edit account -->
-    <string name="hlp_account_editor_closed" formatted="false">Check, if you want to hide the account from the list. You need to uncheck the option Show closed accounts in the preferences</string>
+    <string name="hlp_account_editor_closed" formatted="false">Check, if you want to hide the account from the list. You also need to uncheck the "Show closed accounts" option in Preferences</string>
 
     <!-- 22. Departments -->
     <!-- Entities -->
@@ -1767,7 +1767,7 @@
 
     <!-- 23. Reports -->
     <!-- Actions -->
-    <string name="act_toggle_percents" formatted="false">Percents/Sums</string>
+    <string name="act_toggle_percents" formatted="false">Percent/Amounts</string>
 
     <!-- 23. Reports -->
     <!-- Actions -->
@@ -1791,23 +1791,23 @@
 
     <!-- 23. In-app purchases -->
     <!-- Messages -->
-    <string name="msg_thanks_for_purchase_reports" formatted="false">Thank you for your purchase! To build graphical reports, go to the "Transactions" tab, pull up the bottom panel and click charting. Reports are based on the transactions displayed in the list, taking into account all of the filters.</string>
+    <string name="msg_thanks_for_purchase_reports" formatted="false">Thank you for your purchase! To build graphical reports, go to the "Transactions" tab, pull up the bottom panel and click Charting. Reports are based on the transactions displayed in the list, taking into account all of the filters.</string>
 
     <!-- 24. Senders -->
     <!-- Entities -->
-    <string name="ent_sender" formatted="false">Sms sender</string>
+    <string name="ent_sender" formatted="false">SMS sender</string>
 
     <!-- 24. Senders -->
     <!-- Entities -->
-    <string name="ent_senders" formatted="false">Sms senders</string>
+    <string name="ent_senders" formatted="false">SMS senders</string>
 
     <!-- 24. Senders -->
     <!-- Entities -->
-    <string name="ent_new_sender" formatted="false">New sms sender</string>
+    <string name="ent_new_sender" formatted="false">New SMS sender</string>
 
     <!-- 24. Senders -->
     <!-- Entities -->
-    <string name="ent_edit_sender" formatted="false">Edit sms sender</string>
+    <string name="ent_edit_sender" formatted="false">Edit SMS sender</string>
 
     <!-- 24. Senders -->
     <!-- Entities -->
@@ -1823,11 +1823,11 @@
 
     <!-- 24. Senders -->
     <!-- Titles -->
-    <string name="ttl_delete_sender_confirmation" formatted="false">Delete sms sender?</string>
+    <string name="ttl_delete_sender_confirmation" formatted="false">Delete SMS sender?</string>
 
     <!-- 24. Senders -->
     <!-- Titles -->
-    <string name="title_select_sender" formatted="false">Select sms sender</string>
+    <string name="title_select_sender" formatted="false">Select SMS sender</string>
 
     <!-- 24. Senders -->
     <!-- Titles -->
@@ -1863,7 +1863,7 @@
 
     <!-- 25. Sync -->
     <!-- Titles -->
-    <string name="ttl_enter_email" formatted="false">Enter user\'s email (Google)</string>
+    <string name="ttl_enter_email" formatted="false">Enter user email (Google)</string>
 
     <!-- 25. Sync -->
     <!-- Titles -->
@@ -1919,7 +1919,7 @@
 
     <!-- 26. ScanQR -->
     <!-- Messages -->
-    <string name="msg_camera_access_is_required" formatted="false">Camera access is required to display the camera preview</string>
+    <string name="msg_camera_access_is_required" formatted="false">Camera access is required to display camera preview</string>
 
     <!-- 26. ScanQR -->
     <!-- Messages -->
@@ -1967,7 +1967,7 @@
 
     <!-- 27. Products -->
     <!-- Entities -->
-    <string name="ent_code_from_sms" formatted="false">Code from sms</string>
+    <string name="ent_code_from_sms" formatted="false">Code from SMS</string>
 
     <!-- 27. Products -->
     <!-- Actions -->
@@ -2007,7 +2007,7 @@
 
     <!-- 27. Products -->
     <!-- Titles -->
-    <string name="ttl_you_can_edit_later" formatted="false">You can edit credentials later it preferences</string>
+    <string name="ttl_you_can_edit_later" formatted="false">You can edit credentials later in Preferences</string>
 
     <!-- 27. Products -->
     <!-- Messages -->
@@ -2023,7 +2023,7 @@
 
     <!-- 27. Products -->
     <!-- Messages -->
-    <string name="msg_fts_login_html" formatted="false"><![CDATA[<p>For the ability to download a list of products from the receipt:</p><p>&nbsp;&nbsp;&nbsp; 1. Install the application "<strong>Проверка касcового чека</strong>" (author of <strong>АО ГНИВЦ</strong>).</p><p>&nbsp;&nbsp;&nbsp; 2. Register in it using your mobile phone number and get the code by SMS.</p><p>&nbsp;&nbsp;&nbsp; 3. Enter the phone number and code in the form below.</p><p>&nbsp;&nbsp;&nbsp; 4. Tap "<strong>Save</strong>".</p>]]></string>
+    <string name="msg_fts_login_html" formatted="false"><![CDATA[<p>To download list of products from receipts:</p><p>&nbsp;&nbsp;&nbsp; 1. Install the application "<strong>Проверка касcового чека</strong>" (author of <strong>АО ГНИВЦ</strong>).</p><p>&nbsp;&nbsp;&nbsp; 2. Register in it using your mobile phone number and get the code by SMS.</p><p>&nbsp;&nbsp;&nbsp; 3. Enter the phone number and code in the form below.</p><p>&nbsp;&nbsp;&nbsp; 4. Tap "<strong>Save</strong>".</p>]]></string>
 
     <!-- 28. EditorConstructor -->
     <!-- Entities -->
@@ -2031,5 +2031,5 @@
 
     <!-- 28. EditorConstructor -->
     <!-- Actions -->
-    <string name="act_tune_editor" formatted="false">Tune editor</string>
+    <string name="act_tune_editor" formatted="false">Tune the editor</string>
 </resources>
