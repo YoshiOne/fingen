@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp">
+
+    <TextView
+        android:id="@+id/card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/color_widget_text_secondary"
+        android:textSize="10sp"
+        tools:text="*1111"/>
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/card"
+        android:gravity="center"
+        android:textColor="@color/color_widget_text"
+        android:textSize="14sp"
+        tools:text=" 01/08 12:45"/>
+
+    <LinearLayout
+        android:id="@+id/difference_holder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true">
+
+        <TextView
+            android:id="@+id/difference"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textColor="@color/color_widget_text"
+            android:textSize="23sp"
+            tools:text="+10000"/>
+
+        <ImageView
+            android:id="@+id/recost"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@android:drawable/star_off"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/balance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/difference_holder"
+        android:singleLine="true"
+        android:textColor="@color/color_widget_text"
+        android:textSize="38sp"
+        tools:text="200000"/>
+
+</RelativeLayout>

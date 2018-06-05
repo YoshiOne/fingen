@@ -55,6 +55,13 @@
 
     <color name="dark_grey_color">@color/gray_text</color>
 
+    <!--Widget sms list-->
+    <color name="color_income">#08c708</color>
+    <color name="color_expense">#FF0000</color>
+    <color name="color_widget_divider">#aabcbaba</color>
+    <color name="color_widget_text">#ffffffff</color>
+    <color name="color_widget_text_secondary">#aabcbaba</color>
+
     <array  name="material_palette">
         <item>#FFEBEE</item>
         <item>#FFCDD2</item>

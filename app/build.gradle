@@ -1,13 +1,14 @@
 buildscript {
+    ext.kotlin_version = '1.2.41'
     repositories {
         maven { url 'https://maven.fabric.io/public' }
         jcenter()
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.24.3'
+        classpath 'io.fabric.tools:gradle:1.25.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.41"
     }
-
 }
 
 repositories {
@@ -19,21 +20,11 @@ repositories {
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 
-def keystorePropertiesFile= rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-
 android {
-    signingConfigs {
-        config {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile rootProject.file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-        }
-    }
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
     defaultConfig {
@@ -43,14 +34,46 @@ android {
         versionCode 112
         versionName "2.4.1"
         resValue "string", "app_name", "Fingen"
-        resValue "string", "inAppLicenseKey", keystoreProperties["inAppLicenseKey"]
-        resValue "string", "inAppLicenseSalt", keystoreProperties["inAppLicenseSalt"]
-        manifestPlaceholders = [
-                dropboxApiKey:keystoreProperties["dropboxApiKey"],
-                mapsApiKey:keystoreProperties["mapsApiKey"],
-                fabricApiKey:keystoreProperties["fabricApiKey"]
-        ]
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs { config }
+
+    def keystorePropertiesFile = rootProject.file('keystore.properties')
+    def keystoreProperties = new Properties()
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    }
+    if (keystorePropertiesFile.exists() &&
+            keystoreProperties.containsKey('inAppLicenseKey') &&
+            keystoreProperties.containsKey('inAppLicenseSalt') &&
+            keystoreProperties.containsKey('dropboxApiKey') &&
+            keystoreProperties.containsKey('mapsApiKey') &&
+            keystoreProperties.containsKey('fabricApiKey') &&
+            keystoreProperties.containsKey('storeFile') && keystoreProperties['storeFile'] != "" &&
+            keystoreProperties.containsKey('storePassword') &&
+            keystoreProperties.containsKey('keyAlias') &&
+            keystoreProperties.containsKey('keyPassword')) {
+        android.defaultConfig.resValue "string", "inAppLicenseKey", keystoreProperties["inAppLicenseKey"]
+        android.defaultConfig.resValue "string", "inAppLicenseSalt", keystoreProperties["inAppLicenseSalt"]
+        android.defaultConfig.manifestPlaceholders = [
+                dropboxApiKey: keystoreProperties["dropboxApiKey"],
+                mapsApiKey   : keystoreProperties["mapsApiKey"],
+                fabricApiKey : keystoreProperties["fabricApiKey"]
+        ]
+        android.signingConfigs.config.storeFile = file(keystoreProperties['storeFile'])
+        android.signingConfigs.config.storePassword = keystoreProperties['storePassword']
+        android.signingConfigs.config.keyAlias = keystoreProperties['keyAlias']
+        android.signingConfigs.config.keyPassword = keystoreProperties['keyPassword']
+    } else {
+        android.defaultConfig.resValue "string", "inAppLicenseKey", ""
+        android.defaultConfig.resValue "string", "inAppLicenseSalt", ""
+        android.defaultConfig.manifestPlaceholders = [
+                dropboxApiKey: "",
+                mapsApiKey   : "",
+                fabricApiKey : ""
+        ]
+        android.buildTypes.release.signingConfig = null
     }
     buildTypes {
         release {
@@ -92,6 +115,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation files('libs/opencsv-2.4.jar')
     implementation files('libs/juniversalchardet-1.0.3.jar')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation(name: 'MaterialShowCase-1.0.5', ext: 'aar')
     implementation(name: 'HeaderDecor-0.2.7', ext: 'aar')
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:3.1.0'
