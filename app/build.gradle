@@ -1,13 +1,14 @@
 buildscript {
+    ext.kotlin_version = '1.2.41'
     repositories {
         maven { url 'https://maven.fabric.io/public' }
         jcenter()
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.24.3'
+        classpath 'io.fabric.tools:gradle:1.25.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.41"
     }
-
 }
 
 repositories {
@@ -19,6 +20,8 @@ repositories {
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 
 def keystorePropertiesFile= rootProject.file("keystore.properties")
@@ -92,6 +95,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation files('libs/opencsv-2.4.jar')
     implementation files('libs/juniversalchardet-1.0.3.jar')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation(name: 'MaterialShowCase-1.0.5', ext: 'aar')
     implementation(name: 'HeaderDecor-0.2.7', ext: 'aar')
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:3.1.0'
