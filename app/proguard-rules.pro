@@ -21,6 +21,11 @@
 #-ignorewarnings
 #-dontshrink
 
+#Kotlin
+-dontwarn kotlin.reflect.jvm.internal.**
+-keep class kotlin.** { *; }
+-keep class org.jetbrains.** { *; }
+
 #Butterknife
 -keepattributes EnclosingMethod
 # Retain generated class which implement ViewBinder.
@@ -75,6 +80,7 @@
 -keepattributes SourceFile,LineNumberTable
 -keep class com.crashlytics.** { *; }
 -dontwarn com.crashlytics.**
+-printmapping mapping.txt
 
 #Dropbox OkHttp and Servlet optional dependencies
 -dontwarn okio.**
