@@ -10,19 +10,7 @@
 
 # Установка
 
-Клонируйте репозиторий и откройте в Android Studio. Для успешной компиляции необходимо добавить файл `keystore.properties` со следующим содержимым:
-
-```
-  keyAlias=  
-  keyPassword=  
-  storeFile=  
-  storePassword=  
-  dropboxApiKey=  
-  mapsApiKey=  
-  fabricApiKey=  
-  inAppLicenseKey=  
-  inAppLicenseSalt=
-```
+Клонируйте репозиторий и откройте в Android Studio.
 
 # Автор
 
