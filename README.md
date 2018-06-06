@@ -8,19 +8,7 @@ Universal application for manage revenues and expenses with built-in SMS parser
 
 # Compilation
 
-Clone repo and open in Android Studio. Add file `keystore.properties` with following content:
-
-```
-  keyAlias=  
-  keyPassword=  
-  storeFile=  
-  storePassword=  
-  dropboxApiKey=  
-  mapsApiKey=  
-  fabricApiKey=  
-  inAppLicenseKey=  
-  inAppLicenseSalt=
-```
+Clone repo and open in Android Studio.
 
 # Author
 
