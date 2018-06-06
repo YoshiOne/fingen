@@ -1,4 +1,4 @@
-package com.yoshione.fingen;
+package com.yoshione.fingen.screenwidget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -8,20 +8,23 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.RemoteViews;
 
+import com.yoshione.fingen.ActivityEditTransaction;
+import com.yoshione.fingen.R;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.utils.PrefUtils;
 
 /**
  * Implementation of App Widget functionality.
  */
-public class WidgetTransfer extends AppWidgetProvider {
+public class WidgetIncome extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_transfer);
+
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_income);
         Intent configIntent = new Intent(context, ActivityEditTransaction.class);
         Transaction transaction = new Transaction(PrefUtils.getDefDepID(context));
-        transaction.setTransactionType(Transaction.TRANSACTION_TYPE_TRANSFER);
+        transaction.setTransactionType(Transaction.TRANSACTION_TYPE_INCOME);
         configIntent.putExtra("transaction", transaction);
         configIntent.putExtra("update_date", true);
         configIntent.putExtra("EXIT", true);

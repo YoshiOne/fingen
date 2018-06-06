@@ -93,7 +93,7 @@
                 <action android:name="com.yoshione.fingen.intent.action.CREATE_TRANSACTION"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".WidgetExpense">
+        <receiver android:name=".screenwidget.WidgetExpense">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
@@ -102,7 +102,7 @@
                 android:label="@string/ent_outcome"
                 android:resource="@xml/widget_info_outcome"/>
         </receiver>
-        <receiver android:name=".WidgetIncome">
+        <receiver android:name=".screenwidget.WidgetIncome">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
@@ -111,7 +111,7 @@
                 android:label="@string/ent_income"
                 android:resource="@xml/widget_info_income"/>
         </receiver>
-        <receiver android:name=".WidgetTransfer">
+        <receiver android:name=".screenwidget.WidgetTransfer">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
@@ -120,6 +120,23 @@
                 android:label="@string/ent_transfer"
                 android:resource="@xml/widget_info_transfer"/>
         </receiver>
+        <receiver
+            android:name=".screenwidget.transactions.WidgetTransactions"
+            android:enabled="true"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_transactions">
+            </meta-data>
+        </receiver>
+        <service
+            android:name=".screenwidget.transactions.TransactionsAdapterService"
+            android:permission="android.permission.BIND_REMOTEVIEWS">
+        </service>
 
         <receiver android:name=".receivers.CalcReciever">
             <intent-filter>
