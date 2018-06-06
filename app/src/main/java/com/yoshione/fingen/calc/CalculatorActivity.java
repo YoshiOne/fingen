@@ -241,7 +241,7 @@ public class CalculatorActivity extends ToolbarActivity {
         DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
         decimalFormatSymbols.setGroupingSeparator(',');
         decimalFormatSymbols.setDecimalSeparator('.');
-        decimalFormat = new DecimalFormat("#,###,##0.00", decimalFormatSymbols);
+        decimalFormat = new DecimalFormat("#,###,##0.0000", decimalFormatSymbols);
 
         String title = getIntent().getStringExtra(TITLE_ACTIVITY);
         if (!TextUtils.isEmpty(title)) {

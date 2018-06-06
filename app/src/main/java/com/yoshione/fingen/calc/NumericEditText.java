@@ -196,8 +196,8 @@ public class NumericEditText extends AppCompatEditText {
 
         // add fraction part if any
         if (parts.length > 1) {
-            if (parts[1].length() > 2) {
-                number += mDecimalSeparator + parts[1].substring(parts[1].length() - 2, parts[1].length());
+            if (parts[1].length() > 4) {
+                number += mDecimalSeparator + parts[1].substring(parts[1].length() - 4, parts[1].length());
             } else {
                 number += mDecimalSeparator + parts[1];
             }
