@@ -33,7 +33,6 @@ public class AbstractModelManager {
     public static void editNestedModelNameViaDialog(final IAbstractModel model, final Activity activity, final EditDialogEventsListener eventsListener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(R.string.ttl_enter_new_name);
-//        final EditText input = new EditText(activity, null, R.style.EditableEditText);
         final EditText input = (EditText) activity.getLayoutInflater().inflate(R.layout.template_edittext, null);
         input.setText(model.getName());
         builder.setView(input);

@@ -526,7 +526,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         Category category = TransactionManager.getCategory(transaction, this);
         Payee payee = TransactionManager.getPayee(transaction, this);
         Category defCategory = PayeeManager.getDefCategory(payee, this);
-        if (defCategory.getID() != category.getID()) {
+        if (defCategory.getID() != category.getID() & category.getID() >= 0) {
             PayeesDAO payeesDAO = PayeesDAO.getInstance(getApplicationContext());
             payee.setDefCategoryID(category.getID());
             try {

@@ -686,9 +686,6 @@ public class CsvImporter {
             });
 
             mCurrentRow = 0;
-//            date time account amount currency type exrate category payee location project department note
-//            ImportParams params = new ImportParams(0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 5, true);
-//            params.setDateFormat("yyyy-MM-dd HH:mm:ss");
             @SuppressLint("SimpleDateFormat") FingenCsvImportProc fingenCsvImportProc = new FingenCsvImportProc(columns, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), transaction, skipDuplicates, transactionList, caches);
 
             final SQLiteDatabase database = DBHelper.getInstance(mContext).getDatabase();
@@ -1171,7 +1168,7 @@ public class CsvImporter {
         csv.read(mFileName, new CSVReadProc() {
             @Override
             public void procRow(int i, String... values) {
-                if (values.length > 1) {
+                if (values.length > 1 & i < 100) {
                     mListColumnsCount.add(values.length);
                 }
             }
