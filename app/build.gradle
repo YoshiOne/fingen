@@ -5,7 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.24.3'
+        classpath 'io.fabric.tools:gradle:1.25.2'
     }
 
 }
@@ -21,19 +21,7 @@ repositories {
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
-def keystorePropertiesFile= rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-
 android {
-    signingConfigs {
-        config {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile rootProject.file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-        }
-    }
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
     defaultConfig {
@@ -43,14 +31,46 @@ android {
         versionCode 112
         versionName "2.4.1"
         resValue "string", "app_name", "Fingen"
-        resValue "string", "inAppLicenseKey", keystoreProperties["inAppLicenseKey"]
-        resValue "string", "inAppLicenseSalt", keystoreProperties["inAppLicenseSalt"]
-        manifestPlaceholders = [
-                dropboxApiKey:keystoreProperties["dropboxApiKey"],
-                mapsApiKey:keystoreProperties["mapsApiKey"],
-                fabricApiKey:keystoreProperties["fabricApiKey"]
-        ]
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs { config }
+
+    def keystorePropertiesFile = rootProject.file('keystore.properties')
+    def keystoreProperties = new Properties()
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    }
+    if (keystorePropertiesFile.exists() &&
+            keystoreProperties.containsKey('inAppLicenseKey') &&
+            keystoreProperties.containsKey('inAppLicenseSalt') &&
+            keystoreProperties.containsKey('dropboxApiKey') &&
+            keystoreProperties.containsKey('mapsApiKey') &&
+            keystoreProperties.containsKey('fabricApiKey') &&
+            keystoreProperties.containsKey('storeFile') && keystoreProperties['storeFile'] != "" &&
+            keystoreProperties.containsKey('storePassword') &&
+            keystoreProperties.containsKey('keyAlias') &&
+            keystoreProperties.containsKey('keyPassword')) {
+        android.defaultConfig.resValue "string", "inAppLicenseKey", keystoreProperties["inAppLicenseKey"]
+        android.defaultConfig.resValue "string", "inAppLicenseSalt", keystoreProperties["inAppLicenseSalt"]
+        android.defaultConfig.manifestPlaceholders = [
+                dropboxApiKey: keystoreProperties["dropboxApiKey"],
+                mapsApiKey   : keystoreProperties["mapsApiKey"],
+                fabricApiKey : keystoreProperties["fabricApiKey"]
+        ]
+        android.signingConfigs.config.storeFile = file(keystoreProperties['storeFile'])
+        android.signingConfigs.config.storePassword = keystoreProperties['storePassword']
+        android.signingConfigs.config.keyAlias = keystoreProperties['keyAlias']
+        android.signingConfigs.config.keyPassword = keystoreProperties['keyPassword']
+    } else {
+        android.defaultConfig.resValue "string", "inAppLicenseKey", ""
+        android.defaultConfig.resValue "string", "inAppLicenseSalt", ""
+        android.defaultConfig.manifestPlaceholders = [
+                dropboxApiKey: "",
+                mapsApiKey   : "",
+                fabricApiKey : ""
+        ]
+        android.buildTypes.release.signingConfig = null
     }
     buildTypes {
         release {
@@ -75,7 +95,6 @@ android {
 //            dimension "main"
 //        }
     }
-
     packagingOptions {
         exclude 'LICENSE.txt'
         exclude 'META-INF/LICENSE'
