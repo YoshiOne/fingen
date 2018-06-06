@@ -13,6 +13,7 @@ import android.util.Pair;
 
 import com.yoshione.fingen.BuildConfig;
 import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.R;
 import com.yoshione.fingen.classes.ListSumsByCabbage;
 import com.yoshione.fingen.classes.SumsByCabbage;
 import com.yoshione.fingen.filters.AbstractFilter;
@@ -784,14 +785,16 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
                         modelID = cursor.getLong(1);
                         if (modelID > 0) {
                             model = abstractDAO.getModelById(modelID);
-                            model.setIncome(new BigDecimal(cursor.getDouble(2)).abs());
-                            model.setExpense(new BigDecimal(cursor.getDouble(3)).abs());
-                            if (map.indexOfKey(cabbageID) < 0) {
-                                map.put(cabbageID, new LongSparseArray<IAbstractModel>());
-                            }
-                            models = map.get(cabbageID);
-                            models.put(model.getID(), model);
+                        } else {
+                            model = abstractDAO.createEmptyModel();
                         }
+                        model.setIncome(new BigDecimal(cursor.getDouble(2)).abs());
+                        model.setExpense(new BigDecimal(cursor.getDouble(3)).abs());
+                        if (map.indexOfKey(cabbageID) < 0) {
+                            map.put(cabbageID, new LongSparseArray<IAbstractModel>());
+                        }
+                        models = map.get(cabbageID);
+                        models.put(model.getID(), model);
                         cursor.moveToNext();
                     }
                 }

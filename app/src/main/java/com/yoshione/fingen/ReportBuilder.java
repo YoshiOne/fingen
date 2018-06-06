@@ -308,6 +308,7 @@ public class ReportBuilder {
         mEntitiesDataset = new LinkedHashMap<>();
         List<IAbstractModel> allModelsForCabbage;
         BaseNode tree;
+        IAbstractModel emptyModel;
 
         for(int i = 0; i < reportData.size(); i++) {
             long key = reportData.keyAt(i);
@@ -315,6 +316,11 @@ public class ReportBuilder {
             if (dataForCabbage.size() > 0) {
                 try {
                     allModelsForCabbage = (List<IAbstractModel>) BaseDAO.getDAO(getModelType(), context).getAllModels();
+                    //Add empty model with Id = -1 to show it on chart if it exists
+                    emptyModel = BaseDAO.getDAO(getModelType(), context).createEmptyModel();
+                    emptyModel.setName(context.getString(R.string.ent_undefined));
+                    emptyModel.setFullName(context.getString(R.string.ent_undefined));
+                    allModelsForCabbage.add(emptyModel);
                 } catch (Exception e) {
                     allModelsForCabbage = new ArrayList<>();
                 }

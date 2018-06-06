@@ -648,6 +648,11 @@ public class BaseDAO implements AbstractDAO {
         mDatabase.execSQL(sql);
     }
 
+    @Override
+    public IAbstractModel createEmptyModel() throws Exception {
+        return createModelByTable();
+    }
+
     private IAbstractModel createModelByTable() {
         if (mTableName.equals(DBHelper.T_REF_CURRENCIES)) {
             return new Cabbage();

@@ -26,6 +26,8 @@ public interface AbstractDAO {
 
     IAbstractModel createModel(IAbstractModel model) throws Exception;
 
+    IAbstractModel createEmptyModel() throws Exception;
+
     IAbstractModel createModelWithoutEvent(IAbstractModel model) throws Exception;
 
     IAbstractModel getModelById(long id);

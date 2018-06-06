@@ -178,6 +178,10 @@
     <string name="ent_sunday" formatted="false">Sunday</string>
 
     <!-- 1. General -->
+    <!-- Entities -->
+    <string name="ent_undefined" formatted="false">Undefined</string>
+
+    <!-- 1. General -->
     <!-- Actions -->
     <string name="act_create" formatted="false">New</string>
 
