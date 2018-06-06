@@ -34,10 +34,8 @@ public class AbstractModelManager {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(R.string.ttl_enter_new_name);
 //        final EditText input = new EditText(activity, null, R.style.EditableEditText);
-        final EditText input = new EditText(activity);
+        final EditText input = (EditText) activity.getLayoutInflater().inflate(R.layout.template_edittext, null);
         input.setText(model.getName());
-        input.setId(R.id.text);
-        input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         builder.setView(input);
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {

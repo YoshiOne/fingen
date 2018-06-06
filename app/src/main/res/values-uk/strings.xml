@@ -1587,7 +1587,7 @@
 
     <!-- 20. Settings -->
     <!-- Security -->
-    <string name="toast_pin_turn_off_pinlock_before_change_pin_length" formatted="false">Отключите защиту перед сменой длины пина</string>
+    <string name="pref_pin_lock_timeout" formatted="false">Таймаут блокировки</string>
 
     <!-- 20. Settings -->
     <!-- Transaction editor -->
