@@ -257,7 +257,7 @@ public class SmsParser {
      * @param s - число
      * @return - число без форматирования, пригодное для преобразования в double
      */
-    private static String unformatNumber(String s) {
+    public static String unformatNumber(String s) {
         //грохаем все символы кроме цифр, минуса, точки и запятой. Затем заменяем запятые на точки
         String s1 = s.replaceAll("[^\\d.,-]", "").replaceAll(",", ".");
 
