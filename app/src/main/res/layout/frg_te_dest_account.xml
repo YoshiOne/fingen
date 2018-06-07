@@ -1,16 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
-<android.support.design.widget.TextInputLayout
+<android.support.constraint.ConstraintLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:hint="@string/ent_dest_account">
+    android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/textViewDestAccount"
-        style="@style/NotEditableEditText"
-        android:layout_width="match_parent"
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:inputType="none|textNoSuggestions" />
-</android.support.design.widget.TextInputLayout>
+        android:hint="@string/ent_dest_account"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageButtonInvertTransferDirection"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/textViewDestAccount"
+            style="@style/NotEditableEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none|textNoSuggestions"
+            tools:ignore="LabelFor" />
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/imageButtonInvertTransferDirection"
+        style="@style/ClearButtonStyle"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_import_export_blue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+</android.support.constraint.ConstraintLayout>

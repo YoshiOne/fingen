@@ -406,7 +406,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         super.onPause();
     }
 
-    private void initUI() {
+    public void initUI() {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.ic_close_white));

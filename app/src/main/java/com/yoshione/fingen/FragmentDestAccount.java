@@ -7,11 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.yoshione.fingen.managers.AccountManager;
 import com.yoshione.fingen.managers.TransactionManager;
 import com.yoshione.fingen.model.Account;
+import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.utils.RequestCodes;
 
 import butterknife.BindView;
@@ -27,6 +29,8 @@ public class FragmentDestAccount extends Fragment {
 
     @BindView(R.id.textViewDestAccount)
     EditText textViewDestAccount;
+    @BindView(R.id.imageButtonInvertTransferDirection)
+    ImageButton imageButtonInvertTransferDirection;
 
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frg_te_dest_account, container, false);
@@ -43,15 +47,31 @@ public class FragmentDestAccount extends Fragment {
             }
         });
 
+        imageButtonInvertTransferDirection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ActivityEditTransaction activityEditTransaction = (ActivityEditTransaction) getActivity();
+                Transaction transaction = activityEditTransaction.getTransaction();
+                long src = transaction.getAccountID();
+                long dst = transaction.getDestAccountID();
+                transaction.setAccountID(dst);
+                transaction.setDestAccountID(src);
+                activityEditTransaction.initUI();
+                updateDestAccountName();
+            }
+        });
+
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        updateDestAccountName();
+    }
+
+    private void updateDestAccountName() {
         Account destAccount = TransactionManager.getDestAccount(((ActivityEditTransaction) getActivity()).getTransaction(), getActivity());
-//        textViewDestAccount.setText(destAccount.getName());
-//        textViewDestAccountCabbage.setText(AccountManager.getCabbage(destAccount, getActivity()).getCode());
         String name = destAccount.getName();
         String code = AccountManager.getCabbage(destAccount, getActivity()).getSimbol();
         if (name.isEmpty()) {
