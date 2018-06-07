@@ -100,6 +100,13 @@
             android:entries="@array/pref_pin_length_values"
             android:entryValues="@array/pref_pin_length_values"
             />
+        <EditTextPreference
+            android:defaultValue="10"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="number"
+            android:key="pin_lock_timeout"
+            android:title="@string/pref_pin_lock_timeout"/>
     </PreferenceScreen>
 
     <PreferenceScreen

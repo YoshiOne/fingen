@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.github.omadahealth.lollipin.lib.managers.AppLock;
+import com.github.omadahealth.lollipin.lib.managers.LockManager;
 import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.fts.ActivityFtsLogin;
 import com.yoshione.fingen.interfaces.IAbstractModel;
@@ -108,6 +109,7 @@ public class FragmentSettings extends XpPreferenceFragment implements ICanPressB
         bindPreferenceSummaryToValue(findPreference("pin_length"));
         bindPreferenceSummaryToValue(findPreference(FgConst.PREF_DEFAULT_DEPARTMENT));
         bindPreferenceSummaryToValue(findPreference(FgConst.PREF_FIRST_DAY_OF_WEEK));
+        bindPreferenceSummaryToValue(findPreference(FgConst.PREF_PIN_LOCK_TIMEOUT));
         findPreference("enable_pin_lock").setOnPreferenceChangeListener(sCheckBoxPreferenceChangeListener);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -308,7 +310,7 @@ public class FragmentSettings extends XpPreferenceFragment implements ICanPressB
                 @Override
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                     if (key.equals("autocreate_prerequisites")) {
-                        bindPreferenceSummaryToValue(findPreference("autocreate_prerequisites"));
+                        bindPreferenceSummaryToValue(findPreference(key));
                     }
                     if (key.equals(FgConst.PREF_DEFAULT_DEPARTMENT)) {
                         bindPreferenceSummaryToValue(findPreference(FgConst.PREF_DEFAULT_DEPARTMENT));
@@ -317,6 +319,13 @@ public class FragmentSettings extends XpPreferenceFragment implements ICanPressB
                         boolean pinEnabled = prefs.getBoolean(key, true);
                         getPreferenceScreen().findPreference("change_pin").setEnabled(pinEnabled);
                         getPreferenceScreen().findPreference("pin_length").setEnabled(!pinEnabled);
+                    }
+                    if (key.equals(FgConst.PREF_PIN_LOCK_TIMEOUT)) {
+                        long timeout = Integer.valueOf(prefs.getString(FgConst.PREF_PIN_LOCK_TIMEOUT, "10"))*1000;
+                        LockManager<CustomPinActivity> lockManager = LockManager.getInstance();
+                        lockManager.getAppLock().setTimeout(timeout);
+                        lockManager.getAppLock().setOnlyBackgroundTimeout(true);
+                        bindPreferenceSummaryToValue(findPreference(key));
                     }
                 }
             };

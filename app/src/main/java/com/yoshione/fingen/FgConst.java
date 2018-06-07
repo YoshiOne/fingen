@@ -48,6 +48,7 @@ public class FgConst {
     public static final String PREF_FIRST_DAY_OF_WEEK = "first_day_of_week";
     public static final String PREF_VALUE_MONDAY = "monday";
     public static final String PREF_VALUE_SUNDAY = "sunday";
+    public static final String PREF_PIN_LOCK_TIMEOUT = "pin_lock_timeout";
     //</editor-fold>
 
     //<editor-fold Intent actions

@@ -102,6 +102,11 @@ public class FGApplication extends Application implements ISyncAnimMethods {
         lockManager.enableAppLock(this, CustomPinActivity.class);
         lockManager.getAppLock().setOnlyBackgroundTimeout(true);
         lockManager.getAppLock().setLogoId(R.drawable.ic_main);
+        long timeout = Integer.valueOf(
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(
+                        FgConst.PREF_PIN_LOCK_TIMEOUT, "10"))*1000;
+        lockManager.getAppLock().setTimeout(timeout);
+        lockManager.getAppLock().setOnlyBackgroundTimeout(true);
 
         registerActivityLifecycleCallbacks(new FgActivityLifecycleCallbacks());
 
