@@ -34,6 +34,7 @@ import com.yoshione.fingen.dao.CategoriesDAO;
 import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.dao.LocationsDAO;
 import com.yoshione.fingen.dao.PayeesDAO;
+import com.yoshione.fingen.dao.ProductsDAO;
 import com.yoshione.fingen.dao.ProjectsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ILoadMoreFinish;
@@ -665,48 +666,78 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
             Project project;
             boolean isSplitCategory = false;
             boolean isSplitProject = false;
+            boolean sameCategory = true;
+            boolean sameProject = true;
             if (t.getProductEntries().size() == 0) {
                 isSplitCategory = false;
                 isSplitProject = false;
             } else {
+                Long lastID = null;
                 for (ProductEntry entry : t.getProductEntries()) {
-                    if (entry.getCategoryID() != t.getCategoryID() & entry.getCategoryID() >= 0) {
+                    if (lastID == null) {
+                        lastID = entry.getCategoryID();
+                    } else {
+                        sameCategory = sameCategory & entry.getCategoryID() == lastID;
+                        lastID = entry.getCategoryID();
+                    }
+                    if (entry.getCategoryID() != t.getCategoryID()) {
                         isSplitCategory = true;
-                        break;
                     }
                 }
+                lastID = null;
                 for (ProductEntry entry : t.getProductEntries()) {
-                    if (entry.getProjectID() != t.getProjectID() & entry.getCategoryID() >= 0) {
+                    if (lastID == null) {
+                        lastID = entry.getProjectID();
+                    } else {
+                        sameProject = sameProject & entry.getProjectID() == lastID;
+                        lastID = entry.getProjectID();
+                    }
+                    if (entry.getProjectID() != t.getProjectID()) {
                         isSplitProject = true;
-                        break;
                     }
                 }
             }
-            if (!isSplitCategory) {
+            if (!isSplitCategory) {//это не сплит, выводим имя категории транзакции
                 if (mCategoryCache.containsKey(t.getCategoryID())) {
                     category = mCategoryCache.get(t.getCategoryID());
                 } else {
                     category = CategoriesDAO.getInstance(mContext).getCategoryByID(t.getCategoryID());
                     mCategoryCache.put(category.getID(), category);
                 }
-            } else {
+            } else if (!sameCategory) {//это сплит и у товаров разные категории, выводим надпись "Сплит"
                 category = new Category();
                 category.setID(0);
                 category.setColor(mColorSplit);
                 category.setFullName(mSplitStringCategory);
+            } else {//это сплит, но у него все категории одинаковые, выводим название категории
+                ProductEntry entry = t.getProductEntries().get(0);
+                if (mCategoryCache.containsKey(entry.getCategoryID())) {
+                    category = mCategoryCache.get(entry.getCategoryID());
+                } else {
+                    category = CategoriesDAO.getInstance(mContext).getCategoryByID(entry.getCategoryID());
+                    mCategoryCache.put(category.getID(), category);
+                }
             }
-            if (!isSplitProject) {
+            if (!isSplitProject) {//это не сплит, выводим имя проекта транзакции
                 if (mProjectCache.containsKey(t.getProjectID())) {
                     project = mProjectCache.get(t.getProjectID());
                 } else {
                     project = ProjectsDAO.getInstance(mContext).getProjectByID(t.getProjectID());
                     mProjectCache.put(project.getID(), project);
                 }
-            } else {
+            } else if (!sameProject) {//это сплит и у товаров разные проекты, выводим надпись "Сплит"
                 project = new Project();
                 project.setID(0);
                 project.setColor(mColorSplit);
                 project.setFullName(mSplitStringProject);
+            } else {//это сплит, но у него все проекты одинаковые, выводим название проекта
+                ProductEntry entry = t.getProductEntries().get(0);
+                if (mProjectCache.containsKey(entry.getProjectID())) {
+                    project = mProjectCache.get(entry.getProjectID());
+                } else {
+                    project = ProjectsDAO.getInstance(mContext).getProjectByID(entry.getProjectID());
+                    mProjectCache.put(project.getID(), project);
+                }
             }
             mTagView.setAlignEnd(true);
             mTagView.getTags().clear();
