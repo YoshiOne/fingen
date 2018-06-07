@@ -9,6 +9,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Handler
 import android.provider.Telephony
+import android.support.v4.content.ContextCompat
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.RelativeSizeSpan
@@ -83,7 +84,7 @@ class TransactionsListFactory(private val context: Context, private val intent: 
         items.addAll(arrayOf(
                 DataItem("*1111", Date(), 10.0, 20.0, Date()),
                 DataItem("*1111", Date(), 11.0, 21.0, Date()),
-                DataItem("*1111", Date(), 12.0, 22.0, Date()),
+                DataItem("*1111", Date(), -12.0, 22.0, Date()),
                 DataItem("*1111", Date(), 13.0, 23.0, Date()),
                 DataItem("*1111", Date(), 14.0, 24.0, Date())
         ))
@@ -117,7 +118,7 @@ class TransactionsListFactory(private val context: Context, private val intent: 
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
             setTextViewText(R.id.difference, diffText)
-            setTextColor(R.id.difference, context.resources.getColor(if (isPlus) R.color.color_income else R.color.color_expense, null))
+            setTextColor(R.id.difference, ContextCompat.getColor(context, if (isPlus) R.color.color_income else R.color.color_expense))
 
             val timeDiff = Math.abs(item.dateSent.time - item.parsedDate.time)
             val moreThenDay = timeDiff > RECOST_DELAY
