@@ -438,6 +438,10 @@
     <string name="ttl_enter_actual_balance" formatted="false">Введите актуальный баланс</string>
 
     <!-- 2. Accounts -->
+    <!-- Titles -->
+    <string name="ttl_pull_to_create_account" formatted="false">Потяните вверх для создания нового счета</string>
+
+    <!-- 2. Accounts -->
     <!-- Messages -->
     <string name="msg_delete_account_confirmation" formatted="false">Удалить счет %s? Будут удалены все транзакции по этому счету.</string>
 

@@ -21,14 +21,30 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-        <ImageView
-            android:id="@+id/imageViewPullMe"
+        <LinearLayout
+            android:id="@+id/layout_pull_me"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/pull_me_animated"
-            android:visibility="visible" />
+            android:gravity="center">
+            <TextView
+                android:id="@+id/textview_pull_to_create_account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ttl_pull_to_create_account"
+                android:visibility="gone"
+                android:textColor="@color/ColorAccent"/>
+
+            <ImageView
+                android:id="@+id/imageViewPullMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/pull_me_animated"
+                android:visibility="visible" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 

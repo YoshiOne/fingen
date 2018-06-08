@@ -23,7 +23,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -95,6 +97,10 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
     Button mButtonAddAccount;
     @BindView(R.id.imageViewPullMe)
     ImageView mImageViewPullMe;
+    @BindView(R.id.textview_pull_to_create_account)
+    TextView mTextViewPullToCreateAccount;
+    @BindView(R.id.layout_pull_me)
+    LinearLayout mLayoutPullMe;
     AdapterAccountsSets mAdapterAccountsSets;
     private AccountEventListener mAccountEventListener;
     private ItemTouchHelper mItemTouchHelper;
@@ -155,6 +161,10 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         mButtonAddAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int counter = PreferenceManager.getDefaultSharedPreferences(FragmentAccounts.this.getActivity())
+                        .getInt(FgConst.PREF_NEW_ACCOUNT_BUTTON_COUNTER, 0);
+                PreferenceManager.getDefaultSharedPreferences(FragmentAccounts.this.getActivity())
+                        .edit().putInt(FgConst.PREF_NEW_ACCOUNT_BUTTON_COUNTER, counter + 1).apply();
                 Intent intent = new Intent(FragmentAccounts.this.getActivity(), ActivityEditAccount.class);
                 intent.putExtra("account", new Account());
                 if (getActivity() != null) {
@@ -560,6 +570,11 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
     @Override
     public void updateLists(long itemID) {
         adapter.notifyDataSetChanged();
+        if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt(FgConst.PREF_NEW_ACCOUNT_BUTTON_COUNTER, 0) < 3) {
+            mTextViewPullToCreateAccount.setVisibility(View.VISIBLE);
+        } else {
+            mTextViewPullToCreateAccount.setVisibility(View.GONE);
+        }
     }
 
     @Override

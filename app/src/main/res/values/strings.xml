@@ -438,6 +438,10 @@
     <string name="ttl_enter_actual_balance" formatted="false">Enter the actual balance</string>
 
     <!-- 2. Accounts -->
+    <!-- Titles -->
+    <string name="ttl_pull_to_create_account" formatted="false">Pull up to create account</string>
+
+    <!-- 2. Accounts -->
     <!-- Messages -->
     <string name="msg_delete_account_confirmation" formatted="false">Delete account %s? All transactions on this account will be deleted.</string>
 
