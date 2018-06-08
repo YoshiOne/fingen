@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -27,6 +28,7 @@ import com.yoshione.fingen.filters.AbstractFilter;
 import com.yoshione.fingen.filters.AmountFilter;
 import com.yoshione.fingen.filters.DateRangeFilter;
 import com.yoshione.fingen.model.DateEntry;
+import com.yoshione.fingen.utils.CabbageFormatter;
 import com.yoshione.fingen.utils.ColorUtils;
 import com.yoshione.fingen.utils.FgLargeValuesFormatter;
 import com.yoshione.fingen.utils.NormalValuesFormatter;
@@ -212,11 +214,13 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
         for (DateEntry entry : entries) {
             if (entry.getExpense().compareTo(BigDecimal.ZERO) > 0) {
                 barEntry = new BarEntry(entry.getExpense().setScale(2, RoundingMode.HALF_EVEN).floatValue(), i);
+//                barEntry.setData(entry.getExpense());
                 barEntry.setData(getPairDates(entry.getDate()));
                 yValsExpense.add(barEntry);
             }
             if (entry.getIncome().compareTo(BigDecimal.ZERO) > 0) {
                 barEntry = new BarEntry(entry.getIncome().setScale(2, RoundingMode.HALF_EVEN).floatValue(), i);
+//                barEntry.setData(entry.getIncome());
                 barEntry.setData(getPairDates(entry.getDate()));
                 yValsIncome.add(barEntry);
             }
@@ -260,6 +264,7 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
             sum = entry.getIncome().subtract(entry.getExpense());
             barEntry = new BarEntry(sum.abs().floatValue(), i);
             barEntry.setData(getPairDates(entry.getDate()));
+            barEntry.setData(sum);
             yValsSum.add(barEntry);
 //            xVals.add(df.format(entry.getDate()));
             xVals.add(String.format("%s (%s)", df.format(entry.getDate()), formatValue(sum.abs().floatValue())));
@@ -298,6 +303,7 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
             if (value.compareTo(BigDecimal.ZERO) > 0) {
                 barEntry = new BarEntry(value.floatValue(), i);
                 barEntry.setData(getPairDates(entry.getDate()));
+                barEntry.setData(value);
                 yVals.add(barEntry);
                 xVals.add(String.format("%s (%s)", df.format(entry.getDate()), formatValue(value.floatValue())));
                 i++;
@@ -388,7 +394,15 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
     }
 
     @Override
-    public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
+    public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {CabbageFormatter cabbageFormatter = null;
+        try {
+            cabbageFormatter = new CabbageFormatter(ReportBuilder.getInstance(getActivity()).getActiveCabbage());
+            String s = String.format("%s", cabbageFormatter.format(new BigDecimal(e.getVal())));
+            Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+
         mFabLayout.setVisibility(View.VISIBLE);
     }
 
