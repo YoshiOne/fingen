@@ -299,6 +299,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     private boolean isExRateInverted = false;
     private boolean mDoNotChangeIsAmountEdited = false;
     private boolean isAmountEdited = false;
+    private boolean isErrorLoadingProducts = false;
 
     @Override
     protected int getLayoutResourceId() {
@@ -793,7 +794,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         layoutSimpleDebt.setVisibility(transaction.getSimpleDebtID() >= 0 | mIsBtnMorePressed ? View.VISIBLE : View.GONE);
         layoutDepartment.setVisibility(transaction.getDepartmentID() >= 0 | mIsBtnMorePressed ? View.VISIBLE : View.GONE);
         layoutLocation.setVisibility(transaction.getLocationID() >= 0 | mIsBtnMorePressed ? View.VISIBLE : View.GONE);
-        mLayoutProductList.setVisibility(transaction.getProductEntries().size() > 0 | mIsBtnMorePressed | getIntent().getBooleanExtra("load_products", false) ? View.VISIBLE : View.GONE);
+        mLayoutProductList.setVisibility(isErrorLoadingProducts | transaction.getProductEntries().size() > 0 | mIsBtnMorePressed | getIntent().getBooleanExtra("load_products", false) ? View.VISIBLE : View.GONE);
 
         boolean scanQR = preferences.getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true);
 
@@ -1462,20 +1463,23 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     if ((viewPager.getCurrentItem() == 0) && mPayeeName.isEmpty()) {
                         setPayeeName(payeeName);
                     }
+                    isErrorLoadingProducts = false;
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
-                    if (mTryDownloadAgain) {
+                public void onFailure(String errorMessage, boolean tryAgain) {
+                    if (mTryDownloadAgain & tryAgain) {
                         mTryDownloadAgain = false;
                         initProductList();
                     } else {
+                        isErrorLoadingProducts = true;
                         getIntent().removeExtra("load_products");
                         mTryDownloadAgain = true;
                         spinAnim.cancel();
                         spinAnim.reset();
                         mImageViewLoadingProducts.setVisibility(View.GONE);
-                        mTextViewLoadingProducts.setText(getString(R.string.err_loading_products));
+                        mTextViewLoadingProducts.setText(errorMessage);
+//                        mTextViewLoadingProducts.setText(getString(R.string.err_loading_products));
                         updateControlsState();
 //                        mTextViewLoadingProducts.setTextColor(ContextCompat.getColor(ActivityEditTransaction.this, R.color.negative_color));
                     }
@@ -1515,6 +1519,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     }
 
     private void fillProductList() {
+        isErrorLoadingProducts = false;
         mLayoutLoadingProducts.setVisibility(View.GONE);
 //        mRecyclerViewProductList.setVisibility(View.VISIBLE);
         mAdapterProducts = new AdapterProducts(transaction, this, new AdapterProducts.IProductChangedListener() {

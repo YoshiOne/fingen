@@ -17,9 +17,9 @@ import com.yoshione.fingen.model.Product;
 import com.yoshione.fingen.model.ProductEntry;
 import com.yoshione.fingen.model.Transaction;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +92,13 @@ public class FtsHelper {
                         }
                         downloadProductsListener.onDownload(productEntries, response.body().getDocument().getReceipt().getUser());
                     }
+                } else if (response.errorBody() != null) {
+                    try {
+                        downloadProductsListener.onFailure(response.errorBody().string(), false);
+                    } catch (IOException e) {
+                        downloadProductsListener.onFailure("", false);
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -100,7 +107,7 @@ public class FtsHelper {
                 if (t.getMessage() != null ) {
                     Log.d(getClass().getName(), t.getMessage());
                 }
-                downloadProductsListener.onFailure(t);
+                downloadProductsListener.onFailure(t.getMessage(), true);
             }
         });
         return call;
