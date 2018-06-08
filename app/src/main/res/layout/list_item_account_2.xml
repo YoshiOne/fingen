@@ -92,6 +92,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:layout_marginBottom="?vertical_spacimg_tr_list"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
         app:layout_constraintStart_toEndOf="@+id/imageViewAccountIcon"

@@ -370,6 +370,10 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
             }
         }
 
+        if (prevVersion > 0 & prevVersion < 113) {
+            mySharedPreferences.edit().putInt(FgConst.PREF_NEW_ACCOUNT_BUTTON_COUNTER, 4).apply();
+        }
+
         FragmentChangelog fragmentChangelog = new FragmentChangelog();
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();

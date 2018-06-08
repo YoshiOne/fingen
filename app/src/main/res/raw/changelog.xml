@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.5 beta 1" changeDate=">2018.06.08">
+        <changelogtext>Add credit limit usage progress bar</changelogtext>
+        <changelogtext>Add preference "PIN lock timeout, seconds"</changelogtext>
+        <changelogtext>Add button to invert transfer direction in transaction editor</changelogtext>
+        <changelogtext>Add toast with sums when select value in FragmentTimeBarChart.java</changelogtext>
+        <changelogtext>Add hint "Pull up to create account"</changelogtext>
+        <changelogtext>Update EN localization</changelogtext>
+        <changelogtext>Change fraction part in calc from 2 to 4 digits</changelogtext>
+        <changelogtext>Fix show date range in reports when date range filter exists but disabled</changelogtext>
+        <changelogtext>Change behavior of split category and project labeler in transactions list</changelogtext>
+        <changelogtext>Fix change transaction amount when sum of product list changes</changelogtext>
+        <changelogtext>Fix break payee-category pair when save transaction with empty category</changelogtext>
+        <changelogtext>Fix show suggestions in edit category dialig with SwiftKey</changelogtext>
+        <changelogtext>Fix display empty entity on chart (e.g. transactions w/o category on category chart)</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.4.1" changeDate=">2018.06.01">
         <changelogtext>Fix incorrect account balance after delete transfer</changelogtext>
         <changelogtext>Fix save filter exclude state</changelogtext>
