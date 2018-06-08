@@ -297,6 +297,8 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     private boolean allowUpdateLocation;
     private boolean mIsBtnMorePressed = false;
     private boolean isExRateInverted = false;
+    private boolean mDoNotChangeIsAmountEdited = false;
+    private boolean isAmountEdited = false;
 
     @Override
     protected int getLayoutResourceId() {
@@ -322,6 +324,8 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
             initObjects();
         }
         amountEditor.setActivity(this);
+
+        isAmountEdited = transaction.getAmount().compareTo(BigDecimal.ZERO) != 0;
 
         if (srcTransaction != null) {
             tabLayoutType.setVisibility(View.GONE);
@@ -1523,6 +1527,18 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     entries.add(productEntry);
                 }
                 mAdapterProducts.notifyDataSetChanged();
+
+                if (!isAmountEdited) {
+                    BigDecimal sum = BigDecimal.ZERO;
+                    for (ProductEntry entry : transaction.getProductEntries()) {
+                        sum = sum.add(entry.getPrice().multiply(entry.getQuantity()));
+                    }
+                    transaction.setAmount(sum, sum.compareTo(BigDecimal.ZERO) <= 0 ?
+                    Transaction.TRANSACTION_TYPE_EXPENSE : Transaction.TRANSACTION_TYPE_INCOME);
+                    mDoNotChangeIsAmountEdited = true;
+                    initAmountEditor();
+                    mDoNotChangeIsAmountEdited = false;
+                }
             }
 
             @Override
@@ -1588,6 +1604,9 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         amountEditor.mOnAmountChangeListener = new AmountEditor.OnAmountChangeListener() {
             @Override
             public void OnAmountChange(BigDecimal newAmount, int newType) {
+                if (!mDoNotChangeIsAmountEdited) {
+                    isAmountEdited = true;
+                }
                 transaction.setAmount(newAmount, newType);
                 destAmountEditor.setAmount(TransferManager.getDestAmount(transaction));
                 if (newType != Transaction.TRANSACTION_TYPE_TRANSFER) {

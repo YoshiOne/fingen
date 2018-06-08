@@ -76,6 +76,7 @@ public class ActivityReports extends ToolbarActivity {
     private MenuItem mMenuItemTogglePercents;
     private MenuItem mMenuItemToggleLines;
     private Menu mMenu;
+    private boolean mActivityRestarted;
 
     @Override
     protected int getLayoutResourceId() {
@@ -116,6 +117,18 @@ public class ActivityReports extends ToolbarActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        mActivityRestarted = false;
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        mActivityRestarted = true;
+    }
+
+    @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         mCurrentFragment = savedInstanceState.getInt("current_fragment", FRAGMENT_PIE_CHART);
@@ -126,15 +139,18 @@ public class ActivityReports extends ToolbarActivity {
             mTextInputLayoutDateRange.setVisibility(View.GONE);
             mTextInputLayoutData.setVisibility(View.VISIBLE);
         }
+        mActivityRestarted = true;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        setupFragments();
-        updateUI();
-        updateSpinnersListeners();
-        loadData();
+        if (! mActivityRestarted) {
+            setupFragments();
+            updateUI();
+            updateSpinnersListeners();
+            loadData();
+        }
     }
 
     @Override
