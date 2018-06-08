@@ -217,7 +217,7 @@ public class ReportBuilder {
 
         DateRangeFilter dateRangeFilter;
         for (AbstractFilter filter : mFilterList) {
-            if (filter.getClass().equals(DateRangeFilter.class)) {
+            if (filter.getClass().equals(DateRangeFilter.class) && filter.getEnabled()) {
                 dateRangeFilter = (DateRangeFilter) filter;
                 mDates.add(new Pair<>(dateRangeFilter.getmStartDate(), dateRangeFilter.getmEndDate()));
             }
