@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="56dp"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="?listItemBackground">
+    android:background="?listItemBackground"
+    android:minHeight="56dp">
 
     <ImageView
         android:id="@+id/imageViewAccountIcon"
@@ -15,7 +15,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/ic_credit_card_gray"/>
+        tools:src="@drawable/ic_credit_card_gray" />
 
     <TextView
         android:id="@+id/textViewAccountName"
@@ -66,26 +66,77 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="?vertical_spacimg_tr_list_half"
         android:fontFamily="sans-serif-medium"
-        tools:text="-100 000 ₽"
         android:textColor="@color/negative_color"
         android:textSize="@dimen/text_size_pico"
         android:textStyle="normal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewIncome" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewIncome"
+        tools:text="-100 000 ₽" />
 
     <TextView
         android:id="@+id/textViewAccountCurBalance"
+        style="@style/StyleTextAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="?vertical_spacimg_tr_list"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="?vertical_spacimg_tr_list_half"
-        style="@style/StyleTextAmount"
         android:textColor="@color/positive_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewOutcome"
         tools:text="100 000 ₽" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/progres_bar_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline7"
+        app:layout_constraintStart_toEndOf="@+id/imageViewAccountIcon"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAccountType">
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:max="10"
+            android:progress="10"
+            android:progressDrawable="@drawable/red_to_green_gradient_drawable"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/progress_bar_text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:textSize="@dimen/text_size_pico"
+            android:textStyle="normal"
+            android:visibility="visible"
+            android:shadowColor="#000000"
+            android:shadowDx="1.5"
+            android:shadowDy="1.5"
+            android:shadowRadius="2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/progress_bar"
+            tools:text="600" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
 
     <FrameLayout
         android:id="@+id/spaceBottom"

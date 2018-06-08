@@ -70,12 +70,12 @@ public class ColorUtils {
         return ContextCompat.getColor(activity, activity.getTheme().obtainStyledAttributes(new int[]{R.attr.listItemBackground}).getResourceId(0, 0));
     }
 
-//    public static int getGrayBackgroundColor(Activity activity) {
-//        return ContextCompat.getColor(activity, activity.getTheme().obtainStyledAttributes(new int[]{R.attr.grayBackground}).getResourceId(0, 0));
-//    }
-
     public static int getTextColor(Activity activity) {
         return ContextCompat.getColor(activity, activity.getTheme().obtainStyledAttributes(new int[]{android.R.attr.textColor}).getResourceId(0, 0));
+    }
+
+    public static int getTextInverseColor(Activity activity) {
+        return ContextCompat.getColor(activity, activity.getTheme().obtainStyledAttributes(new int[]{R.attr.textColorInverse}).getResourceId(0, 0));
     }
 
     public static int ContrastColor(int color)

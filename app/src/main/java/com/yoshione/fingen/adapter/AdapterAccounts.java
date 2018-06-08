@@ -1,7 +1,9 @@
 package com.yoshione.fingen.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
@@ -13,8 +15,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.HorizontalBarChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.dao.AccountsDAO;
 import com.yoshione.fingen.managers.AccountManager;
@@ -23,6 +33,7 @@ import com.yoshione.fingen.model.BaseModel;
 import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.utils.CabbageFormatter;
+import com.yoshione.fingen.utils.ColorUtils;
 import com.yoshione.fingen.utils.IconGenerator;
 import com.yoshione.fingen.adapter.helper.ItemTouchHelperAdapter;
 import com.yoshione.fingen.adapter.helper.OnStartDragListener;
@@ -47,7 +58,7 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
 
     private List<Account> accountList;
 
-    private final Context mContext;
+    private final Activity mContext;
 
     private boolean mDragMode = false;
     private final OnStartDragListener mDragStartListener;
@@ -68,7 +79,7 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
     }
 
     //Конструктор
-    public AdapterAccounts(Context context, OnStartDragListener dragStartListener) {
+    public AdapterAccounts(Activity context, OnStartDragListener dragStartListener) {
         this.mContext = context;
         accountList = new ArrayList<>();
 
@@ -175,8 +186,32 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
             avh.mSpaceBottomFinal.setVisibility(View.GONE);
         }
 
+        if (account.getCreditLimit().compareTo(BigDecimal.ZERO) < 0) {
+            avh.mProgresBarLayout.setVisibility(View.VISIBLE);
+            buildProgresBar(avh, account, cabbage, mContext);
+        } else {
+            avh.mProgresBarLayout.setVisibility(View.GONE);
+        }
+
         avh.account = account;
 
+    }
+
+    private void buildProgresBar(AccountViewHolder avh, Account account, Cabbage cabbage, Activity context) {
+        BigDecimal restOfCredit;
+        if (account.getCurrentBalance().compareTo(BigDecimal.ZERO) >= 0) {
+            restOfCredit = account.getCreditLimit();
+        } else if (account.getCurrentBalance().compareTo(account.getCreditLimit()) < 0) {
+            restOfCredit = BigDecimal.ZERO;
+        } else {
+            restOfCredit = account.getCreditLimit().subtract(account.getCurrentBalance()).abs();
+        }
+        avh.mProgressBar.setMax(account.getCreditLimit().abs().intValue());
+        avh.mProgressBar.setProgress(restOfCredit.intValue());
+        CabbageFormatter cabbageFormatter = new CabbageFormatter(cabbage);
+        String s = String.format("%s (%d%%)", cabbageFormatter.format(restOfCredit), account.getCreditLimitUsage());
+        avh.mProgressBarTextView.setText(s);
+        avh.mProgressBarTextView.setShadowLayer(2f,1.5f, 1.5f, ColorUtils.getTextInverseColor(context));
     }
 
     @Override
@@ -228,6 +263,12 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
         FrameLayout mSpaceBottom;
         @BindView(R.id.spaceBottomFinal)
         FrameLayout mSpaceBottomFinal;
+        @BindView(R.id.progres_bar_layout)
+        ConstraintLayout mProgresBarLayout;
+        @BindView(R.id.progress_bar)
+        ProgressBar mProgressBar;
+        @BindView(R.id.progress_bar_text)
+        TextView mProgressBarTextView;
 
         public Account account;
 
