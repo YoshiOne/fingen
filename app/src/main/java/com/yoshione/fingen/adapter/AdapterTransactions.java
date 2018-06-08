@@ -711,10 +711,16 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
                 category.setFullName(mSplitStringCategory);
             } else {//это сплит, но у него все категории одинаковые, выводим название категории
                 ProductEntry entry = t.getProductEntries().get(0);
-                if (mCategoryCache.containsKey(entry.getCategoryID())) {
-                    category = mCategoryCache.get(entry.getCategoryID());
+                long catID;
+                if (entry.getCategoryID() < 0) {
+                    catID = t.getCategoryID();
                 } else {
-                    category = CategoriesDAO.getInstance(mContext).getCategoryByID(entry.getCategoryID());
+                    catID = entry.getCategoryID();
+                }
+                if (mCategoryCache.containsKey(catID)) {
+                    category = mCategoryCache.get(catID);
+                } else {
+                    category = CategoriesDAO.getInstance(mContext).getCategoryByID(catID);
                     mCategoryCache.put(category.getID(), category);
                 }
             }
@@ -732,10 +738,16 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
                 project.setFullName(mSplitStringProject);
             } else {//это сплит, но у него все проекты одинаковые, выводим название проекта
                 ProductEntry entry = t.getProductEntries().get(0);
-                if (mProjectCache.containsKey(entry.getProjectID())) {
-                    project = mProjectCache.get(entry.getProjectID());
+                long catID;
+                if (entry.getProjectID() < 0) {
+                    catID = t.getProjectID();
                 } else {
-                    project = ProjectsDAO.getInstance(mContext).getProjectByID(entry.getProjectID());
+                    catID = entry.getProjectID();
+                }
+                if (mProjectCache.containsKey(catID)) {
+                    project = mProjectCache.get(catID);
+                } else {
+                    project = ProjectsDAO.getInstance(mContext).getProjectByID(catID);
                     mProjectCache.put(project.getID(), project);
                 }
             }
