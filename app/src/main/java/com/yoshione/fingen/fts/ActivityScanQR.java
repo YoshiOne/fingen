@@ -37,11 +37,6 @@ public class ActivityScanQR extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (BuildConfig.DEBUG) {
-            onQRCodeRead("t=20181219T155200&s=1286.00&fn=8710000100448399&i=106760&fp=3157595585&n=1", null);
-//            onQRCodeRead("t=20180113T1024&s=1364.00&fn=8710000100354835&i=40732&fp=3964607275&n=1 ", null);
-        }
-
         setContentView(R.layout.activity_decoder);
 
         mainLayout = findViewById(R.id.main_layout);

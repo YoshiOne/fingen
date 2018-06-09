@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -402,6 +403,14 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
             intent.putExtra("model", new Category());
             intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
             startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
+        }
+
+        if (getIntent().getBooleanExtra("scan_qr", false)) {
+
+            getIntent().removeExtra("scan_qr");
+                    Intent intent = new Intent(ActivityEditTransaction.this, ActivityScanQR.class);
+                    intent.putExtra("transaction", transaction);
+                    startActivityForResult(intent, RequestCodes.REQUEST_CODE_SCAN_QR);
         }
     }
 

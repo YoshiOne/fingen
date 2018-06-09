@@ -19,6 +19,7 @@ import com.crashlytics.android.answers.CustomEvent;
 import com.yoshione.fingen.ActivityEditTransaction;
 import com.yoshione.fingen.ActivityMain;
 import com.yoshione.fingen.BuildConfig;
+import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.dao.AccountsDAO;
 import com.yoshione.fingen.dao.SendersDAO;
@@ -124,7 +125,6 @@ public class SMSReceiver extends BroadcastReceiver {
                                     0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
                             Resources res = context.getResources();
-//                            NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
                             Notification.Builder builder = NotificationHelper.getInstance(context).getNotification();
 
                             NotificationCounter notificationCounter = new NotificationCounter(PreferenceManager.getDefaultSharedPreferences(context));
@@ -136,23 +136,29 @@ public class SMSReceiver extends BroadcastReceiver {
                                     .setWhen(new Date().getTime())
                                     .setAutoCancel(true);
 
-                            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                builder.setColor(ContextCompat.getColor(context, R.color.ColorMain));
-                            }
-//                            Intent intentOK = new Intent(FgConst.ACT_CLEAR_NEW_TRANSACTIONS_COUNTER);
-//                            intentOK.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                            PendingIntent pIntentOK = PendingIntent.getActivity(context,
-//                                    0, intentOK, PendingIntent.FLAG_CANCEL_CURRENT);
+                            builder.setColor(ContextCompat.getColor(context, R.color.ColorAccent));
                             if (notificationCount == 0) {
                                 Intent intentEdit = new Intent(context, ActivityEditTransaction.class);
                                 intentEdit.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 intentEdit.putExtra("transaction", transaction);
                                 intentEdit.putExtra("EXIT", true);
                                 PendingIntent pIntentEdit = PendingIntent.getActivity(context,
-                                        0, intentEdit, PendingIntent.FLAG_CANCEL_CURRENT);
-                                builder.setContentTitle(res.getString(R.string.notif_ticker_transaction_auto_created))// Заголовок уведомления
-                                        .setContentText(TransactionManager.transactionToString(transaction, context)) // Текст уведомления
+                                        RequestCodes.REQUEST_CODE_EDIT_TRANSACTION_FROM_NOTIFYCATION, intentEdit, PendingIntent.FLAG_CANCEL_CURRENT);
+
+                                builder//.setContentTitle(res.getString(R.string.notif_ticker_transaction_auto_created))// Заголовок уведомления
+                                        .setContentText(TransactionManager.transactionToString(transaction, context))// Текст уведомления
                                         .addAction(android.R.drawable.ic_menu_edit, context.getString(R.string.act_edit), pIntentEdit);
+
+                                if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true)) {
+                                    Intent intentScanQR = new Intent(context, ActivityEditTransaction.class);
+                                    intentScanQR.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    intentScanQR.putExtra("transaction", transaction);
+                                    intentScanQR.putExtra("scan_qr", true);
+                                    intentScanQR.putExtra("EXIT", true);
+                                    PendingIntent pIntentScanQR = PendingIntent.getActivity(context,
+                                            RequestCodes.REQUEST_CODE_SCAN_QR, intentScanQR, PendingIntent.FLAG_CANCEL_CURRENT);
+                                    builder.addAction(R.drawable.ic_scan_qr_gray, context.getString(R.string.ttl_scan_qr), pIntentScanQR);
+                                }
                             } else {
                                 builder.setContentText(res.getString(R.string.notif_count_of_new_transactions))
                                         .setNumber(notificationCount + 1); // Текст уведомления

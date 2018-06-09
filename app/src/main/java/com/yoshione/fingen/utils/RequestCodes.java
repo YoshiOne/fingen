@@ -9,7 +9,7 @@ package com.yoshione.fingen.utils;
  *
  */
 public class RequestCodes {
-    public static final int REQUEST_CODE_EDIT_TRANSACTION   = 1;
+    public static final int REQUEST_CODE_EDIT_TRANSACTION   = 0;
     public static final int REQUEST_CODE_EDIT_ACCOUNT       = 2;
     public static final int REQUEST_CODE_VIEW_MODELS = 3;
     public static final int REQUEST_CODE_SELECT_MODEL = 4;
@@ -20,4 +20,5 @@ public class RequestCodes {
     public static final int REQUEST_CODE_SCAN_QR  = 17;
     public static final int REQUEST_CODE_ENTER_FTS_LOGIN  = 18;
     public static final int REQUEST_CODE_TUNE_EDITOR  = 19;
+    public static final int REQUEST_CODE_EDIT_TRANSACTION_FROM_NOTIFYCATION   = 20;
 }
