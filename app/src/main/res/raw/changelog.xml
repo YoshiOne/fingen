@@ -2,7 +2,7 @@
 <changelog bulletedList="true">
     <changelogversion versionName="2.5 beta 2" changeDate=">2018.06.09">
         <changelogtext>Add tools for bulk editing products</changelogtext>
-        <changelogtext>Add "Scan QR" button in notifycation</changelogtext>
+        <changelogtext>Add "Scan QR" button in notification</changelogtext>
         <changelogtext>Add button to add difference between sum of products prices and sum of transaction to sum of transaction</changelogtext>
         <changelogtext>Add show error message on receipt download failure</changelogtext>
         <changelogtext>Fix bugs</changelogtext>
