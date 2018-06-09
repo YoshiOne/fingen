@@ -2018,6 +2018,10 @@
     <string name="ttl_you_can_edit_later" formatted="false">Параметры можно изменить позже в настройках</string>
 
     <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_move_residue" formatted="false">Добавить %s к сумме транзакции</string>
+
+    <!-- 27. Products -->
     <!-- Messages -->
     <string name="msg_delete_product_confirmation" formatted="false">Удалить товар?</string>
 

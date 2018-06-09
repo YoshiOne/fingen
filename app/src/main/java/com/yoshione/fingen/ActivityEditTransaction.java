@@ -1551,6 +1551,12 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 transaction.getProductEntries().remove(position);
                 mAdapterProducts.notifyDataSetChanged();
             }
+
+            @Override
+            public void onResidueMoved() {
+                initAmountEditor();
+                mAdapterProducts.notifyDataSetChanged();
+            }
         });
         mAdapterProducts.setHasStableIds(true);
         mRecyclerViewProductList.setAdapter(mAdapterProducts);

@@ -2,12 +2,9 @@ package com.yoshione.fingen.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.BackgroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +45,7 @@ public class AdapterProducts extends RecyclerView.Adapter {
     private static final int ADD_ITEM_ID = 0;
     private static final int VIEW_TYPE_PRODUCT = 0;
     private static final int VIEW_TYPE_ADD_PRODUCT = 1;
+    private static final int VIEW_TYPE_MOVE_RESIDUE = 2;
 
     private Transaction mTransaction;
     private CabbageFormatter mCabbageFormatter;
@@ -79,6 +77,10 @@ public class AdapterProducts extends RecyclerView.Adapter {
                 v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_add_product, parent, false);
                 vh = new AddProductViewHolder(v);
                 break;
+            case VIEW_TYPE_MOVE_RESIDUE:
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_add_product, parent, false);
+                vh = new MoveResidueViewHolder(v);
+                break;
         }
 
         return vh;
@@ -86,22 +88,35 @@ public class AdapterProducts extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (position < mTransaction.getProductEntries().size()) {
-            ((ProductViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, false,
-                    mActivity, mCabbageFormatter, mTagTextSize, mProductChangedListener);
-        } else if (mTransaction.getResidue().compareTo(BigDecimal.ZERO) != 0 & position == mTransaction.getProductEntries().size()) {
-            ((ProductViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, true,
-                    mActivity, mCabbageFormatter, mTagTextSize, mProductChangedListener);
-        } else {
+        if (holder.getClass().equals(ProductViewHolder.class)) {
+            if (position < mTransaction.getProductEntries().size()) {
+                ((ProductViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, false,
+                        mActivity, mCabbageFormatter, mTagTextSize, mProductChangedListener);
+            } else if (mTransaction.getResidue().compareTo(BigDecimal.ZERO) != 0 & position == mTransaction.getProductEntries().size()) {
+                ((ProductViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, true,
+                        mActivity, mCabbageFormatter, mTagTextSize, mProductChangedListener);
+            }
+        } else if (holder.getClass().equals(AddProductViewHolder.class)) {
             ((AddProductViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, mActivity, mProductChangedListener);
+        } else {
+            ((MoveResidueViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, mActivity, mCabbageFormatter, mProductChangedListener);
         }
+//        if (position < mTransaction.getProductEntries().size()) {
+//            ((ProductViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, false,
+//                    mActivity, mCabbageFormatter, mTagTextSize, mProductChangedListener);
+//        } else if (mTransaction.getResidue().compareTo(BigDecimal.ZERO) != 0 & position == mTransaction.getProductEntries().size()) {
+//            ((ProductViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, true,
+//                    mActivity, mCabbageFormatter, mTagTextSize, mProductChangedListener);
+//        } else {
+//            ((AddProductViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, mActivity, mProductChangedListener);
+//        }
     }
 
     @Override
     public int getItemCount() {
         int count = mTransaction.getProductEntries().size() + 1;
         if (mTransaction.getResidue().compareTo(BigDecimal.ZERO) != 0) {
-            count++;
+            count = count + 2;
         }
         return count;
     }
@@ -121,8 +136,10 @@ public class AdapterProducts extends RecyclerView.Adapter {
             return VIEW_TYPE_PRODUCT;
         } else if (mTransaction.getResidue().compareTo(BigDecimal.ZERO) != 0 & position == mTransaction.getProductEntries().size()) {
             return VIEW_TYPE_PRODUCT;
-        } else {
+        } else if (position == getItemCount() - 1) {
             return VIEW_TYPE_ADD_PRODUCT;
+        } else {
+            return VIEW_TYPE_MOVE_RESIDUE;
         }
     }
 
@@ -255,10 +272,35 @@ public class AdapterProducts extends RecyclerView.Adapter {
         }
     }
 
+    static class MoveResidueViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.textViewAddProduct)
+        TextView mTextViewAddProduct;
+
+        MoveResidueViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+
+        void bindViewHolder(View itemView, final int position, final Transaction transaction, final Activity activity,
+                            CabbageFormatter formatter, final IProductChangedListener listener) {
+            String s = String.format(activity.getString(R.string.ttl_move_residue), formatter.format(transaction.getResidue().negate()));
+            mTextViewAddProduct.setText(s);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    transaction.setAmount(transaction.getAmount().add(transaction.getResidue().negate()), transaction.getTransactionType());
+                   listener.onResidueMoved();
+                }
+            });
+        }
+    }
+
     public interface IProductChangedListener {
         void onProductChanged(int position, ProductEntry productEntry);
 
         void onProductDeleted(int position);
+
+        void onResidueMoved();
     }
 
 }
