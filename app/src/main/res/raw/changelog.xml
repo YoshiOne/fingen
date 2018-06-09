@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.5 beta 2" changeDate=">2018.06.09">
+        <changelogtext>Add tools for bulk editing products</changelogtext>
+        <changelogtext>Add "Scan QR" button in notifycation</changelogtext>
+        <changelogtext>Add button to add difference between sum of products prices and sum of transaction to sum of transaction</changelogtext>
+        <changelogtext>Add show error message on receipt download failure</changelogtext>
+        <changelogtext>Fix bugs</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.5 beta 1" changeDate=">2018.06.08">
         <changelogtext>Add credit limit usage progress bar</changelogtext>
         <changelogtext>Add preference "PIN lock timeout, seconds"</changelogtext>

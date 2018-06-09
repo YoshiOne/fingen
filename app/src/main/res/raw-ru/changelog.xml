@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.5 beta 2" changeDate=">2018.06.09">
+        <changelogtext>Добавлены инструменты для массового редактирования товаров</changelogtext>
+        <changelogtext>Добавлена кнопка "Скан чека" в уведомлении об автоматически созданной транзакции</changelogtext>
+        <changelogtext>Добавлена возможность приравнять сумму транзакции к сумме стоимости всех ее товаров</changelogtext>
+        <changelogtext>Добавлено отображение ошибки, если такая была при скачивании чека</changelogtext>
+        <changelogtext>Исправлены ошибки</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.5 beta 1" changeDate=">2018.06.08">
         <changelogtext>Добавлен индикатор использования кредитного лимита счета</changelogtext>
         <changelogtext>Новая настройка "Таймаут блокировки" позволяет задать через сколько секунд приложение заблокируется находясь в фоне</changelogtext>
