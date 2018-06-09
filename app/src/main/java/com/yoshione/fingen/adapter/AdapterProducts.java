@@ -34,6 +34,7 @@ import java.math.BigDecimal;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import eu.davidea.flipview.FlipView;
 
 /**
  * Created by slv on 02.02.2018.
@@ -152,6 +153,8 @@ public class AdapterProducts extends RecyclerView.Adapter {
         ImageButton mImageButtonDeleteProduct;
         @BindView(R.id.textViewSum)
         TextView mTextViewSum;
+        @BindView(R.id.flipViewIcon)
+        FlipView flipViewIcon;
 
         ProductViewHolder(View view) {
             super(view);
@@ -216,6 +219,18 @@ public class AdapterProducts extends RecyclerView.Adapter {
                 mTagView.addTag(tag);
             }
             //</editor-fold>
+
+            flipViewIcon.flipSilently(productEntry.isSelected());
+            flipViewIcon.setVisibility(residue ? View.INVISIBLE : View.VISIBLE);
+
+            flipViewIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    productEntry.setSelected(!productEntry.isSelected());
+                    flipViewIcon.flip(productEntry.isSelected());
+                    listener.onProductSelected();
+                }
+            });
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -301,6 +316,8 @@ public class AdapterProducts extends RecyclerView.Adapter {
         void onProductDeleted(int position);
 
         void onResidueMoved();
+
+        void onProductSelected();
     }
 
 }

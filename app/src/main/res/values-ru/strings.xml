@@ -1982,6 +1982,14 @@
     <string name="act_add_product" formatted="false">Добавить товар...</string>
 
     <!-- 27. Products -->
+    <!-- Actions -->
+    <string name="act_change_category" formatted="false">Сменить категорию</string>
+
+    <!-- 27. Products -->
+    <!-- Actions -->
+    <string name="act_change_project" formatted="false">Сменить проект</string>
+
+    <!-- 27. Products -->
     <!-- Titles -->
     <string name="ttl_loading_products" formatted="false">Загрузка товаров...</string>
 

@@ -22,6 +22,7 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
     private long mProjectID;
     private BigDecimal mPrice;
     private BigDecimal mQuantity;
+    private boolean mSelected;
 
     public ProductEntry() {
         super();
@@ -101,6 +102,16 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
     }
 
     @Override
+    public boolean isSelected() {
+        return mSelected;
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+        mSelected = selected;
+    }
+
+    @Override
     public ContentValues getCV() {
         ContentValues values = super.getCV();
 
@@ -122,21 +133,23 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeLong(this.mProductID);
-        dest.writeSerializable(this.mQuantity);
-        dest.writeSerializable(this.mPrice);
+        dest.writeLong(this.mTransactionID);
         dest.writeLong(this.mCategoryID);
         dest.writeLong(this.mProjectID);
-        dest.writeLong(this.mTransactionID);
+        dest.writeSerializable(this.mPrice);
+        dest.writeSerializable(this.mQuantity);
+        dest.writeByte(this.mSelected ? (byte) 1 : (byte) 0);
     }
 
     protected ProductEntry(Parcel in) {
         super(in);
         this.mProductID = in.readLong();
-        this.mQuantity = (BigDecimal) in.readSerializable();
-        this.mPrice = (BigDecimal) in.readSerializable();
+        this.mTransactionID = in.readLong();
         this.mCategoryID = in.readLong();
         this.mProjectID = in.readLong();
-        this.mTransactionID = in.readLong();
+        this.mPrice = (BigDecimal) in.readSerializable();
+        this.mQuantity = (BigDecimal) in.readSerializable();
+        this.mSelected = in.readByte() != 0;
     }
 
     public static final Creator<ProductEntry> CREATOR = new Creator<ProductEntry>() {

@@ -12,11 +12,11 @@ import android.content.pm.PackageManager;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
@@ -90,6 +90,7 @@ import com.yoshione.fingen.model.Template;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.utils.CabbageFormatter;
 import com.yoshione.fingen.utils.DateTimeFormatter;
+import com.yoshione.fingen.utils.FabMenuController;
 import com.yoshione.fingen.utils.PrefUtils;
 import com.yoshione.fingen.utils.RequestCodes;
 import com.yoshione.fingen.utils.SmsParser;
@@ -124,6 +125,7 @@ import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_SELECT_MODEL;
+import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT;
 import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_TUNE_EDITOR;
 
 /**
@@ -248,6 +250,32 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     ImageButton mImageButtonInvertExRate;
     @BindView(R.id.layoutExchangeRate)
     RelativeLayout mLayoutExchangeRate;
+    @BindView(R.id.fabBGLayout)
+    View mFabBGLayout;
+    @BindView(R.id.fabSelectAll)
+    FloatingActionButton mFabSelectAll;
+    @BindView(R.id.fabSelectAllLayout)
+    LinearLayout mFabSelectAllLayout;
+    @BindView(R.id.fabUnselectAll)
+    FloatingActionButton mFabUnselectAll;
+    @BindView(R.id.fabUnselectAllLayout)
+    LinearLayout mFabUnselectAllLayout;
+    @BindView(R.id.fabSetCategory)
+    FloatingActionButton mFabSetCategory;
+    @BindView(R.id.fabSetCategoryLayout)
+    LinearLayout mFabSetCategoryLayout;
+    @BindView(R.id.fabSetProject)
+    FloatingActionButton mFabSetProject;
+    @BindView(R.id.fabSetProjectLayout)
+    LinearLayout mFabSetProjectLayout;
+    @BindView(R.id.fabDeleteSelected)
+    FloatingActionButton mFabDeleteSelected;
+    @BindView(R.id.fabDeleteSelectedLayout)
+    LinearLayout mFabDeleteSelectedLayout;
+    @BindView(R.id.fabMenuButtonRoot)
+    FloatingActionButton mFabMenuButtonRoot;
+    @BindView(R.id.fabMenuButtonRootLayout)
+    LinearLayout mFabMenuButtonRootLayout;
     private OnDestAmountChangeListener onDestAmountChangeListener;
     private OnExRateTextChangedListener onExRateTextChangedListener;
     private FragmentPayee fragmentPayee;
@@ -301,6 +329,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     private boolean mDoNotChangeIsAmountEdited = false;
     private boolean isAmountEdited = false;
     private boolean isErrorLoadingProducts = false;
+    FabMenuController mFabMenuController;
 
     @Override
     protected int getLayoutResourceId() {
@@ -408,9 +437,9 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         if (getIntent().getBooleanExtra("scan_qr", false)) {
 
             getIntent().removeExtra("scan_qr");
-                    Intent intent = new Intent(ActivityEditTransaction.this, ActivityScanQR.class);
-                    intent.putExtra("transaction", transaction);
-                    startActivityForResult(intent, RequestCodes.REQUEST_CODE_SCAN_QR);
+            Intent intent = new Intent(ActivityEditTransaction.this, ActivityScanQR.class);
+            intent.putExtra("transaction", transaction);
+            startActivityForResult(intent, RequestCodes.REQUEST_CODE_SCAN_QR);
         }
     }
 
@@ -459,6 +488,8 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         initComment();
 
         initSms();
+
+        initFabMenu();
 
         updateControlsState();
     }
@@ -851,6 +882,16 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(getLayoutTitle());
         }
+
+        boolean productsSelected = false;
+        for (ProductEntry entry : transaction.getProductEntries()) {
+            if (entry.isSelected()) {
+                productsSelected = true;
+                break;
+            }
+        }
+
+        mFabMenuButtonRootLayout.setVisibility(productsSelected ? View.VISIBLE : View.GONE);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -1548,7 +1589,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                         sum = sum.add(entry.getPrice().multiply(entry.getQuantity()));
                     }
                     transaction.setAmount(sum, sum.compareTo(BigDecimal.ZERO) <= 0 ?
-                    Transaction.TRANSACTION_TYPE_EXPENSE : Transaction.TRANSACTION_TYPE_INCOME);
+                            Transaction.TRANSACTION_TYPE_EXPENSE : Transaction.TRANSACTION_TYPE_INCOME);
                     mDoNotChangeIsAmountEdited = true;
                     initAmountEditor();
                     mDoNotChangeIsAmountEdited = false;
@@ -1565,6 +1606,11 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
             public void onResidueMoved() {
                 initAmountEditor();
                 mAdapterProducts.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onProductSelected() {
+                updateControlsState();
             }
         });
         mAdapterProducts.setHasStableIds(true);
@@ -1921,6 +1967,27 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     initLocation();
                     break;
             }
+        } else if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT && data != null) {
+            IAbstractModel model = data.getParcelableExtra("model");
+            switch (model.getModelType()) {
+                case IAbstractModel.MODEL_TYPE_CATEGORY:
+                    for (ProductEntry entry : transaction.getProductEntries()) {
+                        if (entry.isSelected()) {
+                            entry.setCategoryID(model.getID());
+                        }
+                    }
+                    break;
+                case IAbstractModel.MODEL_TYPE_PROJECT:
+                    for (ProductEntry entry : transaction.getProductEntries()) {
+                        if (entry.isSelected()) {
+                            entry.setProjectID(model.getID());
+                        }
+                    }
+                    break;
+            }
+            mAdapterProducts.notifyDataSetChanged();
+            updateControlsState();
+            mFabMenuController.closeFABMenu();
         } else if (resultCode == RESULT_OK && requestCode == RequestCodes.REQUEST_CODE_SCAN_QR) {
             transaction = data.getParcelableExtra("transaction");
             getIntent().putExtra("load_products", true);
@@ -2236,6 +2303,71 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
 
         @Override
         public void afterTextChanged(Editable s) {
+        }
+    }
+
+    private void initFabMenu() {
+        mFabMenuController = new FabMenuController(mFabMenuButtonRoot, mFabBGLayout, this,
+                mFabSetCategoryLayout, mFabSetProjectLayout, mFabDeleteSelectedLayout, mFabUnselectAllLayout, mFabSelectAllLayout);
+        FabMenuSelectionItemClickListener clickListener = new FabMenuSelectionItemClickListener();
+        mFabDeleteSelected.setOnClickListener(clickListener);
+        mFabUnselectAll.setOnClickListener(clickListener);
+        mFabSelectAll.setOnClickListener(clickListener);
+        mFabSetCategory.setOnClickListener(clickListener);
+        mFabSetProject.setOnClickListener(clickListener);
+
+    }
+
+    private class FabMenuSelectionItemClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.fabSelectAll : {
+                    for (ProductEntry entry : transaction.getProductEntries()) {
+                        entry.setSelected(true);
+                    }
+                    mAdapterProducts.notifyDataSetChanged();
+                    mFabMenuController.closeFABMenu();
+                    updateControlsState();
+                    break;
+                }
+                case R.id.fabUnselectAll : {
+                    for (ProductEntry entry : transaction.getProductEntries()) {
+                        entry.setSelected(false);
+                    }
+                    mAdapterProducts.notifyDataSetChanged();
+                    mFabMenuController.closeFABMenu();
+                    updateControlsState();
+                    break;
+                }
+                case R.id.fabSetCategory : {
+                    Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityList.class);
+                    intent.putExtra("showHomeButton", false);
+                    intent.putExtra("model", CategoriesDAO.getInstance(getApplicationContext()).getCategoryByID(transaction.getCategoryID()));
+                    intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT);
+                    ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT);
+                    break;
+                }
+                case R.id.fabSetProject : {
+                    Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityList.class);
+                    intent.putExtra("showHomeButton", false);
+                    intent.putExtra("model", ProjectsDAO.getInstance(getApplicationContext()).getProjectByID(transaction.getProjectID()));
+                    intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT);
+                    ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT);
+                    break;
+                }
+                case R.id.fabDeleteSelected : {
+                    for (int i = transaction.getProductEntries().size() - 1; i >= 0 ; i--) {
+                        if (transaction.getProductEntries().get(i).isSelected()) {
+                            transaction.getProductEntries().remove(i);
+                        }
+                    }
+                    mAdapterProducts.notifyDataSetChanged();
+                    mFabMenuController.closeFABMenu();
+                    updateControlsState();
+                    break;
+                }
+            }
         }
     }
 

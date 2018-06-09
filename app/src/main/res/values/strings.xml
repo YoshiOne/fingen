@@ -1982,6 +1982,14 @@
     <string name="act_add_product" formatted="false">Add product...</string>
 
     <!-- 27. Products -->
+    <!-- Actions -->
+    <string name="act_change_category" formatted="false">Change category</string>
+
+    <!-- 27. Products -->
+    <!-- Actions -->
+    <string name="act_change_project" formatted="false">Change project</string>
+
+    <!-- 27. Products -->
     <!-- Titles -->
     <string name="ttl_loading_products" formatted="false">Loading products...</string>
 

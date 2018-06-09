@@ -79,6 +79,7 @@ public class ActivityList extends ToolbarActivity implements SearchView.OnQueryT
                     mViewMode = AdapterTreeModel.MODE_VIEW;
                     break;
                 case RequestCodes.REQUEST_CODE_SELECT_MODEL:
+                case RequestCodes.REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT:
                     mViewMode = AdapterTreeModel.MODE_SINGLECHOICE;
                     break;
                 case RequestCodes.REQUEST_CODE_BULK_SELECT_MODEL:
@@ -154,6 +155,7 @@ public class ActivityList extends ToolbarActivity implements SearchView.OnQueryT
                         case RequestCodes.REQUEST_CODE_VIEW_MODELS:
                             break;
                         case RequestCodes.REQUEST_CODE_SELECT_MODEL:
+                        case RequestCodes.REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT:
                             break;
                         case RequestCodes.REQUEST_CODE_BULK_SELECT_MODEL:
                             Intent intent = new Intent();
@@ -187,6 +189,7 @@ public class ActivityList extends ToolbarActivity implements SearchView.OnQueryT
             case RequestCodes.REQUEST_CODE_VIEW_MODELS:
                 break;
             case RequestCodes.REQUEST_CODE_SELECT_MODEL:
+            case RequestCodes.REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT:
                 Intent intent = new Intent();
                 intent.putExtra("model", model);
                 intent.putStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS, getIntent().getStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS));

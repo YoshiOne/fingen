@@ -21,4 +21,5 @@ public class RequestCodes {
     public static final int REQUEST_CODE_ENTER_FTS_LOGIN  = 18;
     public static final int REQUEST_CODE_TUNE_EDITOR  = 19;
     public static final int REQUEST_CODE_EDIT_TRANSACTION_FROM_NOTIFYCATION   = 20;
+    public static final int REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT = 21;
 }

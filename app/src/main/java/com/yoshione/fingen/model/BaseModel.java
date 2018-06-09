@@ -447,15 +447,4 @@ public class BaseModel implements Parcelable, IAbstractModel {
         this.TAG = in.readString();
     }
 
-    public static final Creator<BaseModel> CREATOR = new Creator<BaseModel>() {
-        @Override
-        public BaseModel createFromParcel(Parcel source) {
-            return new BaseModel(source);
-        }
-
-        @Override
-        public BaseModel[] newArray(int size) {
-            return new BaseModel[size];
-        }
-    };
 }
