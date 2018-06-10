@@ -28,6 +28,7 @@ import com.yoshione.fingen.filters.AbstractFilter;
 import com.yoshione.fingen.filters.AmountFilter;
 import com.yoshione.fingen.filters.DateRangeFilter;
 import com.yoshione.fingen.model.DateEntry;
+import com.yoshione.fingen.model.DateRangeSum;
 import com.yoshione.fingen.utils.CabbageFormatter;
 import com.yoshione.fingen.utils.ColorUtils;
 import com.yoshione.fingen.utils.FgLargeValuesFormatter;
@@ -89,13 +90,13 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
                     return;
                 }
 
-                Pair<Date, Date> range = (Pair<Date, Date>) entries.get(0).getData();
+                DateRangeSum range = (DateRangeSum) entries.get(0).getData();
                 ReportBuilder reportBuilder = ReportBuilder.getInstance(getActivity());
                 ArrayList<AbstractFilter> filters = new ArrayList<>();
 
                 DateRangeFilter dateRangeFilter = new DateRangeFilter(new Random().nextInt(Integer.MAX_VALUE), getActivity());
-                dateRangeFilter.setmStartDate(range.first);
-                dateRangeFilter.setmEndDate(range.second);
+                dateRangeFilter.setmStartDate(range.getDateStart());
+                dateRangeFilter.setmEndDate(range.getDateEnd());
                 filters.add(dateRangeFilter);
 
                 AmountFilter amountFilter = new AmountFilter(new Random().nextInt(Integer.MAX_VALUE));
@@ -210,18 +211,22 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
         ArrayList<String> xVals = new ArrayList<>();
         DateFormat df = ReportBuilder.getInstance(getActivity()).getDateFormatter();
         BarEntry barEntry;
+        DateRangeSum rangeSum;
+        Pair<Date, Date> datePair;
 
         for (DateEntry entry : entries) {
             if (entry.getExpense().compareTo(BigDecimal.ZERO) > 0) {
                 barEntry = new BarEntry(entry.getExpense().setScale(2, RoundingMode.HALF_EVEN).floatValue(), i);
-//                barEntry.setData(entry.getExpense());
-                barEntry.setData(getPairDates(entry.getDate()));
+                datePair = getPairDates(entry.getDate());
+                rangeSum = new DateRangeSum(datePair.first, datePair.second, entry.getExpense());
+                barEntry.setData(rangeSum);
                 yValsExpense.add(barEntry);
             }
             if (entry.getIncome().compareTo(BigDecimal.ZERO) > 0) {
                 barEntry = new BarEntry(entry.getIncome().setScale(2, RoundingMode.HALF_EVEN).floatValue(), i);
-//                barEntry.setData(entry.getIncome());
-                barEntry.setData(getPairDates(entry.getDate()));
+                datePair = getPairDates(entry.getDate());
+                rangeSum = new DateRangeSum(datePair.first, datePair.second, entry.getIncome());
+                barEntry.setData(rangeSum);
                 yValsIncome.add(barEntry);
             }
             if (entry.getExpense().compareTo(BigDecimal.ZERO) > 0 | entry.getIncome().compareTo(BigDecimal.ZERO) > 0) {
@@ -258,15 +263,17 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
         ArrayList<Integer> colors = new ArrayList<>();
         DateFormat df = ReportBuilder.getInstance(getActivity()).getDateFormatter();
         BarEntry barEntry;
+        DateRangeSum rangeSum;
+        Pair<Date, Date> datePair;
 
         BigDecimal sum;
         for (DateEntry entry : entries) {
             sum = entry.getIncome().subtract(entry.getExpense());
             barEntry = new BarEntry(sum.abs().floatValue(), i);
-            barEntry.setData(getPairDates(entry.getDate()));
-            barEntry.setData(sum);
+            datePair = getPairDates(entry.getDate());
+            rangeSum = new DateRangeSum(datePair.first, datePair.second, sum);
+            barEntry.setData(rangeSum);
             yValsSum.add(barEntry);
-//            xVals.add(df.format(entry.getDate()));
             xVals.add(String.format("%s (%s)", df.format(entry.getDate()), formatValue(sum.abs().floatValue())));
             if (sum.compareTo(BigDecimal.ZERO) >= 0) {
                 colors.add(ContextCompat.getColor(Objects.requireNonNull(getActivity()), R.color.positive_color));
@@ -297,13 +304,17 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
         DateFormat df = ReportBuilder.getInstance(getActivity()).getDateFormatter();
         BarEntry barEntry;
         BigDecimal value;
+        DateRangeSum rangeSum;
+        Pair<Date, Date> datePair;
 
         for (DateEntry entry : entries) {
             value = (expense ? entry.getExpense() : entry.getIncome()).setScale(2, RoundingMode.HALF_EVEN);
             if (value.compareTo(BigDecimal.ZERO) > 0) {
                 barEntry = new BarEntry(value.floatValue(), i);
-                barEntry.setData(getPairDates(entry.getDate()));
-                barEntry.setData(value);
+                datePair = getPairDates(entry.getDate());
+                rangeSum = new DateRangeSum(datePair.first, datePair.second, value);
+//                barEntry.setData(getPairDates(entry.getDate()));
+                barEntry.setData(rangeSum);
                 yVals.add(barEntry);
                 xVals.add(String.format("%s (%s)", df.format(entry.getDate()), formatValue(value.floatValue())));
                 i++;
@@ -397,7 +408,8 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {CabbageFormatter cabbageFormatter = null;
         try {
             cabbageFormatter = new CabbageFormatter(ReportBuilder.getInstance(getActivity()).getActiveCabbage());
-            String s = String.format("%s", cabbageFormatter.format(new BigDecimal(e.getVal())));
+            DateRangeSum rangeSum = (DateRangeSum) e.getData();
+            String s = String.format("%s", cabbageFormatter.format(rangeSum.getSum()));
             Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
         } catch (Exception e1) {
             e1.printStackTrace();

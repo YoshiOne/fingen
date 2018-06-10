@@ -819,12 +819,12 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
 
         String sql = "SELECT \n" +
                 "Currency, \n" +
-                "strftime('" + datePattern + "', DateTime/1000, 'unixepoch') AS Date,\n" +
+                "strftime('" + datePattern + "', DateTime/1000, 'unixepoch', 'localtime') AS Date,\n" +
                 "SUM(CASE WHEN Income = 1 THEN Amount ELSE 0 END) AS InAmountSum,\n" +
                 "SUM(CASE WHEN Income = 0 THEN Amount ELSE 0 END) AS OutAmountSum\n" +
                 "FROM temp_all_Transactions\n" +
                 "WHERE  ExcludeTransfer != 1\n" +
-                "GROUP BY strftime('" + datePattern + "', DateTime/1000, 'unixepoch');";
+                "GROUP BY strftime('" + datePattern + "', DateTime/1000, 'unixepoch', 'localtime');";
         if (BuildConfig.DEBUG) {
             Log.d(SQLTAG, sql);
         }
