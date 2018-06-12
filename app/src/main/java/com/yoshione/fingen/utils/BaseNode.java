@@ -24,8 +24,6 @@ public class BaseNode implements IAbstractNode, Comparable<BaseNode> {
     private final List<BaseNode> mChildren;
     private IAbstractModel mModel;
     private BaseNode mParent;
-    private BigDecimal mIncome;
-    private BigDecimal mExpense;
 
     public BaseNode(IAbstractModel model, BaseNode parent) {
         mModel = model;
@@ -47,22 +45,6 @@ public class BaseNode implements IAbstractNode, Comparable<BaseNode> {
 
     public List<BaseNode> getChildren() {
         return mChildren;
-    }
-
-    public BigDecimal getIncome() {
-        return mIncome;
-    }
-
-    public void setIncome(BigDecimal income) {
-        mIncome = income;
-    }
-
-    public BigDecimal getExpense() {
-        return mExpense;
-    }
-
-    public void setExpense(BigDecimal expense) {
-        mExpense = expense;
     }
 
     public BaseNode addChild(IAbstractModel model) {

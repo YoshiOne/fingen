@@ -23,6 +23,8 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.yoshione.fingen.dao.AbstractDAO;
+import com.yoshione.fingen.dao.BaseDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.managers.AbstractModelManager;
 import com.yoshione.fingen.utils.BaseNode;
@@ -30,6 +32,7 @@ import com.yoshione.fingen.utils.CabbageFormatter;
 import com.yoshione.fingen.utils.ColorUtils;
 import com.yoshione.fingen.utils.FgLargeValuesFormatter;
 import com.yoshione.fingen.utils.NormalValuesFormatter;
+import com.yoshione.fingen.utils.ParcelableHelper;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -150,21 +153,46 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
 
         BarEntry barEntry;
         IAbstractModel model;
+        BigDecimal totalIncome = BigDecimal.ZERO;
+        BigDecimal totalExpense = BigDecimal.ZERO;
         for (BaseNode node : tree.getChildren()) {
             model = node.getModel();
             if (model.getExpense().compareTo(BigDecimal.ZERO) > 0) {
                 barEntry = new BarEntry(model.getExpense().setScale(2, RoundingMode.HALF_EVEN).floatValue(), i);
                 barEntry.setData(model);
                 yValsExpense.add(barEntry);
+                totalExpense = totalExpense.add(model.getExpense());
             }
             if (model.getIncome().compareTo(BigDecimal.ZERO) > 0) {
                 barEntry = new BarEntry(model.getIncome().setScale(2, RoundingMode.HALF_EVEN).floatValue(), i);
                 barEntry.setData(model);
                 yValsIncome.add(barEntry);
+                totalIncome = totalIncome.add(model.getIncome());
             }
-            xVals.add(String.format("%s (%s)", model.getFullName(),
+            xVals.add(String.format("%s (%s)", model.getName(),
                     formatValue(model.getIncome().subtract(model.getExpense()).abs().floatValue())));
             i++;
+        }
+
+        IAbstractModel rootDuplicate = (IAbstractModel) ParcelableHelper.immediateDeepCopy(tree.getModel());
+        rootDuplicate.setIncome(tree.getModel().getIncome().subtract(totalIncome));
+        rootDuplicate.setExpense(tree.getModel().getExpense().subtract(totalExpense));
+        if (rootDuplicate.getIncome().add(rootDuplicate.getExpense().abs()).compareTo(BigDecimal.ZERO) != 0) {
+            AbstractDAO dao = BaseDAO.getDAO(rootDuplicate.getModelType(), getActivity());
+            rootDuplicate.setName(dao.getModelById(rootDuplicate.getID()).getName());
+
+            if (rootDuplicate.getExpense().compareTo(BigDecimal.ZERO) > 0) {
+                barEntry = new BarEntry(rootDuplicate.getExpense().setScale(2, RoundingMode.HALF_EVEN).floatValue(), i);
+                barEntry.setData(rootDuplicate);
+                yValsExpense.add(barEntry);
+            }
+            if (rootDuplicate.getIncome().compareTo(BigDecimal.ZERO) > 0) {
+                barEntry = new BarEntry(rootDuplicate.getIncome().setScale(2, RoundingMode.HALF_EVEN).floatValue(), i);
+                barEntry.setData(rootDuplicate);
+                yValsIncome.add(barEntry);
+            }
+            xVals.add(String.format("%s (%s)", rootDuplicate.getName(),
+                    formatValue(rootDuplicate.getIncome().subtract(rootDuplicate.getExpense()).abs().floatValue())));
         }
 
         BarDataSet setExpense = new BarDataSet(yValsExpense, getString(R.string.ent_outcome));
@@ -195,6 +223,7 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
         BigDecimal sum;
         BarEntry barEntry;
         IAbstractModel model;
+        BigDecimal totalSum = BigDecimal.ZERO;
         for (BaseNode node : tree.getChildren()) {
             model = node.getModel();
             sum = model.getIncome().subtract(model.getExpense());
@@ -202,13 +231,33 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
                 barEntry = new BarEntry(sum.abs().floatValue(), i);
                 barEntry.setData(model);
                 yValsSum.add(barEntry);
-                xVals.add(String.format("%s (%s)", model.getFullName(), formatValue(model.getIncome().subtract(model.getExpense()).abs().floatValue())));
+                xVals.add(String.format("%s (%s)", model.getName(), formatValue(model.getIncome().subtract(model.getExpense()).abs().floatValue())));
                 if (sum.compareTo(BigDecimal.ZERO) >= 0) {
                     colors.add(ContextCompat.getColor(getActivity(), R.color.positive_color));
                 } else {
                     colors.add(ContextCompat.getColor(getActivity(), R.color.negative_color));
                 }
+                totalSum = totalSum.add(sum);
                 i++;
+            }
+        }
+
+        IAbstractModel rootDuplicate = (IAbstractModel) ParcelableHelper.immediateDeepCopy(tree.getModel());
+        ReportBuilder reportBuilder = ReportBuilder.getInstance(getActivity());
+        if (reportBuilder.getParentID() >= 0) {
+            sum = rootDuplicate.getIncome().subtract(rootDuplicate.getExpense()).subtract(totalSum);
+            if (sum.compareTo(BigDecimal.ZERO) != 0) {
+                AbstractDAO dao = BaseDAO.getDAO(rootDuplicate.getModelType(), getActivity());
+                rootDuplicate.setName(dao.getModelById(rootDuplicate.getID()).getName());
+                barEntry = new BarEntry(sum.abs().floatValue(), i);
+                barEntry.setData(rootDuplicate);
+                yValsSum.add(barEntry);
+                xVals.add(String.format("%s (%s)", rootDuplicate.getName(), formatValue(sum.abs().floatValue())));
+                if (sum.compareTo(BigDecimal.ZERO) >= 0) {
+                    colors.add(ContextCompat.getColor(getActivity(), R.color.positive_color));
+                } else {
+                    colors.add(ContextCompat.getColor(getActivity(), R.color.negative_color));
+                }
             }
         }
 
@@ -231,6 +280,7 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
         ArrayList<String> xVals = new ArrayList<>();
         BarEntry barEntry;
         IAbstractModel model;
+        BigDecimal totalSum = BigDecimal.ZERO;
         for (BaseNode node : tree.getChildren()) {
             model = node.getModel();
             if (expense) {
@@ -238,7 +288,8 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
                     barEntry = new BarEntry(model.getExpense().setScale(2, RoundingMode.HALF_EVEN).floatValue(), i);
                     barEntry.setData(model);
                     yVals.add(barEntry);
-                    xVals.add(String.format("%s (%s)", model.getFullName(), formatValue(model.getExpense().abs().floatValue())));
+                    xVals.add(String.format("%s (%s)", model.getName(), formatValue(model.getExpense().abs().floatValue())));
+                    totalSum = totalSum.add(model.getExpense());
                     i++;
                 }
             } else {
@@ -246,8 +297,33 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
                     barEntry = new BarEntry(model.getIncome().setScale(2, RoundingMode.HALF_EVEN).floatValue(), i);
                     barEntry.setData(model);
                     yVals.add(barEntry);
-                    xVals.add(String.format("%s (%s)", model.getFullName(), formatValue(model.getIncome().abs().floatValue())));
+                    xVals.add(String.format("%s (%s)", model.getName(), formatValue(model.getIncome().abs().floatValue())));
+                    totalSum = totalSum.add(model.getIncome());
                     i++;
+                }
+            }
+        }
+
+        ReportBuilder reportBuilder = ReportBuilder.getInstance(getActivity());
+        model = (IAbstractModel) ParcelableHelper.immediateDeepCopy(tree.getModel());
+        if (reportBuilder.getParentID() >= 0) {
+            AbstractDAO dao = BaseDAO.getDAO(model.getModelType(), getActivity());
+            model.setName(dao.getModelById(model.getID()).getName());
+            if (expense) {
+                if (model.getExpense().compareTo(BigDecimal.ZERO) > 0) {
+                    totalSum = model.getExpense().subtract(totalSum);
+                    barEntry = new BarEntry(totalSum.setScale(2, RoundingMode.HALF_EVEN).floatValue(), i);
+                    barEntry.setData(model);
+                    yVals.add(barEntry);
+                    xVals.add(String.format("%s (%s)", model.getName(), formatValue(totalSum.abs().floatValue())));
+                }
+            } else {
+                if (model.getIncome().compareTo(BigDecimal.ZERO) > 0) {
+                    totalSum = model.getIncome().subtract(totalSum);
+                    barEntry = new BarEntry(totalSum.setScale(2, RoundingMode.HALF_EVEN).floatValue(), i);
+                    barEntry.setData(model);
+                    yVals.add(barEntry);
+                    xVals.add(String.format("%s (%s)", model.getName(), formatValue(totalSum.abs().floatValue())));
                 }
             }
         }

@@ -37,6 +37,7 @@ import com.yoshione.fingen.utils.CabbageFormatter;
 import com.yoshione.fingen.utils.ColorUtils;
 import com.yoshione.fingen.utils.FgLargeValuesFormatter;
 import com.yoshione.fingen.utils.NormalValuesFormatter;
+import com.yoshione.fingen.utils.ParcelableHelper;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -216,6 +217,39 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
             if (val.compareTo(BigDecimal.ZERO) != 0) {
                 models.add(node.getModel());
             }
+        }
+
+        IAbstractModel rootDuplicate = (IAbstractModel) ParcelableHelper.immediateDeepCopy(tree.getModel());
+
+        if (reportBuilder.getParentID() >= 0) {
+            switch (reportBuilder.getActiveShowIndex()) {
+                case ReportBuilder.SHOW_INCOME:
+                    val = tree.getModel().getIncome().subtract(totalSum);
+                    rootDuplicate.setIncome(val);
+                    break;
+                case ReportBuilder.SHOW_EXPENSE:
+                    val = tree.getModel().getExpense().subtract(totalSum);
+                    rootDuplicate.setExpense(val);
+                    break;
+                default:
+                    val = BigDecimal.ZERO;
+            }
+            if (val.compareTo(BigDecimal.ZERO) != 0) {
+                AbstractDAO dao = BaseDAO.getDAO(rootDuplicate.getModelType(), getActivity());
+                rootDuplicate.setName(dao.getModelById(rootDuplicate.getID()).getName());
+                models.add(rootDuplicate);
+            }
+        }
+
+        switch (reportBuilder.getActiveShowIndex()) {
+            case ReportBuilder.SHOW_INCOME:
+                totalSum = tree.getModel().getIncome();
+                break;
+            case ReportBuilder.SHOW_EXPENSE:
+                totalSum = tree.getModel().getExpense();
+                break;
+            default:
+                totalSum = BigDecimal.ZERO;
         }
 
         if (models.isEmpty()) {
