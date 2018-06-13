@@ -25,22 +25,56 @@
         android:background="?listDividerBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/caption"
         style="@style/ListDividerText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:background="?listDividerBackground"
         android:ellipsize="end"
-        android:paddingStart="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/toggleButtonExclude"
+        app:layout_constraintEnd_toStartOf="@+id/text_view_not"
         app:layout_constraintStart_toEndOf="@+id/buttonDelete"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Filter name" />
+
+    <TextView
+        android:id="@+id/text_view_not"
+        style="@style/ListDividerText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?listDividerBackground"
+        android:ellipsize="end"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/switch_exclude"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/ttl_not" />
+
+    <Switch
+        android:id="@+id/switch_exclude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:background="?listDividerBackground"
+        android:theme="@style/SwitchTheme"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/text_view_on"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_view_on"
+        style="@style/ListDividerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?listDividerBackground"
+        android:ellipsize="end"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/switch_enabled"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/ttl_on" />
 
     <Switch
         android:id="@+id/switch_enabled"
@@ -51,20 +85,21 @@
         android:theme="@style/SwitchTheme"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:checked="true"/>
 
-    <ToggleButton
-        android:id="@+id/toggleButtonExclude"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/selector_toggle_button"
-        android:checked="true"
-        android:textColor="@color/color_toggle_text"
-        android:textOff="@string/ttl_exclude"
-        android:textOn="@string/ttl_exclude"
-        android:textSize="@dimen/text_size_micro"
-        app:layout_constraintBottom_toBottomOf="@+id/switch_enabled"
-        app:layout_constraintEnd_toStartOf="@+id/switch_enabled"
-        app:layout_constraintTop_toTopOf="@+id/switch_enabled" />
+    <!--<ToggleButton-->
+        <!--android:id="@+id/toggleButtonExclude"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_marginEnd="16dp"-->
+        <!--android:background="@drawable/selector_toggle_button"-->
+        <!--android:checked="true"-->
+        <!--android:textColor="@color/color_toggle_text"-->
+        <!--android:textOff="@string/ttl_exclude"-->
+        <!--android:textOn="@string/ttl_exclude"-->
+        <!--android:textSize="@dimen/text_size_micro"-->
+        <!--app:layout_constraintBottom_toBottomOf="@+id/switch_enabled"-->
+        <!--app:layout_constraintEnd_toStartOf="@+id/switch_enabled"-->
+        <!--app:layout_constraintTop_toTopOf="@+id/switch_enabled" />-->
 </android.support.constraint.ConstraintLayout>

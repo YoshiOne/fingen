@@ -201,8 +201,8 @@ public class AdapterFilters extends RecyclerView.Adapter {
         Switch switchEnabled;
         @BindView(R.id.buttonDelete)
         ImageButton mButtonDelete;
-        @BindView(R.id.toggleButtonExclude)
-        ToggleButton mToggleButtonExclude;
+        @BindView(R.id.switch_exclude)
+        Switch mSwitchExclude;
         AbstractFilter abstractFilter;
 
         BaseViewHolder(View v) {
@@ -270,8 +270,8 @@ public class AdapterFilters extends RecyclerView.Adapter {
                 switchEnabled.setOnCheckedChangeListener(new OnFilterSwitchCheckedChangeListener(abstractFilter));
             }
 
-            mToggleButtonExclude.setChecked(abstractFilter.isInverted());
-            mToggleButtonExclude.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            mSwitchExclude.setChecked(abstractFilter.isInverted());
+            mSwitchExclude.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                     abstractFilter.setInverted(isChecked);

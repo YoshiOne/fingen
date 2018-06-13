@@ -1091,7 +1091,11 @@
 
     <!-- 13. Filters -->
     <!-- Titles -->
-    <string name="ttl_exclude" formatted="false">Исключая</string>
+    <string name="ttl_not" formatted="false">НЕ</string>
+
+    <!-- 13. Filters -->
+    <!-- Titles -->
+    <string name="ttl_on" formatted="false">ВКЛ</string>
 
     <!-- 14. Splits -->
     <!-- Actions -->

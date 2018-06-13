@@ -1091,7 +1091,11 @@
 
     <!-- 13. Filters -->
     <!-- Titles -->
-    <string name="ttl_exclude" formatted="false">Exclude</string>
+    <string name="ttl_not" formatted="false">NOT</string>
+
+    <!-- 13. Filters -->
+    <!-- Titles -->
+    <string name="ttl_on" formatted="false">ON</string>
 
     <!-- 14. Splits -->
     <!-- Actions -->
