@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.5 beta 3" changeDate=">2018.06.13">
+        <changelogtext>Add display root category with its siblings in pie and bar charts</changelogtext>
+        <changelogtext>Replace exclude filter toggle button to switch</changelogtext>
+        <changelogtext>Fix bugs</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.5 beta 2" changeDate=">2018.06.09">
         <changelogtext>Add tools for bulk editing products</changelogtext>
         <changelogtext>Add "Scan QR" button in notification</changelogtext>

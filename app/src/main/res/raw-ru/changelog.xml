@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.5 beta 3" changeDate=">2018.06.13">
+        <changelogtext>В отчетах добавлено отображение транзакций с родительской категорией вместе с дочерними</changelogtext>
+        <changelogtext>Кнопка фильтра "Исключая" заменена на переключатель "НЕ"</changelogtext>
+        <changelogtext>Исправлены ошибки</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.5 beta 2" changeDate=">2018.06.09">
         <changelogtext>Добавлены инструменты для массового редактирования товаров</changelogtext>
         <changelogtext>Добавлена кнопка "Скан чека" в уведомлении об автоматически созданной транзакции</changelogtext>

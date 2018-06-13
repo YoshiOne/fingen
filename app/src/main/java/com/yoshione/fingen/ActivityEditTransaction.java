@@ -1510,7 +1510,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     getIntent().removeExtra("load_products");
                     mTryDownloadAgain = true;
                     fillProductList();
-                    if ((viewPager.getCurrentItem() == 0) && mPayeeName.isEmpty()) {
+                    if ((viewPager.getCurrentItem() == 0) && mPayeeName != null && mPayeeName.isEmpty()) {
                         setPayeeName(payeeName);
                     }
                     isErrorLoadingProducts = false;
