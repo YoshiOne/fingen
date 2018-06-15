@@ -390,9 +390,9 @@ public class Transaction extends BaseModel implements IAbstractModel {
 
     public BigDecimal getResidue() {
         if (getProductEntries().isEmpty()) return BigDecimal.ZERO;
-        BigDecimal residue = new BigDecimal(getAmount().doubleValue()).setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal residue = new BigDecimal(getAmount().doubleValue()).setScale(2, RoundingMode.HALF_UP);
         for (ProductEntry entry : mProductEntries) {
-            residue = residue.subtract(entry.getPrice().multiply(entry.getQuantity())).setScale(2, RoundingMode.HALF_EVEN);
+            residue = residue.subtract((entry.getPrice().multiply(entry.getQuantity())).setScale(2, RoundingMode.HALF_UP)).setScale(2, RoundingMode.HALF_UP);
         }
         return residue;
     }

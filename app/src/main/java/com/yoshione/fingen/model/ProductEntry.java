@@ -82,7 +82,7 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
     }
 
     public void setPrice(BigDecimal price) {
-        mPrice = price.setScale(2, RoundingMode.HALF_EVEN);
+        mPrice = price.setScale(2, RoundingMode.HALF_UP);
     }
 
     public BigDecimal getQuantity() {
@@ -93,7 +93,7 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
         switch (quantity.compareTo(BigDecimal.ZERO)) {
             case 0:
             case 1:
-                mQuantity = quantity.setScale(3, RoundingMode.HALF_EVEN);
+                mQuantity = quantity.setScale(3, RoundingMode.HALF_UP);
                 break;
             case -1:
                 mQuantity = BigDecimal.ZERO;

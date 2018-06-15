@@ -17,7 +17,7 @@ import java.text.NumberFormat;
  *
  */
 public class CabbageFormatter {
-    private final RoundingMode mRoundingMode = RoundingMode.HALF_EVEN;
+    private final RoundingMode mRoundingMode = RoundingMode.HALF_UP;
     private final Cabbage mCabbage;
 
     public CabbageFormatter(Cabbage mCabbage) {

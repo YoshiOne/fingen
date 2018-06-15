@@ -50,7 +50,7 @@ public class ProductEntrysDAO extends BaseDAO implements AbstractDAO, IDaoInheri
         productEntry.setTransactionID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_PRODUCTS_TRANSACTIONID)));
         productEntry.setCategoryID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_PRODUCTS_CATEGORY_ID)));
         productEntry.setProjectID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_PRODUCTS_PROJECT_ID)));
-        productEntry.setPrice(new BigDecimal(cursor.getDouble(mColumnIndexes.get(DBHelper.C_LOG_PRODUCTS_PRICE))).setScale(2, RoundingMode.HALF_EVEN));
+        productEntry.setPrice(new BigDecimal(cursor.getDouble(mColumnIndexes.get(DBHelper.C_LOG_PRODUCTS_PRICE))).setScale(2, RoundingMode.HALF_UP));
         productEntry.setQuantity(new BigDecimal(cursor.getDouble(mColumnIndexes.get(DBHelper.C_LOG_PRODUCTS_QUANTITY))));
 
         productEntry = (ProductEntry) DBHelper.getSyncDataFromCursor(productEntry, cursor, mColumnIndexes);
