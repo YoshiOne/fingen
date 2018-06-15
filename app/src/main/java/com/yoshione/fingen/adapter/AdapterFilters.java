@@ -10,7 +10,6 @@ import android.app.DatePickerDialog;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
@@ -30,9 +29,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
-import com.yoshione.fingen.ActivityMain;
 import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.FragmentDateFilterEdit;
 import com.yoshione.fingen.R;
@@ -203,6 +200,10 @@ public class AdapterFilters extends RecyclerView.Adapter {
         ImageButton mButtonDelete;
         @BindView(R.id.switch_exclude)
         Switch mSwitchExclude;
+        @BindView(R.id.text_view_not)
+        TextView textViewNot;
+        @BindView(R.id.text_view_on)
+        TextView textViewOn;
         AbstractFilter abstractFilter;
 
         BaseViewHolder(View v) {
@@ -263,21 +264,26 @@ public class AdapterFilters extends RecyclerView.Adapter {
 
             textViewCaption.setText(name);
             if (systemFilter) {
-                switchEnabled.setVisibility(View.INVISIBLE);
+                switchEnabled.setVisibility(View.GONE);
+                mSwitchExclude.setVisibility(View.GONE);
+                textViewNot.setVisibility(View.GONE);
+                textViewOn.setVisibility(View.GONE);
             } else {
+                textViewNot.setVisibility(View.VISIBLE);
+                textViewOn.setVisibility(View.VISIBLE);
                 switchEnabled.setVisibility(View.VISIBLE);
                 switchEnabled.setChecked(abstractFilter.getEnabled());
                 switchEnabled.setOnCheckedChangeListener(new OnFilterSwitchCheckedChangeListener(abstractFilter));
+                mSwitchExclude.setVisibility(View.VISIBLE);
+                mSwitchExclude.setChecked(abstractFilter.isInverted());
+                mSwitchExclude.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                        abstractFilter.setInverted(isChecked);
+                        mOnFilterChangeListener.onFilterChange(true);
+                    }
+                });
             }
-
-            mSwitchExclude.setChecked(abstractFilter.isInverted());
-            mSwitchExclude.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                    abstractFilter.setInverted(isChecked);
-                    mOnFilterChangeListener.onFilterChange(true);
-                }
-            });
 
             mButtonDelete.setOnClickListener(new View.OnClickListener() {
                 @Override

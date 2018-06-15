@@ -4,6 +4,7 @@
 
 package com.yoshione.fingen.tag;
 
+import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 

@@ -1,29 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
-    <changelogversion versionName="2.5 beta 3" changeDate=">2018.06.13">
-        <changelogtext>В отчетах добавлено отображение транзакций с родительской категорией вместе с дочерними</changelogtext>
-        <changelogtext>Кнопка фильтра "Исключая" заменена на переключатель "НЕ"</changelogtext>
-        <changelogtext>Исправлены ошибки</changelogtext>
-    </changelogversion>
-    <changelogversion versionName="2.5 beta 2" changeDate=">2018.06.09">
+    <changelogversion versionName="2.5" changeDate=">2018.06.15">
         <changelogtext>Добавлены инструменты для массового редактирования товаров</changelogtext>
-        <changelogtext>Добавлена кнопка "Скан чека" в уведомлении об автоматически созданной транзакции</changelogtext>
-        <changelogtext>Добавлена возможность приравнять сумму транзакции к сумме стоимости всех ее товаров</changelogtext>
-        <changelogtext>Добавлено отображение ошибки, если такая была при скачивании чека</changelogtext>
-        <changelogtext>Исправлены ошибки</changelogtext>
-    </changelogversion>
-    <changelogversion versionName="2.5 beta 1" changeDate=">2018.06.08">
         <changelogtext>Добавлен индикатор использования кредитного лимита счета</changelogtext>
         <changelogtext>Новая настройка "Таймаут блокировки" позволяет задать через сколько секунд приложение заблокируется находясь в фоне</changelogtext>
+        <changelogtext>Добавлена кнопка "Скан чека" в уведомлении об автоматически созданной транзакции</changelogtext>
         <changelogtext>Добавлена кнопка смены направления перевода (меняет счета местами)</changelogtext>
         <changelogtext>Добавлено отображение суммы при нажатии на график по датам</changelogtext>
         <changelogtext>Добавлена подсказка "Потяните вверх для создания нового счета"</changelogtext>
+        <changelogtext>В отчетах добавлено отображение транзакций с родительской категорией вместе с дочерними</changelogtext>
+        <changelogtext>Добавлена возможность приравнять сумму транзакции к сумме стоимости всех ее товаров</changelogtext>
+        <changelogtext>Добавлено отображение ошибки, если такая была при скачивании чека</changelogtext>
+        <changelogtext>Кнопка фильтра "Исключая" заменена на переключатель "НЕ"</changelogtext>
         <changelogtext>Обновлена английская локализация</changelogtext>
         <changelogtext>В калькуляторе увеличена дробная часть до 4-х чисел</changelogtext>
         <changelogtext>Если в транзакции есть товары и все оони одной категории/проекта, то для них отображается название категории/проекта а не "Сплит"</changelogtext>
         <changelogtext>Если при создании новой транзакции не указывая суммы начать добавлять товары, то сумма транзакции будет меняться на сумму стоимость всех товаров</changelogtext>
         <changelogtext>Исправлена проблема с клавиаторой SwiftKey и автоматическим вводом</changelogtext>
-        <changelogtext>Если транзакции не задана катгория (или другой атрибут), то в отчетах по данному атрибуту такие транзакции будут включаться в группу "Не определено"</changelogtext>
+        <changelogtext>Если транзакции не задана категория (или другой атрибут), то в отчетах по данному атрибуту такие транзакции будут включаться в группу "Не определено"</changelogtext>
         <changelogtext>Другие исправления и улучшения</changelogtext>
     </changelogversion>
     <changelogversion versionName="2.4.1" changeDate=">2018.06.01">

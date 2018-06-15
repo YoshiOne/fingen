@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
-    <changelogversion versionName="2.5 beta 3" changeDate=">2018.06.13">
-        <changelogtext>Add display root category with its siblings in pie and bar charts</changelogtext>
-        <changelogtext>Replace exclude filter toggle button to switch</changelogtext>
-        <changelogtext>Fix bugs</changelogtext>
-    </changelogversion>
-    <changelogversion versionName="2.5 beta 2" changeDate=">2018.06.09">
+    <changelogversion versionName="2.5" changeDate=">2018.06.15">
         <changelogtext>Add tools for bulk editing products</changelogtext>
-        <changelogtext>Add "Scan QR" button in notification</changelogtext>
-        <changelogtext>Add button to add difference between sum of products prices and sum of transaction to sum of transaction</changelogtext>
-        <changelogtext>Add show error message on receipt download failure</changelogtext>
-        <changelogtext>Fix bugs</changelogtext>
-    </changelogversion>
-    <changelogversion versionName="2.5 beta 1" changeDate=">2018.06.08">
         <changelogtext>Add credit limit usage progress bar</changelogtext>
         <changelogtext>Add preference "PIN lock timeout, seconds"</changelogtext>
         <changelogtext>Add button to invert transfer direction in transaction editor</changelogtext>
-        <changelogtext>Add toast with sums when select value in FragmentTimeBarChart.java</changelogtext>
-        <changelogtext>Add hint "Pull up to create account"</changelogtext>
+        <changelogtext>Add "Scan QR" button in notification</changelogtext>
+        <changelogtext>Add button to add difference between sum of products prices and sum of transaction to sum of transaction</changelogtext>
+        <changelogtext>Add display root category with its siblings in pie and bar charts</changelogtext>
+        <changelogtext>Add show error message on receipt download failure</changelogtext>
+        <changelogtext>Replace exclude filter toggle button to switch</changelogtext>
         <changelogtext>Update EN localization</changelogtext>
         <changelogtext>Change fraction part in calc from 2 to 4 digits</changelogtext>
-        <changelogtext>Fix show date range in reports when date range filter exists but disabled</changelogtext>
         <changelogtext>Change behavior of split category and project labeler in transactions list</changelogtext>
+        <changelogtext>Fix show date range in reports when date range filter exists but disabled</changelogtext>
         <changelogtext>Fix change transaction amount when sum of product list changes</changelogtext>
         <changelogtext>Fix break payee-category pair when save transaction with empty category</changelogtext>
         <changelogtext>Fix show suggestions in edit category dialig with SwiftKey</changelogtext>

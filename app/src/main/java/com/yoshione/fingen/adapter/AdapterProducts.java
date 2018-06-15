@@ -2,6 +2,7 @@ package com.yoshione.fingen.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
@@ -255,7 +256,7 @@ public class AdapterProducts extends RecyclerView.Adapter {
         tag.radius = radius;
         tag.isDeletable = false;
         tag.tagTextSize = tagTextSize;
-        tag.tagTextColor = ColorUtils.ContrastColor(color);
+        tag.tagTextColor = Color.WHITE;//ColorUtils.ContrastColor(color);
         return tag;
     }
 

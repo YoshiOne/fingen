@@ -3,6 +3,7 @@ package com.yoshione.fingen.adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
@@ -78,7 +79,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
 //    private static final String TAG = "AdapterTransactions";
 
     protected final Handler handler;
-    private final Context mContext;
+    private final Activity mContext;
     private final ArrayList<Transaction> transactionList;
     private final List<String> headerList;
     private final int visibleThreshold = 10;
@@ -115,7 +116,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
 
     //Конструктор
     @SuppressLint("UseSparseArrays")
-    public AdapterTransactions(RecyclerView recyclerView, IOnLoadMore onLoadMore, Context context) {
+    public AdapterTransactions(RecyclerView recyclerView, IOnLoadMore onLoadMore, Activity context) {
         setHasStableIds(true);
 
         mSearchString = "";
@@ -855,7 +856,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
             tag.radius = radius;
             tag.isDeletable = false;
             tag.tagTextSize = mTagTextSize;
-            tag.tagTextColor = ColorUtils.ContrastColor(color);
+            tag.tagTextColor = Color.WHITE;//ColorUtils.ContrastColor(color);
             return tag;
         }
 

@@ -7,6 +7,7 @@ package com.yoshione.fingen.tag;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.yoshione.fingen.R;
+import com.yoshione.fingen.utils.ColorUtils;
 
 /**
  * Android TagView Widget
@@ -174,6 +176,7 @@ public class TagView extends RelativeLayout {
 			tagView.setTextColor(tag.tagTextColor);
 			tagView.setTextSize(TypedValue.COMPLEX_UNIT_SP ,tag.tagTextSize);
 			tagView.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+			tagView.setShadowLayer(5f, 0, 0, Color.BLACK);
             if (tag.onTagClickListener != null) {
                 tagLayout.setOnClickListener(new OnClickListener() {
                     @Override
