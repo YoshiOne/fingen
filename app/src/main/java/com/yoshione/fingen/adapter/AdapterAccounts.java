@@ -217,7 +217,7 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
         CabbageFormatter cabbageFormatter = new CabbageFormatter(cabbage);
         String s = String.format("%s (%d%%)", cabbageFormatter.format(restOfCredit), account.getCreditLimitUsage());
         avh.mProgressBarTextView.setText(s);
-//        avh.mProgressBarTextView.setShadowLayer(2f,1.5f, 1.5f, ColorUtils.getTextInverseColor(context));
+        avh.mProgressBarTextView.setShadowLayer(3f,1.5f, 1.5f, ColorUtils.getTextInverseColor(context));
     }
 
     @Override

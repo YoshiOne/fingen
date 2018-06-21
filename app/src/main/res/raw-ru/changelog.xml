@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.5.1" changeDate=">2018.06.21">
+        <changelogtext>Добавлена новая настройка "Цветные метки категорий и проектов"</changelogtext>
+        <changelogtext>Улучшена читабельность подписей на графиках</changelogtext>
+        <changelogtext>Исправлены проблемы с плавающим меню списка продуктов</changelogtext>
+        <changelogtext>При нажатии на нераспределенную категорию на графике можно посмотреть ее транзакции</changelogtext>
+        <changelogtext>Исправлены некоторые другие ошибки</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.5" changeDate=">2018.06.15">
         <changelogtext>Добавлены инструменты для массового редактирования товаров</changelogtext>
         <changelogtext>Добавлен индикатор использования кредитного лимита счета</changelogtext>
