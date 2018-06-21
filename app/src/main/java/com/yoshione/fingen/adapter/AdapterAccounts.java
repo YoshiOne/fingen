@@ -176,6 +176,12 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
             });
         } else {
             icon.setImageDrawable(IconGenerator.getAccountIcon(account.getAccountType(), compareToZero, account.getIsClosed(), mContext));
+            icon.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return false;
+                }
+            });
         }
 
         if (position == accountList.size() - 1) {
