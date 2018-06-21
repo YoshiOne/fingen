@@ -681,9 +681,6 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         if (v.getId() == R.id.recycler_view) {
             contextMenuTarget = CONTEXT_MENU_TRANSACTIONS;
             menuInflater.inflate(R.menu.context_menu_transactions, menu);
-        } else {
-            contextMenuTarget = CONTEXT_MENU_FILTERS;
-            menuInflater.inflate(R.menu.context_menu_filters, menu);
         }
     }
 
