@@ -7,6 +7,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 
 import com.github.mikephil.charting.utils.FSize;
+import com.yoshione.fingen.FGApplication;
 
 import static com.github.mikephil.charting.utils.Utils.getSizeOfRotatedRectangleByDegrees;
 
@@ -42,7 +43,7 @@ public class ChartUtils {
         Paint.Style oldStyle = paint.getStyle();
         paint.setStyle(Paint.Style.STROKE);
         float oldStroleWidth = paint.getStrokeWidth();
-        paint.setStrokeWidth(5);
+        paint.setStrokeWidth(ScreenUtils.dpToPx(3f, FGApplication.getContext()));
         int oldColor = paint.getColor();
         paint.setColor(color);
 

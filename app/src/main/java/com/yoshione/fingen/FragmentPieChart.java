@@ -45,6 +45,7 @@ import com.yoshione.fingen.utils.ColorUtils;
 import com.yoshione.fingen.utils.FgLargeValuesFormatter;
 import com.yoshione.fingen.utils.NormalValuesFormatter;
 import com.yoshione.fingen.utils.ParcelableHelper;
+import com.yoshione.fingen.utils.ScreenUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -203,8 +204,10 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
         public void drawValues(Canvas c) {
             Paint.Style oldStyle = mValuePaint.getStyle();
             mValuePaint.setStyle(Paint.Style.STROKE);
-            float oldStroleWidth = mValuePaint.getStrokeWidth();
-            mValuePaint.setStrokeWidth(5);
+            float oldStrokeWidth = mValuePaint.getStrokeWidth();
+            mValuePaint.setStrokeWidth(ScreenUtils.dpToPx(3f, FGApplication.getContext()));
+            int color1 = ColorUtils.getTextColor(getActivity());
+            int color2 = ColorUtils.getTextInverseColor(getActivity());
 
             PieData data = mChart.getData();
             List<IPieDataSet> dataSets = data.getDataSets();
@@ -215,14 +218,14 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
 
                 int entryCount = dataSet.getEntryCount();
                 for (int j = 0; j < entryCount; j++) {
-                    dataSet.setValueTextColor(ColorUtils.ContrastColor(dataSet.getValueTextColor(j)));
+                    dataSet.setValueTextColor(color2);
                 }
             }
 
             super.drawValues(c);
 
             mValuePaint.setStyle(oldStyle);
-            mValuePaint.setStrokeWidth(oldStroleWidth);
+            mValuePaint.setStrokeWidth(oldStrokeWidth);
 
             for (int i = 0; i < dataSets.size(); i++) {
                 IPieDataSet dataSet = dataSets.get(i);
@@ -230,7 +233,7 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
 
                 int entryCount = dataSet.getEntryCount();
                 for (int j = 0; j < entryCount; j++) {
-                    dataSet.setValueTextColor(ColorUtils.ContrastColor(dataSet.getValueTextColor(j)));
+                    dataSet.setValueTextColor(color1);
                 }
             }
 
