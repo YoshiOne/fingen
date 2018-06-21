@@ -30,6 +30,7 @@ public class NestedModelFilter extends AbstractFilter implements Parcelable {
     private Boolean mEnabled = true;
     private int mModelType;
     private boolean mInverted;
+    private boolean mIncludeChildren;
 
     private long mId;
 
@@ -37,6 +38,15 @@ public class NestedModelFilter extends AbstractFilter implements Parcelable {
         mModelType = modelType;
         mId = id;
         mIdList = new HashSet<>();
+        mIncludeChildren = true;
+    }
+
+    public boolean isIncludeChildren() {
+        return mIncludeChildren;
+    }
+
+    public void setIncludeChildren(boolean includeChildren) {
+        mIncludeChildren = includeChildren;
     }
 
     public int getModelType() {
@@ -116,14 +126,16 @@ public class NestedModelFilter extends AbstractFilter implements Parcelable {
 
             for (long id : mIdList) {
                 ids.add(id);
-                List<BaseNode> children;
-                try {
-                    children = tree.getNodeById(id).getFlatChildrenList();
-                } catch (Exception e) {
-                    children = new ArrayList<>();
-                }
-                for (BaseNode child : children) {
-                    ids.add(child.getModel().getID());
+                if (mIncludeChildren) {
+                    List<BaseNode> children;
+                    try {
+                        children = tree.getNodeById(id).getFlatChildrenList();
+                    } catch (Exception e) {
+                        children = new ArrayList<>();
+                    }
+                    for (BaseNode child : children) {
+                        ids.add(child.getModel().getID());
+                    }
                 }
             }
             return ids;

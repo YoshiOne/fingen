@@ -52,6 +52,9 @@ public class EntityChartFabOnClickListener implements View.OnClickListener {
         ArrayList<AbstractFilter> filters = new ArrayList<>();
 
         AbstractFilter entityFilter = FilterManager.createFilter(model.getModelType(), model.getID());
+        if (entityFilter.getClass().equals(NestedModelFilter.class)) {
+            ((NestedModelFilter) entityFilter).setIncludeChildren(false);
+        }
         filters.add(entityFilter);
 
         AmountFilter amountFilter = new AmountFilter(new Random().nextInt(Integer.MAX_VALUE));

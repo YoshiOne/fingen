@@ -369,7 +369,7 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         ReportBuilder reportBuilder = ReportBuilder.getInstance(getActivity());
         IAbstractModel model = (IAbstractModel) e.getData();
-        if (AbstractModelManager.getAllChildren(model, getActivity()).size() > 0) {
+        if (reportBuilder.getParentID() != model.getID() && AbstractModelManager.getAllChildren(model, getActivity()).size() > 0) {
             reportBuilder.setParentID(model.getID());
             updateChart(true);
             return;
@@ -381,7 +381,6 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
             e1.printStackTrace();
         }
         String s = String.format("%s %s", e.getData().toString(), cabbageFormatter.format(new BigDecimal(e.getVal())));
-//        Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
         GradientDrawable bgShape = (GradientDrawable) mImageViewColor.getBackground();
         IPieDataSet dataSet = mPieChart.getData().getDataSet();
         bgShape.setColor(dataSet.getColor(dataSet.getEntryIndex(e)));

@@ -403,7 +403,7 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         ReportBuilder reportBuilder = ReportBuilder.getInstance(getActivity());
                 IAbstractModel model = (IAbstractModel) e.getData();
-                if (AbstractModelManager.getAllChildren(model, getActivity()).size() > 0) {
+                if (reportBuilder.getParentID() != model.getID() && AbstractModelManager.getAllChildren(model, getActivity()).size() > 0) {
                     reportBuilder.setParentID(model.getID());
                     updateChart();
                     return;
