@@ -372,9 +372,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
         app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout">
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/act_select_all" />
+            android:text="@string/act_select_all"
+            style="@style/FabChildLabelStyle" />
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabSelectAll"
             style="@style/FabMenuButtonChild"
@@ -388,9 +387,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
         app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout">
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/act_unselect_all" />
+            android:text="@string/act_unselect_all"
+            style="@style/FabChildLabelStyle" />
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabUnselectAll"
             style="@style/FabMenuButtonChild"
@@ -404,9 +402,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
         app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout">
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/act_change_category" />
+            android:text="@string/act_change_category"
+            style="@style/FabChildLabelStyle" />
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabSetCategory"
             style="@style/FabMenuButtonChild"
@@ -421,9 +418,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
         app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout">
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/act_change_project" />
+            android:text="@string/act_change_project"
+            style="@style/FabChildLabelStyle" />
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabSetProject"
             style="@style/FabMenuButtonChild"
@@ -438,9 +434,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
         app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout">
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/act_delete_selected" />
+            android:text="@string/act_delete_selected"
+            style="@style/FabChildLabelStyle" />
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabDeleteSelected"
             style="@style/FabMenuButtonChild"

@@ -27,7 +27,7 @@ public class FabMenuController {
 
         mChildren = new ArrayList<>(Arrays.asList(chidren));
 
-        mAnimator = ValueAnimator.ofFloat(0f, 0.70f);
+        mAnimator = ValueAnimator.ofFloat(0f, 0.90f);
         mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
@@ -103,6 +103,15 @@ public class FabMenuController {
             } else {
                 v.animate().setDuration(ANIM_DURATION).translationY(0);
             }
+        }
+    }
+
+    public void forceCloseFABMenu() {
+        isFABOpen = false;
+        mFabBGLayout.setVisibility(View.GONE);
+        mRoot.setRotation(0);
+        for (View v : mChildren) {
+            v.setVisibility(View.GONE);
         }
     }
 

@@ -1985,9 +1985,12 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     }
                     break;
             }
+            for (ProductEntry entry : transaction.getProductEntries()) {
+                entry.setSelected(false);
+            }
             mAdapterProducts.notifyDataSetChanged();
+            mFabMenuController.forceCloseFABMenu();
             updateControlsState();
-            mFabMenuController.closeFABMenu();
         } else if (resultCode == RESULT_OK && requestCode == RequestCodes.REQUEST_CODE_SCAN_QR) {
             transaction = data.getParcelableExtra("transaction");
             getIntent().putExtra("load_products", true);

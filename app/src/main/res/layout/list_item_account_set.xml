@@ -3,7 +3,6 @@
 <android.support.constraint.ConstraintLayout android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:foreground="?attr/selectableItemBackground"
     android:paddingEnd="16dp"
     android:background="?listItemBackground"
     xmlns:tools="http://schemas.android.com/tools"

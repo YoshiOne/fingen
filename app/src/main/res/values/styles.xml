@@ -327,4 +327,10 @@
         <item name="android:maxHeight">3dp</item>
         <item name="android:progressDrawable">@drawable/progress_horizontal</item>
     </style>
+
+    <style name="FabChildLabelStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?listItemBackground</item>
+    </style>
 </resources>
