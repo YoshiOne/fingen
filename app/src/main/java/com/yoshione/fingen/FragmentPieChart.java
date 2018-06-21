@@ -1,6 +1,9 @@
 package com.yoshione.fingen;
 
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
@@ -27,7 +31,10 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IPieDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.renderer.PieChartRenderer;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.Utils;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.yoshione.fingen.dao.AbstractDAO;
 import com.yoshione.fingen.dao.BaseDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
@@ -41,6 +48,7 @@ import com.yoshione.fingen.utils.ParcelableHelper;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -181,7 +189,53 @@ public class FragmentPieChart extends Fragment implements OnChartValueSelectedLi
 
         mPieChart.setOnChartValueSelectedListener(this);
 
+        mPieChart.setRenderer(new FgPieChartRenderer(mPieChart, mPieChart.getAnimator(), mPieChart.getViewPortHandler()));
         mPieChart.getLegend().setEnabled(false);
+    }
+
+    private class FgPieChartRenderer extends PieChartRenderer {
+
+        public FgPieChartRenderer(PieChart chart, ChartAnimator animator, ViewPortHandler viewPortHandler) {
+            super(chart, animator, viewPortHandler);
+        }
+
+        @Override
+        public void drawValues(Canvas c) {
+            Paint.Style oldStyle = mValuePaint.getStyle();
+            mValuePaint.setStyle(Paint.Style.STROKE);
+            float oldStroleWidth = mValuePaint.getStrokeWidth();
+            mValuePaint.setStrokeWidth(5);
+
+            PieData data = mChart.getData();
+            List<IPieDataSet> dataSets = data.getDataSets();
+
+            for (int i = 0; i < dataSets.size(); i++) {
+                IPieDataSet dataSet = dataSets.get(i);
+                mValueLinePaint.setColor(ColorUtils.ContrastColor(dataSet.getValueLineColor()));
+
+                int entryCount = dataSet.getEntryCount();
+                for (int j = 0; j < entryCount; j++) {
+                    dataSet.setValueTextColor(ColorUtils.ContrastColor(dataSet.getValueTextColor(j)));
+                }
+            }
+
+            super.drawValues(c);
+
+            mValuePaint.setStyle(oldStyle);
+            mValuePaint.setStrokeWidth(oldStroleWidth);
+
+            for (int i = 0; i < dataSets.size(); i++) {
+                IPieDataSet dataSet = dataSets.get(i);
+                mValueLinePaint.setColor(ColorUtils.ContrastColor(dataSet.getValueLineColor()));
+
+                int entryCount = dataSet.getEntryCount();
+                for (int j = 0; j < entryCount; j++) {
+                    dataSet.setValueTextColor(ColorUtils.ContrastColor(dataSet.getValueTextColor(j)));
+                }
+            }
+
+            super.drawValues(c);
+        }
     }
 
     private void setData(BaseNode tree, boolean animate) {

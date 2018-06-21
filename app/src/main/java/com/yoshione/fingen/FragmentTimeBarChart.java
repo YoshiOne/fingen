@@ -31,6 +31,7 @@ import com.yoshione.fingen.model.DateEntry;
 import com.yoshione.fingen.model.DateRangeSum;
 import com.yoshione.fingen.utils.CabbageFormatter;
 import com.yoshione.fingen.utils.ColorUtils;
+import com.yoshione.fingen.utils.FgHorizontalBarChartRenderer;
 import com.yoshione.fingen.utils.FgLargeValuesFormatter;
 import com.yoshione.fingen.utils.NormalValuesFormatter;
 
@@ -201,6 +202,8 @@ public class FragmentTimeBarChart extends Fragment implements OnChartValueSelect
         yr.setAxisMinValue(0f);
         yr.setTextColor(textColor);
 
+        mBarChart.setXAxisRenderer(new FgHorizontalBarChartRenderer(getActivity(), mBarChart.getViewPortHandler(),
+                mBarChart.getXAxis(), mBarChart.getTransformer(YAxis.AxisDependency.LEFT), mBarChart));
         mBarChart.getLegend().setEnabled(false);
     }
 

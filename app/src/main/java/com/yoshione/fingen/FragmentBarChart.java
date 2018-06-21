@@ -30,6 +30,7 @@ import com.yoshione.fingen.managers.AbstractModelManager;
 import com.yoshione.fingen.utils.BaseNode;
 import com.yoshione.fingen.utils.CabbageFormatter;
 import com.yoshione.fingen.utils.ColorUtils;
+import com.yoshione.fingen.utils.FgHorizontalBarChartRenderer;
 import com.yoshione.fingen.utils.FgLargeValuesFormatter;
 import com.yoshione.fingen.utils.NormalValuesFormatter;
 import com.yoshione.fingen.utils.ParcelableHelper;
@@ -142,8 +143,11 @@ public class FragmentBarChart extends Fragment implements OnChartValueSelectedLi
         yr.setAxisMinValue(0f);
         yr.setTextColor(textColor);
 
+        mBarChart.setXAxisRenderer(new FgHorizontalBarChartRenderer(getActivity(), mBarChart.getViewPortHandler(),
+                mBarChart.getXAxis(), mBarChart.getTransformer(YAxis.AxisDependency.LEFT), mBarChart));
         mBarChart.getLegend().setEnabled(false);
     }
+
 
     private Pair<ArrayList<IBarDataSet>, ArrayList<String>> getDatasetsInAndEx(BaseNode tree) {
         int i = 0;
