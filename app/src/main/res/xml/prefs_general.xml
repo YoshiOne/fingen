@@ -134,6 +134,11 @@
         <Preference
             android:key="reset_default_department"
             android:title="@string/title_reset_default_department"/>
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="colored_tags"
+            android:title="@string/pref_title_colored_tags"
+            android:summary="@string/pref_summary_compact_view_mode"/>
     </PreferenceScreen>
 
     <PreferenceScreen

@@ -97,6 +97,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
     private int mNegativeAmountColor;
     private int mColorInactive;
     private int mColorSplit;
+    private int mColorTag;
     private String mSplitStringCategory;
     private String mSplitStringProject;
     private HashMap<Long, Account> mAccountCache;
@@ -109,6 +110,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
     private String mSearchString;
     private ContextThemeWrapper mContextThemeWrapper;
     private Float mTagTextSize;
+    private boolean isTagsColored;
 
     public void setSearchString(String searchString) {
         mSearchString = searchString;
@@ -142,6 +144,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         mNegativeAmountColor = ContextCompat.getColor(mContext, R.color.negative_color);
         mColorInactive = ContextCompat.getColor(mContext, R.color.light_gray_text);
         mColorSplit = ContextCompat.getColor(mContext, R.color.blue_color);
+        mColorTag = ContextCompat.getColor(mContext, R.color.ColorAccent);
         mSplitStringCategory = mContext.getString(R.string.ent_split_category);
         mSplitStringProject = mContext.getString(R.string.ent_split_project);
         mAccountCache = new HashMap<>();
@@ -195,6 +198,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
             mContextThemeWrapper = new ContextThemeWrapper(context, R.style.StyleListItemTransationsNormal);
         }
 
+        isTagsColored = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FgConst.PREF_COLORED_TAGS, true);
         mTagTextSize = ScreenUtils.PxToDp(mContext, mContext.getResources().getDimension(R.dimen.text_size_micro));
     }
 
@@ -761,11 +765,20 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
             mTagView.setLineMargin(0f);
             mTagView.setVisibility(category.getID() >= 0 | project.getID() >= 0 ? View.VISIBLE : View.INVISIBLE);
             Tag tag;
+            int categoryColor;
+            int projectColor;
+            if (isTagsColored) {
+                categoryColor = category.getColor();
+                projectColor = project.getColor();
+            }else {
+                categoryColor = mColorTag;
+                projectColor = mColorTag;
+            }
             if (category.getID() >= 0) {
-                mTagView.addTag(getTag(category.getFullName(), category.getColor(), 100f));
+                mTagView.addTag(getTag(category.getFullName(), categoryColor, 100f));
             }
             if (project.getID() >= 0) {
-                mTagView.addTag(getTag(project.getFullName(), project.getColor(), 5f));
+                mTagView.addTag(getTag(project.getFullName(), projectColor, 5f));
             }
             if (mTagView.getVisibility() == View.INVISIBLE) {
                 tag = new Tag(new SpannableString("T"));

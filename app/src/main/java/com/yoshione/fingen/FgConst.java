@@ -50,6 +50,7 @@ public class FgConst {
     public static final String PREF_VALUE_SUNDAY = "sunday";
     public static final String PREF_PIN_LOCK_TIMEOUT = "pin_lock_timeout";
     public static final String PREF_NEW_ACCOUNT_BUTTON_COUNTER = "new_account_button_counter";
+    public static final String PREF_COLORED_TAGS = "colored_tags";
     //</editor-fold>
 
     //<editor-fold Intent actions

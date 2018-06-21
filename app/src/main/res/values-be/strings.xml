@@ -1625,6 +1625,10 @@
     <!-- Transaction editor -->
     <string name="pref_title_show_transaction_type_titles" formatted="false">Отобр. назв. типов транзакций</string>
 
+    <!-- 20. Settings -->
+    <!-- Transaction editor -->
+    <string name="pref_title_colored_tags" formatted="false">Цветные метки категорий и проектов</string>
+
     <!-- 21. Help -->
     <!-- Edit transaction -->
     <string name="hlp_tr_editor_intro" formatted="false">На этом экране изменяются свойства транзакции. Транзакция, это любое перемещение Ваших денежных средств (приход, расход или перевод)</string>

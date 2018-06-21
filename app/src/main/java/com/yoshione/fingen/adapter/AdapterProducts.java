@@ -3,6 +3,7 @@ package com.yoshione.fingen.adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.FragmentProductEntryEdit;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.dao.AccountsDAO;
@@ -54,6 +56,8 @@ public class AdapterProducts extends RecyclerView.Adapter {
     private Activity mActivity;
     private IProductChangedListener mProductChangedListener;
     private Float mTagTextSize;
+    private int mColorTag;
+    private boolean isTagsColored;
 
     public AdapterProducts(Transaction transaction, Activity activity, IProductChangedListener productChangedListener) {
         mActivity = activity;
@@ -63,6 +67,8 @@ public class AdapterProducts extends RecyclerView.Adapter {
         mCabbageFormatter = new CabbageFormatter(cabbage);
         mProductChangedListener = productChangedListener;
         mTagTextSize = ScreenUtils.PxToDp(activity, activity.getResources().getDimension(R.dimen.text_size_micro));
+        mColorTag = ContextCompat.getColor(activity, R.color.ColorAccent);
+        isTagsColored = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(FgConst.PREF_COLORED_TAGS, true);
     }
 
     @Override
@@ -103,15 +109,6 @@ public class AdapterProducts extends RecyclerView.Adapter {
         } else {
             ((MoveResidueViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, mActivity, mCabbageFormatter, mProductChangedListener);
         }
-//        if (position < mTransaction.getProductEntries().size()) {
-//            ((ProductViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, false,
-//                    mActivity, mCabbageFormatter, mTagTextSize, mProductChangedListener);
-//        } else if (mTransaction.getResidue().compareTo(BigDecimal.ZERO) != 0 & position == mTransaction.getProductEntries().size()) {
-//            ((ProductViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, true,
-//                    mActivity, mCabbageFormatter, mTagTextSize, mProductChangedListener);
-//        } else {
-//            ((AddProductViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, mActivity, mProductChangedListener);
-//        }
     }
 
     @Override
@@ -145,7 +142,7 @@ public class AdapterProducts extends RecyclerView.Adapter {
         }
     }
 
-    static class ProductViewHolder extends RecyclerView.ViewHolder {
+    class ProductViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.textViewProductName)
         TextView mTextViewProductName;
         @BindView(R.id.layoutTagView)
@@ -208,11 +205,20 @@ public class AdapterProducts extends RecyclerView.Adapter {
             mTagView.setLineMargin(0f);
             mTagView.setVisibility(category.getID() >= 0 | project.getID() >= 0 ? View.VISIBLE : View.GONE);
             Tag tag;
+            int categoryColor;
+            int projectColor;
+            if (isTagsColored) {
+                categoryColor = category.getColor();
+                projectColor = project.getColor();
+            }else {
+                categoryColor = mColorTag;
+                projectColor = mColorTag;
+            }
             if (category.getID() >= 0) {
-                mTagView.addTag(getTag(category.getFullName(), category.getColor(), 100f, tagTextSize));
+                mTagView.addTag(getTag(category.getFullName(), categoryColor, 100f, tagTextSize));
             }
             if (project.getID() >= 0) {
-                mTagView.addTag(getTag(project.getFullName(), project.getColor(), 5f, tagTextSize));
+                mTagView.addTag(getTag(project.getFullName(), projectColor, 5f, tagTextSize));
             }
             if (mTagView.getVisibility() == View.GONE) {
                 tag = new Tag(new SpannableString("T"));

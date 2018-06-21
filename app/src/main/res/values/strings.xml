@@ -1625,6 +1625,10 @@
     <!-- Transaction editor -->
     <string name="pref_title_show_transaction_type_titles" formatted="false">Show transaction type titles</string>
 
+    <!-- 20. Settings -->
+    <!-- Transaction editor -->
+    <string name="pref_title_colored_tags" formatted="false">Colored category and project tags</string>
+
     <!-- 21. Help -->
     <!-- Edit transaction -->
     <string name="hlp_tr_editor_intro" formatted="false">On this screen you can change transaction properties. A transaction is any movement of your money (income, expense or transfer)</string>
