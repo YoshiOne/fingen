@@ -227,7 +227,7 @@ public class ActivityImportCSVAdvanced extends ToolbarActivity implements IProgr
 
         final ImportParams importParams = mAdapterColumnIndex.getImportParams();
 
-        importParams.setDateFormat(csvImporter.detectDateFormat(importParams.date));
+        importParams.setDateFormat(csvImporter.detectDateFormat(importParams.date), csvImporter.detectTimeFormat(importParams.time));
 
         handler.sendMessage(handler.obtainMessage(HANDLER_OPERATION_SHOW, 0, 0));
         Thread t = new Thread(new Runnable() {

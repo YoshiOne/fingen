@@ -106,6 +106,9 @@ public class CsvImporter {
             "yyyy-MM-dd",
             "MM/dd/yyyy",
             "dd.MM.yyyy"};
+    private static final String sTimeFormats[] = {
+            "HH:mm:ss",
+            "HH:mm"};
     private final String mFileName;
     private final Context mContext;
     private char mSeparator = ';';
@@ -1201,6 +1204,22 @@ public class CsvImporter {
         return result;
     }
 
+    public String detectTimeFormat(int timeColumnInd) {
+        String result = "";
+        if (timeColumnInd >= 0) {
+            for (String s : sTimeFormats) {
+                try {
+                    if (checkDateFormat(s, timeColumnInd)) {
+                        return s;
+                    }
+                } catch (Exception e) {
+//                    e.printStackTrace();
+                }
+            }
+        }
+        return result;
+    }
+
     private boolean checkDateFormat(final String dfs, final int dateColumnInd) {
         final CSV csv = CSV
                 .separator(mSeparator)  // delimiter of fields
@@ -1219,6 +1238,36 @@ public class CsvImporter {
                         @SuppressLint("SimpleDateFormat") DateFormat df = new SimpleDateFormat(dfs);
                         try {
                             df.parse(values[dateColumnInd]);
+                            mIsValidDateFormat = true;
+                        } catch (ParseException e) {
+//                        e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+
+        return mIsValidDateFormat;
+    }
+
+    private boolean checkTimeFormat(final String dfs, final int timeColumnInd) {
+        final CSV csv = CSV
+                .separator(mSeparator)  // delimiter of fields
+                .quote(mQuote)      // quote character
+                .charset(mCharset)
+                .skipLines(mSkipLines)
+                .create();
+
+        mIsValidDateFormat = false;
+
+        csv.read(mFileName, new CSVReadProc() {
+            @Override
+            public void procRow(int i, String... values) {
+                if (!mIsValidDateFormat) {
+                    if (values.length >= timeColumnInd) {
+                        @SuppressLint("SimpleDateFormat") DateFormat df = new SimpleDateFormat(dfs);
+                        try {
+                            df.parse(values[timeColumnInd]);
                             mIsValidDateFormat = true;
                         } catch (ParseException e) {
 //                        e.printStackTrace();

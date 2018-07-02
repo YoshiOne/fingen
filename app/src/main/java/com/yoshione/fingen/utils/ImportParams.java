@@ -68,8 +68,8 @@ public class ImportParams {
     }
 
     @SuppressLint("SimpleDateFormat")
-    public void setDateFormat(String dateFormat) {
-        this.dateFormat = new SimpleDateFormat(dateFormat);
+    public void setDateFormat(String dateFormat, String timeFormat) {
+        this.dateFormat = new SimpleDateFormat(dateFormat + (timeFormat.isEmpty() ? "" :" ") + timeFormat);
     }
 
     public DateFormat getDateFormat() {
