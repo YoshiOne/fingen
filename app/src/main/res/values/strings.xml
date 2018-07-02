@@ -1885,6 +1885,34 @@
     <!-- Titles -->
     <string name="ttl_delete_user" formatted="false">Delete user?</string>
 
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_sync_iap_title" formatted="false">Sync data across devices</string>
+
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_sync_iap_summary" formatted="false">Allows to keep records on different devices</string>
+
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_purchased" formatted="false">Purchased</string>
+
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_subscribed" formatted="false">Subscribed</string>
+
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_item_unavailible" formatted="false">Unavailable</string>
+
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_min_price" formatted="false">From %s/month</string>
+
+    <!-- 25. Sync -->
+    <!-- Messages -->
+    <string name="msg_select_subscription_type" formatted="false">Select subscription type</string>
+
     <!-- 26. Summary -->
     <!-- Entities -->
     <string name="ent_today" formatted="false">Today</string>
@@ -1926,6 +1954,10 @@
     <string name="ttl_scan_qr" formatted="false">Scan QR</string>
 
     <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_attach_receipt_to" formatted="false">Attach receipt to transaction:</string>
+
+    <!-- 26. ScanQR -->
     <!-- Messages -->
     <string name="msg_camera_permission_was_granted" formatted="false">Camera permission was granted</string>
 
@@ -1952,6 +1984,10 @@
     <!-- 26. ScanQR -->
     <!-- Entities -->
     <string name="ent_fp" formatted="false">FP</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Actions -->
+    <string name="act_create_new" formatted="false">Create new</string>
 
     <!-- 27. Products -->
     <!-- Entities -->

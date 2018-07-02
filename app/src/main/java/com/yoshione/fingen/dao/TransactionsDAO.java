@@ -34,6 +34,7 @@ import com.yoshione.fingen.model.Project;
 import com.yoshione.fingen.model.SimpleDebt;
 import com.yoshione.fingen.model.SummaryItem;
 import com.yoshione.fingen.model.Transaction;
+import com.yoshione.fingen.utils.LocaleUtils;
 import com.yoshione.fingen.utils.Translit;
 
 import java.math.BigDecimal;
@@ -41,6 +42,7 @@ import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -295,7 +297,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
             where = "";
         }
 
-        String sql = "SELECT lt.*, (frb.Income + frb.Expense + sa.StartBalance) as FromBalance, (trb.Income + trb.Expense + da.StartBalance) as ToBalance\n" +
+        String sql = "SELECT DISTINCT lt.*, (frb.Income + frb.Expense + sa.StartBalance) as FromBalance, (trb.Income + trb.Expense + da.StartBalance) as ToBalance\n" +
                 "FROM " + tableName + " as lt\n" +
                 "LEFT OUTER JOIN ref_Accounts sa ON sa._id = SrcAccount\n" +
                 "LEFT OUTER JOIN ref_Accounts da ON da._id = DestAccount\n" +
@@ -316,6 +318,50 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
         } catch (Exception e) {
             return transactions;
         }
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    while (!cursor.isAfterLast()) {
+                        transactions.add(cursorToTransaction(cursor));
+                        cursor.moveToNext();
+                    }
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        return transactions;
+    }
+
+    public List<Transaction> getTransactionsByQR(Transaction transaction, Context context) {
+        Calendar c = Calendar.getInstance(LocaleUtils.getLocale(context));
+        c.setTime(transaction.getDateTime());
+        c.set(Calendar.HOUR_OF_DAY, 0); //anything 0 - 23
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        Date start = c.getTime();
+        c.set(Calendar.HOUR_OF_DAY, 23); //anything 0 - 23
+        c.set(Calendar.MINUTE, 59);
+        c.set(Calendar.SECOND, 59);
+        c.set(Calendar.MILLISECOND, 999);
+        Date end = c.getTime();
+        String select = String.format(
+                        "ROUND(%s,2) = %s AND\n" +
+                        "%s > '%s' AND \n" +
+                        "%s < '%s' AND \n" +
+                        "Deleted = 0",
+                DBHelper.C_LOG_TRANSACTIONS_AMOUNT, String.valueOf(transaction.getAmount().doubleValue()),
+                DBHelper.C_LOG_TRANSACTIONS_DATETIME, String.valueOf(start.getTime()),
+                DBHelper.C_LOG_TRANSACTIONS_DATETIME, String.valueOf(end.getTime()));
+
+//        Log.d(TAG, select);
+
+        Cursor cursor = mDatabase.query(T_LOG_TRANSACTIONS, null,
+                select, null,
+                null, null, null);
+
+        List<Transaction> transactions = new ArrayList<>();
         if (cursor != null) {
             try {
                 if (cursor.moveToFirst()) {

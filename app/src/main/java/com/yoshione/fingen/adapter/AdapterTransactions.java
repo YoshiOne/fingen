@@ -2,73 +2,35 @@ package com.yoshione.fingen.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.l4digital.fastscroll.FastScroller;
-import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.FragmentTransactions;
 import com.yoshione.fingen.R;
-import com.yoshione.fingen.dao.CabbagesDAO;
-import com.yoshione.fingen.dao.CategoriesDAO;
-import com.yoshione.fingen.dao.DepartmentsDAO;
-import com.yoshione.fingen.dao.LocationsDAO;
-import com.yoshione.fingen.dao.PayeesDAO;
-import com.yoshione.fingen.dao.ProductsDAO;
-import com.yoshione.fingen.dao.ProjectsDAO;
+import com.yoshione.fingen.adapter.viewholders.TransactionViewHolder;
+import com.yoshione.fingen.adapter.viewholders.TransactionViewHolderParams;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ILoadMoreFinish;
 import com.yoshione.fingen.interfaces.IOnLoadMore;
-import com.yoshione.fingen.managers.TransactionManager;
-import com.yoshione.fingen.model.Account;
-import com.yoshione.fingen.model.Cabbage;
-import com.yoshione.fingen.model.Category;
-import com.yoshione.fingen.model.Department;
-import com.yoshione.fingen.model.Location;
-import com.yoshione.fingen.model.Payee;
-import com.yoshione.fingen.model.ProductEntry;
-import com.yoshione.fingen.model.Project;
 import com.yoshione.fingen.model.Transaction;
-import com.yoshione.fingen.tag.Tag;
-import com.yoshione.fingen.tag.TagView;
-import com.yoshione.fingen.utils.AmountColorizer;
-import com.yoshione.fingen.utils.CabbageFormatter;
-import com.yoshione.fingen.utils.ColorUtils;
 import com.yoshione.fingen.utils.DateTimeFormatter;
-import com.yoshione.fingen.utils.ScreenUtils;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ca.barrenechea.widget.recyclerview.decoration.StickyHeaderAdapter;
-import eu.davidea.flipview.FlipView;
 
 /**
  * Created by slv on 10.09.2015.
@@ -79,41 +41,23 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
 //    private static final String TAG = "AdapterTransactions";
 
     protected final Handler handler;
-    private final Activity mContext;
     private final ArrayList<Transaction> transactionList;
     private final List<String> headerList;
     private final int visibleThreshold = 10;
-    private final AmountColorizer mAmountColorizer;
-    private final Drawable iconSelected;
-    private final DateTimeFormatter mDateTimeFormatter;
-    private final int mColorSpan;
     public volatile boolean endOfList = false;
     private int lastVisibleItem, totalItemCount;
     private volatile boolean loading;
-    private OnTransactionItemEventListener mOnTransactionItemEventListener;
     private Date lastDate;
     private IOnLoadMore mOnLoadMore;
-    private int mPositiveAmountColor;
-    private int mNegativeAmountColor;
-    private int mColorInactive;
-    private int mColorSplit;
-    private int mColorTag;
-    private String mSplitStringCategory;
-    private String mSplitStringProject;
-    private HashMap<Long, Account> mAccountCache;
-    private HashMap<Long, Payee> mPayeeCache;
-    private HashMap<Long, Category> mCategoryCache;
-    private HashMap<Long, Department> mDepartmentCache;
-    private HashMap<Long, Project> mProjectCache;
-    private HashMap<Long, Location> mLocationCache;
-    private HashMap<Long, CabbageFormatter> mCabbageCache;
-    private String mSearchString;
-    private ContextThemeWrapper mContextThemeWrapper;
-    private Float mTagTextSize;
-    private boolean isTagsColored;
+
+    public TransactionViewHolderParams getParams() {
+        return mParams;
+    }
+
+    private TransactionViewHolderParams mParams;
 
     public void setSearchString(String searchString) {
-        mSearchString = searchString;
+        mParams.mSearchString = searchString;
     }
 
     //Конструктор
@@ -121,8 +65,6 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
     public AdapterTransactions(RecyclerView recyclerView, IOnLoadMore onLoadMore, Activity context) {
         setHasStableIds(true);
 
-        mSearchString = "";
-        mContext = context;
         mOnLoadMore = onLoadMore;
         transactionList = new ArrayList<>();
         headerList = new ArrayList<>();
@@ -131,29 +73,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         linearLayout.layout(0, 0, 56, 56);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(56, 56));
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-
-        mAmountColorizer = new AmountColorizer(context);
-        iconSelected = ContextCompat.getDrawable(mContext, R.drawable.ic_check_circle_blue);
-
-
-        mDateTimeFormatter = DateTimeFormatter.getInstance(context);
         handler = new Handler();
-        mColorSpan = ContextCompat.getColor(context, R.color.ColorPrimary);
-
-        mPositiveAmountColor = ContextCompat.getColor(mContext, R.color.positive_color);
-        mNegativeAmountColor = ContextCompat.getColor(mContext, R.color.negative_color);
-        mColorInactive = ContextCompat.getColor(mContext, R.color.light_gray_text);
-        mColorSplit = ContextCompat.getColor(mContext, R.color.blue_color);
-        mColorTag = ContextCompat.getColor(mContext, R.color.ColorAccent);
-        mSplitStringCategory = mContext.getString(R.string.ent_split_category);
-        mSplitStringProject = mContext.getString(R.string.ent_split_project);
-        mAccountCache = new HashMap<>();
-        mPayeeCache = new HashMap<>();
-        mCategoryCache = new HashMap<>();
-        mDepartmentCache = new HashMap<>();
-        mProjectCache = new HashMap<>();
-        mLocationCache = new HashMap<>();
-        mCabbageCache = new HashMap<>();
 
         if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
 
@@ -192,24 +112,8 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
             });
         }
 
-        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FgConst.PREF_COMPACT_VIEW_MODE, false)) {
-            mContextThemeWrapper = new ContextThemeWrapper(context, R.style.StyleListItemTransationsCompact);
-        } else {
-            mContextThemeWrapper = new ContextThemeWrapper(context, R.style.StyleListItemTransationsNormal);
-        }
-
-        isTagsColored = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FgConst.PREF_COLORED_TAGS, true);
-        mTagTextSize = ScreenUtils.PxToDp(mContext, mContext.getResources().getDimension(R.dimen.text_size_micro));
-    }
-
-    public void clearCaches() {
-        mAccountCache.clear();
-        mPayeeCache.clear();
-        mCategoryCache.clear();
-        mDepartmentCache.clear();
-        mProjectCache.clear();
-        mLocationCache.clear();
-        mCabbageCache.clear();
+        mParams = new TransactionViewHolderParams(context);
+        mParams.mShowDateInsteadOfRunningBalance = false;
     }
 
     private void loadMore(final int numberItems, final ILoadMoreFinish loadMoreFinish) {
@@ -232,7 +136,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
             }
 
             Transaction transaction;
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.getInstance(mContext);
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.getInstance(mParams.mContext);
 
             if (input.size() == 0) {
                 headerList.add(dateTimeFormatter.getDateLongStringWithDayOfWeekName(new Date()));
@@ -283,8 +187,8 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         }
     }
 
-    public void setmOnTransactionItemClickListener(OnTransactionItemEventListener mOnTransactionItemEventListener) {
-        this.mOnTransactionItemEventListener = mOnTransactionItemEventListener;
+    public void setmOnTransactionItemClickListener(OnTransactionItemEventListener onTransactionItemEventListener) {
+        mParams.mOnTransactionItemEventListener = onTransactionItemEventListener;
     }
 
     @Override
@@ -293,28 +197,29 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
     }
 
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContextThemeWrapper).inflate(R.layout.list_item_transactions_2, parent, false);
-        return new TransactionViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(mParams.mContextThemeWrapper).inflate(R.layout.list_item_transactions_2, parent, false);
+        return new TransactionViewHolder(mParams, this, view);
     }
 
     @Override
     public String getSectionText(int position) {
         if (position >= 0) {
             lastDate = transactionList.get(position).getDateTime();
-            return mDateTimeFormatter.getDateShortString(transactionList.get(position).getDateTime());
+            return mParams.mDateTimeFormatter.getDateShortString(transactionList.get(position).getDateTime());
         } else {
             if (lastDate != null) {
-                return mDateTimeFormatter.getDateShortString(lastDate);
+                return mParams.mDateTimeFormatter.getDateShortString(lastDate);
             } else {
-                return mDateTimeFormatter.getDateShortString(new Date());
+                return mParams.mDateTimeFormatter.getDateShortString(new Date());
             }
         }
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         Transaction transaction = transactionList.get(position);
 
         TransactionViewHolder tvh = (TransactionViewHolder) viewHolder;
@@ -338,7 +243,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
 
     @Override
     public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
-        View view = LayoutInflater.from(mContextThemeWrapper).inflate(R.layout.header_item, parent, false);
+        View view = LayoutInflater.from(mParams.mContextThemeWrapper).inflate(R.layout.header_item, parent, false);
         return new HeaderViewHolder(view);
     }
 
@@ -364,7 +269,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
                 for (Transaction transaction : transactionList) {
                     transaction.setSelected(true);
                 }
-                mOnTransactionItemEventListener.onSelectionChange(AdapterTransactions.this.getSelectedCount());
+                mParams.mOnTransactionItemEventListener.onSelectionChange(AdapterTransactions.this.getSelectedCount());
                 AdapterTransactions.this.notifyDataSetChanged();
             }
         });
@@ -409,7 +314,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
                     }
 
                 }
-                mOnTransactionItemEventListener.onSelectionChange(AdapterTransactions.this.getSelectedCount());
+                mParams.mOnTransactionItemEventListener.onSelectionChange(AdapterTransactions.this.getSelectedCount());
                 AdapterTransactions.this.notifyDataSetChanged();
             }
         });
@@ -419,7 +324,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         for (Transaction transaction : transactionList) {
             transaction.setSelected(false);
         }
-        mOnTransactionItemEventListener.onSelectionChange(getSelectedCount());
+        mParams.mOnTransactionItemEventListener.onSelectionChange(getSelectedCount());
         notifyDataSetChanged();
     }
 
@@ -488,419 +393,6 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         void bindHeader(String s) {
             text.setText(s);
         }
-    }
-
-    class TransactionViewHolder extends RecyclerView.ViewHolder {
-
-//        public Transaction transaction;
-        @BindView(R.id.textViewPayee)
-        TextView textViewPayee;
-        @BindView(R.id.textViewAmount)
-        TextView textViewAmount;
-        @BindView(R.id.textViewDate)
-        TextView textViewDate;
-        @BindView(R.id.textViewAccount)
-        TextView textViewAccount;
-        @BindView(R.id.textViewAccountBalance)
-        TextView textViewAccountBalance;
-        @BindView(R.id.textViewDestAccountBalance)
-        TextView textViewDestAccountBalance;
-        @BindView(R.id.layoutTagView)
-        TagView mTagView;
-        @BindView(R.id.imageViewAutoCreated)
-        ImageView imageViewAutoCreated;
-        @BindView(R.id.imageViewHasLocation)
-        ImageView imageViewHasLocation;
-        @BindView(R.id.imageViewHasQR)
-        ImageView imageViewHasQR;
-        @BindView(R.id.imageViewHasProducts)
-        ImageView imageViewHasProducts;
-        @BindView(R.id.imageViewChevronRight)
-        ImageView imageViewChevronRight;
-        @BindView(R.id.flipViewIcon)
-        FlipView flipViewIcon;
-        @BindView(R.id.textViewComment)
-        TextView textViewComment;
-        @BindView(R.id.spaceBottom)
-        FrameLayout spaceBottom;
-        @BindView(R.id.imageViewDestAccount)
-        ImageView mImageViewDestAccount;
-
-        TransactionViewHolder(View v) {
-            super(v);
-            ButterKnife.bind(this, v);
-        }
-
-        void bindTransaction(final Transaction t) {
-            itemView.setLongClickable(true);
-
-            //<editor-fold desc="Get accounts data">
-            Account srcAccount;
-            Account destAccount;
-            if (mAccountCache.containsKey(t.getAccountID())) {
-                srcAccount = mAccountCache.get(t.getAccountID());
-            } else {
-                srcAccount = TransactionManager.getSrcAccount(t, mContext);
-                mAccountCache.put(srcAccount.getID(), srcAccount);
-            }
-
-            if (mAccountCache.containsKey(t.getDestAccountID())) {
-                destAccount = mAccountCache.get(t.getDestAccountID());
-            } else {
-                destAccount = TransactionManager.getDestAccount(t, mContext);
-                mAccountCache.put(destAccount.getID(), destAccount);
-            }
-            //</editor-fold>
-
-            //<editor-fold desc="Account & Department">
-            String text;
-            Spannable spannable;
-            String search = mSearchString.toLowerCase();
-            if (t.getDepartmentID() < 0) {
-                text = srcAccount.getName();
-            } else {
-                Department department;
-                if (mDepartmentCache.containsKey(t.getDepartmentID())) {
-                    department = mDepartmentCache.get(t.getDepartmentID());
-                } else {
-                    department = DepartmentsDAO.getInstance(mContext).getDepartmentByID(t.getDepartmentID());
-                    mDepartmentCache.put(department.getID(), department);
-                }
-
-                text = srcAccount.getName() + "(" + department.getFullName() + ")";
-            }
-            if (search.isEmpty() || !text.toLowerCase().contains(search)) {
-                textViewAccount.setText(text);
-            } else {
-                spannable = new SpannableString(text);
-                spannable.setSpan(new BackgroundColorSpan(mColorSpan), text.toLowerCase().indexOf(search), text.toLowerCase().indexOf(search) + search.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                textViewAccount.setText(spannable);
-            }
-            //</editor-fold>
-
-            //<editor-fold desc="Running balance & Amount">
-            CabbageFormatter cabbageFormatter;
-            if (mCabbageCache.containsKey(srcAccount.getCabbageId())) {
-                cabbageFormatter = mCabbageCache.get(srcAccount.getCabbageId());
-            } else {
-                Cabbage cabbage = CabbagesDAO.getInstance(mContext).getCabbageByID(srcAccount.getCabbageId());
-                cabbageFormatter = new CabbageFormatter(cabbage);
-                mCabbageCache.put(cabbage.getID(), cabbageFormatter);
-            }
-            if (t.getTransactionType() == Transaction.TRANSACTION_TYPE_TRANSFER) {
-                textViewAmount.setText(cabbageFormatter.format(t.getAmount().abs()));
-            } else {
-                textViewAmount.setText(cabbageFormatter.format(t.getAmount()));
-            }
-            String fromAmount = cabbageFormatter.format(t.getFromAccountBalance());
-
-            textViewAccountBalance.setText(fromAmount);
-            textViewAccountBalance.setTextColor(getAmountColor(t.getFromAccountBalance()));
-
-            if (t.getDestAccountID() >= 0) {
-                if (mCabbageCache.containsKey(destAccount.getCabbageId())) {
-                    cabbageFormatter = mCabbageCache.get(destAccount.getCabbageId());
-                } else {
-                    Cabbage cabbage = CabbagesDAO.getInstance(mContext).getCabbageByID(destAccount.getCabbageId());
-                    cabbageFormatter = new CabbageFormatter(cabbage);
-                    mCabbageCache.put(cabbage.getID(), cabbageFormatter);
-                }
-                String toAmount = cabbageFormatter.format(t.getToAccountBalance());
-                textViewDestAccountBalance.setText(toAmount);
-                textViewDestAccountBalance.setTextColor(getAmountColor(t.getToAccountBalance()));
-                imageViewChevronRight.setVisibility(View.VISIBLE);
-                textViewDestAccountBalance.setVisibility(View.VISIBLE);
-            } else {
-                imageViewChevronRight.setVisibility(View.GONE);
-                textViewDestAccountBalance.setVisibility(View.GONE);
-            }
-            //</editor-fold>
-
-            //<editor-fold desc="DateTime">
-            textViewDate.setText(String.format("%s", mDateTimeFormatter.getTimeShortString(t.getDateTime())));
-            //</editor-fold>
-
-            //<editor-fold desc="(Payee & Location) or DestAccount">
-            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) textViewPayee.getLayoutParams();
-            if (t.getTransactionType() == Transaction.TRANSACTION_TYPE_TRANSFER) {
-                mImageViewDestAccount.setVisibility(View.VISIBLE);
-                text = destAccount.getName();
-                lp.setMarginStart(16);
-            } else {
-                mImageViewDestAccount.setVisibility(View.GONE);
-                Payee payee;
-                if (mPayeeCache.containsKey(t.getPayeeID())) {
-                    payee = mPayeeCache.get(t.getPayeeID());
-                } else {
-                    payee = PayeesDAO.getInstance(mContext).getPayeeByID(t.getPayeeID());
-                    mPayeeCache.put(payee.getID(), payee);
-                }
-                String payeeFullName = payee.getFullName();
-                if (t.getLocationID() < 0) {
-                    text = payeeFullName;
-                } else {
-                    Location location;
-                    if (mLocationCache.containsKey(t.getLocationID())) {
-                        location = mLocationCache.get(t.getLocationID());
-                    } else {
-                        location = LocationsDAO.getInstance(mContext).getLocationByID(t.getLocationID());
-                        mLocationCache.put(location.getID(), location);
-                    }
-                    text = payeeFullName + " (" + location.getFullName() + ")";
-                }
-                lp.setMarginStart(0);
-            }
-
-            if (!text.isEmpty()) {
-                if (search.isEmpty() || !text.toLowerCase().contains(search)) {
-                    textViewPayee.setText(text);
-                } else {
-                    spannable = new SpannableString(text);
-                    spannable.setSpan(new BackgroundColorSpan(mColorSpan), text.toLowerCase().indexOf(search), text.toLowerCase().indexOf(search) + search.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    textViewPayee.setText(spannable);
-                }
-                textViewPayee.setVisibility(View.VISIBLE);
-                textViewPayee.setLayoutParams(lp);
-            } else {
-                textViewPayee.setVisibility(View.GONE);
-            }
-            //</editor-fold>
-
-            //<editor-fold desc="Category & Project">
-            Category category;
-            Project project;
-            boolean isSplitCategory = false;
-            boolean isSplitProject = false;
-            boolean sameCategory = true;
-            boolean sameProject = true;
-            if (t.getProductEntries().size() == 0) {
-                isSplitCategory = false;
-                isSplitProject = false;
-            } else {
-                Long lastID = null;
-                for (ProductEntry entry : t.getProductEntries()) {
-                    if (lastID == null) {
-                        lastID = entry.getCategoryID();
-                    } else {
-                        sameCategory = sameCategory & entry.getCategoryID() == lastID;
-                        lastID = entry.getCategoryID();
-                    }
-                    if (entry.getCategoryID() != t.getCategoryID()) {
-                        isSplitCategory = true;
-                    }
-                }
-                lastID = null;
-                for (ProductEntry entry : t.getProductEntries()) {
-                    if (lastID == null) {
-                        lastID = entry.getProjectID();
-                    } else {
-                        sameProject = sameProject & entry.getProjectID() == lastID;
-                        lastID = entry.getProjectID();
-                    }
-                    if (entry.getProjectID() != t.getProjectID()) {
-                        isSplitProject = true;
-                    }
-                }
-            }
-            if (!isSplitCategory) {//это не сплит, выводим имя категории транзакции
-                if (mCategoryCache.containsKey(t.getCategoryID())) {
-                    category = mCategoryCache.get(t.getCategoryID());
-                } else {
-                    category = CategoriesDAO.getInstance(mContext).getCategoryByID(t.getCategoryID());
-                    mCategoryCache.put(category.getID(), category);
-                }
-            } else if (!sameCategory) {//это сплит и у товаров разные категории, выводим надпись "Сплит"
-                category = new Category();
-                category.setID(0);
-                category.setColor(mColorSplit);
-                category.setFullName(mSplitStringCategory);
-            } else {//это сплит, но у него все категории одинаковые, выводим название категории
-                ProductEntry entry = t.getProductEntries().get(0);
-                long catID;
-                if (entry.getCategoryID() < 0) {
-                    catID = t.getCategoryID();
-                } else {
-                    catID = entry.getCategoryID();
-                }
-                if (mCategoryCache.containsKey(catID)) {
-                    category = mCategoryCache.get(catID);
-                } else {
-                    category = CategoriesDAO.getInstance(mContext).getCategoryByID(catID);
-                    mCategoryCache.put(category.getID(), category);
-                }
-            }
-            if (!isSplitProject) {//это не сплит, выводим имя проекта транзакции
-                if (mProjectCache.containsKey(t.getProjectID())) {
-                    project = mProjectCache.get(t.getProjectID());
-                } else {
-                    project = ProjectsDAO.getInstance(mContext).getProjectByID(t.getProjectID());
-                    mProjectCache.put(project.getID(), project);
-                }
-            } else if (!sameProject) {//это сплит и у товаров разные проекты, выводим надпись "Сплит"
-                project = new Project();
-                project.setID(0);
-                project.setColor(mColorSplit);
-                project.setFullName(mSplitStringProject);
-            } else {//это сплит, но у него все проекты одинаковые, выводим название проекта
-                ProductEntry entry = t.getProductEntries().get(0);
-                long catID;
-                if (entry.getProjectID() < 0) {
-                    catID = t.getProjectID();
-                } else {
-                    catID = entry.getProjectID();
-                }
-                if (mProjectCache.containsKey(catID)) {
-                    project = mProjectCache.get(catID);
-                } else {
-                    project = ProjectsDAO.getInstance(mContext).getProjectByID(catID);
-                    mProjectCache.put(project.getID(), project);
-                }
-            }
-            mTagView.setAlignEnd(true);
-            mTagView.getTags().clear();
-            mTagView.setTextPaddingTop(1);
-            mTagView.setTexPaddingBottom(1);
-            mTagView.setTextPaddingRight(3);
-            mTagView.setTextPaddingLeft(3);
-            mTagView.setLineMargin(0f);
-            mTagView.setVisibility(category.getID() >= 0 | project.getID() >= 0 ? View.VISIBLE : View.INVISIBLE);
-            Tag tag;
-            int categoryColor;
-            int projectColor;
-            if (isTagsColored) {
-                categoryColor = category.getColor();
-                projectColor = project.getColor();
-            }else {
-                categoryColor = mColorTag;
-                projectColor = mColorTag;
-            }
-            if (category.getID() >= 0) {
-                mTagView.addTag(getTag(category.getFullName(), categoryColor, 100f));
-            }
-            if (project.getID() >= 0) {
-                mTagView.addTag(getTag(project.getFullName(), projectColor, 5f));
-            }
-            if (mTagView.getVisibility() == View.INVISIBLE) {
-                tag = new Tag(new SpannableString("T"));
-                tag.tagTextSize = mTagTextSize;
-                mTagView.addTag(tag);
-            }
-            //</editor-fold>
-
-            //<editor-fold desc="Comment">
-            if (t.getComment().isEmpty()) {
-                textViewComment.setText("");
-                textViewComment.setVisibility(View.GONE);
-            } else {
-                text = t.getComment();
-
-                if (search.isEmpty() || !text.toLowerCase().contains(search)) {
-                    textViewComment.setText(text);
-                } else {
-                    spannable = new SpannableString(text);
-                    spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.fg_white_color)), text.toLowerCase().indexOf(search), text.toLowerCase().indexOf(search) + search.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spannable.setSpan(new BackgroundColorSpan(mColorSpan), text.toLowerCase().indexOf(search), text.toLowerCase().indexOf(search) + search.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    textViewComment.setText(spannable);
-                }
-                textViewComment.setVisibility(View.VISIBLE);
-            }
-            //</editor-fold>
-
-            //<editor-fold desc="Icon indicators">
-            if (t.hasLocation()) {
-                imageViewHasLocation.setVisibility(View.VISIBLE);
-            } else {
-                imageViewHasLocation.setVisibility(View.GONE);
-            }
-
-            if (t.isAutoCreated()) {
-                imageViewAutoCreated.setVisibility(View.VISIBLE);
-            } else {
-                imageViewAutoCreated.setVisibility(View.GONE);
-            }
-
-            if (t.getFN() > 0) {
-                imageViewHasQR.setVisibility(View.VISIBLE);
-            } else {
-                imageViewHasQR.setVisibility(View.GONE);
-            }
-
-            if (t.getProductEntries().size() > 0) {
-                imageViewHasProducts.setVisibility(View.VISIBLE);
-            } else {
-                imageViewHasProducts.setVisibility(View.GONE);
-            }
-            //</editor-fold>
-
-            //<editor-fold desc="Main icon (FlipView)">
-            flipViewIcon.getFrontImageView().setImageDrawable(mAmountColorizer.getTransactionIcon(t.getTransactionType()));
-            textViewAmount.setTextColor(mAmountColorizer.getTransactionColor(t.getTransactionType()));
-
-            flipViewIcon.getFrontImageView().setScaleType(ImageView.ScaleType.CENTER);
-            flipViewIcon.getRearImageView().setImageDrawable(iconSelected);
-            flipViewIcon.getRearImageView().setScaleType(ImageView.ScaleType.CENTER);
-            flipViewIcon.flipSilently(t.isSelected());
-
-            flipViewIcon.setOnClickListener(new ImageViewIconClickListener(t));
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mOnTransactionItemEventListener != null) {
-                        mOnTransactionItemEventListener.onTransactionItemClick(t);
-                    }
-                }
-            });
-            //</editor-fold>
-
-            spaceBottom.setVisibility(t.isDayLast() ? View.INVISIBLE : View.VISIBLE);
-        }
-
-        private Tag getTag(String text, int color, float radius) {
-            String search = mSearchString.toLowerCase();
-            SpannableString spannable;
-            if (search.isEmpty() || !text.toLowerCase().contains(search)) {
-                spannable = new SpannableString(text.toLowerCase());
-            } else {
-                spannable = new SpannableString(text.toLowerCase());
-                spannable.setSpan(new BackgroundColorSpan(mColorSpan), text.toLowerCase().indexOf(search), text.toLowerCase().indexOf(search) + search.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-            Tag tag = new Tag(spannable, color);
-            tag.radius = radius;
-            tag.isDeletable = false;
-            tag.tagTextSize = mTagTextSize;
-            tag.tagTextColor = Color.WHITE;//ColorUtils.ContrastColor(color);
-            return tag;
-        }
-
-        private int getAmountColor(BigDecimal amount) {
-            switch (amount.compareTo(BigDecimal.ZERO)) {
-                case -1:
-                    return mNegativeAmountColor;
-                case 0:
-                    return mColorInactive;
-                case 1:
-                    return mPositiveAmountColor;
-                default:
-                    return mColorInactive;
-            }
-        }
-
-        private class ImageViewIconClickListener implements View.OnClickListener {
-            private final Transaction mTransaction;
-
-            ImageViewIconClickListener(Transaction transaction) {
-                mTransaction = transaction;
-            }
-
-            @Override
-            public void onClick(View v) {
-                mTransaction.setSelected(!mTransaction.isSelected());
-                flipViewIcon.flip(mTransaction.isSelected());
-                mOnTransactionItemEventListener.onSelectionChange(getSelectedCount());
-            }
-        }
-
     }
 
 }

@@ -1885,6 +1885,34 @@
     <!-- Titles -->
     <string name="ttl_delete_user" formatted="false">Удалить пользователя?</string>
 
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_sync_iap_title" formatted="false">Синхронизация данных между устройствами</string>
+
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_sync_iap_summary" formatted="false">Позволяет вести учет на разных устройствах</string>
+
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_purchased" formatted="false">Приобретено</string>
+
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_subscribed" formatted="false">Активно</string>
+
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_item_unavailible" formatted="false">Недоступно</string>
+
+    <!-- 25. Sync -->
+    <!-- Titles -->
+    <string name="ttl_min_price" formatted="false">От %s/месяц</string>
+
+    <!-- 25. Sync -->
+    <!-- Messages -->
+    <string name="msg_select_subscription_type" formatted="false">Выберите тип подписки</string>
+
     <!-- 26. Summary -->
     <!-- Entities -->
     <string name="ent_today" formatted="false">Сегодня</string>
@@ -1926,6 +1954,10 @@
     <string name="ttl_scan_qr" formatted="false">Скан чека</string>
 
     <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_attach_receipt_to" formatted="false">Прикрепить чек к транзакции:</string>
+
+    <!-- 26. ScanQR -->
     <!-- Messages -->
     <string name="msg_camera_permission_was_granted" formatted="false">Доступ к камере предоставлен</string>
 
@@ -1952,6 +1984,10 @@
     <!-- 26. ScanQR -->
     <!-- Entities -->
     <string name="ent_fp" formatted="false">ФП</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Actions -->
+    <string name="act_create_new" formatted="false">Создать новую</string>
 
     <!-- 27. Products -->
     <!-- Entities -->

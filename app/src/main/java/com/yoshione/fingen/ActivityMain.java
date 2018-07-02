@@ -3,6 +3,7 @@ package com.yoshione.fingen;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -39,11 +40,14 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +65,8 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.yoshione.fingen.adapter.AdapterTransactions;
+import com.yoshione.fingen.adapter.TransactionsArrayAdapter;
 import com.yoshione.fingen.backup.BackupJob;
 import com.yoshione.fingen.dao.SendersDAO;
 import com.yoshione.fingen.dao.SmsDAO;
@@ -943,10 +949,55 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
                 }
             }
         }else if (data != null && resultCode == RESULT_OK && requestCode == RequestCodes.REQUEST_CODE_SCAN_QR) {
-            Intent intent = new Intent(this, ActivityEditTransaction.class);
-            intent.putExtra("transaction", data.getParcelableExtra("transaction"));
-            intent.putExtra("load_products", true);
-            this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+            final Intent intent = new Intent(this, ActivityEditTransaction.class);
+            Transaction transaction = data.getParcelableExtra("transaction");
+            List<Transaction> transactions = TransactionsDAO.getInstance(getApplicationContext()).getTransactionsByQR(transaction, getApplicationContext());
+            if (transactions.isEmpty()) {
+                intent.putExtra("transaction", data.getParcelableExtra("transaction"));
+                intent.putExtra("load_products", true);
+                this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+            } else {
+                AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+                builderSingle.setTitle(getResources().getString(R.string.ttl_attach_receipt_to));
+
+                final Dialog[] dialog = new Dialog[]{null};
+                final TransactionsArrayAdapter arrayAdapter = new TransactionsArrayAdapter(
+                        this, transactions, new AdapterTransactions.OnTransactionItemEventListener() {
+                    @Override
+                    public void onTransactionItemClick(Transaction transaction) {
+                        dialog[0].dismiss();
+                        intent.putExtra("transaction", transaction);
+                        intent.putExtra("load_products", true);
+                        startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+                    }
+
+                    @Override
+                    public void onSelectionChange(int selectedCount) {
+
+                    }
+                });
+                arrayAdapter.addAll(transactions);
+
+                builderSingle.setPositiveButton(getResources().getString(R.string.act_create_new),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                intent.putExtra("transaction", data.getParcelableExtra("transaction"));
+                                intent.putExtra("load_products", true);
+                                startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+                            }
+                        });
+
+                builderSingle.setAdapter(arrayAdapter, null);
+                dialog[0] = builderSingle.show();
+
+                WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+                lp.copyFrom(dialog[0].getWindow().getAttributes());
+                lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+                lp.height = 500;
+                dialog[0].show();
+                dialog[0].getWindow().setAttributes(lp);
+            }
         }else if (requestCode == RequestCodes.REQUEST_CODE_OPEN_PREFERENCES) {
             updateLists();
         } else if (requestCode == RequestCodes.REQUEST_CODE_OPEN_PRO) {

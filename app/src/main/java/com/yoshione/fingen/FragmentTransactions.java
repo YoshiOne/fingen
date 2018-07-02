@@ -1016,7 +1016,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         } catch (Exception e) {
             transactions = new ArrayList<>();
         }
-        adapter.clearCaches();
+        adapter.getParams().clearCaches();
         adapter.setTransactionList(transactions);
         adapter.endOfList = false;
         adapter.setLoaded();
