@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.5.3" changeDate=">2018.07.02">
+        <changelogtext>Проверка на наличие транзакции в базе при сканировании чека кнопкой на главном экране</changelogtext>
+        <changelogtext>Исправлены проблемы с импортом даты и времени из CSV</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.5.2" changeDate=">2018.06.21">
         <changelogtext>Добавлена новая настройка "Цветные метки категорий и проектов"</changelogtext>
         <changelogtext>Улучшена читабельность подписей на графиках</changelogtext>
