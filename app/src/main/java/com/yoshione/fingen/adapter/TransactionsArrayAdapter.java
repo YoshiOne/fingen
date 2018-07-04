@@ -17,6 +17,7 @@ import com.yoshione.fingen.R;
 import com.yoshione.fingen.adapter.viewholders.TransactionViewHolder;
 import com.yoshione.fingen.adapter.viewholders.TransactionViewHolderParams;
 import com.yoshione.fingen.model.Transaction;
+import com.yoshione.fingen.utils.ScreenUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ public class TransactionsArrayAdapter extends ArrayAdapter<Transaction> {
     private final ContextThemeWrapper mContextThemeWrapper;
     private List<Transaction> mTransactionList = new ArrayList<>();
     private TransactionViewHolderParams mParams;
+    private Activity mActivity;
 
     public TransactionsArrayAdapter(@NonNull Activity context, List<Transaction> list, AdapterTransactions.OnTransactionItemEventListener eventListener) {
         super(context, 0, list);
@@ -39,6 +41,7 @@ public class TransactionsArrayAdapter extends ArrayAdapter<Transaction> {
         mParams = new TransactionViewHolderParams(context);
         mParams.mOnTransactionItemEventListener = eventListener;
         mParams.mShowDateInsteadOfRunningBalance = true;
+        mActivity = context;
     }
 
     @NonNull
@@ -46,7 +49,7 @@ public class TransactionsArrayAdapter extends ArrayAdapter<Transaction> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         ViewGroup.LayoutParams lp = parent.getLayoutParams();
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.height = 500;
+        lp.height = ScreenUtils.dpToPx(500f, mActivity);
         parent.setLayoutParams(lp);
         @SuppressLint("ViewHolder") View view = LayoutInflater.from(mContextThemeWrapper).inflate(R.layout.list_item_transactions_2, parent, false);
         TransactionViewHolder viewHolder = new TransactionViewHolder(mParams, null, view);

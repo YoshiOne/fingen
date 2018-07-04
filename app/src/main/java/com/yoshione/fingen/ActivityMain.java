@@ -95,6 +95,7 @@ import com.yoshione.fingen.utils.NotificationCounter;
 import com.yoshione.fingen.utils.NotificationHelper;
 import com.yoshione.fingen.utils.PrefUtils;
 import com.yoshione.fingen.utils.RequestCodes;
+import com.yoshione.fingen.utils.ScreenUtils;
 import com.yoshione.fingen.widgets.ToolbarActivity;
 
 import org.greenrobot.eventbus.EventBus;
@@ -950,7 +951,7 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
             }
         }else if (data != null && resultCode == RESULT_OK && requestCode == RequestCodes.REQUEST_CODE_SCAN_QR) {
             final Intent intent = new Intent(this, ActivityEditTransaction.class);
-            Transaction transaction = data.getParcelableExtra("transaction");
+            final Transaction transaction = data.getParcelableExtra("transaction");
             List<Transaction> transactions = TransactionsDAO.getInstance(getApplicationContext()).getTransactionsByQR(transaction, getApplicationContext());
             if (transactions.isEmpty()) {
                 intent.putExtra("transaction", data.getParcelableExtra("transaction"));
@@ -964,9 +965,12 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
                 final TransactionsArrayAdapter arrayAdapter = new TransactionsArrayAdapter(
                         this, transactions, new AdapterTransactions.OnTransactionItemEventListener() {
                     @Override
-                    public void onTransactionItemClick(Transaction transaction) {
+                    public void onTransactionItemClick(Transaction foundTransaction) {
                         dialog[0].dismiss();
-                        intent.putExtra("transaction", transaction);
+                        foundTransaction.setFN(transaction.getFN());
+                        foundTransaction.setFD(transaction.getFD());
+                        foundTransaction.setFP(transaction.getFP());
+                        intent.putExtra("transaction", foundTransaction);
                         intent.putExtra("load_products", true);
                         startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
                     }
@@ -994,7 +998,7 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
                 WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
                 lp.copyFrom(dialog[0].getWindow().getAttributes());
                 lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-                lp.height = 500;
+                lp.height = ScreenUtils.dpToPx(500f, this);
                 dialog[0].show();
                 dialog[0].getWindow().setAttributes(lp);
             }

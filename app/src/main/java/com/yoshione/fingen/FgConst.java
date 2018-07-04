@@ -12,6 +12,20 @@ public class FgConst {
     public static final String FRAGMENT_TRANSACTIONS = "transactions";
     //</editor-fold>
 
+    public static final String TEI_DATETIME = "datetime";
+    public static final String TEI_ACCOUNT = "account";
+    public static final String TEI_PAYEE_DEST_ACC = "payee_dest_acc";
+    public static final String TEI_CATEGORY = "category";
+    public static final String TEI_AMOUNTS = "amounts";
+    public static final String TEI_SMS = "sms";
+    public static final String TEI_FTS = "fts";
+    public static final String TEI_PRODUCT_LIST = "product_list";
+    public static final String TEI_PROJECT = "project";
+    public static final String TEI_SIMPLE_DEBT = "simple_debt";
+    public static final String TEI_DEPARTMENT = "department";
+    public static final String TEI_LOCATION = "location";
+    public static final String TEI_COMMENT = "comment";
+
     //<editor-fold Preference keys
     public static final String PREF_CURRENT_ACCOUNT_SET = "current_account_set";
     public static final String PREF_FORCE_UPDATE_ACCOUNTS = "force_update_accounts";
@@ -23,6 +37,7 @@ public class FgConst {
     public static final String PREF_START_TAB = "start_tab";
     public static final String PREF_SWITCH_TAB_ON_START = "switch_tab_on_start";
     public static final String PREF_TAB_ORDER = "main_screen_tab_order";
+    public static final String PREF_TRANSACTION_EDITOR_CONSTRUCTOR = "transaction_editor_constructor";
     public static final String PREF_DROPBOX_ACCOUNT = "dropbox_account";
     public static final String PREF_EXPAND_LISTS = "expand_lists";
     public static final String PREF_LAST_BUDGET_CURRENCY = "last_budget_currency";

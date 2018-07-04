@@ -87,6 +87,7 @@ import com.yoshione.fingen.model.ProductEntry;
 import com.yoshione.fingen.model.Sms;
 import com.yoshione.fingen.model.SmsMarker;
 import com.yoshione.fingen.model.Template;
+import com.yoshione.fingen.model.TrEditItem;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.utils.CabbageFormatter;
 import com.yoshione.fingen.utils.DateTimeFormatter;
@@ -104,6 +105,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -276,6 +278,14 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     FloatingActionButton mFabMenuButtonRoot;
     @BindView(R.id.fabMenuButtonRootLayout)
     LinearLayout mFabMenuButtonRootLayout;
+    @BindView(R.id.layoutPayeeOrDestAcc)
+    LinearLayout mLayoutPayeeOrDestAcc;
+    @BindView(R.id.layoutAmounts)
+    LinearLayout mLayoutAmounts;
+    @BindView(R.id.layoutRoot)
+    LinearLayout mLayoutRoot;
+    @BindView(R.id.layoutComment)
+    TextInputLayout mLayoutComment;
     private OnDestAmountChangeListener onDestAmountChangeListener;
     private OnExRateTextChangedListener onExRateTextChangedListener;
     private FragmentPayee fragmentPayee;
@@ -330,6 +340,17 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     private boolean isAmountEdited = false;
     private boolean isErrorLoadingProducts = false;
     FabMenuController mFabMenuController;
+    private List<TrEditItem> mTrEditItems;private final SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener =
+            new SharedPreferences.OnSharedPreferenceChangeListener() {
+                @Override
+                public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                    if (key.equals(FgConst.PREF_TRANSACTION_EDITOR_CONSTRUCTOR)) {
+                        preferences = PreferenceManager.getDefaultSharedPreferences(ActivityEditTransaction.this);
+                        mTrEditItems = PrefUtils.getTrEditorLayout(preferences, ActivityEditTransaction.this);
+                        recreateViews();
+                    }
+                }
+            };
 
     @Override
     protected int getLayoutResourceId() {
@@ -340,6 +361,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         if (!BuildConfig.DEBUG) {
             if (!Fabric.isInitialized()) {
                 Fabric.with(this, new Crashlytics());
@@ -349,6 +371,9 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         ButterKnife.bind(this);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mTrEditItems = PrefUtils.getTrEditorLayout(preferences, this);
+        recreateViews();
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
 
         //получаем объекты
         if (savedInstanceState == null) {
@@ -406,6 +431,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         if (mFtsResponseCall != null) {
             mFtsResponseCall.cancel();
         }
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
         super.onDestroy();
     }
 
@@ -447,6 +473,68 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     protected void onPause() {
         removeUpdates();
         super.onPause();
+    }
+
+    private void recreateViews() {
+        mLayoutRoot.removeView(teLayDateTime);
+        mLayoutRoot.removeView(textInputLayoutAccount);
+        mLayoutRoot.removeView(mLayoutPayeeOrDestAcc);
+        mLayoutRoot.removeView(layoutCategory);
+        mLayoutRoot.removeView(mLayoutAmounts);
+        mLayoutRoot.removeView(layoutSms);
+        mLayoutRoot.removeView(mLayoutFTS);
+        mLayoutRoot.removeView(mLayoutProductList);
+        mLayoutRoot.removeView(layoutProject);
+        mLayoutRoot.removeView(layoutSimpleDebt);
+        mLayoutRoot.removeView(layoutDepartment);
+        mLayoutRoot.removeView(layoutLocation);
+        mLayoutRoot.removeView(mLayoutComment);
+        mLayoutRoot.removeView(mButtonMore);
+
+        for (TrEditItem item : mTrEditItems) {
+            switch (item.getID()) {
+                case FgConst.TEI_DATETIME :
+                    mLayoutRoot.addView(teLayDateTime);
+                    break;
+                case FgConst.TEI_ACCOUNT :
+                    mLayoutRoot.addView(textInputLayoutAccount);
+                    break;
+                case FgConst.TEI_PAYEE_DEST_ACC :
+                    mLayoutRoot.addView(mLayoutPayeeOrDestAcc);
+                    break;
+                case FgConst.TEI_CATEGORY :
+                    mLayoutRoot.addView(layoutCategory);
+                    break;
+                case FgConst.TEI_AMOUNTS :
+                    mLayoutRoot.addView(mLayoutAmounts);
+                    break;
+                case FgConst.TEI_SMS :
+                    mLayoutRoot.addView(layoutSms);
+                    break;
+                case FgConst.TEI_FTS :
+                    mLayoutRoot.addView(mLayoutFTS);
+                    break;
+                case FgConst.TEI_PRODUCT_LIST :
+                    mLayoutRoot.addView(mLayoutProductList);
+                    break;
+                case FgConst.TEI_PROJECT :
+                    mLayoutRoot.addView(layoutProject);
+                    break;
+                case FgConst.TEI_SIMPLE_DEBT :
+                    mLayoutRoot.addView(layoutSimpleDebt);
+                    break;
+                case FgConst.TEI_DEPARTMENT :
+                    mLayoutRoot.addView(layoutDepartment);
+                    break;
+                case FgConst.TEI_LOCATION :
+                    mLayoutRoot.addView(layoutLocation);
+                    break;
+                case FgConst.TEI_COMMENT :
+                    mLayoutRoot.addView(mLayoutComment);
+                    break;
+            }
+        }
+        mLayoutRoot.addView(mButtonMore);
     }
 
     public void initUI() {
@@ -501,7 +589,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-//        getMenuInflater().inflate(R.menu.menu_edit_transaction, menu);
+        getMenuInflater().inflate(R.menu.menu_transaction_editor, menu);
         menu.findItem(R.id.action_go_home).setVisible(false);
         menu.findItem(R.id.action_show_help).setVisible(true);
         return true;
@@ -510,9 +598,9 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_tune_editor:
-                Intent intent = new Intent(this, ActivityEditorConstructor.class);
-                startActivityForResult(intent, REQUEST_CODE_TUNE_EDITOR);
+            case R.id.action_customize_layout:
+                FragmentTrEditConstructorDialog dialog = new FragmentTrEditConstructorDialog();
+                dialog.show(getSupportFragmentManager(),"fragment_tr_edit_constructor_dialog");
                 return true;
             default:
                 return false;
@@ -830,16 +918,49 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
 
     private void updateControlsState() {
         mButtonMore.setVisibility(mIsBtnMorePressed ? View.GONE : View.VISIBLE);
-        layoutProject.setVisibility(transaction.getProjectID() >= 0 | mIsBtnMorePressed ? View.VISIBLE : View.GONE);
-        layoutSimpleDebt.setVisibility(transaction.getSimpleDebtID() >= 0 | mIsBtnMorePressed ? View.VISIBLE : View.GONE);
-        layoutDepartment.setVisibility(transaction.getDepartmentID() >= 0 | mIsBtnMorePressed ? View.VISIBLE : View.GONE);
-        layoutLocation.setVisibility(transaction.getLocationID() >= 0 | mIsBtnMorePressed ? View.VISIBLE : View.GONE);
-        mLayoutProductList.setVisibility(isErrorLoadingProducts | transaction.getProductEntries().size() > 0 | mIsBtnMorePressed | getIntent().getBooleanExtra("load_products", false) ? View.VISIBLE : View.GONE);
+
+        class ItemVisibility {
+            RelativeLayout layout;
+            String id;
+            long entityId;
+
+            public ItemVisibility(RelativeLayout layout, String id, long entityId) {
+                this.layout = layout;
+                this.id = id;
+                this.entityId = entityId;
+            }
+        }
+
+        List<ItemVisibility> views = Arrays.asList(
+                new ItemVisibility(layoutProject, FgConst.TEI_PROJECT, transaction.getProjectID()),
+                new ItemVisibility(layoutSimpleDebt, FgConst.TEI_SIMPLE_DEBT, transaction.getSimpleDebtID()),
+                new ItemVisibility(layoutDepartment, FgConst.TEI_DEPARTMENT, transaction.getDepartmentID()),
+                new ItemVisibility(layoutLocation, FgConst.TEI_LOCATION, transaction.getLocationID()));
+        TrEditItem item;
+        for (ItemVisibility itemVisibility : views) {
+            item = PrefUtils.getTrEditItemByID(mTrEditItems, itemVisibility.id);
+            if (item != null) {
+                itemVisibility.layout.setVisibility((itemVisibility.entityId >= 0 | (!item.isHideUnderMore() || mIsBtnMorePressed))
+                        & item.isVisible() ? View.VISIBLE : View.GONE);
+            }
+        }
+
+        item = PrefUtils.getTrEditItemByID(mTrEditItems, FgConst.TEI_PRODUCT_LIST);
+        if (item != null) {
+            mLayoutProductList.setVisibility(
+                    (isErrorLoadingProducts | transaction.getProductEntries().size() > 0
+                    | (!item.isHideUnderMore() || mIsBtnMorePressed)
+                    | getIntent().getBooleanExtra("load_products", false))
+                     & item.isVisible() ? View.VISIBLE : View.GONE);
+        }
 
         boolean scanQR = preferences.getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true);
 
-        mLayoutFTS.setVisibility(
-                (transaction.getFN() > 0 | transaction.getFD() > 0 | transaction.getFP() > 0 | mIsBtnMorePressed) & scanQR ? View.VISIBLE : View.GONE);
+        item = PrefUtils.getTrEditItemByID(mTrEditItems, FgConst.TEI_FTS);
+        if (item != null) {
+            mLayoutFTS.setVisibility(
+                    (transaction.getFN() > 0 | transaction.getFD() > 0 | transaction.getFP() > 0 | (!item.isHideUnderMore() || mIsBtnMorePressed)) & scanQR & item.isVisible() ? View.VISIBLE : View.GONE);
+        }
 
         if (transaction.getTransactionType() == Transaction.TRANSACTION_TYPE_TRANSFER) {
             Account srcAccount = TransactionManager.getSrcAccount(transaction, this);
@@ -1483,7 +1604,6 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
 
     AdapterProducts mAdapterProducts;
     boolean mProductListExpanded = true;
-    boolean mTryDownloadAgain = true;
 
     private void loadProducts() {
         if (FtsHelper.isFtsCredentialsAvailiable(this)) {
@@ -1508,7 +1628,6 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     transaction.getProductEntries().clear();
                     transaction.getProductEntries().addAll(productEntries);
                     getIntent().removeExtra("load_products");
-                    mTryDownloadAgain = true;
                     fillProductList();
                     if ((viewPager.getCurrentItem() == 0) && mPayeeName != null && mPayeeName.isEmpty()) {
                         setPayeeName(payeeName);
@@ -1517,22 +1636,19 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 }
 
                 @Override
+                public void onAccepted() {
+                    initProductList();
+                }
+
+                @Override
                 public void onFailure(String errorMessage, boolean tryAgain) {
-                    if (mTryDownloadAgain & tryAgain) {
-                        mTryDownloadAgain = false;
-                        initProductList();
-                    } else {
-                        isErrorLoadingProducts = true;
-                        getIntent().removeExtra("load_products");
-                        mTryDownloadAgain = true;
-                        spinAnim.cancel();
-                        spinAnim.reset();
-                        mImageViewLoadingProducts.setVisibility(View.GONE);
-                        mTextViewLoadingProducts.setText(errorMessage);
-//                        mTextViewLoadingProducts.setText(getString(R.string.err_loading_products));
-                        updateControlsState();
-//                        mTextViewLoadingProducts.setTextColor(ContextCompat.getColor(ActivityEditTransaction.this, R.color.negative_color));
-                    }
+                    isErrorLoadingProducts = true;
+                    getIntent().removeExtra("load_products");
+                    spinAnim.cancel();
+                    spinAnim.reset();
+                    mImageViewLoadingProducts.setVisibility(View.GONE);
+                    mTextViewLoadingProducts.setText(errorMessage);
+                    updateControlsState();
                 }
             };
             mFtsResponseCall = FtsHelper.downloadProductEntryList(transaction, downloadProductsListener, this);
@@ -2325,7 +2441,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         @Override
         public void onClick(View view) {
             switch (view.getId()) {
-                case R.id.fabSelectAll : {
+                case R.id.fabSelectAll: {
                     for (ProductEntry entry : transaction.getProductEntries()) {
                         entry.setSelected(true);
                     }
@@ -2334,7 +2450,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     updateControlsState();
                     break;
                 }
-                case R.id.fabUnselectAll : {
+                case R.id.fabUnselectAll: {
                     for (ProductEntry entry : transaction.getProductEntries()) {
                         entry.setSelected(false);
                     }
@@ -2343,7 +2459,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     updateControlsState();
                     break;
                 }
-                case R.id.fabSetCategory : {
+                case R.id.fabSetCategory: {
                     Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityList.class);
                     intent.putExtra("showHomeButton", false);
                     intent.putExtra("model", CategoriesDAO.getInstance(getApplicationContext()).getCategoryByID(transaction.getCategoryID()));
@@ -2351,7 +2467,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT);
                     break;
                 }
-                case R.id.fabSetProject : {
+                case R.id.fabSetProject: {
                     Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityList.class);
                     intent.putExtra("showHomeButton", false);
                     intent.putExtra("model", ProjectsDAO.getInstance(getApplicationContext()).getProjectByID(transaction.getProjectID()));
@@ -2359,8 +2475,8 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT);
                     break;
                 }
-                case R.id.fabDeleteSelected : {
-                    for (int i = transaction.getProductEntries().size() - 1; i >= 0 ; i--) {
+                case R.id.fabDeleteSelected: {
+                    for (int i = transaction.getProductEntries().size() - 1; i >= 0; i--) {
                         if (transaction.getProductEntries().get(i).isSelected()) {
                             transaction.getProductEntries().remove(i);
                         }

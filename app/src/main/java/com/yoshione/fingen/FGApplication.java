@@ -23,9 +23,14 @@ import android.widget.PopupWindow;
 import com.evernote.android.job.JobManager;
 import com.github.omadahealth.lollipin.lib.managers.LockManager;
 import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.yoshione.fingen.backup.BackupJobCreator;
 import com.yoshione.fingen.backup.BackupTestJobCreator;
 import com.yoshione.fingen.fts.FtsApi;
+import com.yoshione.fingen.fts.ReceiptDeserializer;
+import com.yoshione.fingen.fts.models.FtsResponse;
 import com.yoshione.fingen.interfaces.ISyncAnimMethods;
 import com.yoshione.fingen.receivers.CustomIntentReceiver;
 import com.yoshione.fingen.widgets.CustomPinActivity;
@@ -38,6 +43,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -110,10 +116,13 @@ public class FGApplication extends Application implements ISyncAnimMethods {
 
         registerActivityLifecycleCallbacks(new FgActivityLifecycleCallbacks());
 
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(15, TimeUnit.SECONDS)
                 .writeTimeout(15, TimeUnit.SECONDS)
+                .addInterceptor(interceptor)
                 .addInterceptor(new Interceptor() {
                     @Override
                     public Response intercept(Interceptor.Chain chain) throws IOException {
@@ -127,9 +136,13 @@ public class FGApplication extends Application implements ISyncAnimMethods {
                 })
                 .build();
 
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(FtsResponse.class, new ReceiptDeserializer())
+                .create();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://proverkacheka.nalog.ru:8888/")
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(okHttpClient)
                 .build();
         sFtsApi = retrofit.create(FtsApi.class);

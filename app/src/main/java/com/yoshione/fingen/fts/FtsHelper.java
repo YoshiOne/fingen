@@ -2,6 +2,7 @@ package com.yoshione.fingen.fts;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Base64;
@@ -58,7 +59,9 @@ public class FtsHelper {
         call.enqueue(new Callback<FtsResponse>() {
             @Override
             public void onResponse(@NonNull Call<FtsResponse> call, @NonNull Response<FtsResponse> response) {
-                if (response.body() != null) {
+                if (response.code() == 202) {
+                    downloadProductsListener.onAccepted();
+                } else if (response.code() == 200 & response.body() != null) {
                     List<Item> items = new ArrayList<>(response.body().getDocument().getReceipt().getItems());
                     List<ProductEntry> productEntries = new ArrayList<ProductEntry>();
                     ProductsDAO productsDAO = ProductsDAO.getInstance(context);
@@ -92,7 +95,7 @@ public class FtsHelper {
                         }
                         downloadProductsListener.onDownload(productEntries, response.body().getDocument().getReceipt().getUser());
                     }
-                } else if (response.errorBody() != null) {
+                } else {
                     try {
                         downloadProductsListener.onFailure(response.errorBody().string(), false);
                     } catch (IOException e) {

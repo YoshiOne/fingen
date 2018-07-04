@@ -1,10 +1,5 @@
 package com.yoshione.fingen.managers;
 
-import com.yoshione.fingen.adapter.AdapterEditorConstructor;
-import com.yoshione.fingen.model.EditorConstructorItem;
-
-import java.util.List;
-
 /**
  * Created by slv on 28.02.2018.
  *

@@ -137,6 +137,14 @@ public class FragmentSettings extends XpPreferenceFragment implements ICanPressB
                 return true;
             }
         });
+        findPreference(FgConst.PREF_TRANSACTION_EDITOR_CONSTRUCTOR).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                FragmentTrEditConstructorDialog dialog = new FragmentTrEditConstructorDialog();
+                dialog.show(getActivity().getSupportFragmentManager(),"fragment_tr_edit_constructor_dialog");
+                return true;
+            }
+        });
         findPreference(FgConst.PREF_FTS_CREDENTIALS).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {

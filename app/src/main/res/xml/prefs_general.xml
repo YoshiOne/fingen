@@ -113,6 +113,9 @@
         android:key="transactions_screen"
         android:persistent="false"
         android:title="@string/pref_header_transactions">
+        <Preference
+            android:key="transaction_editor_constructor"
+            android:title="@string/pref_title_tredit_layout_constructor"/>
         <ListPreference
             android:key="payee_selection_style"
             android:title="@string/pref_title_select_payee_style"

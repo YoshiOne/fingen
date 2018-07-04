@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.adapter.helper.ItemTouchHelperAdapter;
 import com.yoshione.fingen.adapter.helper.OnStartDragListener;
+import com.yoshione.fingen.model.TrEditItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,21 +29,19 @@ import eu.davidea.flipview.FlipView;
  * a
  */
 
-public class AdapterTabOrder extends RecyclerView.Adapter implements ItemTouchHelperAdapter {
-    private Drawable mIcon;
+public class AdapterTrEditConstructor extends RecyclerView.Adapter implements ItemTouchHelperAdapter {
     private final OnStartDragListener mDragStartListener;
-    private List<Pair<String, String>> mList;
+    private List<TrEditItem> mList;
 
-    public AdapterTabOrder(OnStartDragListener dragStartListener, Drawable icon) {
+    public AdapterTrEditConstructor(OnStartDragListener dragStartListener) {
         mDragStartListener = dragStartListener;
-        mIcon = icon;
         mList = new ArrayList<>();
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder vh;
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_tree_model_2, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_tredit, parent, false);
 
         vh = new ViewHolderTabOrder(v);
 
@@ -52,22 +51,12 @@ public class AdapterTabOrder extends RecyclerView.Adapter implements ItemTouchHe
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         final ViewHolderTabOrder vh = ((ViewHolderTabOrder) holder);
+        final TrEditItem item = mList.get(position);
 
-        vh.textViewModelName.setText(mList.get(position).second);
-        vh.expandableIndicator.setVisibility(View.GONE);
-        vh.colorTag.setVisibility(View.GONE);
+        vh.textViewModelName.setText(item.getName());
 
-        vh.container.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (MotionEventCompat.getActionMasked(motionEvent) == MotionEvent.ACTION_DOWN) {
-                    mDragStartListener.onStartDrag(holder);
-                }
-                return false;
-            }
-        });
         vh.dragHandle.setEnabled(true);
-        vh.dragHandle.getFrontImageView().setOnTouchListener(new View.OnTouchListener() {
+        vh.dragHandle.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
@@ -77,8 +66,31 @@ public class AdapterTabOrder extends RecyclerView.Adapter implements ItemTouchHe
             }
         });
 
-        vh.dragHandle.getFrontImageView().setImageDrawable(mIcon);
-        vh.dragHandle.getFrontImageView().setScaleType(ImageView.ScaleType.CENTER);
+        vh.mFlipViewVisible.setVisibility(item.isLockVisible() ? View.GONE : View.VISIBLE);
+        vh.mflipViewHideUnderMore.setVisibility(item.isLockHide() ? View.GONE : View.VISIBLE);
+
+        vh.mFlipViewVisible.flipSilently(item.isVisible());
+        vh.mflipViewHideUnderMore.flipSilently(item.isHideUnderMore());
+
+        vh.mFlipViewVisible.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!item.isLockVisible()) {
+                    item.setVisible(!item.isVisible());
+                    vh.mFlipViewVisible.flip(item.isVisible());
+                }
+            }
+        });
+
+        vh.mflipViewHideUnderMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!item.isLockHide()) {
+                    item.setHideUnderMore(!item.isHideUnderMore());
+                    vh.mflipViewHideUnderMore.flip(item.isHideUnderMore());
+                }
+            }
+        });
     }
 
     @Override
@@ -88,13 +100,13 @@ public class AdapterTabOrder extends RecyclerView.Adapter implements ItemTouchHe
 
     @Override
     public long getItemId(int position) {
-        return mList.get(position).first.hashCode();
+        return mList.get(position).getID().hashCode();
     }
 
     @Override
     public boolean onItemMove(RecyclerView.ViewHolder vh, int fromPosition, int toPosition) {
-        Pair<String, String> pair = mList.remove(fromPosition);
-        mList.add(toPosition, pair);
+        TrEditItem item = mList.remove(fromPosition);
+        mList.add(toPosition, item);
         notifyItemMoved(fromPosition, toPosition);
         onBindViewHolder(vh, toPosition);
         return true;
@@ -112,15 +124,15 @@ public class AdapterTabOrder extends RecyclerView.Adapter implements ItemTouchHe
 
     static class ViewHolderTabOrder extends RecyclerView.ViewHolder {
         @BindView(R.id.drag_handle)
-        FlipView dragHandle;
+        ImageView dragHandle;
         @BindView(R.id.textViewModelName)
         TextView textViewModelName;
-        @BindView(R.id.expandableIndicator)
-        ImageView expandableIndicator;
         @BindView(R.id.container)
         ConstraintLayout container;
-        @BindView(R.id.color_tag)
-        ImageView colorTag;
+        @BindView(R.id.flip_view_visible)
+        FlipView mFlipViewVisible;
+        @BindView(R.id.flip_view_hide_under_more)
+        FlipView mflipViewHideUnderMore;
 
         ViewHolderTabOrder(View view) {
             super(view);
@@ -128,11 +140,11 @@ public class AdapterTabOrder extends RecyclerView.Adapter implements ItemTouchHe
         }
     }
 
-    public void setList(List<Pair<String, String>> list) {
+    public void setList(List<TrEditItem> list) {
         mList = list;
     }
 
-    public List<Pair<String, String>> getList() {
+    public List<TrEditItem> getList() {
         return mList;
     }
 }

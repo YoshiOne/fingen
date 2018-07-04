@@ -20,8 +20,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import com.yoshione.fingen.adapter.AdapterTabOrder;
+import com.yoshione.fingen.adapter.AdapterTrEditConstructor;
 import com.yoshione.fingen.adapter.helper.OnStartDragListener;
 import com.yoshione.fingen.adapter.helper.SimpleItemTouchHelperCallback;
+import com.yoshione.fingen.model.TrEditItem;
+import com.yoshione.fingen.utils.PrefUtils;
 import com.yoshione.fingen.widgets.ContextMenuRecyclerView;
 
 import java.util.ArrayList;
@@ -36,13 +39,13 @@ import butterknife.Unbinder;
  * Диалог для редактирования порядка отображения вкладок в главном окне
  */
 
-public class FragmentTabOrderDialog extends DialogFragment implements OnStartDragListener {
+public class FragmentTrEditConstructorDialog extends DialogFragment implements OnStartDragListener {
 
 
     @BindView(R.id.recycler_view)
     ContextMenuRecyclerView mRecyclerView;
     Unbinder unbinder;
-    AdapterTabOrder adapter;
+    AdapterTrEditConstructor adapter;
     private ItemTouchHelper mItemTouchHelper;
 
     @NonNull
@@ -51,8 +54,7 @@ public class FragmentTabOrderDialog extends DialogFragment implements OnStartDra
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_tab_order_dialog, null);
         unbinder = ButterKnife.bind(this, view);
 
-        adapter = new AdapterTabOrder(this,
-                getActivity().getDrawable(R.drawable.ic_drag));
+        adapter = new AdapterTrEditConstructor(this);
         adapter.setHasStableIds(true);
 
         mRecyclerView.setAdapter(adapter);
@@ -66,16 +68,16 @@ public class FragmentTabOrderDialog extends DialogFragment implements OnStartDra
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder.setView(view);
-        alertDialogBuilder.setTitle(getActivity().getString(R.string.pref_tab_order));
+        alertDialogBuilder.setTitle(getActivity().getString(R.string.pref_title_tredit_layout_constructor));
         alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String order = "";
-                for (Pair<String, String> pair : adapter.getList()) {
-                    order = String.format("%s%s;", order, pair.first);
+                for (TrEditItem item : adapter.getList()) {
+                    order = String.format("%s%s&%b&%b;", order, item.getID(), item.isVisible(), item.isHideUnderMore());
                 }
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                preferences.edit().putString(FgConst.PREF_TAB_ORDER, order).apply();
+                preferences.edit().putString(FgConst.PREF_TRANSACTION_EDITOR_CONSTRUCTOR, order).apply();
             }
         });
         alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -118,30 +120,7 @@ public class FragmentTabOrderDialog extends DialogFragment implements OnStartDra
 
     private void loadData() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String order = preferences.getString(FgConst.PREF_TAB_ORDER, "");
-        String items[] = order.split(";");
-        List<Pair<String, String>> list = new ArrayList<>();
-
-        String name;
-        try {
-            for (int i = 0; i < 3; i++) {
-                if (items[i].equals(FgConst.FRAGMENT_ACCOUNTS)) {
-                    name = getString(R.string.ent_accounts);
-                } else if (items[i].equals(FgConst.FRAGMENT_TRANSACTIONS)) {
-                    name = getString(R.string.ent_transactions);
-                } else if (items[i].equals(FgConst.FRAGMENT_SUMMARY)) {
-                    name = getString(R.string.ent_summary);
-                } else {
-                    throw new Exception();
-                }
-                list.add(new Pair<>(items[i], name));
-            }
-        } catch (Exception e) {
-            list.add(new Pair<>(FgConst.FRAGMENT_SUMMARY, getString(R.string.ent_summary)));
-            list.add(new Pair<>(FgConst.FRAGMENT_ACCOUNTS, getString(R.string.ent_accounts)));
-            list.add(new Pair<>(FgConst.FRAGMENT_TRANSACTIONS, getString(R.string.ent_transactions)));
-        }
-        adapter.setList(list);
+        adapter.setList(PrefUtils.getTrEditorLayout(preferences, getActivity()));
         adapter.notifyDataSetChanged();
     }
 }
