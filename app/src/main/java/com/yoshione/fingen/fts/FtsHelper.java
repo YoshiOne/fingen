@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.yoshione.fingen.FGApplication;
 import com.yoshione.fingen.FgConst;
+import com.yoshione.fingen.R;
 import com.yoshione.fingen.dao.ProductEntrysDAO;
 import com.yoshione.fingen.dao.ProductsDAO;
 import com.yoshione.fingen.fts.models.FtsResponse;
@@ -70,6 +71,9 @@ public class FtsHelper {
                     ProductEntrysDAO productEntrysDAO = ProductEntrysDAO.getInstance(context);
                     for (Item item : items) {
 //                        product = new Product(-1, item.getName());
+                        if (item.getName() == null) {
+                            item.setName(context.getString(R.string.ent_unknown_product));
+                        }
                         try {
                             product = (Product) productsDAO.getModelByName(item.getName());
                         } catch (Exception e) {

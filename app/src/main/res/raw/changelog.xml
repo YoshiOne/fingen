@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.5.4" changeDate=">2018.07.06">
+        <changelogtext>Add transaction editor layout customizing tool</changelogtext>
+        <changelogtext>Fix receipt download issues</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.5.3" changeDate=">2018.07.02">
         <changelogtext>Add ability to attach scanned receipt to early created transaction</changelogtext>
         <changelogtext>Fix issue with date time parsing in custom CSV import</changelogtext>
     </changelogversion>
     <changelogversion versionName="2.5.2" changeDate=">2018.06.21">
-        <changelogtext>Added new preference "Colored category and project tags"</changelogtext>
-        <changelogtext>Improved readability of chart labels</changelogtext>
-        <changelogtext>Fixed product list floating menu issues</changelogtext>
-        <changelogtext>Fixed refresh chart when tap on parent undefined category</changelogtext>
-        <changelogtext>Fixed some other bugs</changelogtext>
+        <changelogtext>Add new preference "Colored category and project tags"</changelogtext>
+        <changelogtext>Improve readability of chart labels</changelogtext>
+        <changelogtext>Fix product list floating menu issues</changelogtext>
+        <changelogtext>Fix refresh chart when tap on parent undefined category</changelogtext>
+        <changelogtext>Fix some other bugs</changelogtext>
     </changelogversion>
     <changelogversion versionName="2.5" changeDate=">2018.06.15">
         <changelogtext>Add tools for bulk editing products</changelogtext>

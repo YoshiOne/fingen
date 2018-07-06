@@ -2026,6 +2026,10 @@
     <string name="ent_code_from_sms" formatted="false">Код из смс</string>
 
     <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ent_unknown_product" formatted="false">Неизвестный товар</string>
+
+    <!-- 27. Products -->
     <!-- Actions -->
     <string name="act_add_product" formatted="false">Добавить товар...</string>
 

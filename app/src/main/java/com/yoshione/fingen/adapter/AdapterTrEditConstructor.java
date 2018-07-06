@@ -1,10 +1,9 @@
 package com.yoshione.fingen.adapter;
 
-import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,11 +23,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import eu.davidea.flipview.FlipView;
 
-/**
- * Created by Leonid on 23.11.2016.
- * a
- */
-
 public class AdapterTrEditConstructor extends RecyclerView.Adapter implements ItemTouchHelperAdapter {
     private final OnStartDragListener mDragStartListener;
     private List<TrEditItem> mList;
@@ -38,8 +32,9 @@ public class AdapterTrEditConstructor extends RecyclerView.Adapter implements It
         mList = new ArrayList<>();
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder vh;
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_tredit, parent, false);
 
@@ -49,7 +44,7 @@ public class AdapterTrEditConstructor extends RecyclerView.Adapter implements It
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
         final ViewHolderTabOrder vh = ((ViewHolderTabOrder) holder);
         final TrEditItem item = mList.get(position);
 
