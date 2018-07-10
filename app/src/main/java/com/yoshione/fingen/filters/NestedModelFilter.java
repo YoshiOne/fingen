@@ -207,15 +207,16 @@ public class NestedModelFilter extends AbstractFilter implements Parcelable {
         dest.writeValue(this.mEnabled);
         dest.writeInt(this.mModelType);
         dest.writeByte(this.mInverted ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.mIncludeChildren ? (byte) 1 : (byte) 0);
         dest.writeLong(this.mId);
     }
 
-    @SuppressWarnings("unchecked")
-    private NestedModelFilter(Parcel in) {
+    protected NestedModelFilter(Parcel in) {
         this.mIdList = (HashSet<Long>) in.readSerializable();
         this.mEnabled = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.mModelType = in.readInt();
         this.mInverted = in.readByte() != 0;
+        this.mIncludeChildren = in.readByte() != 0;
         this.mId = in.readLong();
     }
 
