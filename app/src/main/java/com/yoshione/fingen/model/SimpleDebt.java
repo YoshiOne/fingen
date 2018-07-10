@@ -75,6 +75,10 @@ public class SimpleDebt extends BaseModel implements IAbstractModel {
         return mName;
     }
 
+    public String getFullName() {
+        return mName;
+    }
+
     public void setName(String mName) {
         this.mName = mName;
     }
