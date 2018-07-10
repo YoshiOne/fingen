@@ -12,7 +12,7 @@
         layout="@layout/common_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/developing_operation_inputText"
@@ -26,21 +26,22 @@
         style="@style/AppTheme.InputCalculatorText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/developing_operation_inputText"
         android:cursorVisible="false"
-        android:text="0" />
+        android:text="0"
+        app:layout_constraintTop_toBottomOf="@id/developing_operation_inputText" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="0dp"
         android:baselineAligned="false"
         android:orientation="horizontal"
-        android:weightSum="4">
+        android:weightSum="4"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline3">
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -49,6 +50,7 @@
                 style="@style/PadButtonStyle.Numeric.Danger"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="C" />
 
             <Button
@@ -56,6 +58,7 @@
                 style="@style/PadButtonStyle.Numeric"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="7" />
 
             <Button
@@ -63,6 +66,7 @@
                 style="@style/PadButtonStyle.Numeric"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="4" />
 
             <Button
@@ -70,6 +74,7 @@
                 style="@style/PadButtonStyle.Numeric"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="1" />
 
             <Button
@@ -77,13 +82,14 @@
                 style="@style/PadButtonStyle.Numeric"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="0" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -92,6 +98,7 @@
                 style="@style/PadButtonStyle.Numeric.Operator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="÷" />
 
             <Button
@@ -99,6 +106,7 @@
                 style="@style/PadButtonStyle.Numeric"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="8" />
 
             <Button
@@ -106,6 +114,7 @@
                 style="@style/PadButtonStyle.Numeric"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="5" />
 
             <Button
@@ -113,6 +122,7 @@
                 style="@style/PadButtonStyle.Numeric"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="2" />
 
             <Button
@@ -120,13 +130,14 @@
                 style="@style/PadButtonStyle.Numeric"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="00" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -135,6 +146,7 @@
                 style="@style/PadButtonStyle.Numeric.Operator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="x" />
 
             <Button
@@ -142,6 +154,7 @@
                 style="@style/PadButtonStyle.Numeric"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="9" />
 
             <Button
@@ -149,6 +162,7 @@
                 style="@style/PadButtonStyle.Numeric"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="6" />
 
             <Button
@@ -156,6 +170,7 @@
                 style="@style/PadButtonStyle.Numeric"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="3" />
 
             <Button
@@ -163,6 +178,7 @@
                 style="@style/PadButtonStyle.Numeric"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="." />
 
         </LinearLayout>
@@ -178,7 +194,7 @@
                 style="@style/PadButtonStyle.Numeric.Operator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
+                android:layout_weight="1"
                 android:text="DEL" />
 
             <Button
@@ -186,7 +202,7 @@
                 style="@style/PadButtonStyle.Numeric.Operator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
+                android:layout_weight="1"
                 android:text="-" />
 
             <Button
@@ -194,14 +210,14 @@
                 style="@style/PadButtonStyle.Numeric.Operator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
+                android:layout_weight="1"
                 android:text="+" />
 
             <Button
                 android:id="@+id/equal_button"
                 style="@style/PadButtonStyle.Numeric.Green"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_weight="2"
                 android:text="="
                 android:visibility="gone" />
 
@@ -209,11 +225,17 @@
                 android:id="@+id/submit_button"
                 style="@style/PadButtonStyle.Numeric.Finish"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="4"
+                android:layout_weight="2"
                 android:text="DONE" />
 
         </LinearLayout>
     </LinearLayout>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
 
 </android.support.constraint.ConstraintLayout>
