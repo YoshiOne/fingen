@@ -12,9 +12,7 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -35,6 +33,7 @@ import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.model.Events;
 import com.yoshione.fingen.receivers.CalcReciever;
 import com.yoshione.fingen.utils.AmountColorizer;
+import com.yoshione.fingen.utils.NumberTextWatcher;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -42,6 +41,9 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,8 +65,6 @@ public class AmountEditor extends LinearLayout {
     public ImageButton btnAmountSign;
     @BindView(R.id.edittext_amount)
     EditText edAmount;
-    @BindView(R.id.edittext_amount_cents)
-    EditText edAmountCents;
     @BindView(R.id.imageButtonCalc)
     ImageButton btnCalc;
     @BindView(R.id.editTextCabbage)
@@ -73,8 +73,6 @@ public class AmountEditor extends LinearLayout {
     TextInputLayout mTextInputLayoutCabbage;
     @BindView(R.id.textInputLayoutAmount)
     TextInputLayout mTextInputLayoutAmount;
-    @BindView(R.id.textInputLayoutAmountCents)
-    TextInputLayout mTextInputLayoutAmountCents;
     private boolean mAllowChangeCabbage = true;
     private int type;
     private int scale;
@@ -221,7 +219,7 @@ public class AmountEditor extends LinearLayout {
         Parcelable superState = super.onSaveInstanceState();
         SavedState ss = new SavedState(superState);
         Log.d("Amount Editor", "onSaveInstanceState " + String.valueOf(getId()));
-        ss.state = new AmountState(scale, type, edAmount.getText().toString(), edAmountCents.getText().toString());
+        ss.state = new AmountState(scale, type, edAmount.getText().toString());
         return ss;
     }
 
@@ -245,7 +243,7 @@ public class AmountEditor extends LinearLayout {
         edAmount.selectAll();
     }
 
-    private void init(Context context) {
+    private void init(final Context context) {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.widget_amount_edit, null);
         this.addView(view);
         ButterKnife.bind(this);
@@ -254,23 +252,13 @@ public class AmountEditor extends LinearLayout {
         mAmountColorizer = new AmountColorizer(context);
         mTextInputLayoutCabbage.setVisibility(GONE);
 
+        edAmount.addTextChangedListener(new NumberTextWatcher(edAmount));
         edAmount.addTextChangedListener(new TextWatcher() {
             private String current = "";
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (!s.toString().equals(current)) {
-                    if ((TextUtils.indexOf(s, '.') > 0) | (TextUtils.indexOf(s, ',') > 0)) {
-                        String[] sa = s.toString().replace("-", "").split("\\.|,");
-                        String s0 = sa[0];
-                        edAmount.setText(s0);
-                        if (sa.length > 1) {
-                            String s1 = sa[1];
-                            edAmountCents.setText(s1);
-                        }
-
-                        edAmountCents.requestFocus();
-                    }
                     current = s.toString();
 
                     if (mOnAmountChangeListener != null) {
@@ -285,25 +273,6 @@ public class AmountEditor extends LinearLayout {
 
             @Override
             public void afterTextChanged(Editable s) {
-            }
-        });
-
-        edAmountCents.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (mOnAmountChangeListener != null) {
-                    mOnAmountChangeListener.OnAmountChange(getAmount(), type);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
             }
         });
 
@@ -338,44 +307,29 @@ public class AmountEditor extends LinearLayout {
     }
 
     public BigDecimal getAmount() {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        symbols.setGroupingSeparator(' ');
+        DecimalFormat df = new DecimalFormat("#,###.##");
+        df.setDecimalSeparatorAlwaysShown(true);
+        df.setDecimalFormatSymbols(symbols);
         try {
-            String i = edAmount.getText().toString();
-            if (i.equals("")) {
-                i = "0";
+            String s = edAmount.getText().toString();
+            if (s.equals("")) {
+                s = "0";
             }
-            String f = edAmountCents.getText().toString();
-            if (f.equals("")) {
-                f = "0";
-            }
-            return new BigDecimal(i + "." + f);
-        } catch (NumberFormatException nfe) {
+            return new BigDecimal(df.parse(s).doubleValue());
+        } catch (NumberFormatException | ParseException nfe) {
             return BigDecimal.ZERO;
         }
     }
 
     public void setAmount(BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) != 0) {
-            String amountvalue = amount.abs().setScale(scale, RoundingMode.HALF_EVEN).toString();
-            String parts[] = amountvalue.split("\\.|,");
-            if (parts.length > 0) {
-                int pos = edAmount.getSelectionStart();
-                edAmount.setText(amountvalue.split("\\.|,")[0]);
-                edAmount.setSelection(Math.min(pos, edAmount.getText().length()));
-                if (parts.length > 1) {
-                    pos = edAmountCents.getSelectionStart();
-                    String cents = amountvalue.split("\\.|,")[1];
-                    cents = cents.replaceAll("0*$", "");
-                    edAmountCents.setText(cents);
-                    edAmountCents.setSelection(Math.min(pos, edAmountCents.getText().length()));
-                }
-            } else {
-                edAmount.setText("");
-                edAmountCents.setText("");
-            }
-//            edAmount.selectAll();
+//            String amountvalue = amount.abs().setScale(scale, RoundingMode.HALF_EVEN).toString();
+            edAmount.setText(amount.abs().toString());
         } else {
             edAmount.setText("");
-            edAmountCents.setText("");
         }
         setBtnAmountIcon();
     }
@@ -451,13 +405,11 @@ public class AmountEditor extends LinearLayout {
         final int scale;
         final int type;
         final String amount;
-        final String cents;
 
-        AmountState(int scale, int type, String amount, String cents) {
+        AmountState(int scale, int type, String amount) {
             this.scale = scale;
             this.type = type;
             this.amount = amount;
-            this.cents = cents;
 
         }
 
@@ -465,7 +417,6 @@ public class AmountEditor extends LinearLayout {
             this.scale = in.readInt();
             this.type = in.readInt();
             this.amount = in.readString();
-            this.cents = in.readString();
         }
 
         public int getType() {
@@ -475,10 +426,6 @@ public class AmountEditor extends LinearLayout {
         public String getAmount() {
             return amount;
         }
-
-//        public String getCents() {
-//            return cents;
-//        }
 
         @Override
         public int describeContents() {
@@ -490,7 +437,6 @@ public class AmountEditor extends LinearLayout {
             dest.writeInt(this.scale);
             dest.writeInt(this.type);
             dest.writeString(this.amount);
-            dest.writeString(this.cents);
         }
     }
 

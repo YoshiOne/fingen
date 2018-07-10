@@ -5,7 +5,6 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -41,7 +40,7 @@
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/textInputLayoutAmount"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="@string/ent_amount">
@@ -55,47 +54,6 @@
                     android:inputType="numberDecimal"
                     android:selectAllOnFocus="true"
                     tools:text="100" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.constraint.ConstraintLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="0dp"
-                    android:gravity="center|bottom"
-                    android:textSize="@dimen/text_size_giant"
-                    app:layout_constraintBottom_toTopOf="@id/guideline3"
-                    android:text="."
-                    tools:ignore="HardcodedText" />
-
-                <android.support.constraint.Guideline
-                    android:id="@+id/guideline3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:layout_constraintGuide_percent="0.80" />
-            </android.support.constraint.ConstraintLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/textInputLayoutAmountCents"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="3">
-
-                <EditText
-                    android:id="@+id/edittext_amount_cents"
-                    style="@style/EditableEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="start"
-                    android:inputType="numberDecimal"
-                    android:maxLength="2"
-                    android:selectAllOnFocus="true"
-                    tools:text="00"
-                    tools:ignore="LabelFor" />
             </android.support.design.widget.TextInputLayout>
 
         </LinearLayout>

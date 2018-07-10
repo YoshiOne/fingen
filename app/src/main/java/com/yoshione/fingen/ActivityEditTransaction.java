@@ -491,6 +491,8 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         mLayoutRoot.removeView(mLayoutComment);
         mLayoutRoot.removeView(mButtonMore);
 
+        boolean focused = false;
+
         for (TrEditItem item : mTrEditItems) {
             switch (item.getID()) {
                 case FgConst.TEI_DATETIME :
@@ -501,12 +503,20 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     break;
                 case FgConst.TEI_PAYEE_DEST_ACC :
                     mLayoutRoot.addView(mLayoutPayeeOrDestAcc);
+                    if (!focused) {
+                        mLayoutPayeeOrDestAcc.requestFocus();
+                        focused = true;
+                    }
                     break;
                 case FgConst.TEI_CATEGORY :
                     mLayoutRoot.addView(layoutCategory);
                     break;
                 case FgConst.TEI_AMOUNTS :
                     mLayoutRoot.addView(mLayoutAmounts);
+                    if (!focused) {
+                        amountEditor.requestFocus();
+                        focused = true;
+                    }
                     break;
                 case FgConst.TEI_SMS :
                     mLayoutRoot.addView(layoutSms);
@@ -932,6 +942,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         }
 
         List<ItemVisibility> views = Arrays.asList(
+                new ItemVisibility(layoutCategory, FgConst.TEI_CATEGORY, transaction.getCategoryID()),
                 new ItemVisibility(layoutProject, FgConst.TEI_PROJECT, transaction.getProjectID()),
                 new ItemVisibility(layoutSimpleDebt, FgConst.TEI_SIMPLE_DEBT, transaction.getSimpleDebtID()),
                 new ItemVisibility(layoutDepartment, FgConst.TEI_DEPARTMENT, transaction.getDepartmentID()),
