@@ -77,7 +77,7 @@ public class AdapterColumnIndex extends RecyclerView.Adapter {
                 entity = new String[]{"time", "время"};
                 break;
             case EntityToFieldLink.ENTITY_TYPE_ACCOUNT:
-                entity = new String[]{"account", "счет"};
+                entity = new String[]{"account", "счет", "счёт"};
                 break;
             case EntityToFieldLink.ENTITY_TYPE_CURRENCY:
                 entity = new String[]{"currency", "валюта"};

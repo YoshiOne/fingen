@@ -1117,7 +1117,7 @@ public class CsvImporter {
         });
 
         for (int i = 0; i < mHeaders.length; i++) {
-            mHeaders[i] = mHeaders[i].replaceAll("[^A-Za-z0-9]", "");
+            mHeaders[i] = mHeaders[i].replaceAll("[^A-Za-zА-Яа-яЁё0-9]", "");
         }
 
         if (mHeaders.length == 0) {
