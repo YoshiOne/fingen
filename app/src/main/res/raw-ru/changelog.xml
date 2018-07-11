@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.5.5" changeDate=">2018.07.11">
+        <changelogtext>Редакторы целой и дробной части суммы объединены в один редактор суммы</changelogtext>
+        <changelogtext>Исправлены ошибки</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.5.4" changeDate=">2018.07.06">
         <changelogtext>Добавлена возможность настройки редактора транзакций</changelogtext>
         <changelogtext>Исправлены некоторые проблемы со сканированием чеков</changelogtext>

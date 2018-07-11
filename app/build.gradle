@@ -28,10 +28,14 @@ android {
         applicationId "com.yoshione.fingen"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 120
-        versionName "2.5.4"
+        versionCode 121
+        versionName "2.5.5"
         resValue "string", "app_name", "Fingen"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
     }
 
     signingConfigs { config }

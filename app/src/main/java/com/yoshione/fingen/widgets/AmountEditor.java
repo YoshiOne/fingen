@@ -318,7 +318,7 @@ public class AmountEditor extends LinearLayout {
             if (s.equals("")) {
                 s = "0";
             }
-            return new BigDecimal(df.parse(s).doubleValue());
+            return new BigDecimal(df.parse(s).doubleValue()).setScale(2, RoundingMode.HALF_UP);
         } catch (NumberFormatException | ParseException nfe) {
             return BigDecimal.ZERO;
         }
