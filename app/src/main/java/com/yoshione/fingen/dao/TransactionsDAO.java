@@ -471,7 +471,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
                 "WHERE " +
                 "   t.Deleted = 0\n" +
                 "   AND DestAccount >= 0\n" +
-                "   AND (SrcAccount != DestAccount) " + filterDst;
+                "   AND (SrcAccount != DestAccount) " + filterDst+";";
         //</editor-fold>
 
         if (BuildConfig.DEBUG) {
@@ -548,7 +548,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
 
                 "SELECT t._id,\n" +
                 "   t.DestAccount   AS AccountID,\n" +
-                "   Amount*ExchangeRate*-1,DateTime, a.Currency,\n" +
+                "   Amount*ExchangeRate*-1 AS Amount1,DateTime, a.Currency,\n" +
                 "   1 > 0           AS Income,\n" +
                 "   IFNULL(a.Currency = b.Currency AND SrcAccount IN(" + filteredAccountsString + "), 0) AS ExcludeTransfer,\n" +
                 "   a.Name          AS AccountName,\n" +

@@ -251,7 +251,7 @@ public class DateRangeFilter extends AbstractFilter implements Parcelable {
     }
 
     @Override
-    public String getSelectionString() {
+    public String getSelectionString(HashSet<Long> allAccountIDS) {
         if (getEnabled()) {
             String condition = String.format("(%s >= %s AND %s <= %s)", DBHelper.C_LOG_TRANSACTIONS_DATETIME, String.valueOf(mStartDate.getTime()),
                     DBHelper.C_LOG_TRANSACTIONS_DATETIME, String.valueOf(mEndDate.getTime()));

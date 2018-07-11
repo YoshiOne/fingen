@@ -156,7 +156,7 @@ public class NestedModelFilter extends AbstractFilter implements Parcelable {
 
     @Override
     @SuppressWarnings("unchecked")
-    public String getSelectionString() {
+    public String getSelectionString(HashSet<Long> allAccountIDS) {
         return "";
     }
 

@@ -417,7 +417,7 @@ public class AdapterFilters extends RecyclerView.Adapter {
             checkBoxIncome.setOnCheckedChangeListener(onCheckedChangeListener);
             checkBoxOutcome.setOnCheckedChangeListener(onCheckedChangeListener);
 
-            switch (((AmountFilter) getFilter()).getTransfer()) {
+            switch (((AmountFilter) getFilter()).getType()) {
                 case AmountFilter.TRANSACTION_TYPE_TRANSACTION: {
                     radioButtonTypeTransaction.setChecked(true);
                     break;

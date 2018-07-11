@@ -20,7 +20,7 @@ public abstract class AbstractFilter implements Parcelable {
     public abstract Boolean getEnabled();
     public abstract void setEnabled(Boolean enabled);
     public abstract int getModelType();
-    public abstract String getSelectionString();
+    public abstract String getSelectionString(HashSet<Long> allAccountIDS);
     public abstract String saveToString();
     public abstract boolean loadFromString(String s);
     public abstract HashSet<Long> getIDsSet();

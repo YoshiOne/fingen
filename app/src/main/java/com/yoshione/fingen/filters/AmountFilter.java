@@ -6,6 +6,7 @@ package com.yoshione.fingen.filters;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.interfaces.IAbstractModel;
@@ -26,8 +27,8 @@ public class AmountFilter extends AbstractFilter implements Parcelable {
     private BigDecimal mMinAmount;
     private BigDecimal mMaxAmount;
     private boolean mIncome;
-    private boolean mOutcome;
-    private int mTransfer;
+    private boolean mExpense;
+    private int mType;
 
     private long mId;
     private boolean mInverted;
@@ -56,10 +57,10 @@ public class AmountFilter extends AbstractFilter implements Parcelable {
         mId = id;
         mEnabled = true;
         mIncome = true;
-        mOutcome = true;
+        mExpense = true;
         mMinAmount = new BigDecimal(BigInteger.ZERO);
         mMaxAmount = new BigDecimal(Integer.MAX_VALUE);
-        mTransfer = TRANSACTION_TYPE_BOTH;
+        mType = TRANSACTION_TYPE_BOTH;
     }
 
     @Override
@@ -78,7 +79,59 @@ public class AmountFilter extends AbstractFilter implements Parcelable {
     }
 
     @Override
-    public String getSelectionString() {
+    public String getSelectionString(HashSet<Long> allAccountIDS) {
+        if (!mEnabled) return "";
+
+        String ids = TextUtils.join(",", allAccountIDS);
+
+        String transactionIncome =
+                String.format("DestAccount < 0 AND SrcAccount IN (%s) AND Amount BETWEEN %s AND %s",
+                        ids, mMinAmount.abs().toString(), mMaxAmount.abs().toString());
+        String transactionExpense =
+                String.format("DestAccount < 0 AND SrcAccount IN (%s) AND Amount BETWEEN %s AND %s",
+                        ids, mMaxAmount.abs().negate().toString(), mMinAmount.negate().toString());
+        String transferIncome =
+                String.format("DestAccount IN (%s) AND Amount BETWEEN %s AND %s",
+                        ids, mMaxAmount.abs().negate().toString(), mMinAmount.negate().toString());
+        String transferExpense =
+                String.format("DestAccount >= 0 AND SrcAccount IN (%s) AND Amount BETWEEN %s AND %s",
+                        ids, mMaxAmount.abs().negate().toString(), mMinAmount.abs().negate().toString());
+
+        String condition = "";
+        switch (mType) {
+            case TRANSACTION_TYPE_BOTH:
+                if (mIncome & !mExpense) {
+                    condition = String.format("(%s) OR (%s)", transactionIncome, transferIncome);
+                } else if (!mIncome & mExpense) {
+                    condition = String.format("(%s) OR (%s)", transactionExpense, transferExpense);
+                } else if (mIncome & mExpense)
+                    condition = String.format("(%s) OR (%s) OR (%s) OR (%s)", transactionIncome, transferIncome, transactionExpense, transferExpense);
+                break;
+            case TRANSACTION_TYPE_TRANSACTION:
+                if (mIncome & !mExpense) {
+                    condition = String.format("(%s)", transactionIncome);
+                } else if (!mIncome & mExpense) {
+                    condition = String.format("(%s)", transactionExpense);
+                } else if (mIncome & mExpense)
+                    condition = String.format("(%s) OR (%s)", transactionIncome, transactionExpense);
+                break;
+            case TRANSACTION_TYPE_TRANSFER:
+                if (mIncome & !mExpense) {
+                    condition = String.format("(%s)", transferIncome);
+                } else if (!mIncome & mExpense) {
+                    condition = String.format("(%s)", transferExpense);
+                } else if (mIncome & mExpense)
+                    condition = String.format("(%s) OR (%s)", transferIncome, transferExpense);
+                break;
+        }
+        if (mInverted) {
+            condition = String.format("NOT(%s)", condition);
+        }
+
+        return condition;
+    }
+
+    public String getSelectionString1() {
         if (getEnabled()) {
             String pos;
             String neg;
@@ -89,7 +142,7 @@ public class AmountFilter extends AbstractFilter implements Parcelable {
                 pos = "";
             }
 
-            if (mOutcome) {
+            if (mExpense) {
                 neg = String.format("%s BETWEEN %s AND %s", DBHelper.C_LOG_TRANSACTIONS_AMOUNT, mMaxAmount.abs().
                         multiply(new BigDecimal(-1)).toString(), mMinAmount.multiply(new BigDecimal(-1)).toString());
             } else {
@@ -97,7 +150,7 @@ public class AmountFilter extends AbstractFilter implements Parcelable {
             }
 
             type = "";
-            switch (mTransfer) {
+            switch (mType) {
                 case TRANSACTION_TYPE_BOTH: {
                     type = "";
                     break;
@@ -147,8 +200,8 @@ public class AmountFilter extends AbstractFilter implements Parcelable {
                 String.valueOf(mMinAmount.doubleValue()) + "@" +
                         String.valueOf(mMaxAmount.doubleValue()) + "@" +
                         String.valueOf(mIncome) + "@" +
-                        String.valueOf(mOutcome) + "@" +
-                        String.valueOf(mTransfer);
+                        String.valueOf(mExpense) + "@" +
+                        String.valueOf(mType);
     }
 
     @Override
@@ -161,8 +214,8 @@ public class AmountFilter extends AbstractFilter implements Parcelable {
             mMinAmount = new BigDecimal(strings[0]);
             mMaxAmount = new BigDecimal(strings[1]);
             mIncome = Boolean.valueOf(strings[2]);
-            mOutcome = Boolean.valueOf(strings[3]);
-            mTransfer = Integer.valueOf(strings[4]);
+            mExpense = Boolean.valueOf(strings[3]);
+            mType = Integer.valueOf(strings[4]);
             return true;
         } catch (NumberFormatException e) {
             return false;
@@ -201,23 +254,23 @@ public class AmountFilter extends AbstractFilter implements Parcelable {
     }
 
     public boolean ismOutcome() {
-        return mOutcome;
+        return mExpense;
     }
 
     public void setmOutcome(boolean mOutcome) {
-        this.mOutcome = mOutcome;
+        this.mExpense = mOutcome;
     }
 
 //    public int ismTransfer() {
-//        return mTransfer;
+//        return mType;
 //    }
 
     public void setmTransfer(int mTransfer) {
-        this.mTransfer = mTransfer;
+        this.mType = mTransfer;
     }
 
-    public int getTransfer() {
-        return mTransfer;
+    public int getType() {
+        return mType;
     }
 
     private void compareAmounts() {
@@ -239,8 +292,8 @@ public class AmountFilter extends AbstractFilter implements Parcelable {
         dest.writeSerializable(this.mMinAmount);
         dest.writeSerializable(this.mMaxAmount);
         dest.writeByte(this.mIncome ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.mOutcome ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.mTransfer);
+        dest.writeByte(this.mExpense ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.mType);
         dest.writeLong(this.mId);
         dest.writeByte(this.mInverted ? (byte) 1 : (byte) 0);
     }
@@ -250,8 +303,8 @@ public class AmountFilter extends AbstractFilter implements Parcelable {
         this.mMinAmount = (BigDecimal) in.readSerializable();
         this.mMaxAmount = (BigDecimal) in.readSerializable();
         this.mIncome = in.readByte() != 0;
-        this.mOutcome = in.readByte() != 0;
-        this.mTransfer = in.readInt();
+        this.mExpense = in.readByte() != 0;
+        this.mType = in.readInt();
         this.mId = in.readLong();
         this.mInverted = in.readByte() != 0;
     }

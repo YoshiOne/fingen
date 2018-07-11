@@ -78,7 +78,7 @@ public class AccountFilter extends AbstractFilter implements Parcelable {
     }
 
     @Override
-    public String getSelectionString() {
+    public String getSelectionString(HashSet<Long> allAccountIDS) {
         return "";
     }
 

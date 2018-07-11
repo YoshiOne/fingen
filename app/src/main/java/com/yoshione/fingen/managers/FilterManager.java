@@ -27,8 +27,8 @@ import java.util.Random;
 public class FilterManager {
 
     private static final int FILTER_TYPES[] = new int[]{
-            IAbstractModel.MODEL_TYPE_ACCOUNT,
             IAbstractModel.MODEL_TYPE_AMOUNT_FILTER,
+            IAbstractModel.MODEL_TYPE_ACCOUNT,
             IAbstractModel.MODEL_TYPE_DATE_RANGE,
             IAbstractModel.MODEL_TYPE_PAYEE,
             IAbstractModel.MODEL_TYPE_PROJECT,
@@ -260,13 +260,26 @@ public class FilterManager {
         return condition;
     }
 
-    private static String joinFilterConditionsByType(int filterType, List<AbstractFilter> filters) {
+    private static String joinAmountFilterConditions(int filterType, HashSet<Long> filteredAccountIDS, List<AbstractFilter> filters) {
+        List<String> conditions = new ArrayList<>();
+        for (AbstractFilter filter : filters) {
+            if (filter.getModelType() == IAbstractModel.MODEL_TYPE_AMOUNT_FILTER) {
+                String condition = ((AmountFilter)filter).getSelectionString(filteredAccountIDS);
+                if (!condition.isEmpty()) {
+                    conditions.add(condition);
+                }
+            }
+        }
+        return TextUtils.join(" AND ", conditions);
+    }
+
+    private static String joinDateRangeFilterConditions(int filterType, List<AbstractFilter> filters) {
         List<String> conditions = new ArrayList<>();
         for (AbstractFilter filter : filters) {
             if (filter.getModelType() == filterType) {
-                String condition = filter.getSelectionString();
+                String condition = filter.getSelectionString(null);
                 if (!condition.isEmpty()) {
-                    conditions.add(filter.getSelectionString());
+                    conditions.add(condition);
                 }
             }
         }
@@ -276,15 +289,21 @@ public class FilterManager {
     public static String createSelectionString(List<AbstractFilter> filters, HashSet<Long> allAccountIDS, boolean filtersForList, boolean src, boolean useForList, Context context) {
         List<String> conditions = new ArrayList<>();
         String condition;
+        boolean isAmountFilterActive = false;
         for (int type : FILTER_TYPES) {
             condition = "";
             switch (type) {
                 case IAbstractModel.MODEL_TYPE_AMOUNT_FILTER:
+                    condition = joinAmountFilterConditions(type, getAccountIDsFromFilters(filters, allAccountIDS), filters);
+                    isAmountFilterActive = !condition.isEmpty();
+                    break;
                 case IAbstractModel.MODEL_TYPE_DATE_RANGE:
-                    condition = joinFilterConditionsByType(type, filters);
+                    condition = joinDateRangeFilterConditions(type, filters);
                     break;
                 case IAbstractModel.MODEL_TYPE_ACCOUNT:
-                    condition = getAccountsFilterString(filters, allAccountIDS, filtersForList, src, context);
+                    if (!isAmountFilterActive) {
+                        condition = getAccountsFilterString(filters, allAccountIDS, filtersForList, src, context);
+                    }
                     break;
                 case IAbstractModel.MODEL_TYPE_PAYEE:
                 case IAbstractModel.MODEL_TYPE_PROJECT:
@@ -299,7 +318,12 @@ public class FilterManager {
                 conditions.add(String.format("(%s)", condition));
             }
         }
-        return TextUtils.join(" AND ", conditions);
+
+        condition = TextUtils.join(" AND ", conditions);
+
+
+
+        return condition;
     }
 
     public static AbstractFilter createFilter(int modelType, long modelID) {
