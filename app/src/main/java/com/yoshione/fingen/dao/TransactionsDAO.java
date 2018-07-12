@@ -870,7 +870,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
                 "SUM(CASE WHEN Income = 0 THEN Amount ELSE 0 END) AS OutAmountSum\n" +
                 "FROM temp_all_Transactions\n" +
                 "WHERE  ExcludeTransfer != 1\n" +
-                "GROUP BY strftime('" + datePattern + "', DateTime/1000, 'unixepoch', 'localtime');";
+                "GROUP BY Currency, strftime('" + datePattern + "', DateTime/1000, 'unixepoch', 'localtime');";
         if (BuildConfig.DEBUG) {
             Log.d(SQLTAG, sql);
         }
