@@ -50,6 +50,12 @@ public class NumberTextWatcher implements TextWatcher {
             inilen = et.getText().length();
 
             String v = s.toString().replace(String.valueOf(df.getDecimalFormatSymbols().getGroupingSeparator()), "");
+            String suffix = "";
+            if (v.endsWith(".0")) {
+                suffix = "0";
+            } else if (v.endsWith(".00")) {
+                suffix = "00";
+            }
             Number n = df.parse(v);
             int cp = et.getSelectionStart();
             String sn;
@@ -58,6 +64,7 @@ public class NumberTextWatcher implements TextWatcher {
             } else {
                 sn = dfnd.format(n);
             }
+            sn = sn + suffix;
             et.setText(sn);
             endlen = et.getText().length();
             int sel = (cp + (endlen - inilen));
