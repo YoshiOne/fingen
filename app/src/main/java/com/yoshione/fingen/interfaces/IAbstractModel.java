@@ -36,6 +36,7 @@ public interface IAbstractModel extends Parcelable, Comparable<IAbstractModel> {
     int MODEL_TYPE_PRODUCT          = 20;
     int MODEL_TYPE_PRODUCT_ENTRY    = 21;
     int MODEL_TYPE_DATE_RANGE       = 456;
+    int MODEL_TYPE_DUMMY            = 1000;
 
     String toString();
     String getSearchString();

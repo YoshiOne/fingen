@@ -64,6 +64,7 @@ import com.yoshione.fingen.managers.TransactionManager;
 import com.yoshione.fingen.model.Account;
 import com.yoshione.fingen.model.AccountsSet;
 import com.yoshione.fingen.model.BaseModel;
+import com.yoshione.fingen.model.DummyModel;
 import com.yoshione.fingen.model.StringIntItem;
 import com.yoshione.fingen.model.Template;
 import com.yoshione.fingen.model.Transaction;
@@ -793,12 +794,23 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 Transaction transaction = mTransactionsDAO.getTransactionByID(info.id);
 
                 final AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
-                builderSingle.setTitle(getActivity().getResources().getString(R.string.ttl_new_filter));
+                if(item.getItemId() == R.id.action_filter_on_selected) {
+                    builderSingle.setTitle(getActivity().getResources().getString(R.string.ttl_new_filter));
+                } else {
+                    builderSingle.setTitle(getActivity().getResources().getString(R.string.ttl_selection));
+                }
 
                 final ArrayAdapter<IAbstractModel> arrayAdapter = new ArrayAdapter<>(
                         getActivity(),
                         android.R.layout.select_dialog_singlechoice);
                 arrayAdapter.addAll(FilterUtils.CreateModelsListFromTransaction(transaction, getActivity()));
+
+                if(item.getItemId() == R.id.action_select_on_selected) {
+                    arrayAdapter.add(new DummyModel(DummyModel.PredefinedKeys.SELECT_ALL, getContext()));
+                    if(adapter.getSelectedCount() > 0) {
+                        arrayAdapter.add(new DummyModel(DummyModel.PredefinedKeys.UNSELECT_ALL, getContext()));
+                    }
+                }
 
                 builderSingle.setNegativeButton(
                         getActivity().getResources().getString(android.R.string.cancel),
