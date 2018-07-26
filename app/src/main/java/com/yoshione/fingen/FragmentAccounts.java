@@ -177,14 +177,14 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         mItemTouchHelper = new ItemTouchHelper(callback);
         mItemTouchHelper.attachToRecyclerView(recyclerView);
 
-        if (getActivity() instanceof ActivityAccounts) {
-            mSlidingUpPanelLayout.setEnabled(false);
-            mSlidingUpPanelLayout.setPanelHeight(0);
-            mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-        } else {
+//        if (getActivity() instanceof ActivityAccounts) {
+//            mSlidingUpPanelLayout.setEnabled(false);
+//            mSlidingUpPanelLayout.setPanelHeight(0);
+//            mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+//        } else {
             mLayoutSumTable.getViewTreeObserver().addOnGlobalLayoutListener(
                     new SumsTableOnGlobalLayoutListener(getActivity(), mLayoutSumTable, mSlidingUpPanelLayout));
-        }
+//        }
 
         if (getActivity() instanceof ActivityMain) {
             ((ActivityMain) getActivity()).mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
@@ -549,7 +549,7 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
 
     @Override
     public void loadSums(UpdateMainListsRwHandler handler) {
-        if (getActivity() instanceof ActivityAccounts) return;
+//        if (getActivity() instanceof ActivityAccounts) return;
         TransactionsDAO transactionsDAO = TransactionsDAO.getInstance(FragmentAccounts.this.getActivity());
         ListSumsByCabbage listSumsByCabbage;
 
