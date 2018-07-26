@@ -1546,6 +1546,10 @@
     <string name="pref_title_detect_locations" formatted="false">Автоматич. определять местоположение</string>
 
     <!-- 20. Settings -->
+    <!-- Account list -->
+    <string name="pref_title_remember_last_account" formatted="false">Запоминать последний счет</string>
+
+    <!-- 20. Settings -->
     <!-- Work with SMS -->
     <string name="pref_header_sms" formatted="false">Работа с SMS</string>
 

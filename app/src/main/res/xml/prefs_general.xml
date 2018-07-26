@@ -70,6 +70,10 @@
             />
         <SwitchPreference
             android:defaultValue="true"
+            android:key="remember_last_account"
+            android:title="@string/pref_title_remember_last_account"/>
+        <SwitchPreference
+            android:defaultValue="true"
             android:key="show_closed_accounts"
             android:title="@string/pref_title_accounts_list_show_closed"/>
         <SwitchPreference

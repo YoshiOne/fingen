@@ -1546,6 +1546,10 @@
     <string name="pref_title_detect_locations" formatted="false">Automatically detect location</string>
 
     <!-- 20. Settings -->
+    <!-- Account list -->
+    <string name="pref_title_remember_last_account" formatted="false">Remember last account</string>
+
+    <!-- 20. Settings -->
     <!-- Work with SMS -->
     <string name="pref_header_sms" formatted="false">SMS</string>
 

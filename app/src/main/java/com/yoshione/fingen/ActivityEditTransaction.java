@@ -1403,8 +1403,10 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         } else {
             AccountsDAO accountsDAO = AccountsDAO.getInstance(getApplicationContext());
 
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
             Account account = TransactionManager.getSrcAccount(transaction, this);
-            if (account.getID() < 0) {
+            if (preferences.getBoolean(FgConst.PREF_REMEMBER_LAST_ACCOUNT, true) && account.getID() < 0) {
                 account = accountsDAO.getAccountByID(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getLong("last_account_id", -1));
                 transaction.setAccountID(account.getID());
             }
