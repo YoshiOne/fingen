@@ -104,6 +104,8 @@ import com.yoshione.fingen.widgets.ToolbarActivity;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -994,7 +996,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 edExchangeRate.setText(String.valueOf(transaction.getExchangeRate().doubleValue()));
             } else {
                 s = String.format("%s/%s", dstCabbage.getCode(), srcCabbage.getCode());
-                edExchangeRate.setText(String.valueOf(BigDecimal.ONE.divide(transaction.getExchangeRate(), RoundingMode.HALF_EVEN).doubleValue()));
+                edExchangeRate.setText(String.valueOf(BigDecimal.ONE.divide(transaction.getExchangeRate(), 5, RoundingMode.HALF_UP).doubleValue()));
             }
             if (onExRateTextChangedListener != null)
                 edExchangeRate.addTextChangedListener(onExRateTextChangedListener);
@@ -1845,8 +1847,10 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
             }
         });
         edExchangeRate.setText(String.valueOf(transaction.getExchangeRate().doubleValue()));
-        onExRateTextChangedListener = new OnExRateTextChangedListener();
-        edExchangeRate.addTextChangedListener(onExRateTextChangedListener);
+        if (onExRateTextChangedListener == null) {
+            onExRateTextChangedListener = new OnExRateTextChangedListener();
+            edExchangeRate.addTextChangedListener(onExRateTextChangedListener);
+        }
     }
 
     private void initComment() {
@@ -2393,14 +2397,13 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     private class OnDestAmountChangeListener implements AmountEditor.OnAmountChangeListener {
         @Override
         public void OnAmountChange(BigDecimal newAmount, int newType) {
-//            transaction.setDestAmount(newAmount);
             transaction.setExchangeRate(TransferManager.getExRate(transaction, newAmount));
             edExchangeRate.removeTextChangedListener(onExRateTextChangedListener);
             BigDecimal visibleExRate;
             if (!isExRateInverted) {
                 visibleExRate = transaction.getExchangeRate();
             } else {
-                visibleExRate = BigDecimal.ONE.divide(transaction.getExchangeRate(), RoundingMode.HALF_EVEN);
+                visibleExRate = BigDecimal.ONE.divide(transaction.getExchangeRate(), 5, RoundingMode.HALF_UP);
             }
             edExchangeRate.setText(String.valueOf(visibleExRate.doubleValue()));
             edExchangeRate.addTextChangedListener(onExRateTextChangedListener);
@@ -2416,13 +2419,26 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             try {
-                double rate;
-                if (!isExRateInverted) {
-                    rate = Double.valueOf(s.toString());
-                } else {
-                    rate = 1d / Double.valueOf(s.toString());
+                BigDecimal rate;
+                DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+//                symbols.setGroupingSeparator(',');
+                symbols.setDecimalSeparator('.');
+                DecimalFormat df = new DecimalFormat();
+                df.setDecimalFormatSymbols(symbols);
+                df.setParseBigDecimal(true);
+                try {
+                    rate = (BigDecimal) df.parse(s.toString());
+                } catch (ParseException e) {
+                    rate = BigDecimal.ONE;
                 }
-                transaction.setExchangeRate(new BigDecimal(rate));
+                if (isExRateInverted) {
+                    if (rate.compareTo(BigDecimal.ZERO) != 0) {
+                        rate = BigDecimal.ONE.divide((rate), 5, RoundingMode.HALF_UP);
+                    } else {
+                        rate = BigDecimal.ONE;
+                    }
+                }
+                transaction.setExchangeRate(rate);
                 destAmountEditor.mOnAmountChangeListener = null;
                 destAmountEditor.setAmount(TransferManager.getDestAmount(transaction));
                 destAmountEditor.mOnAmountChangeListener = onDestAmountChangeListener;

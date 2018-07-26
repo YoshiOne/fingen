@@ -39,7 +39,8 @@ public class TransferManager {
                 trim = prev;
                 break;
             }
-            prev = new BigDecimal(trim.doubleValue());
+//            prev = new BigDecimal(trim.doubleValue());
+            prev = trim;
             scale--;
         }
         return trim;

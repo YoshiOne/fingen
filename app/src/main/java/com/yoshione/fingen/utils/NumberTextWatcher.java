@@ -4,6 +4,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
+import com.yoshione.fingen.widgets.AmountEditor;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -15,8 +17,10 @@ public class NumberTextWatcher implements TextWatcher {
     private DecimalFormat dfnd;
     private boolean hasFractionalPart;
     private EditText et;
+    private TextWatcher mTextWatcher;
 
-    public NumberTextWatcher(EditText et) {
+    public NumberTextWatcher(EditText et, TextWatcher textWatcher) {
+        mTextWatcher = textWatcher;
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setDecimalSeparator('.');
         symbols.setGroupingSeparator(' ');
@@ -44,6 +48,7 @@ public class NumberTextWatcher implements TextWatcher {
     @Override
     public void afterTextChanged(Editable s) {
         et.removeTextChangedListener(this);
+        et.removeTextChangedListener(mTextWatcher);
 
         try {
             int inilen, endlen;
@@ -71,8 +76,10 @@ public class NumberTextWatcher implements TextWatcher {
             if (sel > 0 && sel <= et.getText().length()) {
                 et.setSelection(sel);
             } else {
-                // place cursor at the end?
-                et.setSelection(et.getText().length() - 1);
+                // place cursor at the end?0
+                if (et.getText().length() > 0) {
+                    et.setSelection(et.getText().length() - 1);
+                }
             }
         } catch (NumberFormatException nfe) {
             // do nothing?
@@ -81,6 +88,7 @@ public class NumberTextWatcher implements TextWatcher {
         }
 
         et.addTextChangedListener(this);
+        et.addTextChangedListener(mTextWatcher);
     }
 
     @Override

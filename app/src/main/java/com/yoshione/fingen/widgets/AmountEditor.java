@@ -252,12 +252,13 @@ public class AmountEditor extends LinearLayout {
         mAmountColorizer = new AmountColorizer(context);
         mTextInputLayoutCabbage.setVisibility(GONE);
 
-        edAmount.addTextChangedListener(new NumberTextWatcher(edAmount));
-        edAmount.addTextChangedListener(new TextWatcher() {
+        TextWatcher textWatcher = new TextWatcher() {
             private String current = "";
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.i("TC", "beforeTC " + s.toString() + " "
+                        + s.subSequence(start, start + count).toString());
                 if (!s.toString().equals(current)) {
                     current = s.toString();
 
@@ -269,12 +270,17 @@ public class AmountEditor extends LinearLayout {
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                Log.i("TC", "beforeTC " + s.toString() + " "
+                    + s.subSequence(start, start + count).toString());
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+                Log.i("TC", "afterTC " + s.toString());
             }
-        });
+        };
+        edAmount.addTextChangedListener(textWatcher);
+        edAmount.addTextChangedListener(new NumberTextWatcher(edAmount, textWatcher));
 
         edAmount.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
