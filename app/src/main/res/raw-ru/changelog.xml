@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.5.6" changeDate=">2018.07.26">
+        <changelogtext>Добавлена настройка "Запоминать последний счет"</changelogtext>
+        <changelogtext>Появилась возможность создавать счет в диалоге выбора счетов в редакторе транзакции</changelogtext>
+        <changelogtext>Исправлены проблемы редактированием сумм в переводах</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.5.5.1" changeDate=">2018.07.13">
         <changelogtext>Редакторы целой и дробной части суммы объединены в один редактор суммы</changelogtext>
         <changelogtext>Исправлены ошибки</changelogtext>

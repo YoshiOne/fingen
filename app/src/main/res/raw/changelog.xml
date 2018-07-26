@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.5.6" changeDate=">2018.07.26">
+        <changelogtext>Add preference "Remember last account"</changelogtext>
+        <changelogtext>Allow to create account in select account dialog</changelogtext>
+        <changelogtext>Fix editing amounts issues</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.5.5.1" changeDate=">2018.07.13">
         <changelogtext>Merge amount integer and fractional parts editors into one</changelogtext>
         <changelogtext>Fix bugs</changelogtext>
