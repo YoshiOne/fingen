@@ -199,6 +199,9 @@ public class BaseModel implements Parcelable, IAbstractModel {
         if (getClass().equals(ProductEntry.class)) {
             return IAbstractModel.MODEL_TYPE_PRODUCT_ENTRY;
         }
+        if (getClass().equals(DummyModel.class)) {
+            return IAbstractModel.MODEL_TYPE_DUMMY;
+        }
         return 0;
     }
 
@@ -249,6 +252,9 @@ public class BaseModel implements Parcelable, IAbstractModel {
                 break;
             case MODEL_TYPE_DATE_RANGE:
                 name = "RANGE";
+                break;
+            case MODEL_TYPE_DUMMY:
+                name = "DUMMY";
                 break;
         }
         return name;
@@ -302,6 +308,9 @@ public class BaseModel implements Parcelable, IAbstractModel {
         }
         if (modelType == IAbstractModel.MODEL_TYPE_PRODUCT_ENTRY) {
             return new ProductEntry();
+        }
+        if (modelType == IAbstractModel.MODEL_TYPE_DUMMY) {
+            return new DummyModel();
         }
         return new BaseModel();
     }

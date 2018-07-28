@@ -20,6 +20,7 @@ import com.yoshione.fingen.adapter.viewholders.TransactionViewHolderParams;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ILoadMoreFinish;
 import com.yoshione.fingen.interfaces.IOnLoadMore;
+import com.yoshione.fingen.model.DummyModel;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.utils.DateTimeFormatter;
 
@@ -309,6 +310,13 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
                         case IAbstractModel.MODEL_TYPE_PROJECT:
                             if (transaction.getProjectID() == model.getID()) {
                                 transaction.setSelected(true);
+                            }
+                            break;
+                        case IAbstractModel.MODEL_TYPE_DUMMY:
+                            if (DummyModel.PredefinedKeys.SELECT_ALL.getKey() == model.getID()) {
+                                transaction.setSelected(true);
+                            } else if(DummyModel.PredefinedKeys.UNSELECT_ALL.getKey() == model.getID()) {
+                                transaction.setSelected(false);
                             }
                             break;
                     }
