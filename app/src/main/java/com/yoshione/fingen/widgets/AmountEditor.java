@@ -319,12 +319,13 @@ public class AmountEditor extends LinearLayout {
         DecimalFormat df = new DecimalFormat("#,###.##");
         df.setDecimalSeparatorAlwaysShown(true);
         df.setDecimalFormatSymbols(symbols);
+        df.setParseBigDecimal(true);
         try {
             String s = edAmount.getText().toString();
             if (s.equals("")) {
                 s = "0";
             }
-            return new BigDecimal(df.parse(s).doubleValue()).setScale(2, RoundingMode.HALF_UP);
+            return ((BigDecimal) df.parse(s.replaceAll(" ", ""))).setScale(2, RoundingMode.HALF_UP);
         } catch (NumberFormatException | ParseException nfe) {
             return BigDecimal.ZERO;
         }

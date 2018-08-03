@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.5.7" changeDate=">2018.08.03">
+        <changelogtext>Исправлены некоторые ошибки</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.5.6" changeDate=">2018.07.26">
         <changelogtext>Добавлена настройка "Запоминать последний счет"</changelogtext>
         <changelogtext>Появилась возможность создавать счет в диалоге выбора счетов в редакторе транзакции</changelogtext>
