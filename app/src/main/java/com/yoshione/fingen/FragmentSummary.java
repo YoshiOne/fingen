@@ -3,6 +3,7 @@ package com.yoshione.fingen;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -26,8 +27,8 @@ import com.yoshione.fingen.model.SummaryItem;
 import com.yoshione.fingen.utils.DateTimeFormatter;
 import com.yoshione.fingen.utils.Lg;
 import com.yoshione.fingen.utils.LocaleUtils;
-import com.yoshione.fingen.utils.UpdateMainListsRwHandler;
 import com.yoshione.fingen.widgets.ContextMenuRecyclerView;
+import com.yoshione.fingen.widgets.ToolbarActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,8 +37,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -69,7 +74,7 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
@@ -84,7 +89,7 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         // Inflate Menu from xml resource
-        MenuInflater menuInflater = getActivity().getMenuInflater();
+        MenuInflater menuInflater = Objects.requireNonNull(getActivity()).getMenuInflater();
         menuInflater.inflate(R.menu.context_menu_summary, menu);
         MenuItem item = menu.findItem(R.id.action_show_report);
         if (getActivity() != null && getActivity() instanceof ActivityMain) {
@@ -110,7 +115,7 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
                     intent.putExtra("caption", summaryItem.getName());
                     intent.putExtra(FgConst.HIDE_FAB, true);
                     intent.putExtra(FgConst.LOCK_SLIDINGUP_PANEL, true);
-                    getActivity().startActivity(intent);
+                    Objects.requireNonNull(getActivity()).startActivity(intent);
                     break;
                 case R.id.action_show_report:
                     intent = new Intent(getActivity(), ActivityReports.class);
@@ -124,7 +129,7 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
     }
 
     private SummaryItem getSummaryItemByID(int id) {
-        Resources res = getActivity().getResources();
+        Resources res = Objects.requireNonNull(getActivity()).getResources();
         DateTimeFormatter df = DateTimeFormatter.getInstance(getActivity());
         SimpleDateFormat dateFormat;
         Calendar cal = Calendar.getInstance();
@@ -168,8 +173,8 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
 
     @Override
     @SuppressWarnings("unchecked")
-    public void loadData(UpdateMainListsRwHandler handler, long itemID) {
-        Set<String> defValues = new HashSet<>(Arrays.asList(getActivity().getResources().getStringArray(R.array.pref_summary_items_values)));
+    public void loadData(long itemID) {
+        Set<String> defValues = new HashSet<>(Arrays.asList(Objects.requireNonNull(getActivity()).getResources().getStringArray(R.array.pref_summary_items_values)));
         Set<String> set = PreferenceManager.getDefaultSharedPreferences(getActivity()).getStringSet("summary_items", defValues);
 
         List<SummaryItem> items = new ArrayList<>();
@@ -206,29 +211,22 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
         List<AbstractFilter> filters = new ArrayList<>();
         filters.add(accountFilter);
 
-        try {
-            items = TransactionsDAO.getInstance(getActivity()).getSummaryGroupedSums(
-                    items, new FilterListHelper(filters, "", getActivity()),
-                    getActivity());
-        } catch (Exception e) {
-            items = new ArrayList<>();
-        }
-        adapter.setList(items, CabbagesDAO.getInstance(getActivity()).getCabbagesMap());
-        handler.sendMessage(handler.obtainMessage(UpdateMainListsRwHandler.UPDATE_LIST, 0, 0));
+        ToolbarActivity activity = (ToolbarActivity) getActivity();
+        Objects.requireNonNull(activity).mCompositeDisposable.add(
+                TransactionsDAO.getInstance(getActivity()).getSummaryGroupedSumsRx(
+                        items, new FilterListHelper(filters, "", getActivity()),
+                        getActivity())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(summaryItems -> {
+                            adapter.setList(items, CabbagesDAO.getInstance(getActivity()).getCabbagesMap());
+                            adapter.notifyDataSetChanged();
+                        })
+        );
     }
 
     @Override
-    public void loadSums(UpdateMainListsRwHandler handler) {
-
-    }
-
-    @Override
-    public void updateLists(long itemID) {
-        adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void updateSums(ListSumsByCabbage listSumsByCabbage) {
+    public void loadSums() {
 
     }
 }

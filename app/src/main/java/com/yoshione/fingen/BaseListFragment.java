@@ -1,6 +1,7 @@
 package com.yoshione.fingen;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceManager;
@@ -11,9 +12,10 @@ import android.view.ViewGroup;
 
 import com.yoshione.fingen.interfaces.IUpdateMainListsEvents;
 import com.yoshione.fingen.utils.Lg;
-import com.yoshione.fingen.utils.UpdateMainListsRwHandler;
 import com.yoshione.fingen.widgets.ContextMenuRecyclerView;
 import com.yoshione.fingen.widgets.FgLinearLayoutManager;
+
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,18 +33,14 @@ public class BaseListFragment extends Fragment implements IListFragment {
     @BindView(R.id.recycler_view)
     ContextMenuRecyclerView recyclerView;
     private Unbinder unbinder;
-    private UpdateMainListsRwHandler mUpdateMainListsRwHandler;
     private boolean isUpdating = false;
     private IUpdateMainListsEvents mUpdateListsEvents;
     private String mForceUpdateParam;
-//    private boolean isVisibleToUser = false;
-//    private boolean isViewCreated = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Lg.log("%s onCreate", getClass().getName());
         super.onCreate(savedInstanceState);
-        mUpdateMainListsRwHandler = new UpdateMainListsRwHandler(this, getClass().getName());
         if (getArguments() != null) {
             mForceUpdateParam = getArguments().getString(FORCE_UPDATE_PARAM);
         }
@@ -51,14 +49,12 @@ public class BaseListFragment extends Fragment implements IListFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Lg.log("%s onCreateView", getClass().getName());
-        //R.layout.fragment_accounts
-        View view = inflater.inflate(getArguments().getInt(LAYOUT_NAME_PARAM), container, false);
+        View view = inflater.inflate(Objects.requireNonNull(getArguments()).getInt(LAYOUT_NAME_PARAM), container, false);
         unbinder = ButterKnife.bind(this, view);
         FgLinearLayoutManager layoutManager = new FgLinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
-//        isViewCreated = true;
         return view;
     }
 
@@ -95,10 +91,6 @@ public class BaseListFragment extends Fragment implements IListFragment {
         super.onPause();
     }
 
-    public IUpdateMainListsEvents getUpdateListsEvents() {
-        return mUpdateListsEvents;
-    }
-
     public void setUpdateListsEvents(IUpdateMainListsEvents updateListsEvents) {
         mUpdateListsEvents = updateListsEvents;
     }
@@ -107,55 +99,26 @@ public class BaseListFragment extends Fragment implements IListFragment {
     public void fullUpdate(long itemID) {
         Lg.log("%s fullUpdate", getClass().getName());
         if (getView() != null && getUserVisibleHint() && !isUpdating) {
-            runUpdateThread(itemID);
+            update(itemID);
         } else {
-            PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean(mForceUpdateParam, true).apply();
+            PreferenceManager.getDefaultSharedPreferences(Objects.requireNonNull(getActivity())).edit().putBoolean(mForceUpdateParam, true).apply();
         }
     }
 
     private void updateIfNecessary(long itemID) {
         Lg.log("%s updateIfNecessary", getClass().getName());
-        if (getView() != null && getUserVisibleHint() && !isUpdating && PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(mForceUpdateParam, false)) {
-            runUpdateThread(itemID);
+        if (getView() != null && getUserVisibleHint() && !isUpdating && PreferenceManager.getDefaultSharedPreferences(Objects.requireNonNull(getActivity())).getBoolean(mForceUpdateParam, false)) {
+            update(itemID);
         }
     }
 
-    private void runUpdateThread(long itemID) {
-        Lg.log("%s runUpdateThread", getClass().getName());
+    private void update(long itemID) {
         isUpdating = true;
-        Thread t = new Thread(new UpdateRunnable(mUpdateListsEvents, itemID, getClass().getName()));
-        t.start();
-    }
 
-    private class UpdateRunnable implements Runnable {
-        private IUpdateMainListsEvents mUpdateEvents;
-        private long mItemID;
-        private String mClassName;
+        mUpdateListsEvents.loadData(itemID);
+        mUpdateListsEvents.loadSums();
 
-        UpdateRunnable(IUpdateMainListsEvents updateEvents, long itemID, String className) {
-            mUpdateEvents = updateEvents;
-            mItemID = itemID;
-            mClassName = className;
-        }
-
-        @Override
-        public void run() {
-            if (mUpdateEvents != null) {
-
-//                if (BuildConfig.DEBUG) {
-//                    Debug.startMethodTracing(mClassName + "LoadData");
-//                }
-                PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean(mForceUpdateParam, false).apply();
-                Lg.log("%s load data", mClassName);
-                mUpdateEvents.loadData(mUpdateMainListsRwHandler, mItemID);
-                mUpdateEvents.loadSums(mUpdateMainListsRwHandler);
-
-//                if (BuildConfig.DEBUG) {
-//                    Debug.stopMethodTracing();
-//                }
-            }
-            isUpdating = false;
-        }
+        isUpdating = false;
     }
 
 }

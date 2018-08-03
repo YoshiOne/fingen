@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+//import com.arellomobile.mvp.MvpDelegate;
 import com.github.omadahealth.lollipin.lib.PinCompatActivity;
 import com.yoshione.fingen.ActivityMain;
 import com.yoshione.fingen.BuildConfig;
@@ -22,23 +23,31 @@ import com.yoshione.fingen.utils.ViewServer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by slv on 18.11.2015.
  *
  */
 public abstract class ToolbarActivity extends PinCompatActivity {
+//    private MvpDelegate<? extends ToolbarActivity> mMvpDelegate;
 
     protected final String TAG = this.getClass().getName();
     @BindView(R.id.toolbar)
     public Toolbar toolbar;
+    public CompositeDisposable mCompositeDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        getMvpDelegate().onCreate(savedInstanceState);
+
         setContentView(getLayoutResourceId());
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+
+        mCompositeDisposable = new CompositeDisposable();
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -59,22 +68,46 @@ public abstract class ToolbarActivity extends PinCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+//        getMvpDelegate().onAttach();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+
+//        getMvpDelegate().onDetach();
+
+        mCompositeDisposable.clear();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+//        getMvpDelegate().onDestroyView();
+
+        if (isFinishing()) {
+//            getMvpDelegate().onDestroy();
+        }
+
         ViewServer.get(this).removeWindow(this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+//        getMvpDelegate().onSaveInstanceState(outState);
+//        getMvpDelegate().onDetach();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+//        getMvpDelegate().onAttach();
+
         ViewServer.get(this).setFocusedWindow(this);
     }
 
@@ -149,5 +182,12 @@ public abstract class ToolbarActivity extends PinCompatActivity {
     public boolean showHelp() {
         return true;
     }
+
+//    public MvpDelegate getMvpDelegate() {
+//        if (mMvpDelegate == null) {
+//            mMvpDelegate = new MvpDelegate<>(this);
+//        }
+//        return mMvpDelegate;
+//    }
 
 }

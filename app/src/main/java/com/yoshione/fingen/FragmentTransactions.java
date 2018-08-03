@@ -1,8 +1,8 @@
 package com.yoshione.fingen;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.PreferenceManager;
@@ -71,19 +70,22 @@ import com.yoshione.fingen.utils.FabMenuController;
 import com.yoshione.fingen.utils.PrefUtils;
 import com.yoshione.fingen.utils.RequestCodes;
 import com.yoshione.fingen.utils.ScreenUtils;
-import com.yoshione.fingen.utils.UpdateMainListsRwHandler;
 import com.yoshione.fingen.widgets.ContextMenuRecyclerView;
 import com.yoshione.fingen.widgets.FgLinearLayoutManager;
+import com.yoshione.fingen.widgets.ToolbarActivity;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import ca.barrenechea.widget.recyclerview.decoration.StickyHeaderDecoration;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_OK;
 import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_SELECT_MODEL;
@@ -100,7 +102,6 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     public static final int NUMBER_ITEMS_TO_BE_LOADED = 25;
 
     private static final int CONTEXT_MENU_TRANSACTIONS = 0;
-    private static final int CONTEXT_MENU_FILTERS = 1;
     AdapterFilters adapterFilters;
     @BindView(R.id.layoutSummaryTable)
     TableLayout layoutSumTable;
@@ -167,7 +168,6 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     private boolean isInSelectionMode;
     private TransactionsDAO mTransactionsDAO;
     private StickyHeaderDecoration stickyHeaderDecoration;
-    private boolean mSumsLoaded;
     FabMenuController mFabMenuController;
 
     public static FragmentTransactions newInstance(String forceUpdateParam, int layoutID) {
@@ -190,11 +190,11 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        mSumsLoaded = false;
+//        mSumsLoaded = false;
         if (getActivity() != null) {
             Intent intent = getActivity().getIntent();
             if (intent.getBooleanExtra(FgConst.LOCK_SLIDINGUP_PANEL, false) & !BuildConfig.DEBUG) {
@@ -210,12 +210,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         adapter = new AdapterTransactions(recyclerView, this, getActivity());
         adapter.setHasStableIds(true);
         adapter.setmOnTransactionItemClickListener(this);
-        adapterFilters = new AdapterFilters(getActivity(), this, new AdapterFilters.IEditFilterListener() {
-            @Override
-            public void OnEditClick(AbstractFilter filter) {
-                editFilter(filter);
-            }
-        });
+        adapterFilters = new AdapterFilters(getActivity(), this, this::editFilter);
         adapterFilters.setHasStableIds(true);
 
         stickyHeaderDecoration = new StickyHeaderDecoration(adapter);
@@ -224,15 +219,12 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         recyclerView.addItemDecoration(stickyHeaderDecoration);
         recyclerViewFilters.setAdapter(adapterFilters);
 
-        switchAllFilters.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (AbstractFilter filter : adapterFilters.getFilterList()) {
-                    filter.setEnabled(switchAllFilters.isChecked());
-                }
-
-                FragmentTransactions.this.onFilterChange(true);
+        switchAllFilters.setOnClickListener(v -> {
+            for (AbstractFilter filter : adapterFilters.getFilterList()) {
+                filter.setEnabled(switchAllFilters.isChecked());
             }
+
+            FragmentTransactions.this.onFilterChange(true);
         });
 
 
@@ -280,15 +272,12 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             }
         });
 
-        mImageButtonClearSearchString.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mEditTextSearch.getText().toString().isEmpty()) {
-                    mEditTextSearch.setText("");
-                    fullUpdate(-1);
-                } else {
-                    hideSearchView();
-                }
+        mImageButtonClearSearchString.setOnClickListener(view1 -> {
+            if (!mEditTextSearch.getText().toString().isEmpty()) {
+                mEditTextSearch.setText("");
+                fullUpdate(-1);
+            } else {
+                hideSearchView();
             }
         });
 
@@ -296,22 +285,21 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 new SumsTableOnGlobalLayoutListener(getActivity(), layoutSumTable, mSlidingLayoutTransactions));
 
         if (getActivity() instanceof ActivityMain) {
-            ((ActivityMain) getActivity()).mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-                @Override
-                public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                    if (getActivity() != null) {
-                        int verticalOffsetDp = Math.round(ScreenUtils.PxToDp(getActivity(), verticalOffset));
-                        if (verticalOffsetDp == -48) {
-                            animatePullMe();
-                        } else {
-                            animatePullMeReverse();
-                        }
+            ((ActivityMain) getActivity()).mAppBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+                if (getActivity() != null) {
+                    int verticalOffsetDp = Math.round(ScreenUtils.PxToDp(getActivity(), verticalOffset));
+                    if (verticalOffsetDp == -48) {
+                        animatePullMe();
+                    } else {
+                        animatePullMeReverse();
                     }
                 }
             });
         }
 
-        unbinder = ButterKnife.bind(this, view);
+        if (view != null) {
+            unbinder = ButterKnife.bind(this, view);
+        }
         return view;
     }
 
@@ -348,13 +336,10 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         mFabEditSelected.setOnClickListener(fabMenuSelectionItemClickListener);
         mFabExportSelected.setOnClickListener(fabMenuSelectionItemClickListener);
 
-        mFabGoTop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FgLinearLayoutManager linearLayoutManager = (FgLinearLayoutManager) recyclerView.getLayoutManager();
-                if (adapter.getTransactionList().size() > 0) {
-                    linearLayoutManager.scrollToPositionWithOffset(0, 0);
-                }
+        mFabGoTop.setOnClickListener(v -> {
+            FgLinearLayoutManager linearLayoutManager = (FgLinearLayoutManager) recyclerView.getLayoutManager();
+            if (adapter.getTransactionList().size() > 0) {
+                linearLayoutManager.scrollToPositionWithOffset(0, 0);
             }
         });
 
@@ -368,19 +353,14 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 if (firstVisiblePosition < 10) {
                     mFabGoTop.setVisibility(View.GONE);
                 } else {
-                    if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("show_tr_go_top_button", true)) {
+                    if (PreferenceManager.getDefaultSharedPreferences(FGApplication.getContext()).getBoolean("show_tr_go_top_button", true)) {
                         mFabGoTop.setVisibility(View.VISIBLE);
                     }
                 }
             }
         });
 
-        mButtonSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showSearchView();
-            }
-        });
+        mButtonSearch.setOnClickListener(v -> showSearchView());
     }
 
     private void saveFilters() {
@@ -533,12 +513,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     @Override
     public void onSelectionChange(int selectedCount) {
         if (selectedCount > 0) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mFabMenuButtonRootLayout.setVisibility(View.VISIBLE);
-                }
-            }, 200);
+            new Handler().postDelayed(() -> mFabMenuButtonRootLayout.setVisibility(View.VISIBLE), 200);
             mTextViewSelectedCount.setVisibility(View.VISIBLE);
             mTextViewSelectedCount.setText(String.format("%d %s", selectedCount, getString(R.string.ttl_selected)));
         } else {
@@ -559,69 +534,50 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     }
 
     private void initSlidePanelButtons() {
-        mButtonAddFilter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getActivity() == null) return;
-                AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
-                builderSingle.setTitle(getActivity().getResources().getString(R.string.ttl_new_filter));
+        mButtonAddFilter.setOnClickListener(v -> {
+            if (getActivity() == null) return;
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
+            builderSingle.setTitle(getActivity().getResources().getString(R.string.ttl_new_filter));
 
-                final ArrayAdapter<StringIntItem> arrayAdapter = new ArrayAdapter<>(
-                        getActivity(),
-                        android.R.layout.select_dialog_singlechoice);
+            final ArrayAdapter<StringIntItem> arrayAdapter = new ArrayAdapter<>(
+                    getActivity(),
+                    android.R.layout.select_dialog_singlechoice);
 
-                Resources res = getActivity().getResources();
-                arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_amount), IAbstractModel.MODEL_TYPE_AMOUNT_FILTER));
-                arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_date_range), IAbstractModel.MODEL_TYPE_DATE_RANGE));
-                arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_account), IAbstractModel.MODEL_TYPE_ACCOUNT));
-                arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_payee_or_payer), IAbstractModel.MODEL_TYPE_PAYEE));
-                arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_category), IAbstractModel.MODEL_TYPE_CATEGORY));
-                arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_project), IAbstractModel.MODEL_TYPE_PROJECT));
-                arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_location), IAbstractModel.MODEL_TYPE_LOCATION));
-                arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_department), IAbstractModel.MODEL_TYPE_DEPARTMENT));
-                arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_debt), IAbstractModel.MODEL_TYPE_SIMPLEDEBT));
+            Resources res = getActivity().getResources();
+            arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_amount), IAbstractModel.MODEL_TYPE_AMOUNT_FILTER));
+            arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_date_range), IAbstractModel.MODEL_TYPE_DATE_RANGE));
+            arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_account), IAbstractModel.MODEL_TYPE_ACCOUNT));
+            arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_payee_or_payer), IAbstractModel.MODEL_TYPE_PAYEE));
+            arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_category), IAbstractModel.MODEL_TYPE_CATEGORY));
+            arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_project), IAbstractModel.MODEL_TYPE_PROJECT));
+            arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_location), IAbstractModel.MODEL_TYPE_LOCATION));
+            arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_department), IAbstractModel.MODEL_TYPE_DEPARTMENT));
+            arrayAdapter.add(new StringIntItem(res.getString(R.string.ent_debt), IAbstractModel.MODEL_TYPE_SIMPLEDEBT));
 
-                builderSingle.setNegativeButton(
-                        getActivity().getResources().getString(android.R.string.cancel),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
+            builderSingle.setNegativeButton(
+                    getActivity().getResources().getString(android.R.string.cancel),
+                    (dialog, which) -> dialog.dismiss());
 
-                builderSingle.setAdapter(
-                        arrayAdapter,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ListView lw = ((AlertDialog) dialog).getListView();
-                                StringIntItem checkedItem = (StringIntItem) lw.getAdapter().getItem(which);
-                                addFilter(checkedItem.getID(), -1);
-                            }
-                        });
-                builderSingle.show();
-            }
+            builderSingle.setAdapter(
+                    arrayAdapter,
+                    (dialog, which) -> {
+                        ListView lw = ((AlertDialog) dialog).getListView();
+                        StringIntItem checkedItem = (StringIntItem) lw.getAdapter().getItem(which);
+                        addFilter(checkedItem.getID(), -1);
+                    });
+            builderSingle.show();
         });
-        mButtonClearFilters.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                adapterFilters.clearData();
-            }
-        });
-        mButtonReports.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent;
-                if (isReportsPurchased()) {
-                    intent = new Intent(getActivity(), ActivityReports.class);
-                    intent.putParcelableArrayListExtra("filter_list", adapterFilters.getFilterList());
-                    mSlidingLayoutTransactions.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                    startActivity(intent);
-                } else {
-                    intent = new Intent(getActivity(), ActivityPro.class);
-                    startActivityForResult(intent, RequestCodes.REQUEST_CODE_OPEN_PRO);
-                }
+        mButtonClearFilters.setOnClickListener(v -> adapterFilters.clearData());
+        mButtonReports.setOnClickListener(v -> {
+            Intent intent;
+            if (isReportsPurchased()) {
+                intent = new Intent(getActivity(), ActivityReports.class);
+                intent.putParcelableArrayListExtra("filter_list", adapterFilters.getFilterList());
+                mSlidingLayoutTransactions.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                startActivity(intent);
+            } else {
+                intent = new Intent(getActivity(), ActivityPro.class);
+                startActivityForResult(intent, RequestCodes.REQUEST_CODE_OPEN_PRO);
             }
         });
     }
@@ -677,10 +633,13 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater menuInflater = getActivity().getMenuInflater();
-        if (v.getId() == R.id.recycler_view) {
-            contextMenuTarget = CONTEXT_MENU_TRANSACTIONS;
-            menuInflater.inflate(R.menu.context_menu_transactions, menu);
+        Activity activity = getActivity();
+        if (activity != null) {
+            MenuInflater menuInflater = activity.getMenuInflater();
+            if (v.getId() == R.id.recycler_view) {
+                contextMenuTarget = CONTEXT_MENU_TRANSACTIONS;
+                menuInflater.inflate(R.menu.context_menu_transactions, menu);
+            }
         }
     }
 
@@ -718,7 +677,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         final AccountsDAO accountsDAO = AccountsDAO.getInstance(getActivity());
         List<Account> accountList;
         try {
-            accountList = accountsDAO.getAllAccounts(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(FgConst.PREF_SHOW_CLOSED_ACCOUNTS, true));
+            accountList = accountsDAO.getAllAccounts(PreferenceManager.getDefaultSharedPreferences(Objects.requireNonNull(getActivity())).getBoolean(FgConst.PREF_SHOW_CLOSED_ACCOUNTS, true));
         } catch (Exception e) {
             accountList = new ArrayList<>();
         }
@@ -733,35 +692,29 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getActivity().getResources().getString(R.string.ttl_select_accounts));
         builder.setMultiChoiceItems(items, checkedItems,
-                new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog1, int indexSelected, boolean isChecked) {
+                (dialog1, indexSelected, isChecked) -> {
 
-                    }
                 })
                 // Set the action buttons
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog1, int id) {
-                        AlertDialog ad = (AlertDialog) dialog1;
-                        String name;
-                        long accId;
-                        for (int i = 0; i < ad.getListView().getCount(); i++) {
-                            name = ad.getListView().getAdapter().getItem(i).toString();
-                            try {
-                                accId = accountsDAO.getModelByName(name).getID();
-                            } catch (Exception e) {
-                                accId = -1;
-                            }
-                            if (ad.getListView().isItemChecked(i)) {
-                                filter.addAccount(accId);
-                            } else {
-                                filter.removeAccount(accId);
-                            }
+                .setPositiveButton("OK", (dialog1, id) -> {
+                    AlertDialog ad = (AlertDialog) dialog1;
+                    String name;
+                    long accId;
+                    for (int i = 0; i < ad.getListView().getCount(); i++) {
+                        name = ad.getListView().getAdapter().getItem(i).toString();
+                        try {
+                            accId = accountsDAO.getModelByName(name).getID();
+                        } catch (Exception e) {
+                            accId = -1;
                         }
-                        adapterFilters.notifyDataSetChanged();
-                        FragmentTransactions.this.onFilterChange(true);
+                        if (ad.getListView().isItemChecked(i)) {
+                            filter.addAccount(accId);
+                        } else {
+                            filter.removeAccount(accId);
+                        }
                     }
+                    adapterFilters.notifyDataSetChanged();
+                    FragmentTransactions.this.onFilterChange(true);
                 });
 
         dialog = builder.create();//AlertDialog dialog; create like this outside onClick
@@ -775,7 +728,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         intent.putExtra("filterID", filter.getId());
         intent.putExtra("checked_ids", filter.getIDsSet());
         intent.putExtra("requestCode", RequestCodes.REQUEST_CODE_BULK_SELECT_MODEL);
-        getActivity().startActivityForResult(intent, RequestCodes.REQUEST_CODE_BULK_SELECT_MODEL);
+        Objects.requireNonNull(getActivity()).startActivityForResult(intent, RequestCodes.REQUEST_CODE_BULK_SELECT_MODEL);
     }
 
     @SuppressWarnings("WrongConstant")
@@ -785,14 +738,14 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             case R.id.action_add: {
                 Intent intent = new Intent(getActivity(), ActivityEditTransaction.class);
                 intent.putExtra("transaction", new Transaction(PrefUtils.getDefDepID(getActivity())));
-                getActivity().startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+                Objects.requireNonNull(getActivity()).startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
                 break;
             }
             case R.id.action_filter_on_selected:
             case R.id.action_select_on_selected: {
                 Transaction transaction = mTransactionsDAO.getTransactionByID(info.id);
 
-                final AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
+                final AlertDialog.Builder builderSingle = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
                 builderSingle.setTitle(getActivity().getResources().getString(R.string.ttl_new_filter));
 
                 final ArrayAdapter<IAbstractModel> arrayAdapter = new ArrayAdapter<>(
@@ -802,28 +755,20 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
                 builderSingle.setNegativeButton(
                         getActivity().getResources().getString(android.R.string.cancel),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
+                        (dialog, which) -> dialog.dismiss());
 
                 builderSingle.setAdapter(
                         arrayAdapter,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ListView lw = ((AlertDialog) dialog).getListView();
-                                IAbstractModel checkedModel = (IAbstractModel) lw.getAdapter().getItem(which);
-                                switch (item.getItemId()) {
-                                    case R.id.action_filter_on_selected:
-                                        addFilter(checkedModel.getModelType(), checkedModel.getID());
-                                        break;
-                                    case R.id.action_select_on_selected:
-                                        adapter.selectByModel(checkedModel);
-                                        break;
-                                }
+                        (dialog, which) -> {
+                            ListView lw = ((AlertDialog) dialog).getListView();
+                            IAbstractModel checkedModel = (IAbstractModel) lw.getAdapter().getItem(which);
+                            switch (item.getItemId()) {
+                                case R.id.action_filter_on_selected:
+                                    addFilter(checkedModel.getModelType(), checkedModel.getID());
+                                    break;
+                                case R.id.action_select_on_selected:
+                                    adapter.selectByModel(checkedModel);
+                                    break;
                             }
                         });
                 builderSingle.show();
@@ -842,7 +787,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                     intent.putExtra("transaction", transaction);
                     intent.putExtra("src_transaction", srcTransaction);
                     intent.putExtra("focus_to_category", true);
-                    getActivity().startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+                    Objects.requireNonNull(getActivity()).startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
                 }
                 break;
             }
@@ -851,7 +796,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 transaction.setDateTime(new Date());
                 Intent intent = new Intent(getActivity(), ActivityEditTransaction.class);
                 intent.putExtra("transaction", transaction);
-                getActivity().startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+                Objects.requireNonNull(getActivity()).startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
                 break;
             }
             case R.id.action_create_template: {
@@ -867,26 +812,20 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             case R.id.action_edit: {
                 Intent intent = new Intent(getActivity(), ActivityEditTransaction.class);
                 intent.putExtra("transaction", mTransactionsDAO.getTransactionByID(info.id));
-                getActivity().startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+                Objects.requireNonNull(getActivity()).startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
                 break;
             }
             case R.id.action_delete: {
                 final List<IAbstractModel> transactionsToDelete = new ArrayList<>();
                 transactionsToDelete.add(mTransactionsDAO.getTransactionByID(info.id));
-                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
                 alertDialogBuilder
                         .setTitle(R.string.ttl_confirm_action)
                         .setMessage(R.string.msg_confirm_delete_transaction)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                TransactionsDAO.getInstance(getActivity()).bulkDeleteModel(transactionsToDelete, true);
-                                onSelectionChange(0);
-                            }
-                        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).show();
+                        .setPositiveButton(R.string.ok, (dialog, which) -> {
+                            TransactionsDAO.getInstance(getActivity()).bulkDeleteModel(transactionsToDelete, true);
+                            onSelectionChange(0);
+                        }).setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
                 break;
             }
         }
@@ -965,12 +904,9 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         if (getActivity() != null) {
             final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             mEditTextSearch.postDelayed(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            if (imm != null) {
-                                imm.showSoftInput(mEditTextSearch, 0);
-                            }
+                    () -> {
+                        if (imm != null) {
+                            imm.showSoftInput(mEditTextSearch, 0);
                         }
                     }, 300);
         }
@@ -992,63 +928,74 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     }
 
     @Override
-    public synchronized void loadData(UpdateMainListsRwHandler handler, long itemID) {
-
-//        Debug.startMethodTracing("TransactionsLoadData");
-
+    public void loadData(long itemID) {
         stickyHeaderDecoration.clearHeaderCache();
         setAccountSetFilter();
 
-        if (recyclerView == null) {
-            return;
-        }
+        if (recyclerView == null) return;
 
         FgLinearLayoutManager linearLayoutManager = (FgLinearLayoutManager) recyclerView.getLayoutManager();
         int currentItem = linearLayoutManager.findFirstVisibleItemPosition();
 
+        adapter.getTransactionList().clear();
+
         int count = Math.max(adapter.getItemCount(), NUMBER_ITEMS_TO_BE_LOADED);
-        List<Transaction> transactions;
-        try {
-            long curTime = System.currentTimeMillis();
-            transactions = mTransactionsDAO.getRangeTransactions(0, count, new FilterListHelper(adapterFilters.getFilterList(), mEditTextSearch.getText().toString(), getActivity()), getActivity());
-            curTime = System.currentTimeMillis() - curTime;
-            Log.d(TAG, "Query length" + String.valueOf(curTime));
-        } catch (Exception e) {
-            transactions = new ArrayList<>();
-        }
-        adapter.getParams().clearCaches();
-        adapter.setTransactionList(transactions);
-        adapter.endOfList = false;
-        adapter.setLoaded();
-//        handler.sendMessage(handler.obtainMessage(UpdateMainListsRwHandler.UPDATE_LIST, (int) itemID, 0));
 
-        if (itemID >= 0) {
-            for (int i = 0; i < adapter.getTransactionList().size(); i++) {
-                if (adapter.getTransactionList().get(i).getID() == itemID) {
-                    handler.sendMessage(handler.obtainMessage(UpdateMainListsRwHandler.UPDATE_LIST, i, 0));
+        loadMore(count, () -> {
+            adapter.getParams().clearCaches();
+            if (itemID >= 0) {
+                for (int i = 0; i < adapter.getTransactionList().size(); i++) {
+                    if (adapter.getTransactionList().get(i).getID() == itemID) {
+                        updateLists(i);
+                    }
                 }
+            } else {
+                updateLists(currentItem);
             }
-        } else {
-            handler.sendMessage(handler.obtainMessage(UpdateMainListsRwHandler.UPDATE_LIST, currentItem, 0));
-        }
-//        Debug.stopMethodTracing();
+        });
     }
 
     @Override
-    public void loadSums(UpdateMainListsRwHandler handler) {
-//        Debug.startMethodTracing("TransactionsLoadSums");
-        ListSumsByCabbage listSumsByCabbage;
-        try {
-            listSumsByCabbage = mTransactionsDAO.getGroupedSums(new FilterListHelper(adapterFilters.getFilterList(),
-                    mEditTextSearch.getText().toString(), getActivity()), true, adapter.getSelectedTransactionsIDsAsLong(), getActivity());
-        } catch (Exception e) {
-            listSumsByCabbage = new ListSumsByCabbage();
+    public void loadMore(int numberItems, ILoadMoreFinish loadMoreFinish) {
+        int start = adapter.getTransactionList().size();
+        if (!adapter.endOfList) {
+            long curTime = System.currentTimeMillis();
+            ToolbarActivity activity = (ToolbarActivity) getActivity();
+            Objects.requireNonNull(activity).mCompositeDisposable.add(
+                    TransactionsDAO.getInstance(getActivity()).getRangeTransactionsRx(
+                            start,
+                            numberItems,
+                            new FilterListHelper(adapterFilters.getFilterList(), mEditTextSearch.getText().toString(), getActivity()),
+                            getActivity())
+
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(transactions -> {
+                                adapter.endOfList = transactions.size() < numberItems;
+                                adapter.addTransactions(transactions, false);
+                                if (loadMoreFinish != null) {
+                                    loadMoreFinish.onLoadMoreFinish();
+                                }
+                                adapter.setLoaded();
+                            }, throwable -> {
+                            }));
+            curTime = System.currentTimeMillis() - curTime;
+            Log.d(TAG, "Query length " + String.valueOf(curTime));
         }
-        handler.sendMessage(handler.obtainMessage(UpdateMainListsRwHandler.UPDATE_SUMS, listSumsByCabbage));
-//        Debug.stopMethodTracing();
     }
 
     @Override
+    public void loadSums() {
+        ToolbarActivity activity = (ToolbarActivity) getActivity();
+        Objects.requireNonNull(activity).mCompositeDisposable.add(
+            mTransactionsDAO.getGroupedSumsRx(new FilterListHelper(adapterFilters.getFilterList(),
+                    mEditTextSearch.getText().toString(), getActivity()), true, adapter.getSelectedTransactionsIDsAsLong(), getActivity())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(this::updateSums)
+        );
+    }
+
     public void updateLists(long itemID) {
         adapter.notifyDataSetChanged();
         adapterFilters.notifyDataSetChanged();
@@ -1058,31 +1005,8 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         }
     }
 
-    @Override
     public void updateSums(ListSumsByCabbage listSumsByCabbage) {
         SumsManager.updateSummaryTable(getActivity(), layoutSumTable, false, listSumsByCabbage, CabbagesDAO.getInstance(getActivity()).getCabbagesMap(), null);
-        mSumsLoaded = true;
-    }
-
-    @Override
-    public synchronized void loadMore(int numberItems, ILoadMoreFinish loadMoreFinish) {
-        int start = adapter.getTransactionList().size();
-        List<Transaction> rangeTransactions = new ArrayList<>();
-        if (!adapter.endOfList) {
-            try {
-                long curTime = System.currentTimeMillis();
-                rangeTransactions = TransactionsDAO.getInstance(getActivity()).getRangeTransactions(start, numberItems, new FilterListHelper(adapterFilters.getFilterList(), mEditTextSearch.getText().toString(), getActivity()), getActivity());
-                curTime = System.currentTimeMillis() - curTime;
-                Log.d(TAG, "Query length " + String.valueOf(curTime));
-            } catch (Exception e) {
-                rangeTransactions = new ArrayList<>();
-            }
-        }
-        adapter.endOfList = rangeTransactions.size() < numberItems;
-        adapter.addTransactions(rangeTransactions, false);
-//        adapter.notifyDataSetChanged();
-        loadMoreFinish.onLoadMoreFinish();
-        adapter.setLoaded();
     }
 
     @Override
@@ -1104,7 +1028,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                     break;
                 }
                 case R.id.fabEditSelected: {
-                    final AlertDialog.Builder builderSingle = new AlertDialog.Builder(getActivity());
+                    final AlertDialog.Builder builderSingle = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
                     builderSingle.setTitle(getActivity().getResources().getString(R.string.ttl_change_selected_param));
 
                     final ArrayAdapter<StringIntItem> arrayAdapter = new ArrayAdapter<>(
@@ -1122,44 +1046,36 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
                     builderSingle.setNegativeButton(
                             getActivity().getResources().getString(android.R.string.cancel),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
+                            (dialog, which) -> dialog.dismiss());
 
                     builderSingle.setAdapter(
                             arrayAdapter,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    ListView lw = ((AlertDialog) dialog).getListView();
-                                    StringIntItem checkedItem = (StringIntItem) lw.getAdapter().getItem(which);
-                                    Intent intent;
-                                    switch (checkedItem.getID()) {
-                                        case IAbstractModel.MODEL_TYPE_ACCOUNT:
-                                            intent = new Intent(getActivity(), ActivityAccounts.class);
-                                            intent.putExtra("showHomeButton", false);
-                                            intent.putExtra("model", new Account());
-                                            intent.putExtra("destAccount", false);
-                                            intent.putStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS, adapter.getSelectedTransactionsIDs());
-                                            startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
-                                            break;
-                                        case IAbstractModel.MODEL_TYPE_PAYEE:
-                                        case IAbstractModel.MODEL_TYPE_CATEGORY:
-                                        case IAbstractModel.MODEL_TYPE_PROJECT:
-                                        case IAbstractModel.MODEL_TYPE_LOCATION:
-                                        case IAbstractModel.MODEL_TYPE_DEPARTMENT:
-                                        case IAbstractModel.MODEL_TYPE_SIMPLEDEBT:
-                                            intent = new Intent(getActivity(), ActivityList.class);
-                                            intent.putExtra("showHomeButton", false);
-                                            intent.putExtra("model", BaseModel.createModelByType(checkedItem.getID()));
-                                            intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
-                                            intent.putStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS, adapter.getSelectedTransactionsIDs());
-                                            startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
-                                            break;
-                                    }
+                            (dialog, which) -> {
+                                ListView lw = ((AlertDialog) dialog).getListView();
+                                StringIntItem checkedItem = (StringIntItem) lw.getAdapter().getItem(which);
+                                Intent intent;
+                                switch (checkedItem.getID()) {
+                                    case IAbstractModel.MODEL_TYPE_ACCOUNT:
+                                        intent = new Intent(getActivity(), ActivityAccounts.class);
+                                        intent.putExtra("showHomeButton", false);
+                                        intent.putExtra("model", new Account());
+                                        intent.putExtra("destAccount", false);
+                                        intent.putStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS, adapter.getSelectedTransactionsIDs());
+                                        startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
+                                        break;
+                                    case IAbstractModel.MODEL_TYPE_PAYEE:
+                                    case IAbstractModel.MODEL_TYPE_CATEGORY:
+                                    case IAbstractModel.MODEL_TYPE_PROJECT:
+                                    case IAbstractModel.MODEL_TYPE_LOCATION:
+                                    case IAbstractModel.MODEL_TYPE_DEPARTMENT:
+                                    case IAbstractModel.MODEL_TYPE_SIMPLEDEBT:
+                                        intent = new Intent(getActivity(), ActivityList.class);
+                                        intent.putExtra("showHomeButton", false);
+                                        intent.putExtra("model", BaseModel.createModelByType(checkedItem.getID()));
+                                        intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
+                                        intent.putStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS, adapter.getSelectedTransactionsIDs());
+                                        startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
+                                        break;
                                 }
                             });
                     builderSingle.show();
@@ -1173,20 +1089,14 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 }
                 case R.id.fabDeleteSelected: {
                     final List<IAbstractModel> transactionsToDelete = adapter.removeSelectedTransactions();
-                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
                     alertDialogBuilder
                             .setTitle(R.string.ttl_confirm_action)
                             .setMessage(R.string.msg_confirm_delete_selected_transactions)
-                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    TransactionsDAO.getInstance(getActivity()).bulkDeleteModel(transactionsToDelete, true);
-                                    onSelectionChange(0);
-                                }
-                            }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
+                            .setPositiveButton(R.string.ok, (dialog, which) -> {
+                                TransactionsDAO.getInstance(getActivity()).bulkDeleteModel(transactionsToDelete, true);
+                                onSelectionChange(0);
+                            }).setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
 
                     break;
                 }
@@ -1200,7 +1110,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     private void animatePullMe() {
         if (!mPullMeBended) {
             mPullMeBended = true;
-            mImageViewPullMe.setImageDrawable(getContext().getDrawable(R.drawable.pull_me_animated));
+            mImageViewPullMe.setImageDrawable(Objects.requireNonNull(getContext()).getDrawable(R.drawable.pull_me_animated));
             ((Animatable) mImageViewPullMe.getDrawable()).start();
         }
     }
@@ -1208,7 +1118,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     private void animatePullMeReverse() {
         if (mPullMeBended) {
             mPullMeBended = false;
-            mImageViewPullMe.setImageDrawable(getContext().getDrawable(R.drawable.pull_me_animated_reverse));
+            mImageViewPullMe.setImageDrawable(Objects.requireNonNull(getContext()).getDrawable(R.drawable.pull_me_animated_reverse));
             ((Animatable) mImageViewPullMe.getDrawable()).start();
         }
     }

@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import io.reactivex.Single;
+
 import static com.yoshione.fingen.DBHelper.C_ID;
 import static com.yoshione.fingen.DBHelper.C_REF_ACCOUNTS_CURRENCY;
 import static com.yoshione.fingen.DBHelper.C_SYNC_DELETED;
@@ -112,13 +114,16 @@ public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         super.deleteModel(model, resetTS, context);
     }
 
+    public Single<List<Account>> getAllAccountsRx(boolean includeClosed) {
+        return Single.fromCallable(() -> getAllAccounts(includeClosed));
+    }
+
     @SuppressWarnings("unchecked")
     public List<Account> getAllAccounts(boolean includeClosed) throws Exception {
         String selection = null;
         if (!includeClosed) {
             selection = String.format("%s = 0", DBHelper.C_REF_ACCOUNTS_ISCLOSED);
         }
-
 
         return (List<Account>) getItems(getTableName(), DBHelper.T_REF_ACCOUNTS_ALL_COLUMNS, selection, null, DBHelper.C_REF_ACCOUNTS_NAME, null);
     }

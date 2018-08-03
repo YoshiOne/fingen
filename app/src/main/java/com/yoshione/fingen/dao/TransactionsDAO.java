@@ -10,10 +10,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
-
 import com.yoshione.fingen.BuildConfig;
 import com.yoshione.fingen.DBHelper;
-import com.yoshione.fingen.R;
 import com.yoshione.fingen.classes.ListSumsByCabbage;
 import com.yoshione.fingen.classes.SumsByCabbage;
 import com.yoshione.fingen.filters.AbstractFilter;
@@ -23,14 +21,8 @@ import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.managers.FilterManager;
 import com.yoshione.fingen.managers.TransferManager;
-import com.yoshione.fingen.model.Account;
-import com.yoshione.fingen.model.Category;
 import com.yoshione.fingen.model.DateEntry;
-import com.yoshione.fingen.model.Department;
-import com.yoshione.fingen.model.Location;
-import com.yoshione.fingen.model.Payee;
 import com.yoshione.fingen.model.ProductEntry;
-import com.yoshione.fingen.model.Project;
 import com.yoshione.fingen.model.SimpleDebt;
 import com.yoshione.fingen.model.SummaryItem;
 import com.yoshione.fingen.model.Transaction;
@@ -44,11 +36,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
+
+import io.reactivex.Single;
 
 import static com.yoshione.fingen.DBHelper.C_ID;
 import static com.yoshione.fingen.DBHelper.T_LOG_TRANSACTIONS;
@@ -277,60 +269,66 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
     }
 
     @SuppressWarnings("unchecked")
-    public synchronized List<Transaction> getRangeTransactions(int first, int count, FilterListHelper filterListHelper, Context context) throws Exception {
-        List<AbstractFilter> filterList = filterListHelper.getFilters();
+    public synchronized Single<List<Transaction>> getRangeTransactionsRx(int first, int count, FilterListHelper filterListHelper, Context context) {
+        return Single.fromCallable(() -> getRangeTransactions(first, count, filterListHelper, context));
+    }
 
-        String tableName;
+    @SuppressWarnings("unchecked")
+    private synchronized List<Transaction> getRangeTransactions(int first, int count, FilterListHelper filterListHelper, Context context) {
 
-        if (filterListHelper.getSearchString().isEmpty()) {
-            tableName = T_LOG_TRANSACTIONS;
-        } else {
-            createSearchTransactionsTable(Translit.toTranslit(filterListHelper.getSearchString().toLowerCase()).replaceAll("'", "''"));
-            tableName = DBHelper.T_SEARCH_TRANSACTIONS;
-        }
+            List < AbstractFilter > filterList = filterListHelper.getFilters();
 
-        String selection = FilterManager.createSelectionString(filterList, AccountsDAO.getInstance(context).getAllModelsIDs(), true,true,true, context);
-        String where;
-        if (selection != null && !selection.isEmpty()) {
-            where = " AND (" + selection + ") ";
-        } else {
-            where = "";
-        }
+            String tableName;
 
-        String sql = "SELECT DISTINCT lt.*, (frb.Income + frb.Expense + sa.StartBalance) as FromBalance, (trb.Income + trb.Expense + da.StartBalance) as ToBalance\n" +
-                "FROM " + tableName + " as lt\n" +
-                "LEFT OUTER JOIN ref_Accounts sa ON sa._id = SrcAccount\n" +
-                "LEFT OUTER JOIN ref_Accounts da ON da._id = DestAccount\n" +
-                "LEFT OUTER JOIN log_Running_Balance AS frb ON frb.TransactionID = lt._id AND frb.AccountID = lt.SrcAccount\n" +
-                "LEFT OUTER JOIN log_Running_Balance AS trb ON trb.TransactionID = lt._id AND trb.AccountID = lt.DestAccount\n" +
-                "WHERE lt.Deleted = 0" + where + "\n" +
-                "ORDER BY DateTime DESC\n" +
-                "LIMIT " + String.valueOf(first) + ", " + String.valueOf(count);
-
-        if (BuildConfig.DEBUG) {
-            Log.d(SQLTAG, sql);
-        }
-
-        Cursor cursor;
-        List<Transaction> transactions = new ArrayList<>();
-        try {
-            cursor = mDatabase.rawQuery(sql, null);
-        } catch (Exception e) {
-            return transactions;
-        }
-        if (cursor != null) {
-            try {
-                if (cursor.moveToFirst()) {
-                    while (!cursor.isAfterLast()) {
-                        transactions.add(cursorToTransaction(cursor));
-                        cursor.moveToNext();
-                    }
-                }
-            } finally {
-                cursor.close();
+            if (filterListHelper.getSearchString().isEmpty()) {
+                tableName = T_LOG_TRANSACTIONS;
+            } else {
+                createSearchTransactionsTable(Translit.toTranslit(filterListHelper.getSearchString().toLowerCase()).replaceAll("'", "''"));
+                tableName = DBHelper.T_SEARCH_TRANSACTIONS;
             }
-        }
-        return transactions;
+
+            String selection = FilterManager.createSelectionString(filterList, AccountsDAO.getInstance(context).getAllModelsIDs(), true,true,true, context);
+            String where;
+            if (selection != null && !selection.isEmpty()) {
+                where = " AND (" + selection + ") ";
+            } else {
+                where = "";
+            }
+
+            String sql = "SELECT DISTINCT lt.*, (frb.Income + frb.Expense + sa.StartBalance) as FromBalance, (trb.Income + trb.Expense + da.StartBalance) as ToBalance\n" +
+                    "FROM " + tableName + " as lt\n" +
+                    "LEFT OUTER JOIN ref_Accounts sa ON sa._id = SrcAccount\n" +
+                    "LEFT OUTER JOIN ref_Accounts da ON da._id = DestAccount\n" +
+                    "LEFT OUTER JOIN log_Running_Balance AS frb ON frb.TransactionID = lt._id AND frb.AccountID = lt.SrcAccount\n" +
+                    "LEFT OUTER JOIN log_Running_Balance AS trb ON trb.TransactionID = lt._id AND trb.AccountID = lt.DestAccount\n" +
+                    "WHERE lt.Deleted = 0" + where + "\n" +
+                    "ORDER BY DateTime DESC\n" +
+                    "LIMIT " + String.valueOf(first) + ", " + String.valueOf(count);
+
+            if (BuildConfig.DEBUG) {
+                Log.d(SQLTAG, sql);
+            }
+
+            Cursor cursor;
+            List<Transaction> transactions = new ArrayList<>();
+            try {
+                cursor = mDatabase.rawQuery(sql, null);
+            } catch (Exception e) {
+                return transactions;
+            }
+            if (cursor != null) {
+                try {
+                    if (cursor.moveToFirst()) {
+                        while (!cursor.isAfterLast()) {
+                            transactions.add(cursorToTransaction(cursor));
+                            cursor.moveToNext();
+                        }
+                    }
+                } finally {
+                    cursor.close();
+                }
+            }
+            return transactions;
     }
 
     public List<Transaction> getTransactionsByQR(Transaction transaction, Context context) {
@@ -398,7 +396,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
     /**
      * Создает временную таблицу транзакций на основе log_Transactions  с учетом фильтров
      */
-    private void createTempTransactionsTable(List<AbstractFilter> filterList, Context context) {
+    private synchronized void createTempTransactionsTable(List<AbstractFilter> filterList, Context context) {
         HashSet<Long> allAccountsIDs = AccountsDAO.getInstance(context).getAllModelsIDs();
         //Генерируем условие для SQL запроса
         String filterSelectionSrc = FilterManager.createSelectionString(filterList, allAccountsIDs, false, true, false, context);
@@ -488,7 +486,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
     /**
      * Создает временную таблицу транзакций на основе log_Transactions  с учетом фильтров и поискового запроса
      */
-    private void createTempTransactionsTable(List<AbstractFilter> filterList, String searchString, Context context) {
+    private synchronized void createTempTransactionsTable(List<AbstractFilter> filterList, String searchString, Context context) {
         HashSet<Long> allAccountsIDs = AccountsDAO.getInstance(context).getAllModelsIDs();
         //Генерируем условие для SQL запроса
         String filterSelectionSrc = FilterManager.createSelectionString(filterList, allAccountsIDs, false, true, false, context);
@@ -593,7 +591,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
         mDatabase.execSQL(sql);
     }
 
-    private void createSearchTransactionsTable(String searchString) {
+    private synchronized void createSearchTransactionsTable(String searchString) {
 //        if (searchString.equals(mLastSearchString)) return;
         String sql = "DROP TABLE IF EXISTS " + DBHelper.T_SEARCH_TRANSACTIONS + ";";
         if (BuildConfig.DEBUG) {
@@ -655,15 +653,21 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
         }
     }
 
+    public synchronized Single<ListSumsByCabbage> getGroupedSumsRx(FilterListHelper filterListHelper,
+                                                         boolean takeSearchString,
+                                                         ArrayList<Long> selectedIDs,
+                                                         Context context) {
+        return Single.fromCallable(() -> getGroupedSums(filterListHelper, takeSearchString, selectedIDs, context));
+    }
+
     /**
      * @param filterListHelper - автоматически добавляет фильтр исключающий закрытые счета
-     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     public synchronized ListSumsByCabbage getGroupedSums(FilterListHelper filterListHelper,
                                                          boolean takeSearchString,
                                                          ArrayList<Long> selectedIDs,
-                                                         Context context) throws Exception {
+                                                         Context context) {
         //Создаем экземпляр результирующей записи "валюта - сумма"
         ListSumsByCabbage listSumsByCabbage = new ListSumsByCabbage();
 
@@ -727,10 +731,16 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
         return listSumsByCabbage;
     }
 
+    public synchronized Single<List<SummaryItem>> getSummaryGroupedSumsRx(@NonNull List<SummaryItem> intervals,
+                                                   FilterListHelper filterListHelper,
+                                                   @NonNull Context context){
+        return Single.fromCallable(() -> getSummaryGroupedSums(intervals, filterListHelper, context));
+    }
+
     @SuppressWarnings("unchecked")
-    public synchronized List<SummaryItem> getSummaryGroupedSums(@NonNull List<SummaryItem> intervals,
-                                                                FilterListHelper filterListHelper,
-                                                                @NonNull Context context) throws Exception {
+    private synchronized List<SummaryItem> getSummaryGroupedSums(@NonNull List<SummaryItem> intervals,
+                                                                 FilterListHelper filterListHelper,
+                                                                 @NonNull Context context) {
         SummaryItem summaryItem;
 
         //Получаем список фильтров
@@ -837,7 +847,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
                         model.setIncome(new BigDecimal(cursor.getDouble(2)).abs());
                         model.setExpense(new BigDecimal(cursor.getDouble(3)).abs());
                         if (map.indexOfKey(cabbageID) < 0) {
-                            map.put(cabbageID, new LongSparseArray<IAbstractModel>());
+                            map.put(cabbageID, new LongSparseArray<>());
                         }
                         models = map.get(cabbageID);
                         models.put(model.getID(), model);
@@ -885,7 +895,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
                         income = new BigDecimal(cursor.getDouble(2)).abs();
                         expense = new BigDecimal(cursor.getDouble(3)).abs();
                         if (!map.containsKey(cabbageID)) {
-                            map.put(cabbageID, new ArrayList<DateEntry>());
+                            map.put(cabbageID, new ArrayList<>());
                         }
                         entries = map.get(cabbageID);
                         entries.add(new DateEntry(date, income, expense));
@@ -951,7 +961,6 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
                 "ORDER BY DateTime DESC\n" +
                 "LIMIT 1";
         Cursor cursor;
-        List<Transaction> transactions = new ArrayList<>();
         try {
             cursor = mDatabase.rawQuery(sql, null);
         } catch (Exception e) {

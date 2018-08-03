@@ -954,7 +954,7 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
             final Transaction transaction = data.getParcelableExtra("transaction");
             List<Transaction> transactions = TransactionsDAO.getInstance(getApplicationContext()).getTransactionsByQR(transaction, getApplicationContext());
             if (transactions.isEmpty()) {
-                intent.putExtra("transaction", data.getParcelableExtra("transaction"));
+                intent.putExtra("transaction", transaction);
                 intent.putExtra("load_products", true);
                 this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
             } else {
@@ -986,7 +986,7 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                intent.putExtra("transaction", data.getParcelableExtra("transaction"));
+                                intent.putExtra("transaction", transaction);
                                 intent.putExtra("load_products", true);
                                 startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
                             }
