@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Animatable;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -929,6 +930,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
     @Override
     public void loadData(long itemID) {
+//        Debug.startMethodTracing("TransactionsLoadData");
         stickyHeaderDecoration.clearHeaderCache();
         setAccountSetFilter();
 
@@ -1007,6 +1009,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
     public void updateSums(ListSumsByCabbage listSumsByCabbage) {
         SumsManager.updateSummaryTable(getActivity(), layoutSumTable, false, listSumsByCabbage, CabbagesDAO.getInstance(getActivity()).getCabbagesMap(), null);
+//        Debug.stopMethodTracing();
     }
 
     @Override

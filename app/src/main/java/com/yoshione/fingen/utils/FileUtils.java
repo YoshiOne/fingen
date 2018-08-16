@@ -147,13 +147,18 @@ public class FileUtils {
                     }
                     else {
                         FileOutputStream fout = new FileOutputStream(outputFile, false);
+                        BufferedOutputStream bufout = new BufferedOutputStream(fout);
                         try {
-                            for (int c = zin.read(); c != -1; c = zin.read()) {
-                                fout.write(c);
+
+                            byte[] buffer = new byte[2048];
+                            int read;
+                            while ((read = zin.read(buffer)) != -1) {
+                                bufout.write(buffer, 0, read);
                             }
-                            zin.closeEntry();
                         }
                         finally {
+                            zin.closeEntry();
+                            bufout.close();
                             fout.close();
                         }
                     }
