@@ -89,9 +89,12 @@ import com.yoshione.fingen.model.SmsMarker;
 import com.yoshione.fingen.model.Template;
 import com.yoshione.fingen.model.TrEditItem;
 import com.yoshione.fingen.model.Transaction;
+import com.yoshione.fingen.receivers.SMSReceiver;
 import com.yoshione.fingen.utils.CabbageFormatter;
 import com.yoshione.fingen.utils.DateTimeFormatter;
 import com.yoshione.fingen.utils.FabMenuController;
+import com.yoshione.fingen.utils.NotificationCounter;
+import com.yoshione.fingen.utils.NotificationHelper;
 import com.yoshione.fingen.utils.PrefUtils;
 import com.yoshione.fingen.utils.RequestCodes;
 import com.yoshione.fingen.utils.SmsParser;
@@ -440,6 +443,10 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     @Override
     public void onResume() {
         super.onResume();
+
+        NotificationHelper.getInstance(this).cancel(SMSReceiver.NOTIFICATION_ID_TRANSACTION_AUTO_CREATED);
+        NotificationCounter notificationCounter = new NotificationCounter(PreferenceManager.getDefaultSharedPreferences(this));
+        notificationCounter.removeNotification(SMSReceiver.NOTIFICATION_ID_TRANSACTION_AUTO_CREATED);
 
         forceUpdateLocation = transaction.getID() < 0;
         allowUpdateLocation = preferences.getBoolean("detect_locations", false) & forceUpdateLocation & (srcTransaction == null);

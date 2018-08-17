@@ -1,8 +1,8 @@
 package com.yoshione.fingen.adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MotionEventCompat;
@@ -18,25 +18,19 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.HorizontalBarChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.yoshione.fingen.FgConst;
+import com.yoshione.fingen.R;
+import com.yoshione.fingen.adapter.helper.ItemTouchHelperAdapter;
+import com.yoshione.fingen.adapter.helper.OnStartDragListener;
 import com.yoshione.fingen.dao.AccountsDAO;
 import com.yoshione.fingen.managers.AccountManager;
 import com.yoshione.fingen.model.Account;
 import com.yoshione.fingen.model.BaseModel;
 import com.yoshione.fingen.model.Cabbage;
-import com.yoshione.fingen.R;
 import com.yoshione.fingen.utils.CabbageFormatter;
 import com.yoshione.fingen.utils.ColorUtils;
 import com.yoshione.fingen.utils.IconGenerator;
-import com.yoshione.fingen.adapter.helper.ItemTouchHelperAdapter;
-import com.yoshione.fingen.adapter.helper.OnStartDragListener;
+import com.yoshione.fingen.widgets.ToolbarActivity;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -45,6 +39,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by slv on 17.09.2015.
@@ -58,7 +54,7 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
 
     private List<Account> accountList;
 
-    private final Activity mContext;
+    private final ToolbarActivity mActivity;
 
     private boolean mDragMode = false;
     private final OnStartDragListener mDragStartListener;
@@ -79,16 +75,16 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
     }
 
     //Конструктор
-    public AdapterAccounts(Activity context, OnStartDragListener dragStartListener) {
-        this.mContext = context;
+    public AdapterAccounts(ToolbarActivity activity, OnStartDragListener dragStartListener) {
+        this.mActivity = activity;
         accountList = new ArrayList<>();
 
         mDragStartListener = dragStartListener;
 
-        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FgConst.PREF_COMPACT_VIEW_MODE, false)) {
-            mContextThemeWrapper = new ContextThemeWrapper(context, R.style.StyleListItemTransationsCompact);
+        if (PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(FgConst.PREF_COMPACT_VIEW_MODE, false)) {
+            mContextThemeWrapper = new ContextThemeWrapper(activity, R.style.StyleListItemTransationsCompact);
         } else {
-            mContextThemeWrapper = new ContextThemeWrapper(context, R.style.StyleListItemTransationsNormal);
+            mContextThemeWrapper = new ContextThemeWrapper(activity, R.style.StyleListItemTransationsNormal);
         }
     }
 
@@ -103,8 +99,9 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
     }
 
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
                                                       int viewType) {
         RecyclerView.ViewHolder vh;
         View v = LayoutInflater.from(mContextThemeWrapper).inflate(
@@ -116,7 +113,7 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder viewHolder, int position) {
 
         Account account = accountList.get(position);
 
@@ -128,60 +125,71 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
 
         avh.textViewName.setText(account.getName());
 
-        String[] accountTypes = mContext.getResources().getStringArray(R.array.account_types);
+        String[] accountTypes = mActivity.getResources().getStringArray(R.array.account_types);
         String accountType = accountTypes[account.getAccountType().ordinal()];
 
-        Cabbage cabbage = AccountManager.getCabbage(account, mContext);
+        Cabbage cabbage = AccountManager.getCabbage(account, mActivity);
         avh.textViewType.setText(String.format("%s (%s)", accountType, cabbage.getCode()));
 
         CabbageFormatter cabbageFormatter = new CabbageFormatter(cabbage);
-        Boolean showInEx = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean(FgConst.PREF_SHOW_INCOME_EXPENSE_FOR_ACCOUNTS, true);
+        Boolean showInEx = PreferenceManager.getDefaultSharedPreferences(mActivity).getBoolean(FgConst.PREF_SHOW_INCOME_EXPENSE_FOR_ACCOUNTS, true);
         if (showInEx) {
-            avh.textViewIncome.setText(cabbageFormatter.format(account.getIncome()));
-            avh.textViewOutcome.setText(cabbageFormatter.format(account.getExpense()));
-            avh.textViewIncome.setVisibility(View.VISIBLE);
+            mActivity.unsubscribeOnDestroy(
+                    cabbageFormatter.formatRx(account.getIncome())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(s -> {
+                                avh.textViewIncome.setText(s);
+                                avh.textViewIncome.setVisibility(View.VISIBLE);
+                            }));
+            mActivity.unsubscribeOnDestroy(
+                    cabbageFormatter.formatRx(account.getExpense())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(s -> {
+                                avh.textViewOutcome.setText(s);
+                                avh.textViewOutcome.setVisibility(View.VISIBLE);
+                            }));
             avh.textViewOutcome.setVisibility(View.VISIBLE);
         } else {
             avh.textViewIncome.setVisibility(View.GONE);
             avh.textViewOutcome.setVisibility(View.GONE);
         }
-        avh.textViewCurBalance.setText(cabbageFormatter.format(account.getCurrentBalance()));
+
+        mActivity.unsubscribeOnDestroy(
+                cabbageFormatter.formatRx(account.getCurrentBalance())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(s -> avh.textViewCurBalance.setText(s))
+        );
 
         int compareToZero = account.getCurrentBalance().setScale(cabbage.getDecimalCount(), RoundingMode.HALF_EVEN).compareTo(BigDecimal.ZERO);
 
         switch (compareToZero) {
             case -1:
-                avh.textViewCurBalance.setTextColor(ContextCompat.getColor(mContext, R.color.negative_color));
+                avh.textViewCurBalance.setTextColor(ContextCompat.getColor(mActivity, R.color.negative_color));
                 break;
             case 0:
-                avh.textViewCurBalance.setTextColor(ContextCompat.getColor(mContext, R.color.light_gray_text));
+                avh.textViewCurBalance.setTextColor(ContextCompat.getColor(mActivity, R.color.light_gray_text));
                 break;
             case 1:
-                avh.textViewCurBalance.setTextColor(ContextCompat.getColor(mContext, R.color.positive_color));
+                avh.textViewCurBalance.setTextColor(ContextCompat.getColor(mActivity, R.color.positive_color));
                 break;
         }
 
         if (mDragMode) {
-            icon.setImageDrawable(mContext.getDrawable(R.drawable.ic_drag));
-            icon.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
-                        mDragStartListener.onStartDrag(viewHolder);
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            });
-        } else {
-            icon.setImageDrawable(IconGenerator.getAccountIcon(account.getAccountType(), compareToZero, account.getIsClosed(), mContext));
-            icon.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
+            icon.setImageDrawable(mActivity.getDrawable(R.drawable.ic_drag));
+            icon.setOnTouchListener((v, event) -> {
+                if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
+                    mDragStartListener.onStartDrag(viewHolder);
+                    return true;
+                } else {
                     return false;
                 }
             });
+        } else {
+            icon.setImageDrawable(IconGenerator.getAccountIcon(account.getAccountType(), compareToZero, account.getIsClosed(), mActivity));
+            icon.setOnTouchListener((view, motionEvent) -> false);
         }
 
         if (position == accountList.size() - 1) {
@@ -194,7 +202,7 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
 
         if (account.getCreditLimit().compareTo(BigDecimal.ZERO) < 0) {
             avh.mProgresBarLayout.setVisibility(View.VISIBLE);
-            buildProgresBar(avh, account, cabbage, mContext);
+            buildProgresBar(avh, account, cabbage, mActivity);
         } else {
             avh.mProgresBarLayout.setVisibility(View.GONE);
         }
@@ -238,8 +246,8 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
         for (Account account : accountList) {
             pairs.add(new Pair<>(account.getID(), i++));
         }
-        AccountsDAO.getInstance(mContext).updateOrder(pairs);
-        PreferenceManager.getDefaultSharedPreferences(mContext)
+        AccountsDAO.getInstance(mActivity).updateOrder(pairs);
+        PreferenceManager.getDefaultSharedPreferences(mActivity)
                 .edit()
                 .putInt("accounts_sort_type", BaseModel.SORT_BY_ACCOUNT_CUSTOM)
                 .apply();

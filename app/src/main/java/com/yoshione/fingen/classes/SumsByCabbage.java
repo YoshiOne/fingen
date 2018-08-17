@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 /**
  * Created by slv on 07.03.2016.
- *
  */
 public class SumsByCabbage {
     private long mCabbageId = -1;
@@ -13,6 +12,19 @@ public class SumsByCabbage {
     private BigDecimal inPlan;
     private BigDecimal outPlan;
     private BigDecimal startBalance;
+
+    private String inString;
+    private String outString;
+    private String totalString;
+
+    public SumsByCabbage(long mCabbageId, BigDecimal inTrSum, BigDecimal outTrSum) {
+        this.mCabbageId = mCabbageId;
+        this.inTrSum = inTrSum;
+        this.outTrSum = outTrSum;
+        inPlan = BigDecimal.ZERO;
+        outPlan = BigDecimal.ZERO;
+        startBalance = BigDecimal.ZERO;
+    }
 
     public boolean isEmpty(boolean isAddStartBalance) {
         boolean isEmpty = inPlan.compareTo(BigDecimal.ZERO) == 0 &
@@ -69,12 +81,27 @@ public class SumsByCabbage {
         this.outTrSum = outTrSum;
     }
 
-    public SumsByCabbage(long mCabbageId, BigDecimal inTrSum, BigDecimal outTrSum) {
-        this.mCabbageId = mCabbageId;
-        this.inTrSum = inTrSum;
-        this.outTrSum = outTrSum;
-        inPlan = BigDecimal.ZERO;
-        outPlan = BigDecimal.ZERO;
-        startBalance = BigDecimal.ZERO;
+    public String getInString() {
+        return inString;
+    }
+
+    public void setInString(String inString) {
+        this.inString = inString;
+    }
+
+    public String getOutString() {
+        return outString;
+    }
+
+    public void setOutString(String outString) {
+        this.outString = outString;
+    }
+
+    public String getTotalString() {
+        return totalString;
+    }
+
+    public void setTotalString(String totalString) {
+        this.totalString = totalString;
     }
 }

@@ -18,6 +18,7 @@ import com.yoshione.fingen.adapter.viewholders.TransactionViewHolder;
 import com.yoshione.fingen.adapter.viewholders.TransactionViewHolderParams;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.utils.ScreenUtils;
+import com.yoshione.fingen.widgets.ToolbarActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,22 +27,22 @@ public class TransactionsArrayAdapter extends ArrayAdapter<Transaction> {
     private final ContextThemeWrapper mContextThemeWrapper;
     private List<Transaction> mTransactionList = new ArrayList<>();
     private TransactionViewHolderParams mParams;
-    private Activity mActivity;
+    private ToolbarActivity mActivity;
 
-    public TransactionsArrayAdapter(@NonNull Activity context, List<Transaction> list, AdapterTransactions.OnTransactionItemEventListener eventListener) {
-        super(context, 0, list);
+    public TransactionsArrayAdapter(@NonNull ToolbarActivity activity, List<Transaction> list, AdapterTransactions.OnTransactionItemEventListener eventListener) {
+        super(activity, 0, list);
         mTransactionList.clear();
         mTransactionList.addAll(list);
 
-        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FgConst.PREF_COMPACT_VIEW_MODE, false)) {
-            mContextThemeWrapper = new ContextThemeWrapper(context, R.style.StyleListItemTransationsCompact);
+        if (PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(FgConst.PREF_COMPACT_VIEW_MODE, false)) {
+            mContextThemeWrapper = new ContextThemeWrapper(activity, R.style.StyleListItemTransationsCompact);
         } else {
-            mContextThemeWrapper = new ContextThemeWrapper(context, R.style.StyleListItemTransationsNormal);
+            mContextThemeWrapper = new ContextThemeWrapper(activity, R.style.StyleListItemTransationsNormal);
         }
-        mParams = new TransactionViewHolderParams(context);
+        mParams = new TransactionViewHolderParams(activity);
         mParams.mOnTransactionItemEventListener = eventListener;
         mParams.mShowDateInsteadOfRunningBalance = true;
-        mActivity = context;
+        mActivity = activity;
     }
 
     @NonNull
@@ -52,7 +53,7 @@ public class TransactionsArrayAdapter extends ArrayAdapter<Transaction> {
         lp.height = ScreenUtils.dpToPx(500f, mActivity);
         parent.setLayoutParams(lp);
         @SuppressLint("ViewHolder") View view = LayoutInflater.from(mContextThemeWrapper).inflate(R.layout.list_item_transactions_2, parent, false);
-        TransactionViewHolder viewHolder = new TransactionViewHolder(mParams, null, view);
+        TransactionViewHolder viewHolder = new TransactionViewHolder(mParams, null, mActivity, view);
         viewHolder.bindTransaction(mTransactionList.get(position));
         return viewHolder.itemView;
     }

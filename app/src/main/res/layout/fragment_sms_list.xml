@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:showIn="@layout/activity_sms_list"
-    tools:context="com.yoshione.fingen.FragmentSmsList">
+    tools:activity="com.yoshione.fingen.FragmentSmsList">
 
     <com.yoshione.fingen.widgets.ContextMenuRecyclerView
         android:id="@+id/recycler_view"

@@ -22,6 +22,7 @@ import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.dao.LocationsDAO;
 import com.yoshione.fingen.dao.PayeesDAO;
 import com.yoshione.fingen.dao.ProjectsDAO;
+import com.yoshione.fingen.interfaces.IUnsubscribeOnDestroy;
 import com.yoshione.fingen.managers.TransactionManager;
 import com.yoshione.fingen.model.Account;
 import com.yoshione.fingen.model.Cabbage;
@@ -41,6 +42,8 @@ import java.math.BigDecimal;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import eu.davidea.flipview.FlipView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class TransactionViewHolder extends RecyclerView.ViewHolder {
 
@@ -77,15 +80,18 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.imageViewDestAccount)
     ImageView mImageViewDestAccount;
 
-    TransactionViewHolderParams mParams;
+    private TransactionViewHolderParams mParams;
 
-    AdapterTransactions mAdapterTransactions;
+    private AdapterTransactions mAdapterTransactions;
 
-    public TransactionViewHolder(TransactionViewHolderParams params, AdapterTransactions adapterTransactions, View v) {
+    private IUnsubscribeOnDestroy mUnsubscriber;
+
+    public TransactionViewHolder(TransactionViewHolderParams params, AdapterTransactions adapterTransactions, IUnsubscribeOnDestroy unsubscriber, View v) {
         super(v);
         ButterKnife.bind(this, v);
         mParams = params;
         mAdapterTransactions = adapterTransactions;
+        mUnsubscriber = unsubscriber;
     }
 
     public void bindTransaction(final Transaction t) {
@@ -144,15 +150,30 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
             cabbageFormatter = new CabbageFormatter(cabbage);
             mParams.mCabbageCache.put(cabbage.getID(), cabbageFormatter);
         }
-        if (t.getTransactionType() == Transaction.TRANSACTION_TYPE_TRANSFER) {
-            textViewAmount.setText(cabbageFormatter.format(t.getAmount().abs()));
-        } else {
-            textViewAmount.setText(cabbageFormatter.format(t.getAmount()));
-        }
-        String fromAmount = cabbageFormatter.format(t.getFromAccountBalance());
 
-        textViewAccountBalance.setText(fromAmount);
+        mUnsubscriber.unsubscribeOnDestroy(
+                cabbageFormatter.formatRx(t.getTransactionType() == Transaction.TRANSACTION_TYPE_TRANSFER ? t.getAmount().abs() : t.getAmount())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(s -> textViewAmount.setText(s))
+        );
+
+//        if (t.getTransactionType() == Transaction.TRANSACTION_TYPE_TRANSFER) {
+//            textViewAmount.setText(cabbageFormatter.format(t.getAmount().abs()));
+//        } else {
+//            textViewAmount.setText(cabbageFormatter.format(t.getAmount()));
+//        }
+
         textViewAccountBalance.setTextColor(getAmountColor(t.getFromAccountBalance()));
+        mUnsubscriber.unsubscribeOnDestroy(
+                cabbageFormatter.formatRx(t.getFromAccountBalance())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(s -> textViewAccountBalance.setText(s))
+        );
+
+//        String fromAmount = cabbageFormatter.format(t.getFromAccountBalance());
+//        textViewAccountBalance.setText(fromAmount);
 
         if (t.getDestAccountID() >= 0) {
             if (mParams.mCabbageCache.containsKey(destAccount.getCabbageId())) {
@@ -162,9 +183,17 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
                 cabbageFormatter = new CabbageFormatter(cabbage);
                 mParams.mCabbageCache.put(cabbage.getID(), cabbageFormatter);
             }
-            String toAmount = cabbageFormatter.format(t.getToAccountBalance());
-            textViewDestAccountBalance.setText(toAmount);
+
             textViewDestAccountBalance.setTextColor(getAmountColor(t.getToAccountBalance()));
+            mUnsubscriber.unsubscribeOnDestroy(
+                    cabbageFormatter.formatRx(t.getToAccountBalance())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(s -> textViewDestAccountBalance.setText(s))
+            );
+
+//            String toAmount = cabbageFormatter.format(t.getToAccountBalance());
+//            textViewDestAccountBalance.setText(toAmount);
             imageViewChevronRight.setVisibility(View.VISIBLE);
             textViewDestAccountBalance.setVisibility(View.VISIBLE);
         } else {
@@ -178,7 +207,7 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
         }
 
         //<editor-fold desc="DateTime">
-        textViewDate.setText(String.format("%s", mParams.mDateTimeFormatter.getTimeShortString(t.getDateTime())));
+        textViewDate.setText(mParams.mDateTimeFormatter.getTimeShortString(t.getDateTime()));
         //</editor-fold>
 
         //<editor-fold desc="(Payee & Location) or DestAccount">
@@ -404,12 +433,9 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
 
         flipViewIcon.setOnClickListener(new ImageViewIconClickListener(t));
 
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mParams.mOnTransactionItemEventListener != null) {
-                    mParams.mOnTransactionItemEventListener.onTransactionItemClick(t);
-                }
+        itemView.setOnClickListener(v -> {
+            if (mParams.mOnTransactionItemEventListener != null) {
+                mParams.mOnTransactionItemEventListener.onTransactionItemClick(t);
             }
         });
         //</editor-fold>

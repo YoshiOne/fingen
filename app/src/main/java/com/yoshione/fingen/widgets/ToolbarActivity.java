@@ -19,23 +19,30 @@ import com.github.omadahealth.lollipin.lib.PinCompatActivity;
 import com.yoshione.fingen.ActivityMain;
 import com.yoshione.fingen.BuildConfig;
 import com.yoshione.fingen.R;
+import com.yoshione.fingen.interfaces.IUnsubscribeOnDestroy;
 import com.yoshione.fingen.utils.ViewServer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by slv on 18.11.2015.
  *
  */
-public abstract class ToolbarActivity extends PinCompatActivity {
+public abstract class ToolbarActivity extends PinCompatActivity implements IUnsubscribeOnDestroy {
 //    private MvpDelegate<? extends ToolbarActivity> mMvpDelegate;
 
     protected final String TAG = this.getClass().getName();
     @BindView(R.id.toolbar)
     public Toolbar toolbar;
-    public CompositeDisposable mCompositeDisposable;
+    private CompositeDisposable mCompositeDisposable;
+
+    @Override
+    public void unsubscribeOnDestroy(Disposable disposable) {
+        mCompositeDisposable.add(disposable);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

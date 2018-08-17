@@ -59,6 +59,7 @@ import com.yoshione.fingen.widgets.ToolbarActivity;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -129,7 +130,7 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
 
         mAllAccountsSetCaption = getString(R.string.ent_all_accounts);
 
-        adapter = new AdapterAccounts(getActivity(), this);
+        adapter = new AdapterAccounts((ToolbarActivity) getActivity(), this);
         adapter.setHasStableIds(true);
         recyclerView.setAdapter(adapter);
 
@@ -205,7 +206,7 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
 
     private void loadAccountsSets() {
         ToolbarActivity activity = (ToolbarActivity) getActivity();
-        Objects.requireNonNull(activity).mCompositeDisposable.add(
+        Objects.requireNonNull(activity).unsubscribeOnDestroy(
                 Single.fromCallable(() -> {
                     List<AccountsSet> accountsSetList = AccountsSetManager.getInstance().getAcoountsSets(getActivity());
                     AccountsSetRef allAccountsSetRef = new AccountsSetRef(-1, mAllAccountsSetCaption);
@@ -447,9 +448,9 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         int sortOrder = preferences.getInt("accounts_sort_order", 0);
 
         ToolbarActivity activity = (ToolbarActivity) getActivity();
-        Objects.requireNonNull(activity).mCompositeDisposable.add(
+        Objects.requireNonNull(activity).unsubscribeOnDestroy(
             AccountsDAO.getInstance(getActivity()).getAllAccountsRx(showClosed)
-                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.newThread())
                     .map(accounts -> {
                         if (!preferences.getBoolean("show_debt_accounts", true)) {
                             CreditsDAO creditsDAO = CreditsDAO.getInstance(getActivity());
@@ -487,15 +488,12 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
                         } else {
                             mTextViewPullToCreateAccount.setVisibility(View.GONE);
                         }
+                        loadSums();
                     })
         );
     }
 
-    @Override
     public void loadSums() {
-//        if (getActivity() instanceof ActivityAccounts) return;
-        TransactionsDAO transactionsDAO = TransactionsDAO.getInstance(FragmentAccounts.this.getActivity());
-        ListSumsByCabbage listSumsByCabbage;
 
         List<Long> accountsIDs = AccountsSetManager.getInstance().getCurrentAccountSet(getContext()).getAccountsIDsList();
         AccountFilter accountFilter = new AccountFilter(0);
@@ -503,13 +501,19 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         List<AbstractFilter> filters = new ArrayList<>();
         filters.add(accountFilter);
 
-        try {
-            listSumsByCabbage = transactionsDAO.getGroupedSums(new FilterListHelper(filters, "", getActivity()), false, null, getActivity());
-        } catch (Exception e) {
-            listSumsByCabbage = new ListSumsByCabbage();
-        }
-        SumsManager.updateSummaryTable(getActivity(), mLayoutSumTable, true, listSumsByCabbage,
-                CabbagesDAO.getInstance(getActivity()).getCabbagesMap(), null);
+        ToolbarActivity activity = (ToolbarActivity) getActivity();
+        TransactionsDAO transactionsDAO = TransactionsDAO.getInstance(activity);
+        HashMap<Long, Cabbage> cabbages = CabbagesDAO.getInstance(getActivity()).getCabbagesMap();
+        Objects.requireNonNull(activity).unsubscribeOnDestroy(
+                transactionsDAO.getGroupedSumsRx(new FilterListHelper(filters, "", activity), true, null, getActivity())
+                        .map(listSumsByCabbage -> SumsManager.formatSums(listSumsByCabbage, cabbages, true))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(listSumsByCabbage -> {
+                            SumsManager.updateSummaryTableWithFormattedStrings(getActivity(), mLayoutSumTable, true, listSumsByCabbage,
+                                    cabbages, null);
+                        })
+        );
     }
 
     interface AccountEventListener {

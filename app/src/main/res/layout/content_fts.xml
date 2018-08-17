@@ -5,7 +5,7 @@
     android:id="@+id/layoutFTS"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".ActivityEditTransaction">
+    tools:activity=".ActivityEditTransaction">
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/textInputLayout3"

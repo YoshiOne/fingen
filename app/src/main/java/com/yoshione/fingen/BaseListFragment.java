@@ -16,10 +16,12 @@ import com.yoshione.fingen.widgets.ContextMenuRecyclerView;
 import com.yoshione.fingen.widgets.FgLinearLayoutManager;
 
 import java.util.Objects;
+import java.util.concurrent.Callable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.Single;
 
 /**
  * Created by slv on 08.11.2016.
@@ -116,7 +118,6 @@ public class BaseListFragment extends Fragment implements IListFragment {
         isUpdating = true;
 
         mUpdateListsEvents.loadData(itemID);
-        mUpdateListsEvents.loadSums();
 
         isUpdating = false;
     }

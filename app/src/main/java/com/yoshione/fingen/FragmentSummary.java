@@ -212,7 +212,7 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
         filters.add(accountFilter);
 
         ToolbarActivity activity = (ToolbarActivity) getActivity();
-        Objects.requireNonNull(activity).mCompositeDisposable.add(
+        Objects.requireNonNull(activity).unsubscribeOnDestroy(
                 TransactionsDAO.getInstance(getActivity()).getSummaryGroupedSumsRx(
                         items, new FilterListHelper(filters, "", getActivity()),
                         getActivity())
@@ -223,10 +223,5 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
                             adapter.notifyDataSetChanged();
                         })
         );
-    }
-
-    @Override
-    public void loadSums() {
-
     }
 }

@@ -71,7 +71,7 @@
         <changelogtext>Google Play services are no longer requires to install and run the application.</changelogtext>
         <changelogtext>When exporting CSV, the option "Export goods" appeared.</changelogtext>
         <changelogtext>The total amount is displayed in the center of the pie chart.</changelogtext>
-        <changelogtext>In the context menu of the account, the item "Show report" appeared.</changelogtext>
+        <changelogtext>In the activity menu of the account, the item "Show report" appeared.</changelogtext>
         <changelogtext>On the graphs by dates, the values ​​of the sums are signed.</changelogtext>
         <changelogtext>When you duplicate a transaction, its duplicate is immediately opened for editing.</changelogtext>
     </changelogversion>
@@ -138,7 +138,7 @@
         <changelogtext>Geographical coordinates of the transaction are exported to CSV.</changelogtext>
         <changelogtext>New setting "Hide panel with sums".</changelogtext>
         <changelogtext>Swapes in the date and time fields in the transaction editor change change values ​​by 1 day and hour, respectively.</changelogtext>
-        <changelogtext>Instead of the filter list context menu, there are now buttons in the header of each filter.</changelogtext>
+        <changelogtext>Instead of the filter list activity menu, there are now buttons in the header of each filter.</changelogtext>
         <changelogtext>When you delete the last item from the filter, the filter itself is also deleted.</changelogtext>
         <changelogtext>Buttons to edit and delete filters.</changelogtext>
         <changelogtext>Fixed the response of the sum filter to the switch.</changelogtext>
@@ -150,7 +150,7 @@
         <changelogtext>Disable the ability to disable automatic backup. Now backups are made by default between 1 am and 6 am (at the discretion of the system).</changelogtext>
         <changelogtext>[Android 6+] At the first start, a dialog with a suggestion to give rights to the memory card is displayed, as it is necessary for backup.</changelogtext>
         <changelogtext>Bulk editing of transactions.</changelogtext>
-        <changelogtext>Fast filtering and selection of transactions through the context menu.</changelogtext>
+        <changelogtext>Fast filtering and selection of transactions through the activity menu.</changelogtext>
         <changelogtext>Buttons for switching transaction type: Payment / Transfer. Can be disabled in the settings.</changelogtext>
     </changelogversion>
     <!--(77)-->
@@ -216,11 +216,11 @@
         <changelogtext>Implemented sets of accounts. Pull up on the bottom panel in the list of accounts to add account to the set, or switch between sets. All amounts and transactions are displayed for accounts, included in the set.</changelogtext>
         <changelogtext>Display account balance after ever transaction.</changelogtext>
         <changelogtext>Closed accounts are now not accounted for in the balance sheet. Transactions on them just do not appear except for transfers between open and closed accounts.</changelogtext>
-        <changelogtext>When you click on the account in the "Accounts" or a period in the "Summary", opens a list of the relevant transaction element. Editing is available via the context menu.</changelogtext>
+        <changelogtext>When you click on the account in the "Accounts" or a period in the "Summary", opens a list of the relevant transaction element. Editing is available via the activity menu.</changelogtext>
         <changelogtext>Removed create an account floating button from the list of accounts. Instead, there was a button "New Account" at the bottom of the panel, the pulled up accounts list.</changelogtext>
         <changelogtext>Configure the order of tabs on the main screen. Settings now groupped in different screens.</changelogtext>
         <changelogtext>New quick shortcuts for Android 7.1+ (caused by a long press on an app icon).</changelogtext>
-        <changelogtext>It returned to the ability to remove the transaction from the context menu.</changelogtext>
+        <changelogtext>It returned to the ability to remove the transaction from the activity menu.</changelogtext>
         <changelogtext>In the "Backup and Restore" displays the date and time of the last successful save in Dropbox.</changelogtext>
         <changelogtext>[font color=#4CAF50](FIXED)[/font] wrong amount in the transaction list, when you add account filter but turn it off.</changelogtext>
         <changelogtext>[font color=#4CAF50](FIXED)[/font] incorrect dates titles display in the list of transaction.</changelogtext>
@@ -250,7 +250,7 @@
     <!--(45)-->
     <changelogversion versionName="0.9.7" changeDate=">2016.10.20">
         <changelogtext>Splash screen instead of empty screen when on app start.</changelogtext>
-        <changelogtext>"Balance adjustment" item in account context menu.</changelogtext>
+        <changelogtext>"Balance adjustment" item in account activity menu.</changelogtext>
         <changelogtext>Template selection via template manage screen.</changelogtext>
         <changelogtext>All spinners changed to single choice dialogs or entity manage screens.</changelogtext>
         <changelogtext>New edit text and fast scroll components.</changelogtext>
@@ -266,7 +266,7 @@
         <changelogtext>When checking sms on suitability for the automatic creation of a transaction, the entities "payee" and "category" does not apply to transfers.</changelogtext>
         <changelogtext>Transactions for which the determined location are indicated on the list.</changelogtext>
         <changelogtext>The name of the category in the transaction list item deferred to a separate line and now does not overlap with the name of the account for long names of accounts or categories.</changelogtext>
-        <changelogtext>From the transaction list context menu are removed  items "Delete" and "Delete All". These operations can be done by selecting the desired transaction and selecting the "Delete Selected".</changelogtext>
+        <changelogtext>From the transaction list activity menu are removed  items "Delete" and "Delete All". These operations can be done by selecting the desired transaction and selecting the "Delete Selected".</changelogtext>
         <changelogtext>When you create a transaction through intent, if you specify a template, "type" parameter (if specified) is not taken into account. Type is taken from the template.</changelogtext>
         <changelogtext>The algorithm of deleting transactions was changed. If before they were removed without confirmation, and can be restored for some time, now deleted after confirmation with no possibility.</changelogtext>
         <changelogtext>Setting the payee selecttion style for the transaction: drop-down list when you type the name or the conclusion the list of recipients in a separate window.</changelogtext>

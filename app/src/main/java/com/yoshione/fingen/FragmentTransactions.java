@@ -64,6 +64,7 @@ import com.yoshione.fingen.managers.TransactionManager;
 import com.yoshione.fingen.model.Account;
 import com.yoshione.fingen.model.AccountsSet;
 import com.yoshione.fingen.model.BaseModel;
+import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.model.StringIntItem;
 import com.yoshione.fingen.model.Template;
 import com.yoshione.fingen.model.Transaction;
@@ -78,6 +79,7 @@ import com.yoshione.fingen.widgets.ToolbarActivity;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -208,7 +210,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         FgLinearLayoutManager layoutManagerFilters = new FgLinearLayoutManager(getActivity());
         recyclerViewFilters.setLayoutManager(layoutManagerFilters);
 
-        adapter = new AdapterTransactions(recyclerView, this, getActivity());
+        adapter = new AdapterTransactions(recyclerView, this, (ToolbarActivity) getActivity());
         adapter.setHasStableIds(true);
         adapter.setmOnTransactionItemClickListener(this);
         adapterFilters = new AdapterFilters(getActivity(), this, this::editFilter);
@@ -339,7 +341,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
         mFabGoTop.setOnClickListener(v -> {
             FgLinearLayoutManager linearLayoutManager = (FgLinearLayoutManager) recyclerView.getLayoutManager();
-            if (adapter.getTransactionList().size() > 0) {
+            if (adapter.getTransactionListSize() > 0) {
                 linearLayoutManager.scrollToPositionWithOffset(0, 0);
             }
         });
@@ -939,38 +941,38 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         FgLinearLayoutManager linearLayoutManager = (FgLinearLayoutManager) recyclerView.getLayoutManager();
         int currentItem = linearLayoutManager.findFirstVisibleItemPosition();
 
-        adapter.getTransactionList().clear();
+        adapter.clearTransactionList();
 
         int count = Math.max(adapter.getItemCount(), NUMBER_ITEMS_TO_BE_LOADED);
 
         loadMore(count, () -> {
             adapter.getParams().clearCaches();
             if (itemID >= 0) {
-                for (int i = 0; i < adapter.getTransactionList().size(); i++) {
-                    if (adapter.getTransactionList().get(i).getID() == itemID) {
-                        updateLists(i);
-                    }
+                int ind = adapter.getItemIndexByID(itemID);
+                if (ind >= 0) {
+                    updateLists(ind);
                 }
             } else {
                 updateLists(currentItem);
+                loadSums();
             }
         });
     }
 
     @Override
     public void loadMore(int numberItems, ILoadMoreFinish loadMoreFinish) {
-        int start = adapter.getTransactionList().size();
+        int start = adapter.getTransactionListSize();
         if (!adapter.endOfList) {
             long curTime = System.currentTimeMillis();
             ToolbarActivity activity = (ToolbarActivity) getActivity();
-            Objects.requireNonNull(activity).mCompositeDisposable.add(
+            Objects.requireNonNull(activity).unsubscribeOnDestroy(
                     TransactionsDAO.getInstance(getActivity()).getRangeTransactionsRx(
                             start,
                             numberItems,
                             new FilterListHelper(adapterFilters.getFilterList(), mEditTextSearch.getText().toString(), getActivity()),
                             getActivity())
 
-                            .subscribeOn(Schedulers.io())
+                            .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(transactions -> {
                                 adapter.endOfList = transactions.size() < numberItems;
@@ -986,15 +988,19 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         }
     }
 
-    @Override
     public void loadSums() {
         ToolbarActivity activity = (ToolbarActivity) getActivity();
-        Objects.requireNonNull(activity).mCompositeDisposable.add(
+        HashMap<Long, Cabbage> cabbages = CabbagesDAO.getInstance(getActivity()).getCabbagesMap();
+        Objects.requireNonNull(activity).unsubscribeOnDestroy(
             mTransactionsDAO.getGroupedSumsRx(new FilterListHelper(adapterFilters.getFilterList(),
                     mEditTextSearch.getText().toString(), getActivity()), true, adapter.getSelectedTransactionsIDsAsLong(), getActivity())
-                    .subscribeOn(Schedulers.io())
+                    .map(listSumsByCabbage -> SumsManager.formatSums(listSumsByCabbage, cabbages, false))
+                    .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(this::updateSums)
+            .subscribe(listSumsByCabbage -> {
+                SumsManager.updateSummaryTableWithFormattedStrings(getActivity(), layoutSumTable, false, listSumsByCabbage,
+                        cabbages, null);
+            })
         );
     }
 

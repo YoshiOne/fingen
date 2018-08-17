@@ -5,6 +5,4 @@ package com.yoshione.fingen.interfaces;
  */
 public interface IUpdateMainListsEvents {
     void loadData(long itemID);
-
-    void loadSums();
 }

@@ -22,6 +22,7 @@ import com.yoshione.fingen.interfaces.ILoadMoreFinish;
 import com.yoshione.fingen.interfaces.IOnLoadMore;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.utils.DateTimeFormatter;
+import com.yoshione.fingen.widgets.ToolbarActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,6 +50,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
     private volatile boolean loading;
     private Date lastDate;
     private IOnLoadMore mOnLoadMore;
+    private ToolbarActivity mActivity;
 
     public TransactionViewHolderParams getParams() {
         return mParams;
@@ -62,14 +64,16 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
 
     //Конструктор
     @SuppressLint("UseSparseArrays")
-    public AdapterTransactions(RecyclerView recyclerView, IOnLoadMore onLoadMore, Activity context) {
+    public AdapterTransactions(RecyclerView recyclerView, IOnLoadMore onLoadMore, ToolbarActivity activity) {
+        mActivity = activity;
+
         setHasStableIds(true);
 
         mOnLoadMore = onLoadMore;
         transactionList = new ArrayList<>();
         headerList = new ArrayList<>();
 
-        LinearLayout linearLayout = new LinearLayout(context);
+        LinearLayout linearLayout = new LinearLayout(activity);
         linearLayout.layout(0, 0, 56, 56);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(56, 56));
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -112,7 +116,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
             });
         }
 
-        mParams = new TransactionViewHolderParams(context);
+        mParams = new TransactionViewHolderParams(activity);
         mParams.mShowDateInsteadOfRunningBalance = false;
     }
 
@@ -120,12 +124,23 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         mOnLoadMore.loadMore(numberItems, loadMoreFinish);
     }
 
-    public ArrayList<Transaction> getTransactionList() {
-        return transactionList;
+    public void clearTransactionList() {
+        transactionList.clear();
+        headerList.clear();
+        endOfList = false;
     }
 
-    public synchronized void setTransactionList(List<Transaction> input) {
-        addTransactions(input, true);
+    public int getTransactionListSize() {
+        return transactionList.size();
+    }
+
+    public int getItemIndexByID(long itemID) {
+        for (int i = 0; i < getTransactionListSize(); i++) {
+            if (transactionList.get(i).getID() == itemID) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public void addTransactions(List<Transaction> input, boolean clearLists) {
@@ -201,7 +216,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mParams.mContextThemeWrapper).inflate(R.layout.list_item_transactions_2, parent, false);
-        return new TransactionViewHolder(mParams, this, view);
+        return new TransactionViewHolder(mParams, this, mActivity, view);
     }
 
     @Override
