@@ -53,6 +53,7 @@ import com.yoshione.fingen.filters.DateRangeFilter;
 import com.yoshione.fingen.filters.FilterListHelper;
 import com.yoshione.fingen.filters.FilterUtils;
 import com.yoshione.fingen.filters.NestedModelFilter;
+import com.yoshione.fingen.iab.BillingService;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ILoadMoreFinish;
 import com.yoshione.fingen.interfaces.IOnLoadMore;
@@ -82,6 +83,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -173,6 +176,9 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     private StickyHeaderDecoration stickyHeaderDecoration;
     FabMenuController mFabMenuController;
 
+    @Inject
+    BillingService mBillingService;
+
     public static FragmentTransactions newInstance(String forceUpdateParam, int layoutID) {
         FragmentTransactions fragment = new FragmentTransactions();
         Bundle args = new Bundle();
@@ -197,7 +203,8 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                              Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-//        mSumsLoaded = false;
+        FGApplication.getAppComponent().inject(this);
+
         if (getActivity() != null) {
             Intent intent = getActivity().getIntent();
             if (intent.getBooleanExtra(FgConst.LOCK_SLIDINGUP_PANEL, false) & !BuildConfig.DEBUG) {
@@ -314,16 +321,6 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         initFabMenu();
         mTextViewSelectedCount.setVisibility(isInSelectionMode ? View.VISIBLE : View.GONE);
 
-    }
-
-    private boolean isReportsPurchased() {
-        if (getActivity() != null && getActivity() instanceof ActivityMain) {
-            Log.d(TAG, "activity is not null");
-            Log.d(TAG, "mReportsPurchased is " + String.valueOf(((ActivityMain) getActivity()).mReportsPurchased));
-            return ((ActivityMain) getActivity()).mReportsPurchased;
-        } else {
-            return false;
-        }
     }
 
     private void initFabMenu() {
@@ -571,18 +568,23 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             builderSingle.show();
         });
         mButtonClearFilters.setOnClickListener(v -> adapterFilters.clearData());
-        mButtonReports.setOnClickListener(v -> {
-            Intent intent;
-            if (isReportsPurchased()) {
-                intent = new Intent(getActivity(), ActivityReports.class);
-                intent.putParcelableArrayListExtra("filter_list", adapterFilters.getFilterList());
-                mSlidingLayoutTransactions.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                startActivity(intent);
-            } else {
-                intent = new Intent(getActivity(), ActivityPro.class);
-                startActivityForResult(intent, RequestCodes.REQUEST_CODE_OPEN_PRO);
-            }
-        });
+        mButtonReports.setOnClickListener(v -> ((ToolbarActivity) Objects.requireNonNull(getActivity())).unsubscribeOnDestroy(
+                mBillingService.getReportsIapInfo()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                skuDetailsWrapper -> {
+                                    Intent intent;
+                                    if (skuDetailsWrapper.isPurchased()) {
+                                        intent = new Intent(getActivity(), ActivityReports.class);
+                                        intent.putParcelableArrayListExtra("filter_list", adapterFilters.getFilterList());
+                                        mSlidingLayoutTransactions.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                                        startActivity(intent);
+                                    } else {
+                                        intent = new Intent(getActivity(), ActivityPro.class);
+                                        startActivityForResult(intent, RequestCodes.REQUEST_CODE_OPEN_PRO);
+                                    }
+                                })));
     }
 
     @Override

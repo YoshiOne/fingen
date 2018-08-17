@@ -1,6 +1,9 @@
 package com.yoshione.fingen.adapter;
 
+import android.content.Context;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,11 +11,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import android.graphics.drawable.Drawable;
+import com.yoshione.fingen.FGApplication;
 import com.yoshione.fingen.R;
-import com.yoshione.fingen.model.SkuDetailsItem;
+import com.yoshione.fingen.iab.models.ReportsItem;
 
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,20 +27,23 @@ import butterknife.ButterKnife;
  */
 public class AdapterSku extends RecyclerView.Adapter {
 
-    private List<SkuDetailsItem> skuDetailsItemList;
+    private List<Object> mItemList;
     private int mColorPurchased;
+    private Context mContext;
 
-    public AdapterSku(List<SkuDetailsItem> skuDetailsItemList, int colorPurchased) {
-        this.skuDetailsItemList = skuDetailsItemList;
+    public AdapterSku(List<Object> itemList, int colorPurchased) {
+        this.mItemList = itemList;
         mColorPurchased = colorPurchased;
+        mContext = FGApplication.getAppComponent().getContext();
     }
 
-    public List<SkuDetailsItem> getSkuDetailsItemList() {
-        return skuDetailsItemList;
+    public List<Object> getItemList() {
+        return mItemList;
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder vh;
         View v = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.list_item_sku, parent, false);
@@ -47,33 +54,41 @@ public class AdapterSku extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         SkuDetailsItemViewHolder mvh = (SkuDetailsItemViewHolder) holder;
-        SkuDetailsItem skuDetailsItem = skuDetailsItemList.get(position);
+        if (mItemList.get(position).getClass().equals(ReportsItem.class)) {
+            ReportsItem reportsItem = (ReportsItem) mItemList.get(position);
+            if (reportsItem.getSkuDetailsWrapper().getSkuDetails() == null) {
+                return;
+            }
+            mvh.textViewSkuTitle.setText(reportsItem.getSkuDetailsWrapper().getSkuDetails().title);
+            mvh.textViewSkuDescription.setText(reportsItem.getSkuDetailsWrapper().getSkuDetails().description);
 
-        mvh.textViewSkuTitle.setText(skuDetailsItem.getSkuDetails().title);
-        mvh.textViewSkuDescription.setText(skuDetailsItem.getSkuDetails().description);
-
-        Drawable icon = skuDetailsItem.getIcon();
-        if (skuDetailsItem.isPurchased()) {
-            mvh.textViewSkuPrice.setVisibility(View.GONE);
-            icon.setColorFilter(mColorPurchased, PorterDuff.Mode.SRC_ATOP);
-        } else {
-            mvh.textViewSkuPrice.setVisibility(View.VISIBLE);
-            mvh.textViewSkuPrice.setText(skuDetailsItem.getSkuDetails().priceText);
+            Drawable icon = FGApplication.getContext().getDrawable(reportsItem.getIconID());
+            if (reportsItem.getSkuDetailsWrapper().isPurchased()) {
+                Objects.requireNonNull(icon).setColorFilter(mColorPurchased, PorterDuff.Mode.SRC_ATOP);
+                mvh.textViewSkuPrice.setText(mContext.getString(R.string.ttl_purchased));
+            } else {
+                mvh.textViewSkuPrice.setText(reportsItem.getSkuDetailsWrapper().getSkuDetails().priceText);
+            }
+            mvh.imageViewIcon.setImageDrawable(icon);
+            mvh.itemView.setOnClickListener(reportsItem.getOnClickListener());
         }
-        mvh.imageViewIcon.setImageDrawable(icon);
-        mvh.itemView.setOnClickListener(skuDetailsItem.getOnClickListener());
     }
 
     @Override
     public int getItemCount() {
-        return skuDetailsItemList.size();
+        return mItemList.size();
     }
 
     @Override
     public long getItemId(int position) {
-        return skuDetailsItemList.get(position).getId();
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     class SkuDetailsItemViewHolder extends RecyclerView.ViewHolder {

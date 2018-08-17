@@ -20,6 +20,7 @@ import com.yoshione.fingen.filters.AbstractFilter;
 import com.yoshione.fingen.filters.AccountFilter;
 import com.yoshione.fingen.filters.DateRangeFilter;
 import com.yoshione.fingen.filters.FilterListHelper;
+import com.yoshione.fingen.iab.BillingService;
 import com.yoshione.fingen.interfaces.IUpdateMainListsEvents;
 import com.yoshione.fingen.managers.AccountsSetManager;
 import com.yoshione.fingen.model.AccountsSet;
@@ -41,6 +42,8 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -61,6 +64,9 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
 
     private AdapterSummary adapter;
 
+    @Inject
+    BillingService mBillingService;
+
     public static FragmentSummary newInstance(String forceUpdateParam, int layoutID) {
         Lg.log("FragmentSummary newInstance");
         FragmentSummary fragment = new FragmentSummary();
@@ -78,6 +84,7 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
                              Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
+        FGApplication.getAppComponent().inject(this);
         adapter = new AdapterSummary(getActivity());
         adapter.setHasStableIds(true);
         recyclerView.setAdapter(adapter);
@@ -88,13 +95,22 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        // Inflate Menu from xml resource
         MenuInflater menuInflater = Objects.requireNonNull(getActivity()).getMenuInflater();
         menuInflater.inflate(R.menu.context_menu_summary, menu);
-        MenuItem item = menu.findItem(R.id.action_show_report);
-        if (getActivity() != null && getActivity() instanceof ActivityMain) {
-            item.setVisible(((ActivityMain) getActivity()).mReportsPurchased);
-        }
+        final MenuItem item = menu.findItem(R.id.action_show_report);
+        ((ToolbarActivity) getActivity()).unsubscribeOnDestroy(
+                mBillingService.getReportsIapInfo()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                skuDetailsWrapper -> {
+                                    if (skuDetailsWrapper.isPurchased()) {
+                                        item.setVisible(true);
+                                    } else {
+                                        item.setVisible(false);
+                                    }
+                                },
+                                throwable -> item.setVisible(false)));
     }
 
     @Override

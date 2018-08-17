@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -16,7 +15,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -33,26 +31,20 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.anjlab.android.iab.v3.BillingProcessor;
-import com.anjlab.android.iab.v3.TransactionDetails;
 import com.crashlytics.android.Crashlytics;
 import com.mikepenz.actionitembadge.library.ActionItemBadge;
 import com.mikepenz.actionitembadge.library.utils.BadgeStyle;
@@ -63,11 +55,9 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.yoshione.fingen.adapter.AdapterTransactions;
 import com.yoshione.fingen.adapter.TransactionsArrayAdapter;
-import com.yoshione.fingen.backup.BackupJob;
 import com.yoshione.fingen.dao.SendersDAO;
 import com.yoshione.fingen.dao.SmsDAO;
 import com.yoshione.fingen.dao.SmsMarkersDAO;
@@ -75,11 +65,10 @@ import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.filters.AbstractFilter;
 import com.yoshione.fingen.filters.AccountFilter;
 import com.yoshione.fingen.fts.ActivityScanQR;
+import com.yoshione.fingen.iab.BillingService;
 import com.yoshione.fingen.interfaces.IAbstractModel;
-import com.yoshione.fingen.interfaces.IUpdateCallback;
 import com.yoshione.fingen.managers.AccountsSetManager;
 import com.yoshione.fingen.managers.TransactionManager;
-import com.yoshione.fingen.model.Account;
 import com.yoshione.fingen.model.AccountsSet;
 import com.yoshione.fingen.model.BaseModel;
 import com.yoshione.fingen.model.Events;
@@ -106,6 +95,9 @@ import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -118,11 +110,7 @@ import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
-public class ActivityMain extends ToolbarActivity implements BillingProcessor.IBillingHandler {
-
-    /*Sample sms
-        VISA1234 01.01.16 12:00 покупка 106.40р SUPERMARKET Баланс: 6623.34р
-    */
+public class ActivityMain extends ToolbarActivity {
 
     public static final String TAG = "ActivityMain";
     public static final int ACTION_OPEN_TRANSACTIONS_LIST = 1;
@@ -145,16 +133,7 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
     private static final int DRAWER_ITEM_ID_HELP = 11;
     private static final int DRAWER_ITEM_ID_ABOUT = 10;
     private static final int DRAWER_ITEM_ID_PRO = 12;
-    private final List<Fragment> fragments = new ArrayList<>();
-    private final SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener =
-            new SharedPreferences.OnSharedPreferenceChangeListener() {
-                @Override
-                public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                    if (key.equals("theme")) {
-                        ActivityMain.this.recreate(); // the function you want called
-                    }
-                }
-            };
+
     @BindView(R.id.pager)
     ViewPager viewPager;
     @BindView(R.id.tabLayout)
@@ -169,7 +148,6 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
     CoordinatorLayout coordinatorLayout;
     @BindView(R.id.appbar)
     AppBarLayout mAppBarLayout;
-    boolean mReportsPurchased = false;
     @BindView(R.id.textViewSubtitle)
     TextView mTextViewActiveSet;
     @BindView(R.id.buttonTemplates)
@@ -186,20 +164,29 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
     LinearLayout mButtonsBar;
     @BindView(R.id.buttonsBarContainer)
     FrameLayout mButtonsBarContainer;
-    private SharedPreferences mySharedPreferences;
+
     private FragmentAccounts fragmentAccounts;
     FragmentTransactions fragmentTransactions;
     private FragmentSummary fragmentSummary;
     private Drawer mMaterialDrawer = null;
-    private BillingProcessor mBillingProcessor = null;
-    //    private UpdateInAppHandler mInAppHandler;
     FragmentStatePagerAdapter fragmentPagerAdapter;
+    private final List<Fragment> fragments = new ArrayList<>();
+    private final SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener =
+            (prefs, key) -> {
+                if (key.equals("theme")) {
+                    ActivityMain.this.recreate(); // the function you want called
+                }
+            };
 
-    private Long lastEventTime = 0L;
-    //    private final List<Events.EventOnModelChanged> eventsQueue = new ArrayList<>();
-    private Boolean waitForQueue = false;
+    private volatile long lastEventTime = 0L;
+    private volatile boolean waitForQueue = false;
     UpdateUIHandler mUpdateUIHandler;
     private int mUnreadSms = 0;
+
+    @Inject
+    SharedPreferences mPreferences;
+    @Inject
+    BillingService mBillingService;
 
     @Override
     protected int getLayoutResourceId() {
@@ -213,10 +200,10 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        FGApplication.getAppComponent().inject(this);
         getIntent().putExtra("showHomeButton", false);
-        mUpdateUIHandler = new UpdateUIHandler(this);
 
-        switch (Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("theme", "0"))) {
+        switch (Integer.valueOf(mPreferences.getString("theme", "0"))) {
             case THEME_LIGHT:
                 setTheme(R.style.AppThemeLight);
                 break;
@@ -228,27 +215,15 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
                 break;
         }
 
-//        if (BuildConfig.DEBUG) {
-//            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-//                    .detectLeakedSqlLiteObjects()
-//                    .detectLeakedClosableObjects()
-//                    .penaltyLog()
-//                    .penaltyDeath()
-//                    .build());
-//        }
-
         super.onCreate(null);
-        TransactionsDAO transactionsDAO = TransactionsDAO.getInstance(this);
+
+        mUpdateUIHandler = new UpdateUIHandler(this);
+
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
         }
 
-//        mInAppHandler = new UpdateInAppHandler();
-
-        mySharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mySharedPreferences.edit().putBoolean(FgConst.PREF_SWITCH_TAB_ON_START, true).apply();
-
-        BackupJob.schedule();
+        mPreferences.edit().putBoolean(FgConst.PREF_SWITCH_TAB_ON_START, true).apply();
 
         ButterKnife.bind(this);
 
@@ -273,12 +248,7 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
         fragmentPagerAdapter = new FgFragmentPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(fragmentPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
-        tabLayout.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View view, DragEvent dragEvent) {
-                return true;
-            }
-        });
+        tabLayout.setOnDragListener((view, dragEvent) -> true);
         viewPager.setOffscreenPageLimit(2);
         //</editor-fold>
 
@@ -293,31 +263,26 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
             version = -1;
         }
         if (version > 0) {
-            int prevVersion = mySharedPreferences.getInt("version_code", -1);
+            int prevVersion = mPreferences.getInt("version_code", -1);
             if (version != prevVersion) {
                 onUpdateVersion(prevVersion, version);
             }
         }
 
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
+        mPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
         //</editor-fold>
 
-        mBillingProcessor = new BillingProcessor(this, InApp.getDeveloperKey(), null, this);
-
         final View rootView = getWindow().getDecorView().getRootView();
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Rect rect = new Rect();
-                rootView.getWindowVisibleDisplayFrame(rect);
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect rect = new Rect();
+            rootView.getWindowVisibleDisplayFrame(rect);
 
-                int screenHeight = rootView.getHeight();
-                int keyboardHeight = screenHeight - (rect.bottom - rect.top);
-                if (keyboardHeight > screenHeight / 3) {
-                    mButtonsBarContainer.setVisibility(View.GONE);
-                } else {
-                    mButtonsBarContainer.setVisibility(View.VISIBLE);
-                }
+            int screenHeight = rootView.getHeight();
+            int keyboardHeight = screenHeight - (rect.bottom - rect.top);
+            if (keyboardHeight > screenHeight / 3) {
+                mButtonsBarContainer.setVisibility(View.GONE);
+            } else {
+                mButtonsBarContainer.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -351,12 +316,11 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
 
     private void onUpdateVersion(int prevVersion, int newVersion) {
         fragmentTransactions.isNewVersion = true;
-        mySharedPreferences.edit().putInt("version_code", newVersion).apply();
-//        mySharedPreferences.edit().putBoolean(FgConst.PREF_SHOW_ACCOUNTS_PANEL, true).apply();
+        mPreferences.edit().putInt("version_code", newVersion).apply();
 
         if (prevVersion < 59) {
             try {
-                int startTabInt = Integer.valueOf(mySharedPreferences.getString(FgConst.PREF_START_TAB, "0"));
+                int startTabInt = Integer.valueOf(mPreferences.getString(FgConst.PREF_START_TAB, "0"));
                 String startTabString;
                 switch (startTabInt) {
                     case 0:
@@ -371,14 +335,14 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
                     default:
                         startTabString = FgConst.FRAGMENT_SUMMARY;
                 }
-                mySharedPreferences.edit().putString(FgConst.PREF_START_TAB, startTabString).apply();
+                mPreferences.edit().putString(FgConst.PREF_START_TAB, startTabString).apply();
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
         }
 
         if (prevVersion > 0 & prevVersion < 113) {
-            mySharedPreferences.edit().putInt(FgConst.PREF_NEW_ACCOUNT_BUTTON_COUNTER, 4).apply();
+            mPreferences.edit().putInt(FgConst.PREF_NEW_ACCOUNT_BUTTON_COUNTER, 4).apply();
         }
 
         FragmentChangelog fragmentChangelog = new FragmentChangelog();
@@ -440,44 +404,36 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
 
 
     private void addFragments() {
-        fragmentAccounts = FragmentAccounts.newInstance(FgConst.PREF_FORCE_UPDATE_ACCOUNTS, R.layout.fragment_accounts, new IUpdateCallback() {
-            @Override
-            public void update() {
-                updateLists();
+        fragmentAccounts = FragmentAccounts.newInstance(FgConst.PREF_FORCE_UPDATE_ACCOUNTS, R.layout.fragment_accounts, this::updateLists);
+        fragmentAccounts.setmAccountEventListener(account -> {
+            int action = Integer.valueOf(mPreferences.getString(FgConst.PREF_ACCOUNT_CLICK_ACTION, String.valueOf(ACCOUNT_CLICK_ACTION_LIST_TRANSACTIONS)));
+            switch (action) {
+                case ACCOUNT_CLICK_ACTION_LIST_TRANSACTIONS:
+                    AccountFilter filter = new AccountFilter(0);
+                    filter.addAccount(account.getID());
+                    ArrayList<AbstractFilter> filters = new ArrayList<>();
+                    filters.add(filter);
+                    Intent intent = new Intent(ActivityMain.this, ActivityTransactions.class);
+                    intent.putParcelableArrayListExtra("filter_list", filters);
+                    intent.putExtra("caption", account.getName());
+                    intent.putExtra(FgConst.HIDE_FAB, true);
+                    intent.putExtra(FgConst.LOCK_SLIDINGUP_PANEL, true);
+                    startActivity(intent);
+                    break;
+                case ACCOUNT_CLICK_ACTION_NEW_TRANSACTION:
+                    Transaction transaction = new Transaction(PrefUtils.getDefDepID(ActivityMain.this));
+                    transaction.setAccountID(account.getID());
+                    Intent intentNT = new Intent(ActivityMain.this, ActivityEditTransaction.class);
+                    intentNT.putExtra("transaction", transaction);
+                    startActivity(intentNT);
+                    break;
             }
-        });
-        fragmentAccounts.setmAccountEventListener(new FragmentAccounts.AccountEventListener() {
-            @Override
-            public void OnItemClick(Account account) {
-                int action = Integer.valueOf(mySharedPreferences.getString(FgConst.PREF_ACCOUNT_CLICK_ACTION, String.valueOf(ACCOUNT_CLICK_ACTION_LIST_TRANSACTIONS)));
-                switch (action) {
-                    case ACCOUNT_CLICK_ACTION_LIST_TRANSACTIONS:
-                        AccountFilter filter = new AccountFilter(0);
-                        filter.addAccount(account.getID());
-                        ArrayList<AbstractFilter> filters = new ArrayList<>();
-                        filters.add(filter);
-                        Intent intent = new Intent(ActivityMain.this, ActivityTransactions.class);
-                        intent.putParcelableArrayListExtra("filter_list", filters);
-                        intent.putExtra("caption", account.getName());
-                        intent.putExtra(FgConst.HIDE_FAB, true);
-                        intent.putExtra(FgConst.LOCK_SLIDINGUP_PANEL, true);
-                        startActivity(intent);
-                        break;
-                    case ACCOUNT_CLICK_ACTION_NEW_TRANSACTION:
-                        Transaction transaction = new Transaction(PrefUtils.getDefDepID(ActivityMain.this));
-                        transaction.setAccountID(account.getID());
-                        Intent intentNT = new Intent(ActivityMain.this, ActivityEditTransaction.class);
-                        intentNT.putExtra("transaction", transaction);
-                        startActivity(intentNT);
-                        break;
-                }
 
-            }
         });
         fragmentSummary = FragmentSummary.newInstance(FgConst.PREF_FORCE_UPDATE_SUMMARY, R.layout.fragment_summary);
         fragmentTransactions = FragmentTransactions.newInstance(FgConst.PREF_FORCE_UPDATE_TRANSACTIONS, R.layout.fragment_transactions);
 
-        List<String> tabs = PrefUtils.getTabsOrder(mySharedPreferences);
+        List<String> tabs = PrefUtils.getTabsOrder(mPreferences);
 
         fragments.clear();
         for (String tabID : tabs) {
@@ -497,10 +453,7 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
 
     @Override
     public void onDestroy() {
-//        Debug.stopMethodTracing();
-        if (mBillingProcessor != null)
-            mBillingProcessor.release();
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
+        mPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
         super.onDestroy();
     }
 
@@ -511,26 +464,26 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
 
         if (getIntent().getIntExtra("action", 0) == ACTION_OPEN_TRANSACTIONS_LIST) {
             String startTab = FgConst.FRAGMENT_TRANSACTIONS;
-            List<String> tabsOrder = PrefUtils.getTabsOrder(mySharedPreferences);
+            List<String> tabsOrder = PrefUtils.getTabsOrder(mPreferences);
             int currentItem = tabsOrder.indexOf(startTab);
             if (currentItem >= 0 && currentItem < fragments.size()) {
                 viewPager.setCurrentItem(currentItem);
             }
         } else {
-            if (mySharedPreferences.getBoolean(FgConst.PREF_SWITCH_TAB_ON_START, false)) {
-                String startTab = mySharedPreferences.getString(FgConst.PREF_START_TAB, FgConst.FRAGMENT_SUMMARY);
-                List<String> tabsOrder = PrefUtils.getTabsOrder(mySharedPreferences);
+            if (mPreferences.getBoolean(FgConst.PREF_SWITCH_TAB_ON_START, false)) {
+                String startTab = mPreferences.getString(FgConst.PREF_START_TAB, FgConst.FRAGMENT_SUMMARY);
+                List<String> tabsOrder = PrefUtils.getTabsOrder(mPreferences);
                 int currentItem = tabsOrder.indexOf(startTab);
                 if (currentItem >= 0 && currentItem < fragments.size()) {
                     viewPager.setCurrentItem(currentItem);
                 }
-                mySharedPreferences.edit().putBoolean(FgConst.PREF_SWITCH_TAB_ON_START, false).apply();
+                mPreferences.edit().putBoolean(FgConst.PREF_SWITCH_TAB_ON_START, false).apply();
             }
         }
 
         checkPermissionsAndShowAlert();
 
-        List<String> tabs = PrefUtils.getTabsOrder(mySharedPreferences);
+        List<String> tabs = PrefUtils.getTabsOrder(mPreferences);
         boolean actual = true;
         if (fragments.size() == tabs.size()) {
             for (int i = 0; i < fragments.size(); i++) {
@@ -615,68 +568,65 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
 
                     }
                 })
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        if (drawerItem instanceof PrimaryDrawerItem) {
-                            Intent intent;
-                            switch ((int) drawerItem.getIdentifier()) {
-                                case DRAWER_ITEM_ID_DEBTS:
-                                    intent = new Intent(ActivityMain.this, ActivityDebtsAndCredits.class);
-                                    ActivityMain.this.startActivity(intent);
-                                    break;
-                                case DRAWER_ITEM_ID_REFERENCES:
-                                    ActivityMain.this.openReferences();
-                                    break;
-                                case DRAWER_ITEM_ID_INCOMING_SMS: {
-                                    intent = new Intent(ActivityMain.this, ActivitySmsList.class);
-                                    ActivityMain.this.startActivity(intent);
-                                    break;
-                                }
-                                case DRAWER_ITEM_ID_BUDGETS: {
-                                    intent = new Intent(ActivityMain.this, ActivityBudget.class);
-                                    ActivityMain.this.startActivity(intent);
-                                    break;
-                                }
-                                case DRAWER_ITEM_ID_ADDITIONAL: {
-                                    intent = new Intent(ActivityMain.this, ActivityAdditional.class);
-                                    ActivityMain.this.startActivity(intent);
-                                    break;
-                                }
-                                case DRAWER_ITEM_ID_PRO: {
-                                    intent = new Intent(ActivityMain.this, ActivityPro.class);
-                                    startActivityForResult(intent, RequestCodes.REQUEST_CODE_OPEN_PRO);
-                                    break;
-                                }
-                                case DRAWER_ITEM_ID_SETTINGS: {
-                                    intent = new Intent(ActivityMain.this, ActivitySettings.class);
-                                    ActivityMain.this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_OPEN_PREFERENCES);
-                                    break;
-                                }
-                                case DRAWER_ITEM_ID_HELP: {
-                                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://faq.fingen-app.com/"));
-                                    startActivity(browserIntent);
-                                    break;
-                                }
-                                case DRAWER_ITEM_ID_SUPPORT: {
-                                    intent = new Intent(Intent.ACTION_SEND);
-                                    intent.setType("message/rfc822");
-                                    intent.putExtra(Intent.EXTRA_EMAIL,  new String[] {"support@fingen-app.com"});
-                                    intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.ttl_email_subject));
-                                    intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.ttl_email_body));
+                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
+                    if (drawerItem instanceof PrimaryDrawerItem) {
+                        Intent intent;
+                        switch ((int) drawerItem.getIdentifier()) {
+                            case DRAWER_ITEM_ID_DEBTS:
+                                intent = new Intent(ActivityMain.this, ActivityDebtsAndCredits.class);
+                                ActivityMain.this.startActivity(intent);
+                                break;
+                            case DRAWER_ITEM_ID_REFERENCES:
+                                ActivityMain.this.openReferences();
+                                break;
+                            case DRAWER_ITEM_ID_INCOMING_SMS: {
+                                intent = new Intent(ActivityMain.this, ActivitySmsList.class);
+                                ActivityMain.this.startActivity(intent);
+                                break;
+                            }
+                            case DRAWER_ITEM_ID_BUDGETS: {
+                                intent = new Intent(ActivityMain.this, ActivityBudget.class);
+                                ActivityMain.this.startActivity(intent);
+                                break;
+                            }
+                            case DRAWER_ITEM_ID_ADDITIONAL: {
+                                intent = new Intent(ActivityMain.this, ActivityAdditional.class);
+                                ActivityMain.this.startActivity(intent);
+                                break;
+                            }
+                            case DRAWER_ITEM_ID_PRO: {
+                                intent = new Intent(ActivityMain.this, ActivityPro.class);
+                                startActivityForResult(intent, RequestCodes.REQUEST_CODE_OPEN_PRO);
+                                break;
+                            }
+                            case DRAWER_ITEM_ID_SETTINGS: {
+                                intent = new Intent(ActivityMain.this, ActivitySettings.class);
+                                ActivityMain.this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_OPEN_PREFERENCES);
+                                break;
+                            }
+                            case DRAWER_ITEM_ID_HELP: {
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://faq.fingen-app.com/"));
+                                startActivity(browserIntent);
+                                break;
+                            }
+                            case DRAWER_ITEM_ID_SUPPORT: {
+                                intent = new Intent(Intent.ACTION_SEND);
+                                intent.setType("message/rfc822");
+                                intent.putExtra(Intent.EXTRA_EMAIL,  new String[] {"support@fingen-app.com"});
+                                intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.ttl_email_subject));
+                                intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.ttl_email_body));
 
-                                    startActivity(Intent.createChooser(intent, "Send Email"));
-                                    break;
-                                }
-                                case DRAWER_ITEM_ID_ABOUT: {
-                                    intent = new Intent(ActivityMain.this, ActivityAbout.class);
-                                    ActivityMain.this.startActivity(intent);
-                                    break;
-                                }
+                                startActivity(Intent.createChooser(intent, "Send Email"));
+                                break;
+                            }
+                            case DRAWER_ITEM_ID_ABOUT: {
+                                intent = new Intent(ActivityMain.this, ActivityAbout.class);
+                                ActivityMain.this.startActivity(intent);
+                                break;
                             }
                         }
-                        return false;
                     }
+                    return false;
                 })
                 .build();
     }
@@ -702,12 +652,11 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
     public void onResume() {
         super.onResume();
         Log.d(TAG, "MainActivity onResume");
-        checkInAppPurchases();
 
         mLastBackPressed = -1;
 
         NotificationHelper.getInstance(this).cancel(SMSReceiver.NOTIFICATION_ID_TRANSACTION_AUTO_CREATED);
-        NotificationCounter notificationCounter = new NotificationCounter(mySharedPreferences);
+        NotificationCounter notificationCounter = new NotificationCounter(mPreferences);
         notificationCounter.removeNotification(SMSReceiver.NOTIFICATION_ID_TRANSACTION_AUTO_CREATED);
 
         mMaterialDrawer.deselect();
@@ -715,7 +664,7 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
 
         updateLists();
 
-        if (mySharedPreferences.getBoolean(FgConst.PREF_HIDE_SUMS_PANEL, true)) {
+        if (mPreferences.getBoolean(FgConst.PREF_HIDE_SUMS_PANEL, true)) {
             AppBarLayout.LayoutParams paramsABL = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
             paramsABL.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
             toolbar.requestLayout();
@@ -788,18 +737,8 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
 
     private void showExStorageRationaleDialog(@StringRes int messageResId, final PermissionRequest request) {
         new AlertDialog.Builder(this)
-                .setPositiveButton(R.string.act_next, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        request.proceed();
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        request.cancel();
-                    }
-                })
+                .setPositiveButton(R.string.act_next, (dialog, which) -> request.proceed())
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> request.cancel())
                 .setCancelable(false)
                 .setMessage(messageResId)
                 .show();
@@ -825,18 +764,8 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
 
     private void showRationaleDialog(@StringRes int messageResId, final PermissionRequest request) {
         new AlertDialog.Builder(this)
-                .setPositiveButton(R.string.act_next, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        request.proceed();
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        request.cancel();
-                    }
-                })
+                .setPositiveButton(R.string.act_next, (dialog, which) -> request.proceed())
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> request.cancel())
                 .setCancelable(false)
                 .setMessage(messageResId)
                 .show();
@@ -874,7 +803,7 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
                 && fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentSummary.class)) {
             fragmentSummary.fullUpdate(-1);
         } else {
-            mySharedPreferences.edit().putBoolean(FgConst.PREF_FORCE_UPDATE_SUMMARY, true).apply();
+            mPreferences.edit().putBoolean(FgConst.PREF_FORCE_UPDATE_SUMMARY, true).apply();
         }
     }
 
@@ -883,7 +812,7 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
                 && fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentAccounts.class)) {
             fragmentAccounts.fullUpdate(-1);
         } else {
-            mySharedPreferences.edit().putBoolean(FgConst.PREF_FORCE_UPDATE_ACCOUNTS, true).apply();
+            mPreferences.edit().putBoolean(FgConst.PREF_FORCE_UPDATE_ACCOUNTS, true).apply();
         }
     }
 
@@ -892,12 +821,11 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
                 && fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentTransactions.class)) {
             fragmentTransactions.fullUpdate(transactionID);
         } else {
-            mySharedPreferences.edit().putBoolean(FgConst.PREF_FORCE_UPDATE_TRANSACTIONS, true).apply();
+            mPreferences.edit().putBoolean(FgConst.PREF_FORCE_UPDATE_TRANSACTIONS, true).apply();
         }
     }
 
     private void updateLists() {
-//        long accountSetID = mySharedPreferences.getLong(FgConst.PREF_CURRENT_ACCOUNT_SET, -1);
         AccountsSet currentAccountsSet = AccountsSetManager.getInstance().getCurrentAccountSet(this);
 
         if (currentAccountsSet.getAccountsSetRef().getID() >= 0) {
@@ -913,17 +841,14 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
     }
 
     private void updateCounters() {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SmsDAO smsDAO = SmsDAO.getInstance(getApplicationContext());
-                try {
-                    mUnreadSms = smsDAO.getAllModels().size();
-                } catch (Exception e) {
-                    mUnreadSms = 0;
-                }
-                mUpdateUIHandler.sendMessage(mUpdateUIHandler.obtainMessage(MSG_UPDATE_SMS_COUNTERS, mUnreadSms, 0));
+        Thread t = new Thread(() -> {
+            SmsDAO smsDAO = SmsDAO.getInstance(getApplicationContext());
+            try {
+                mUnreadSms = smsDAO.getAllModels().size();
+            } catch (Exception e) {
+                mUnreadSms = 0;
             }
+            mUpdateUIHandler.sendMessage(mUpdateUIHandler.obtainMessage(MSG_UPDATE_SMS_COUNTERS, mUnreadSms, 0));
         });
         t.start();
     }
@@ -983,20 +908,17 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
                 arrayAdapter.addAll(transactions);
 
                 builderSingle.setPositiveButton(getResources().getString(R.string.act_create_new),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                intent.putExtra("transaction", transaction);
-                                intent.putExtra("load_products", true);
-                                startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
-                            }
+                        (dialogInterface, i) -> {
+                            intent.putExtra("transaction", transaction);
+                            intent.putExtra("load_products", true);
+                            startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
                         });
 
                 builderSingle.setAdapter(arrayAdapter, null);
                 dialog[0] = builderSingle.show();
 
                 WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-                lp.copyFrom(dialog[0].getWindow().getAttributes());
+                lp.copyFrom(Objects.requireNonNull(dialog[0].getWindow()).getAttributes());
                 lp.width = WindowManager.LayoutParams.MATCH_PARENT;
                 lp.height = ScreenUtils.dpToPx(500f, this);
                 dialog[0].show();
@@ -1004,16 +926,8 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
             }
         }else if (requestCode == RequestCodes.REQUEST_CODE_OPEN_PREFERENCES) {
             updateLists();
-        } else if (requestCode == RequestCodes.REQUEST_CODE_OPEN_PRO) {
-            checkInAppPurchases();
         } else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    fragments.get(viewPager.getCurrentItem()).onActivityResult(requestCode, resultCode, data);
-                }
-            }, 200);
-
+            new Handler().postDelayed(() -> fragments.get(viewPager.getCurrentItem()).onActivityResult(requestCode, resultCode, data), 200);
         }
     }
 
@@ -1031,45 +945,34 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
             case IAbstractModel.MODEL_TYPE_PROJECT:
             case IAbstractModel.MODEL_TYPE_LOCATION:
             case IAbstractModel.MODEL_TYPE_DEPARTMENT:
-                synchronized (lastEventTime) {
-                    lastEventTime = System.currentTimeMillis();
-                    Lg.log("eventsQueue set lastEventTime %s", String.valueOf(lastEventTime));
-                }
+                lastEventTime = System.currentTimeMillis();
+                Lg.log("eventsQueue set lastEventTime %s", String.valueOf(lastEventTime));
                 if (!waitForQueue) {
-                    synchronized (waitForQueue) {
-                        waitForQueue = true;
-                    }
-                    Thread t = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Lg.log("eventsQueue thread started lastEventTime = %s", String.valueOf(lastEventTime));
+                    waitForQueue = true;
+                    Thread t = new Thread(() -> {
+                        Lg.log("eventsQueue thread started lastEventTime = %s", String.valueOf(lastEventTime));
+                        try {
+                            Thread.sleep(300);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        long d = System.currentTimeMillis() - lastEventTime;
+                        Lg.log("eventsQueue d = %s", String.valueOf(d));
+                        while (d < 300) {
                             try {
-                                Thread.sleep(300);
+                                Thread.sleep(50);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            synchronized (lastEventTime) {
-                                long d = System.currentTimeMillis() - lastEventTime;
-                                Lg.log("eventsQueue d = %s", String.valueOf(d));
-                                while (d < 300) {
-                                    try {
-                                        Thread.sleep(50);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    d = System.currentTimeMillis() - lastEventTime;
-                                    Lg.log("eventsQueue sleep 50ms d = %s", String.valueOf(d));
-                                    if (d > 1000) {
-                                        break;
-                                    }
-                                }
-                                mUpdateUIHandler.sendMessage(mUpdateUIHandler.obtainMessage(MSG_UPDATE_LISTS));
-                                synchronized (waitForQueue) {
-                                    waitForQueue = false;
-                                }
-                                Lg.log("eventsQueue sendMessage");
+                            d = System.currentTimeMillis() - lastEventTime;
+                            Lg.log("eventsQueue sleep 50ms d = %s", String.valueOf(d));
+                            if (d > 1000) {
+                                break;
                             }
                         }
+                        mUpdateUIHandler.sendMessage(mUpdateUIHandler.obtainMessage(MSG_UPDATE_LISTS));
+                        waitForQueue = false;
+                        Lg.log("eventsQueue sendMessage");
                     });
                     t.start();
                 }
@@ -1088,39 +991,6 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(Events.EventOnGetSupportMessage event) {
         updateCounters();
-    }
-
-    @Override
-    public void onProductPurchased(@NonNull String productId, TransactionDetails details) {
-
-    }
-
-    @Override
-    public void onPurchaseHistoryRestored() {
-
-    }
-
-    @SuppressLint("StringFormatInvalid")
-    @Override
-    public void onBillingError(int errorCode, Throwable error) {
-        Toast.makeText(this, String.format(getString(R.string.ttl_billing_error), String.valueOf(errorCode)), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onBillingInitialized() {
-        checkInAppPurchases();
-    }
-
-    private void checkInAppPurchases() {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "Start checkInAppPurchases thread");
-                mReportsPurchased = BuildConfig.DEBUG || mBillingProcessor.isPurchased(InApp.SKU_REPORTS);
-                Log.d(TAG, "mReportsPurchased is " + String.valueOf(mReportsPurchased));
-            }
-        });
-        thread.start();
     }
 
     private static class UpdateUIHandler extends Handler {
@@ -1148,7 +1018,7 @@ public class ActivityMain extends ToolbarActivity implements BillingProcessor.IB
     private void setupBottomBar() {
         BottomButtonClickListener clickListener = new BottomButtonClickListener();
 
-        boolean scanQR = mySharedPreferences.getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true);
+        boolean scanQR = mPreferences.getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true);
         mButtonScanQR.setVisibility(scanQR ? View.VISIBLE : View.GONE);
 
         mButtonTemplates.setOnClickListener(clickListener);

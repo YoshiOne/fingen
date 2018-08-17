@@ -26,8 +26,12 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.yoshione.fingen.backup.BackupJob;
 import com.yoshione.fingen.backup.BackupJobCreator;
 import com.yoshione.fingen.backup.BackupTestJobCreator;
+import com.yoshione.fingen.di.AppComponent;
+import com.yoshione.fingen.di.DaggerAppComponent;
+import com.yoshione.fingen.di.modules.ContextModule;
 import com.yoshione.fingen.fts.FtsApi;
 import com.yoshione.fingen.fts.ReceiptDeserializer;
 import com.yoshione.fingen.fts.models.FtsResponse;
@@ -83,6 +87,8 @@ public class FGApplication extends Application implements ISyncAnimMethods {
 
     private static FtsApi sFtsApi;
 
+    private static AppComponent sAppComponent;
+
     private static FGApplication mContext;
 
     public static FGApplication getContext() {
@@ -94,6 +100,10 @@ public class FGApplication extends Application implements ISyncAnimMethods {
     public void onCreate() {
 //        Debug.startMethodTracing("Startup");
         super.onCreate();
+
+        sAppComponent = DaggerAppComponent.builder()
+                .contextModule(new ContextModule(this))
+                .build();
 
         mContext = this;
 
@@ -123,17 +133,6 @@ public class FGApplication extends Application implements ISyncAnimMethods {
                 .readTimeout(15, TimeUnit.SECONDS)
                 .writeTimeout(15, TimeUnit.SECONDS)
                 .addInterceptor(interceptor)
-                .addInterceptor(new Interceptor() {
-                    @Override
-                    public Response intercept(Interceptor.Chain chain) throws IOException {
-                        Request request = chain.request();
-                        Response response = chain.proceed(request);
-//                        if (response.code() == 403) {
-//                            handleForbiddenResponse();
-//                        }
-                        return response;
-                    }
-                })
                 .build();
 
         Gson gson = new GsonBuilder()
@@ -147,6 +146,12 @@ public class FGApplication extends Application implements ISyncAnimMethods {
                 .build();
         sFtsApi = retrofit.create(FtsApi.class);
         mCustomIntentReceiver = new CustomIntentReceiver();
+
+        BackupJob.schedule();
+    }
+
+    public static AppComponent getAppComponent() {
+        return sAppComponent;
     }
 
     @Override

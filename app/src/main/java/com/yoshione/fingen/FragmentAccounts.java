@@ -30,7 +30,6 @@ import com.yoshione.fingen.adapter.AdapterAccounts;
 import com.yoshione.fingen.adapter.AdapterAccountsSets;
 import com.yoshione.fingen.adapter.helper.OnStartDragListener;
 import com.yoshione.fingen.adapter.helper.SimpleItemTouchHelperCallback;
-import com.yoshione.fingen.classes.ListSumsByCabbage;
 import com.yoshione.fingen.dao.AccountsDAO;
 import com.yoshione.fingen.dao.CabbagesDAO;
 import com.yoshione.fingen.dao.CreditsDAO;
@@ -38,6 +37,7 @@ import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.filters.AbstractFilter;
 import com.yoshione.fingen.filters.AccountFilter;
 import com.yoshione.fingen.filters.FilterListHelper;
+import com.yoshione.fingen.iab.BillingService;
 import com.yoshione.fingen.interfaces.IUpdateCallback;
 import com.yoshione.fingen.interfaces.IUpdateMainListsEvents;
 import com.yoshione.fingen.managers.AccountManager;
@@ -63,6 +63,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import io.reactivex.Single;
@@ -101,6 +103,9 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
     private int contextMenuTarget = -1;
     private String mAllAccountsSetCaption;
 
+    @Inject
+    BillingService mBillingService;
+
     public void setFullUpdateCallback(IUpdateCallback fullUpdateCallback) {
         mFullUpdateCallback = fullUpdateCallback;
     }
@@ -127,6 +132,8 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
+
+        FGApplication.getAppComponent().inject(this);
 
         mAllAccountsSetCaption = getString(R.string.ent_all_accounts);
 
@@ -257,13 +264,24 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
                     menuInflater.inflate(R.menu.context_menu_accounts_sets, menu);
                     break;
             }
-            MenuItem item = menu.findItem(R.id.action_show_report);
+            final MenuItem item = menu.findItem(R.id.action_show_report);
             if (item != null) {
-                if (getActivity() != null && getActivity() instanceof ActivityMain) {
-                    item.setVisible(((ActivityMain) getActivity()).mReportsPurchased);
-                } else {
-                    item.setVisible(false);
-                }
+                item.setVisible(false);
+                ((ToolbarActivity) getActivity()).unsubscribeOnDestroy(
+                        mBillingService.getReportsIapInfo()
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        skuDetailsWrapper -> {
+                                            if (skuDetailsWrapper.isPurchased()) {
+                                                item.setVisible(true);
+                                            } else {
+                                                item.setVisible(false);
+                                            }
+                                        },
+                                        throwable -> {
+                                            item.setVisible(false);
+                                        }));
             }
         }
     }
