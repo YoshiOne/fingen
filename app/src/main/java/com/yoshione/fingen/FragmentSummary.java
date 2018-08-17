@@ -1,10 +1,10 @@
 package com.yoshione.fingen;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -21,7 +21,6 @@ import com.yoshione.fingen.filters.AccountFilter;
 import com.yoshione.fingen.filters.DateRangeFilter;
 import com.yoshione.fingen.filters.FilterListHelper;
 import com.yoshione.fingen.iab.BillingService;
-import com.yoshione.fingen.interfaces.IUpdateMainListsEvents;
 import com.yoshione.fingen.managers.AccountsSetManager;
 import com.yoshione.fingen.model.AccountsSet;
 import com.yoshione.fingen.model.SummaryItem;
@@ -51,7 +50,7 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * A
  */
-public class FragmentSummary extends BaseListFragment implements IUpdateMainListsEvents {
+public class FragmentSummary extends BaseListFragment {
 
     private static final int INTERVAL_TODAY = 1;
     private static final int INTERVAL_YESTERDAY = 2;
@@ -66,6 +65,12 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
 
     @Inject
     BillingService mBillingService;
+    @Inject
+    TransactionsDAO mTransactionsDAO;
+    @Inject
+    CabbagesDAO mCabbagesDAO;
+    @Inject
+    SharedPreferences mPreferences;
 
     public static FragmentSummary newInstance(String forceUpdateParam, int layoutID) {
         Lg.log("FragmentSummary newInstance");
@@ -75,7 +80,7 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
         args.putInt(LAYOUT_NAME_PARAM, layoutID);
         fragment.setArguments(args);
         Lg.log("FragmentSummary setUpdateListsEvents");
-        fragment.setUpdateListsEvents(fragment);
+//        fragment.setUpdateListsEvents(fragment);
         return fragment;
     }
 
@@ -191,7 +196,7 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
     @SuppressWarnings("unchecked")
     public void loadData(long itemID) {
         Set<String> defValues = new HashSet<>(Arrays.asList(Objects.requireNonNull(getActivity()).getResources().getStringArray(R.array.pref_summary_items_values)));
-        Set<String> set = PreferenceManager.getDefaultSharedPreferences(getActivity()).getStringSet("summary_items", defValues);
+        Set<String> set = mPreferences.getStringSet("summary_items", defValues);
 
         List<SummaryItem> items = new ArrayList<>();
 
@@ -229,13 +234,13 @@ public class FragmentSummary extends BaseListFragment implements IUpdateMainList
 
         ToolbarActivity activity = (ToolbarActivity) getActivity();
         Objects.requireNonNull(activity).unsubscribeOnDestroy(
-                TransactionsDAO.getInstance(getActivity()).getSummaryGroupedSumsRx(
+                mTransactionsDAO.getSummaryGroupedSumsRx(
                         items, new FilterListHelper(filters, "", getActivity()),
                         getActivity())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(summaryItems -> {
-                            adapter.setList(items, CabbagesDAO.getInstance(getActivity()).getCabbagesMap());
+                            adapter.setList(items, mCabbagesDAO.getCabbagesMap());
                             adapter.notifyDataSetChanged();
                         })
         );

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
@@ -30,7 +31,6 @@ import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.tag.Tag;
 import com.yoshione.fingen.tag.TagView;
 import com.yoshione.fingen.utils.CabbageFormatter;
-import com.yoshione.fingen.utils.ColorUtils;
 import com.yoshione.fingen.utils.ScreenUtils;
 
 import java.math.BigDecimal;
@@ -71,8 +71,9 @@ public class AdapterProducts extends RecyclerView.Adapter {
         isTagsColored = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(FgConst.PREF_COLORED_TAGS, true);
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder vh;
         View v;
         switch (viewType) {
@@ -95,7 +96,7 @@ public class AdapterProducts extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder.getClass().equals(ProductViewHolder.class)) {
             if (position < mTransaction.getProductEntries().size()) {
                 ((ProductViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, false,
@@ -107,7 +108,7 @@ public class AdapterProducts extends RecyclerView.Adapter {
         } else if (holder.getClass().equals(AddProductViewHolder.class)) {
             ((AddProductViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, mActivity, mProductChangedListener);
         } else {
-            ((MoveResidueViewHolder) holder).bindViewHolder(holder.itemView, position, mTransaction, mActivity, mCabbageFormatter, mProductChangedListener);
+            ((MoveResidueViewHolder) holder).bindViewHolder(holder.itemView, mTransaction, mActivity, mCabbageFormatter, mProductChangedListener);
         }
     }
 
@@ -175,12 +176,7 @@ public class AdapterProducts extends RecyclerView.Adapter {
                     formatter.format(productEntry.getPrice().multiply(productEntry.getQuantity())));
             mTextViewSum.setText(s);
             mImageButtonDeleteProduct.setVisibility(residue ? View.INVISIBLE : View.VISIBLE);
-            mImageButtonDeleteProduct.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    listener.onProductDeleted(position);
-                }
-            });
+            mImageButtonDeleteProduct.setOnClickListener(view -> listener.onProductDeleted(position));
 
             int color;
             switch (productEntry.getPrice().compareTo(BigDecimal.ZERO)) {
@@ -230,27 +226,16 @@ public class AdapterProducts extends RecyclerView.Adapter {
             flipViewIcon.flipSilently(productEntry.isSelected());
             flipViewIcon.setVisibility(residue ? View.INVISIBLE : View.VISIBLE);
 
-            flipViewIcon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    productEntry.setSelected(!productEntry.isSelected());
-                    flipViewIcon.flip(productEntry.isSelected());
-                    listener.onProductSelected();
-                }
+            flipViewIcon.setOnClickListener(view -> {
+                productEntry.setSelected(!productEntry.isSelected());
+                flipViewIcon.flip(productEntry.isSelected());
+                listener.onProductSelected();
             });
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    FragmentProductEntryEdit alertDialog = FragmentProductEntryEdit.newInstance(activity.getString(R.string.ttl_edit_product), productEntry);
-                    alertDialog.setEntryEditListener(new FragmentProductEntryEdit.IProductEntryEditListener() {
-                        @Override
-                        public void onProductEntryEdited(ProductEntry productEntry1) {
-                            listener.onProductChanged(position, productEntry1);
-                        }
-                    });
-                    alertDialog.show(activity.getFragmentManager(), "fragment_product_entry_edit");
-                }
+            itemView.setOnClickListener(view -> {
+                FragmentProductEntryEdit alertDialog = FragmentProductEntryEdit.newInstance(activity.getString(R.string.ttl_edit_product), productEntry);
+                alertDialog.setEntryEditListener(productEntry1 -> listener.onProductChanged(position, productEntry1));
+                alertDialog.show(activity.getFragmentManager(), "fragment_product_entry_edit");
             });
         }
     }
@@ -276,20 +261,12 @@ public class AdapterProducts extends RecyclerView.Adapter {
         }
 
         void bindViewHolder(View itemView, final int position, final Transaction transaction, final Activity activity, final IProductChangedListener listener) {
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ProductEntry entry = new ProductEntry();
-                    entry.setTransactionID(transaction.getID());
-                    FragmentProductEntryEdit alertDialog = FragmentProductEntryEdit.newInstance(activity.getString(R.string.ttl_add_product), entry);
-                    alertDialog.setEntryEditListener(new FragmentProductEntryEdit.IProductEntryEditListener() {
-                        @Override
-                        public void onProductEntryEdited(ProductEntry productEntry1) {
-                            listener.onProductChanged(position, productEntry1);
-                        }
-                    });
-                    alertDialog.show(activity.getFragmentManager(), "fragment_product_entry_edit");
-                }
+            itemView.setOnClickListener(view -> {
+                ProductEntry entry = new ProductEntry();
+                entry.setTransactionID(transaction.getID());
+                FragmentProductEntryEdit alertDialog = FragmentProductEntryEdit.newInstance(activity.getString(R.string.ttl_add_product), entry);
+                alertDialog.setEntryEditListener(productEntry1 -> listener.onProductChanged(position, productEntry1));
+                alertDialog.show(activity.getFragmentManager(), "fragment_product_entry_edit");
             });
         }
     }
@@ -303,16 +280,13 @@ public class AdapterProducts extends RecyclerView.Adapter {
             ButterKnife.bind(this, view);
         }
 
-        void bindViewHolder(View itemView, final int position, final Transaction transaction, final Activity activity,
+        void bindViewHolder(View itemView, final Transaction transaction, final Activity activity,
                             CabbageFormatter formatter, final IProductChangedListener listener) {
             String s = String.format(activity.getString(R.string.ttl_move_residue), formatter.format(transaction.getResidue().negate()));
             mTextViewAddProduct.setText(s);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    transaction.setAmount(transaction.getAmount().add(transaction.getResidue().negate()), transaction.getTransactionType());
-                   listener.onResidueMoved();
-                }
+            itemView.setOnClickListener(view -> {
+                transaction.setAmount(transaction.getAmount().add(transaction.getResidue().negate()), transaction.getTransactionType());
+               listener.onResidueMoved();
             });
         }
     }

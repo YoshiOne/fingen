@@ -10,34 +10,36 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.yoshione.fingen.interfaces.IUpdateMainListsEvents;
 import com.yoshione.fingen.utils.Lg;
 import com.yoshione.fingen.widgets.ContextMenuRecyclerView;
 import com.yoshione.fingen.widgets.FgLinearLayoutManager;
 
 import java.util.Objects;
-import java.util.concurrent.Callable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import io.reactivex.Single;
 
 /**
  * Created by slv on 08.11.2016.
  * Базовый фрагмент, от которого наследуются фрагменты на главном экране (те, что во ViewPager)
  */
 
-public class BaseListFragment extends Fragment implements IListFragment {
+public class BaseListFragment extends Fragment {
 
     public static final String FORCE_UPDATE_PARAM = "forceUpdateParam";
     public static final String LAYOUT_NAME_PARAM = "layoutID";
+
     @BindView(R.id.recycler_view)
     ContextMenuRecyclerView recyclerView;
+
     private Unbinder unbinder;
     private boolean isUpdating = false;
-    private IUpdateMainListsEvents mUpdateListsEvents;
     private String mForceUpdateParam;
+
+    protected void loadData(long itemID) {
+        throw new UnsupportedOperationException("Method loadData must be implemented");
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,11 +95,6 @@ public class BaseListFragment extends Fragment implements IListFragment {
         super.onPause();
     }
 
-    public void setUpdateListsEvents(IUpdateMainListsEvents updateListsEvents) {
-        mUpdateListsEvents = updateListsEvents;
-    }
-
-    @Override
     public void fullUpdate(long itemID) {
         Lg.log("%s fullUpdate", getClass().getName());
         if (getView() != null && getUserVisibleHint() && !isUpdating) {
@@ -117,7 +114,9 @@ public class BaseListFragment extends Fragment implements IListFragment {
     private void update(long itemID) {
         isUpdating = true;
 
-        mUpdateListsEvents.loadData(itemID);
+        loadData(itemID);
+
+        PreferenceManager.getDefaultSharedPreferences(Objects.requireNonNull(getActivity())).edit().putBoolean(mForceUpdateParam, false).apply();
 
         isUpdating = false;
     }

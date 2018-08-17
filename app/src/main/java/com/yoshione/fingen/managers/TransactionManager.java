@@ -127,7 +127,6 @@ public class TransactionManager {
         }
         String items[] = text.split("&");
         String keyValue[];
-        Intent intent = new Intent(context, ActivityEditTransaction.class);
         for (String s : items) {
             keyValue = s.split("=");
             if (keyValue.length == 2) {

@@ -38,8 +38,7 @@ public class FilterManager {
             IAbstractModel.MODEL_TYPE_CATEGORY
     };
 
-    public static List<AbstractFilter> loadFiltersFromPreferences(Context context) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+    public static List<AbstractFilter> loadFiltersFromPreferences(SharedPreferences preferences, Context context) {
         String filters[] = preferences.getString("filters", "").split(";");
         List<AbstractFilter> filterList = new ArrayList<>();
         AbstractFilter filter;

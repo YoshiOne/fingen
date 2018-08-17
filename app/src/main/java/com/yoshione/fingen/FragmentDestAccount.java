@@ -1,20 +1,14 @@
 package com.yoshione.fingen;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
-
-import com.yoshione.fingen.managers.AccountManager;
-import com.yoshione.fingen.managers.TransactionManager;
-import com.yoshione.fingen.model.Account;
-import com.yoshione.fingen.model.Transaction;
-import com.yoshione.fingen.utils.RequestCodes;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,41 +19,45 @@ import butterknife.ButterKnife;
  */
 public class FragmentDestAccount extends Fragment {
 
-    private static final String TAG = "FragmentDestAccount";
-
     @BindView(R.id.textViewDestAccount)
     EditText textViewDestAccount;
     @BindView(R.id.imageButtonInvertTransferDirection)
     ImageButton imageButtonInvertTransferDirection;
 
-    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    FragmentDestAccountListener mCallback;
+
+    public interface FragmentDestAccountListener {
+        void destAccountTextViewClick();
+
+        void InvertTransferDirectionClick();
+
+        String getDestAccountName();
+    }
+
+    public static FragmentDestAccount newInstance() {
+        return new FragmentDestAccount();
+    }
+
+    public View onCreateView(@NonNull final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frg_te_dest_account, container, false);
         ButterKnife.bind(this, view);
 
-        textViewDestAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), ActivityAccounts.class);
-                intent.putExtra("showHomeButton", false);
-                intent.putExtra("model", new Account());
-                intent.putExtra("destAccount", true);
-                getActivity().startActivityForResult(intent, RequestCodes.REQUEST_CODE_SELECT_MODEL);
-            }
-        });
+        ActivityEditTransaction activityEditTransaction = (ActivityEditTransaction) getActivity();
 
-        imageButtonInvertTransferDirection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ActivityEditTransaction activityEditTransaction = (ActivityEditTransaction) getActivity();
-                Transaction transaction = activityEditTransaction.getTransaction();
-                long src = transaction.getAccountID();
-                long dst = transaction.getDestAccountID();
-                transaction.setAccountID(dst);
-                transaction.setDestAccountID(src);
-                activityEditTransaction.initUI();
-                updateDestAccountName();
-            }
-        });
+        if (activityEditTransaction != null) {
+            textViewDestAccount.setOnClickListener(view12 -> {
+                if (mCallback != null) {
+                    mCallback.destAccountTextViewClick();
+                }
+            });
+
+            imageButtonInvertTransferDirection.setOnClickListener(view1 -> {
+                if (mCallback != null) {
+                    mCallback.InvertTransferDirectionClick();
+                    textViewDestAccount.setText(mCallback.getDestAccountName());
+                }
+            });
+        }
 
         return view;
     }
@@ -67,17 +65,18 @@ public class FragmentDestAccount extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        updateDestAccountName();
+        if (mCallback != null) {
+            textViewDestAccount.setText(mCallback.getDestAccountName());
+        }
     }
 
-    private void updateDestAccountName() {
-        Account destAccount = TransactionManager.getDestAccount(((ActivityEditTransaction) getActivity()).getTransaction(), getActivity());
-        String name = destAccount.getName();
-        String code = AccountManager.getCabbage(destAccount, getActivity()).getSimbol();
-        if (name.isEmpty()) {
-            textViewDestAccount.setText("");
-        } else {
-            textViewDestAccount.setText(String.format("%s (%s)", destAccount.getName(), code));
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mCallback = (FragmentDestAccountListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement FragmentDestAccountListener");
         }
     }
 }

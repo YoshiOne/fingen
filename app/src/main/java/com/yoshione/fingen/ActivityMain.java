@@ -1,7 +1,6 @@
 package com.yoshione.fingen;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -78,7 +77,6 @@ import com.yoshione.fingen.model.Template;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.receivers.SMSReceiver;
 import com.yoshione.fingen.utils.ColorUtils;
-import com.yoshione.fingen.utils.InApp;
 import com.yoshione.fingen.utils.Lg;
 import com.yoshione.fingen.utils.NotificationCounter;
 import com.yoshione.fingen.utils.NotificationHelper;
@@ -101,6 +99,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import dagger.Lazy;
 import io.fabric.sdk.android.Fabric;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
@@ -184,9 +183,15 @@ public class ActivityMain extends ToolbarActivity {
     private int mUnreadSms = 0;
 
     @Inject
-    SharedPreferences mPreferences;
+    Lazy<BillingService> mBillingService;
     @Inject
-    BillingService mBillingService;
+    Lazy<SmsMarkersDAO> mSmsMarkersDAO;
+    @Inject
+    Lazy<SmsDAO> mSmsDAO;
+    @Inject
+    Lazy<SendersDAO> mSendersDAO;
+    @Inject
+    Lazy<TransactionsDAO> mTransactionsDAO;
 
     @Override
     protected int getLayoutResourceId() {
@@ -315,7 +320,6 @@ public class ActivityMain extends ToolbarActivity {
     }
 
     private void onUpdateVersion(int prevVersion, int newVersion) {
-        fragmentTransactions.isNewVersion = true;
         mPreferences.edit().putInt("version_code", newVersion).apply();
 
         if (prevVersion < 59) {
@@ -493,7 +497,6 @@ public class ActivityMain extends ToolbarActivity {
         if (!actual) {
             addFragments();
             fragmentPagerAdapter.notifyDataSetChanged();
-//            updateLists();
         }
     }
 
@@ -662,7 +665,7 @@ public class ActivityMain extends ToolbarActivity {
         mMaterialDrawer.deselect();
         updateCounters();
 
-        updateLists();
+//        updateLists();
 
         if (mPreferences.getBoolean(FgConst.PREF_HIDE_SUMS_PANEL, true)) {
             AppBarLayout.LayoutParams paramsABL = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
@@ -677,13 +680,23 @@ public class ActivityMain extends ToolbarActivity {
     public void onBackPressed() {
         // Закрываем Navigation Drawer по нажатию системной кнопки "Назад" если он открыт
         ButterKnife.bind(this);
-        if (mMaterialDrawer.isDrawerOpen()) {
+        if (mMaterialDrawer.isDrawerOpen())
+        {
             mMaterialDrawer.closeDrawer();
-        } else if (fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentAccounts.class) & (mSlidingUpAccounts != null &&
-                (mSlidingUpAccounts.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED
-                        || mSlidingUpAccounts.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED))) {
+        }
+        else if (
+                fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentAccounts.class) &
+                        (mSlidingUpAccounts != null &&
+                                (mSlidingUpAccounts.getPanelState() ==
+                                        SlidingUpPanelLayout.PanelState.EXPANDED ||
+                                        mSlidingUpAccounts.getPanelState() ==
+                                                SlidingUpPanelLayout.PanelState.ANCHORED)
+                        )
+                )
+        {
             mSlidingUpAccounts.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-        } else if (fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentTransactions.class) & (mSlidingUpTransactions != null &&
+        }
+        else if (fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentTransactions.class) & (mSlidingUpTransactions != null &&
                 (mSlidingUpTransactions.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || mSlidingUpTransactions.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED))) {
             mSlidingUpTransactions.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         } else if (fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentTransactions.class) && fragmentTransactions.mFabMenuController.isFABOpen()) {
@@ -776,13 +789,13 @@ public class ActivityMain extends ToolbarActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
             List<SmsMarker> smsMarkers;
             try {
-                smsMarkers = SmsMarkersDAO.getInstance(this).getAllSmsParserPatterns();
+                smsMarkers = mSmsMarkersDAO.get().getAllSmsParserPatterns();
             } catch (Exception e) {
                 smsMarkers = new ArrayList<>();
             }
             List<Sender> senders;
             try {
-                senders = SendersDAO.getInstance(this).getAllSenders();
+                senders = mSendersDAO.get().getAllSenders();
             } catch (Exception e) {
                 senders = new ArrayList<>();
             }
@@ -842,9 +855,8 @@ public class ActivityMain extends ToolbarActivity {
 
     private void updateCounters() {
         Thread t = new Thread(() -> {
-            SmsDAO smsDAO = SmsDAO.getInstance(getApplicationContext());
             try {
-                mUnreadSms = smsDAO.getAllModels().size();
+                mUnreadSms = mSmsDAO.get().getAllModels().size();
             } catch (Exception e) {
                 mUnreadSms = 0;
             }
@@ -868,7 +880,7 @@ public class ActivityMain extends ToolbarActivity {
                     this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
                 } else {
                     try {
-                        TransactionsDAO.getInstance(this).createModel(transaction);
+                        mTransactionsDAO.get().createModel(transaction);
                     } catch (Exception e) {
                         Toast.makeText(this, R.string.msg_error_on_write_to_db, Toast.LENGTH_SHORT).show();
                     }
@@ -877,7 +889,7 @@ public class ActivityMain extends ToolbarActivity {
         }else if (data != null && resultCode == RESULT_OK && requestCode == RequestCodes.REQUEST_CODE_SCAN_QR) {
             final Intent intent = new Intent(this, ActivityEditTransaction.class);
             final Transaction transaction = data.getParcelableExtra("transaction");
-            List<Transaction> transactions = TransactionsDAO.getInstance(getApplicationContext()).getTransactionsByQR(transaction, getApplicationContext());
+            List<Transaction> transactions = mTransactionsDAO.get().getTransactionsByQR(transaction, getApplicationContext());
             if (transactions.isEmpty()) {
                 intent.putExtra("transaction", transaction);
                 intent.putExtra("load_products", true);

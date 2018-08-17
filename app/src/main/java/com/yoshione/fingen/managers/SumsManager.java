@@ -170,10 +170,8 @@ public class SumsManager {
     public static synchronized void updateSummaryTableWithFormattedStrings(Activity activity, TableLayout layoutSumTable,
                                                 boolean isAddStartBalance,
                                                 ListSumsByCabbage listSumsByCabbage,
-                                                HashMap<Long, Cabbage> cabbages,
                                                 @Nullable String captions[]) {
         if (layoutSumTable == null) return;
-        CabbageFormatter cf;
         layoutSumTable.removeAllViews();
         TableRow tableRow;
         TextView textView;

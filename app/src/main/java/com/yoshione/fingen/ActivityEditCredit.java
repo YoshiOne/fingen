@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.yoshione.fingen.adapter.NestedItemFullNameAdapter;
 import com.yoshione.fingen.dao.CategoriesDAO;
 import com.yoshione.fingen.dao.CreditsDAO;
 import com.yoshione.fingen.dao.PayeesDAO;
@@ -37,7 +38,7 @@ import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_SELECT_MODEL;
  * Created by slv on 03.03.2016.
  * a
  */
-public class ActivityEditCredit extends ToolbarActivity {
+public class ActivityEditCredit extends ToolbarActivity implements FragmentPayee.FragmentPayeeListener{
 
 //    private static final String TAG = "ActivityEditCredit";
 
@@ -139,35 +140,51 @@ public class ActivityEditCredit extends ToolbarActivity {
         Payee payee = DebtsManager.getPayee(mCredit, this);
         setPayeeName(payee.getFullName());
         fragmentPayee.setHint(getString(R.string.ent_payee));
-        fragmentPayee.setPayeeTextChangeListener(new FragmentPayee.PayeeTextChangeListener() {
-            @Override
-            public void OnPayeeItemClick(Payee payee1) {
-                mCredit.setPayeeID(payee1.getID());
-                mPayeeName = payee1.getFullName();
-            }
+    }
 
-            @Override
-            public void OnPayeeTyping(String payeeName) {
-                mPayeeName = payeeName;
-            }
+    @Override
+    public String getPayeeName() {
+        return mPayeeName;
+    }
 
-            @Override
-            public void OnClearPayee() {
-                mCredit.setPayeeID(-1);
-                setPayeeName("");
-            }
-        });
+    @Override
+    public void onPayeeTextViewClick() {
+        Intent intent = new Intent(ActivityEditCredit.this.getApplicationContext(), ActivityList.class);
+        intent.putExtra("showHomeButton", false);
+        intent.putExtra("model", PayeesDAO.getInstance(getApplicationContext()).getPayeeByID(mCredit.getPayeeID()));
+        intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
+        ActivityEditCredit.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
+    }
 
-        fragmentPayee.setPayeeOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ActivityEditCredit.this.getApplicationContext(), ActivityList.class);
-                intent.putExtra("showHomeButton", false);
-                intent.putExtra("model", PayeesDAO.getInstance(getApplicationContext()).getPayeeByID(mCredit.getPayeeID()));
-                intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
-                ActivityEditCredit.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
-            }
-        });
+    @Override
+    public void onPayeeItemClick(long payeeID) {
+
+    }
+
+    @Override
+    public void onPayeeTyping(String payeeName) {
+        mPayeeName = payeeName;
+    }
+
+    @Override
+    public void onClearPayee() {
+        mCredit.setPayeeID(-1);
+        setPayeeName("");
+    }
+
+    @Override
+    public int getPayeeSelectionStyle() {
+        return 0;
+    }
+
+    @Override
+    public boolean isShowKeyboard() {
+        return false;
+    }
+
+    @Override
+    public NestedItemFullNameAdapter getPayeeNameAutocompleteAdapter() {
+        return null;
     }
 
     private void initCategory() {
@@ -215,7 +232,7 @@ public class ActivityEditCredit extends ToolbarActivity {
                     Account selectedAccount = (Account) model;
                     textViewAccount.setText(selectedAccount.getName());
                     mCredit.setAccountID(selectedAccount.getID());
-                    fragmentPayee.edPayee.requestFocus();
+//                    fragmentPayee.edPayee.requestFocus();
                     Cabbage cabbage = AccountManager.getCabbage(selectedAccount, ActivityEditCredit.this);
                     textViewAccount.setText(String.format("%s (%s)", selectedAccount.getName(), cabbage.getSimbol()));
                     break;
@@ -225,7 +242,6 @@ public class ActivityEditCredit extends ToolbarActivity {
                     break;
                 case IAbstractModel.MODEL_TYPE_PAYEE:
                     mCredit.setPayeeID(model.getID());
-                    setPayeeName(model.getFullName());
                     mPayeeName = model.getFullName();
                     break;
             }
@@ -250,7 +266,6 @@ public class ActivityEditCredit extends ToolbarActivity {
                 e.printStackTrace();
             }
             mCredit.setPayeeID(payee.getID());
-            fragmentPayee.setAutocompleteAdapter();
         }
     }
 

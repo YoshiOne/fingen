@@ -144,7 +144,6 @@
         <activity
             android:name=".ActivityEditTransaction"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER"/>

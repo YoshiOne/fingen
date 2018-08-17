@@ -21,7 +21,7 @@ import android.support.design.widget.TabLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -42,7 +42,6 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -50,11 +49,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.yoshione.fingen.adapter.AdapterProducts;
+import com.yoshione.fingen.adapter.NestedItemFullNameAdapter;
 import com.yoshione.fingen.dao.AccountsDAO;
 import com.yoshione.fingen.dao.CategoriesDAO;
 import com.yoshione.fingen.dao.DepartmentsDAO;
@@ -77,7 +76,9 @@ import com.yoshione.fingen.managers.PayeeManager;
 import com.yoshione.fingen.managers.SmsMarkerManager;
 import com.yoshione.fingen.managers.TransactionManager;
 import com.yoshione.fingen.managers.TransferManager;
+import com.yoshione.fingen.managers.TreeManager;
 import com.yoshione.fingen.model.Account;
+import com.yoshione.fingen.model.AutocompleteItem;
 import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.model.Category;
 import com.yoshione.fingen.model.Credit;
@@ -90,6 +91,7 @@ import com.yoshione.fingen.model.Template;
 import com.yoshione.fingen.model.TrEditItem;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.receivers.SMSReceiver;
+import com.yoshione.fingen.utils.BaseNode;
 import com.yoshione.fingen.utils.CabbageFormatter;
 import com.yoshione.fingen.utils.DateTimeFormatter;
 import com.yoshione.fingen.utils.FabMenuController;
@@ -97,6 +99,7 @@ import com.yoshione.fingen.utils.NotificationCounter;
 import com.yoshione.fingen.utils.NotificationHelper;
 import com.yoshione.fingen.utils.PrefUtils;
 import com.yoshione.fingen.utils.RequestCodes;
+import com.yoshione.fingen.utils.SmartFragmentStatePagerAdapter;
 import com.yoshione.fingen.utils.SmsParser;
 import com.yoshione.fingen.utils.SwipeDetector;
 import com.yoshione.fingen.widgets.AmountEditor;
@@ -116,6 +119,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -133,28 +138,26 @@ import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_SELECT_MODEL;
 import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT;
-import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_TUNE_EDITOR;
 
 /**
  * Created by slv on 20.08.2015.
  * a
  */
 @RuntimePermissions
-public class ActivityEditTransaction extends ToolbarActivity /*implements TimePickerDialog.OnTimeSetListener,
-        DatePickerDialog.OnDateSetListener*/ {
+public class ActivityEditTransaction extends ToolbarActivity implements
+        FragmentDestAccount.FragmentDestAccountListener,
+        FragmentPayee.FragmentPayeeListener{
 
     //<editor-fold desc="Static declarations" defaultstate="collapsed">
     private static final int FRAGMENT_PAYEE = 0;
     private static final int FRAGMENT_DEST_ACCOUNT = 1;
-    private static final int FRAGMENTS_COUNT = 2;
     private static final int ERR_EXRATE_ZERO = 1;
     private static final int ERR_EXRATE_ONE = 2;
     private static final int ERR_EMPTY_SRC_ACCOUNT = 3;
-    private static final int ERR_EMPTY_CATEGORY = 4;
     private static final String SHOWCASE_ID = "Edit transaction showcase";
     //</editor-fold>
-    private final List<Fragment> fragments = new ArrayList<>();
-    //<editor-fold desc="BindView" defaultstate="collapsed">
+
+    //<editor-fold desc="Bind views" defaultstate="collapsed">
     @BindView(R.id.te_lay_DateTime)
     LinearLayout teLayDateTime;
     @BindView(R.id.editTextTemplateName)
@@ -245,8 +248,6 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     RecyclerView mRecyclerViewProductList;
     @BindView(R.id.layoutProductList)
     ConstraintLayout mLayoutProductList;
-    //</editor-fold>
-    FragmentDestAccount fragmentDestAccount;
     @BindView(R.id.imageViewLoadingProducts)
     ImageView mImageViewLoadingProducts;
     @BindView(R.id.textViewLoadingProducts)
@@ -291,11 +292,12 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     LinearLayout mLayoutRoot;
     @BindView(R.id.layoutComment)
     TextInputLayout mLayoutComment;
+    //</editor-fold>
+
+    private MyPagerAdapter fragmentPagerAdapter;
     private OnDestAmountChangeListener onDestAmountChangeListener;
     private OnExRateTextChangedListener onExRateTextChangedListener;
-    private FragmentPayee fragmentPayee;
     private String mPayeeName;
-    private SharedPreferences preferences;
     private Transaction transaction;
     private Transaction srcTransaction;//исходная транзакция для сплита
     private Template template;
@@ -310,52 +312,19 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     private String provider = "";
     private LocationManager locationManager;
     private boolean forceUpdateLocation = false;
-    private Call<FtsResponse> mFtsResponseCall;
-    private final LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(android.location.Location location) {
-            if (location == null)
-                return;
-            lat = location.getLatitude();
-            lon = location.getLongitude();
-            accuracy = Math.round(location.getAccuracy());
-            provider = location.getProvider();
-            updateEdLocation();
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
     private boolean allowUpdateLocation;
     private boolean mIsBtnMorePressed = false;
     private boolean isExRateInverted = false;
     private boolean mDoNotChangeIsAmountEdited = false;
     private boolean isAmountEdited = false;
     private boolean isErrorLoadingProducts = false;
-    FabMenuController mFabMenuController;
-    private List<TrEditItem> mTrEditItems;private final SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener =
-            new SharedPreferences.OnSharedPreferenceChangeListener() {
-                @Override
-                public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                    if (key.equals(FgConst.PREF_TRANSACTION_EDITOR_CONSTRUCTOR)) {
-                        preferences = PreferenceManager.getDefaultSharedPreferences(ActivityEditTransaction.this);
-                        mTrEditItems = PrefUtils.getTrEditorLayout(preferences, ActivityEditTransaction.this);
-                        recreateViews();
-                    }
-                }
-            };
+    private FabMenuController mFabMenuController;
+    private List<TrEditItem> mTrEditItems;
+    private LocationListener locationListener;
+    private SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener;
+
+    @Inject
+    FtsHelper mFtsHelper;
 
     @Override
     protected int getLayoutResourceId() {
@@ -366,6 +335,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        FGApplication.getAppComponent().inject(this);
 
         if (!BuildConfig.DEBUG) {
             if (!Fabric.isInitialized()) {
@@ -375,53 +345,16 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
 
         ButterKnife.bind(this);
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mTrEditItems = PrefUtils.getTrEditorLayout(preferences, this);
+        mTrEditItems = PrefUtils.getTrEditorLayout(mPreferences, this);
         recreateViews();
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
 
         //получаем объекты
-        if (savedInstanceState == null) {
-            initObjects();
-        }
+        initObjects(savedInstanceState);
+
         amountEditor.setActivity(this);
 
         isAmountEdited = transaction.getAmount().compareTo(BigDecimal.ZERO) != 0;
-
-        if (srcTransaction != null) {
-            tabLayoutType.setVisibility(View.GONE);
-            viewPager.setVisibility(View.GONE);
-        } else {
-            FragmentPagerAdapter fragmentPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-                @Override
-                public int getCount() {
-                    return FRAGMENTS_COUNT;
-                }
-
-                @Override
-                public Fragment getItem(final int position) {
-                    return fragments.get(position);
-                }
-
-                @Override
-                public CharSequence getPageTitle(final int position) {
-                    switch (position) {
-                        case FRAGMENT_PAYEE:
-                            return getString(R.string.ent_payment);
-                        case FRAGMENT_DEST_ACCOUNT:
-                            return getString(R.string.ent_transfer);
-                        default:
-                            return null;
-                    }
-                }
-            };
-            viewPager.setAdapter(fragmentPagerAdapter);
-            fragmentPayee = new FragmentPayee();
-            fragmentDestAccount = new FragmentDestAccount();
-
-            fragments.add(FRAGMENT_PAYEE, fragmentPayee);
-            fragments.add(FRAGMENT_DEST_ACCOUNT, fragmentDestAccount);
-        }
 
         mRecyclerViewProductList.setLayoutManager(new LinearLayoutManager(this) {
             @Override
@@ -429,13 +362,45 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 return false;
             }
         });
+
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(android.location.Location location) {
+                if (location == null)
+                    return;
+                lat = location.getLatitude();
+                lon = location.getLongitude();
+                accuracy = Math.round(location.getAccuracy());
+                provider = location.getProvider();
+                updateEdLocation();
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+        sharedPreferenceChangeListener = (prefs, key) -> {
+            if (key.equals(FgConst.PREF_TRANSACTION_EDITOR_CONSTRUCTOR)) {
+                mTrEditItems = PrefUtils.getTrEditorLayout(mPreferences, ActivityEditTransaction.this);
+                recreateViews();
+            }
+        };
     }
 
     @Override
     public void onDestroy() {
-        if (mFtsResponseCall != null) {
-            mFtsResponseCall.cancel();
-        }
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
         super.onDestroy();
     }
@@ -449,7 +414,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         notificationCounter.removeNotification(SMSReceiver.NOTIFICATION_ID_TRANSACTION_AUTO_CREATED);
 
         forceUpdateLocation = transaction.getID() < 0;
-        allowUpdateLocation = preferences.getBoolean("detect_locations", false) & forceUpdateLocation & (srcTransaction == null);
+        allowUpdateLocation = mPreferences.getBoolean("detect_locations", false) & forceUpdateLocation & (srcTransaction == null);
 
         if (allowUpdateLocation) {
             ActivityEditTransactionPermissionsDispatcher.startDetectCoordsWithPermissionCheck(this);
@@ -570,7 +535,9 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
 
         initAccount();
 
-        initViewPagerPayee();
+        initViewPager();
+
+//        initViewPagerPayee();
 
         initCategory();
 
@@ -666,7 +633,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 e.printStackTrace();
             }
             if (updateAutocompleteAdapter) {
-                fragmentPayee.setAutocompleteAdapter();
+                getFragmentPayee().setAutocompleteAdapter();
             }
         }
 
@@ -773,18 +740,10 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     break;
                 case ERR_EXRATE_ONE:
                     new AlertDialog.Builder(this)
-                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
+                            .setNegativeButton(android.R.string.no, (dialog, which) -> {
 
-                                }
                             })
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    saveTransaction();
-                                }
-                            })
+                            .setPositiveButton(android.R.string.yes, (dialog, which) -> saveTransaction())
                             .setCancelable(false)
                             .setMessage(getString(R.string.err_exrate_one))
                             .show();
@@ -941,9 +900,9 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         class ItemVisibility {
             RelativeLayout layout;
             String id;
-            long entityId;
+            private long entityId;
 
-            public ItemVisibility(RelativeLayout layout, String id, long entityId) {
+            private ItemVisibility(RelativeLayout layout, String id, long entityId) {
                 this.layout = layout;
                 this.id = id;
                 this.entityId = entityId;
@@ -974,7 +933,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                      & item.isVisible() ? View.VISIBLE : View.GONE);
         }
 
-        boolean scanQR = preferences.getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true);
+        boolean scanQR = mPreferences.getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true);
 
         item = PrefUtils.getTrEditItemByID(mTrEditItems, FgConst.TEI_FTS);
         if (item != null) {
@@ -997,7 +956,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
             String s;
             if (onExRateTextChangedListener != null)
                 edExchangeRate.removeTextChangedListener(onExRateTextChangedListener);
-            isExRateInverted = preferences.getBoolean(String.format("%s/%s", srcCabbage.getCode(), dstCabbage.getCode()), false);
+            isExRateInverted = mPreferences.getBoolean(String.format("%s/%s", srcCabbage.getCode(), dstCabbage.getCode()), false);
             if (!isExRateInverted) {
                 s = String.format("%s/%s", srcCabbage.getCode(), dstCabbage.getCode());
                 edExchangeRate.setText(String.valueOf(transaction.getExchangeRate().doubleValue()));
@@ -1051,12 +1010,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
             edSms.setText(text);
 
 //            imageButtonAddMarker.setImageDrawable(IconGenerator.getInstance(this).getAddIcon(this));
-            imageButtonAddMarker.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ActivityEditTransaction.this.showAddMarkerDialog();
-                }
-            });
+            imageButtonAddMarker.setOnClickListener(v -> ActivityEditTransaction.this.showAddMarkerDialog());
 
             edSms.setCustomSelectionActionModeCallback(new ActionModeCallback(this));
         } else {
@@ -1083,12 +1037,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
 
         builderSingle.setNegativeButton(
                 this.getResources().getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                (dialog, which) -> dialog.dismiss());
 
 
         String selectedText = sms.getmBody().subSequence(Math.max(0, Math.min(selStart, selEnd)),
@@ -1099,13 +1048,10 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
 
     private void selectPayeeForMarker(final int markerType, final String selectedText) {
         if (!checkPayeeAndCreateIfNecessary(true)) {
-            PayeeManager.ShowSelectPayeeDialog(ActivityEditTransaction.this, new PayeeManager.OnSelectPayeeListener() {
-                @Override
-                public void OnSelectPayee(Payee selectedPayee) {
-                    transaction.setPayeeID(selectedPayee.getID());
-                    setPayeeName(selectedPayee.getName());
-                    ActivityEditTransaction.this.createSmsMarker(markerType, selectedText);
-                }
+            PayeeManager.ShowSelectPayeeDialog(ActivityEditTransaction.this, selectedPayee -> {
+                transaction.setPayeeID(selectedPayee.getID());
+                setPayeeName(selectedPayee.getName());
+                ActivityEditTransaction.this.createSmsMarker(markerType, selectedText);
             });
         } else {
             ActivityEditTransaction.this.createSmsMarker(markerType, selectedText);
@@ -1120,28 +1066,20 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 if (transaction.getPayeeID() < 0) {
                     if (mPayeeName.isEmpty()) {
                         new AlertDialog.Builder(this)
-                                .setNegativeButton(R.string.act_create, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        PayeesDAO payeesDAO = PayeesDAO.getInstance(ActivityEditTransaction.this);
-                                        Payee payee = new Payee();
-                                        payee.setName(selectedText);
-                                        try {
-                                            payee = (Payee) payeesDAO.createModel(payee);
-                                            transaction.setPayeeID(payee.getID());
-                                            setPayeeName(payee.getName());
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                        ActivityEditTransaction.this.createSmsMarker(markerType, selectedText);
+                                .setNegativeButton(R.string.act_create, (dialog, which) -> {
+                                    PayeesDAO payeesDAO = PayeesDAO.getInstance(ActivityEditTransaction.this);
+                                    Payee payee = new Payee();
+                                    payee.setName(selectedText);
+                                    try {
+                                        payee = (Payee) payeesDAO.createModel(payee);
+                                        transaction.setPayeeID(payee.getID());
+                                        setPayeeName(payee.getName());
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
                                     }
+                                    ActivityEditTransaction.this.createSmsMarker(markerType, selectedText);
                                 })
-                                .setPositiveButton(R.string.act_select, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        selectPayeeForMarker(markerType, selectedText);
-                                    }
-                                })
+                                .setPositiveButton(R.string.act_select, (dialog, which) -> selectPayeeForMarker(markerType, selectedText))
                                 .setCancelable(false)
                                 .setMessage(String.format(getString(R.string.ttl_create_new_payee_from_marker), selectedText))
                                 .show();
@@ -1230,58 +1168,62 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         }
     }
 
-    private void initObjects() {
-        if (getIntent().getAction() != null) {
-            switch (getIntent().getAction()) {
-                case FgConst.ACT_NEW_EXPENSE:
-                    transaction = new Transaction(PrefUtils.getDefDepID(this));
-                    transaction.setTransactionType(Transaction.TRANSACTION_TYPE_EXPENSE);
-                    break;
-                case FgConst.ACT_NEW_INCOME:
-                    transaction = new Transaction(PrefUtils.getDefDepID(this));
-                    transaction.setTransactionType(Transaction.TRANSACTION_TYPE_INCOME);
-                    break;
-                case FgConst.ACT_NEW_TRANSFER:
-                    transaction = new Transaction(PrefUtils.getDefDepID(this));
-                    transaction.setTransactionType(Transaction.TRANSACTION_TYPE_TRANSFER);
-                    break;
-                default:
-                    transaction = getIntent().getParcelableExtra("transaction");
-            }
-        } else {
-            transaction = getIntent().getParcelableExtra("transaction");
-        }
-        if (transaction == null) {
-            transaction = new Transaction(PrefUtils.getDefDepID(this));
-        }
-        if (getIntent().getBooleanExtra("update_date", false)) {
-            transaction.setDateTime(new Date());
-        }
-        srcTransaction = getIntent().getParcelableExtra("src_transaction");
-        if (srcTransaction != null) {
-            srcAmount = new BigDecimal(srcTransaction.getAmount().doubleValue());
-        } else {
-            srcAmount = BigDecimal.ZERO;
-        }
-        template = getIntent().getParcelableExtra("template");
-        mCredit = getIntent().getParcelableExtra("credit");
-        credit_action = getIntent().getIntExtra("credit_action", -1);
-        //получаем смс
-        sms = getIntent().getParcelableExtra("sms");
-        if (sms != null) {
-            SmsParser smsParser = new SmsParser(sms, this);
-            transaction = smsParser.extractTransaction();
-        }
-
-        if (getIntent().getStringExtra("template_name") != null) {
-            if (!getIntent().getStringExtra("template_name").isEmpty()) {
-                try {
-                    transaction = TransactionManager.templateToTransaction((Template) TemplatesDAO.getInstance(this).getModelByName(getIntent().getStringExtra("template_name")), this);
-                } catch (Exception e) {
-                    e.printStackTrace();
+    private void initObjects(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            if (getIntent().getAction() != null) {
+                switch (getIntent().getAction()) {
+                    case FgConst.ACT_NEW_EXPENSE:
+                        transaction = new Transaction(PrefUtils.getDefDepID(this));
+                        transaction.setTransactionType(Transaction.TRANSACTION_TYPE_EXPENSE);
+                        break;
+                    case FgConst.ACT_NEW_INCOME:
+                        transaction = new Transaction(PrefUtils.getDefDepID(this));
+                        transaction.setTransactionType(Transaction.TRANSACTION_TYPE_INCOME);
+                        break;
+                    case FgConst.ACT_NEW_TRANSFER:
+                        transaction = new Transaction(PrefUtils.getDefDepID(this));
+                        transaction.setTransactionType(Transaction.TRANSACTION_TYPE_TRANSFER);
+                        break;
+                    default:
+                        transaction = getIntent().getParcelableExtra("transaction");
                 }
-                getIntent().putExtra("transaction", transaction);
+            } else {
+                transaction = getIntent().getParcelableExtra("transaction");
             }
+            if (transaction == null) {
+                transaction = new Transaction(PrefUtils.getDefDepID(this));
+            }
+            if (getIntent().getBooleanExtra("update_date", false)) {
+                transaction.setDateTime(new Date());
+            }
+            srcTransaction = getIntent().getParcelableExtra("src_transaction");
+            if (srcTransaction != null) {
+                srcAmount = new BigDecimal(srcTransaction.getAmount().doubleValue());
+            } else {
+                srcAmount = BigDecimal.ZERO;
+            }
+            template = getIntent().getParcelableExtra("template");
+            mCredit = getIntent().getParcelableExtra("credit");
+            credit_action = getIntent().getIntExtra("credit_action", -1);
+            //получаем смс
+            sms = getIntent().getParcelableExtra("sms");
+            if (sms != null) {
+                SmsParser smsParser = new SmsParser(sms, this);
+                transaction = smsParser.extractTransaction();
+            }
+
+            if (getIntent().getStringExtra("template_name") != null) {
+                if (!getIntent().getStringExtra("template_name").isEmpty()) {
+                    try {
+                        transaction = TransactionManager.templateToTransaction((Template) TemplatesDAO.getInstance(this).getModelByName(getIntent().getStringExtra("template_name")), this);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    getIntent().putExtra("transaction", transaction);
+                }
+            }
+        } else {
+            onRestoreInstanceState(savedInstanceState);
         }
     }
 
@@ -1427,15 +1369,12 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
 
             amountEditor.setScale(cabbage.getDecimalCount());
 
-            textViewAccount.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(ActivityEditTransaction.this, ActivityAccounts.class);
-                    intent.putExtra("showHomeButton", false);
-                    intent.putExtra("model", new Account());
-                    intent.putExtra("destAccount", false);
-                    ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
-                }
+            textViewAccount.setOnClickListener(view -> {
+                Intent intent = new Intent(ActivityEditTransaction.this, ActivityAccounts.class);
+                intent.putExtra("showHomeButton", false);
+                intent.putExtra("model", new Account());
+                intent.putExtra("destAccount", false);
+                ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
             });
         }
     }
@@ -1450,15 +1389,100 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 viewPager.setCurrentItem(0);
                 break;
         }
-//        viewPager.setCurrentItem((transactionType == Transaction.TRANSACTION_TYPE_TRANSFER) ? 1 : 0);
     }
 
-    private void initViewPagerPayee() {
+    @Override
+    public void destAccountTextViewClick() {
+        Intent intent = new Intent(this, ActivityAccounts.class);
+        intent.putExtra("showHomeButton", false);
+        intent.putExtra("model", new Account());
+        intent.putExtra("destAccount", true);
+        startActivityForResult(intent, RequestCodes.REQUEST_CODE_SELECT_MODEL);
+    }
+
+    @Override
+    public void InvertTransferDirectionClick() {
+        long src = transaction.getAccountID();
+        long dst = transaction.getDestAccountID();
+        transaction.setAccountID(dst);
+        transaction.setDestAccountID(src);
+        initUI();
+    }
+
+    @Override
+    public String getDestAccountName() {
+        Account destAccount = TransactionManager.getDestAccount(transaction, this);
+        String name = destAccount.getName();
+        String code = AccountManager.getCabbage(destAccount, this).getSimbol();
+        if (name.isEmpty()) {
+            return "";
+        } else {
+            return String.format("%s (%s)", destAccount.getName(), code);
+        }
+    }
+
+    // Extend from SmartFragmentStatePagerAdapter now instead for more dynamic ViewPager items
+    private class MyPagerAdapter extends SmartFragmentStatePagerAdapter {
+
+        MyPagerAdapter(FragmentManager fragmentManager) {
+            super(fragmentManager);
+        }
+
+        // Returns total number of pages
+        @Override
+        public int getCount() {
+            return 2;//FRAGMENTS_COUNT;
+        }
+
+        // Returns the fragment to display for that page
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0: // Fragment # 0 - This will show FirstFragment
+                    if (mPayeeName != null && !mPayeeName.isEmpty()) {
+                        setPayeeName(mPayeeName);
+                    } else {
+                        Payee payee = TransactionManager.getPayee(transaction, getApplicationContext());
+                        setPayeeName(payee.getFullName());
+                    }
+                    FragmentPayee fragmentPayee = FragmentPayee.newInstance();
+                    initViewPagerPayee();
+                    return fragmentPayee;
+                case 1:
+                    return FragmentDestAccount.newInstance();
+                default:
+                    return null;
+            }
+        }
+
+        // Returns the page title for the top indicator
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case FRAGMENT_PAYEE:
+                    return getString(R.string.ent_payment);
+                case FRAGMENT_DEST_ACCOUNT:
+                    return getString(R.string.ent_transfer);
+                default:
+                    return null;
+            }
+        }
+
+    }
+
+    private void initViewPager() {
         if (srcTransaction != null) {
+            tabLayoutType.setVisibility(View.GONE);
             viewPager.setVisibility(View.GONE);
         } else {
+            fragmentPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+            viewPager.setAdapter(fragmentPagerAdapter);
+
+            tabLayoutType.setVisibility(View.VISIBLE);
+            viewPager.setVisibility(View.VISIBLE);
+
             tabLayoutType.setupWithViewPager(viewPager);
-            tabLayoutType.setVisibility(preferences.getBoolean(FgConst.PREF_SHOW_TRANSACTION_TYPE_TITLES, true) ?
+            tabLayoutType.setVisibility(mPreferences.getBoolean(FgConst.PREF_SHOW_TRANSACTION_TYPE_TITLES, true) ?
                     View.VISIBLE : View.GONE);
             setTransactionTypeControls(transaction.getTransactionType());
             viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -1481,65 +1505,92 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 public void onPageScrollStateChanged(int state) {
                 }
             });
-
-            fragmentPayee.setShowKeyboard(transaction.getID() < 0);
-
-            //Инициируем ViewPager Payee/DestAccount
-            if (mPayeeName != null && !mPayeeName.isEmpty()) {
-                setPayeeName(mPayeeName);
-            } else {
-                Payee payee = TransactionManager.getPayee(transaction, getApplicationContext());
-                setPayeeName(payee.getFullName());
-            }
-
-            fragmentPayee.setPayeeOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityList.class);
-                    intent.putExtra("showHomeButton", false);
-                    intent.putExtra("model", PayeesDAO.getInstance(getApplicationContext()).getPayeeByID(transaction.getPayeeID()));
-                    intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
-                    ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
-                }
-            });
-            fragmentPayee.setPayeeTextChangeListener(new FragmentPayee.PayeeTextChangeListener() {
-                @Override
-                public void OnPayeeItemClick(Payee payee) {
-                    transaction.setPayeeID(payee.getID());
-                    mPayeeName = payee.getFullName();
-                    Category defCategory = PayeeManager.getDefCategory(payee, ActivityEditTransaction.this);
-                    if (defCategory.getID() >= 0) {
-                        transaction.setCategoryID(defCategory.getID());
-                        ActivityEditTransaction.this.initCategory();
-                    }
-                    amountEditor.requestFocus();
-                }
-
-                @Override
-                public void OnPayeeTyping(String payeeName) {
-                    mPayeeName = payeeName;
-                }
-
-                @Override
-                public void OnClearPayee() {
-                    transaction.setPayeeID(-1);
-                    setPayeeName("");
-                }
-            });
         }
+    }
+
+    private FragmentPayee getFragmentPayee() {
+        return (FragmentPayee) fragmentPagerAdapter.getRegisteredFragment(0);
+    }
+
+    private void initViewPagerPayee() {
+         viewPager.setVisibility(srcTransaction == null ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public String getPayeeName() {
+        return mPayeeName;
+    }
+
+    @Override
+    public void onPayeeTextViewClick() {
+        Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityList.class);
+        intent.putExtra("showHomeButton", false);
+        intent.putExtra("model", PayeesDAO.getInstance(getApplicationContext()).getPayeeByID(transaction.getPayeeID()));
+        intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
+        ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
+    }
+
+    @Override
+    public void onPayeeItemClick(long payeeID) {
+        Payee payee = PayeesDAO.getInstance(this).getPayeeByID(payeeID);
+        transaction.setPayeeID(payee.getID());
+        mPayeeName = payee.getFullName();
+        Category defCategory = PayeeManager.getDefCategory(payee, ActivityEditTransaction.this);
+        if (defCategory.getID() >= 0) {
+            transaction.setCategoryID(defCategory.getID());
+            ActivityEditTransaction.this.initCategory();
+        }
+        amountEditor.requestFocus();
+    }
+
+    @Override
+    public void onPayeeTyping(String payeeName) {
+        mPayeeName = payeeName;
+    }
+
+    @Override
+    public void onClearPayee() {
+        transaction.setPayeeID(-1);
+        setPayeeName("");
+    }
+
+    @Override
+    public int getPayeeSelectionStyle() {
+        return Integer.valueOf(mPreferences.getString("payee_selection_style", "0"));
+    }
+
+    @Override
+    public boolean isShowKeyboard() {
+        return transaction.getID() < 0;
+    }
+
+    @Override
+    public NestedItemFullNameAdapter getPayeeNameAutocompleteAdapter() {
+        PayeesDAO payeesDAO = PayeesDAO.getInstance(this);
+        List<IAbstractModel> payees;
+        List<AutocompleteItem> autocompleteItems = new ArrayList<>();
+        try {
+            payees = (List<IAbstractModel>) payeesDAO.getAllModels();
+        } catch (Exception e) {
+            payees = new ArrayList<>();
+        }
+
+        BaseNode tree = TreeManager.convertListToTree(payees, IAbstractModel.MODEL_TYPE_PAYEE);
+        for (BaseNode node : tree.getFlatChildrenList()) {
+            autocompleteItems.add(new AutocompleteItem(node.getModel().getID(), node.getModel().getFullName()));
+        }
+
+        return new NestedItemFullNameAdapter(this, android.R.layout.simple_spinner_dropdown_item, autocompleteItems);
     }
 
     private void initCategory() {
         edCategory.setText(CategoriesDAO.getInstance(this).getCategoryByID(transaction.getCategoryID()).getFullName());
-        edCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityList.class);
-                intent.putExtra("showHomeButton", false);
-                intent.putExtra("model", CategoriesDAO.getInstance(getApplicationContext()).getCategoryByID(transaction.getCategoryID()));
-                intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
-                ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
-            }
+        edCategory.setOnClickListener(v -> {
+            Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityList.class);
+            intent.putExtra("showHomeButton", false);
+            intent.putExtra("model", CategoriesDAO.getInstance(getApplicationContext()).getCategoryByID(transaction.getCategoryID()));
+            intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
+            ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
         });
     }
 
@@ -1606,21 +1657,15 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
             }
         });
 
-        mImageButtonScanQR.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ActivityEditTransaction.this, ActivityScanQR.class);
-                intent.putExtra("transaction", transaction);
-                startActivityForResult(intent, RequestCodes.REQUEST_CODE_SCAN_QR);
-            }
+        mImageButtonScanQR.setOnClickListener(view -> {
+            Intent intent = new Intent(ActivityEditTransaction.this, ActivityScanQR.class);
+            intent.putExtra("transaction", transaction);
+            startActivityForResult(intent, RequestCodes.REQUEST_CODE_SCAN_QR);
         });
 
-        mImageButtonDownloadReceipt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getIntent().putExtra("load_products", true);
-                initProductList();
-            }
+        mImageButtonDownloadReceipt.setOnClickListener(view -> {
+            getIntent().putExtra("load_products", true);
+            initProductList();
         });
     }
 
@@ -1628,7 +1673,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     boolean mProductListExpanded = true;
 
     private void loadProducts() {
-        if (FtsHelper.isFtsCredentialsAvailiable(this)) {
+        if (mFtsHelper.isFtsCredentialsAvailiable(this)) {
             final RotateAnimation spinAnim = new RotateAnimation(360, 0f,
                     Animation.RELATIVE_TO_SELF, 0.5f,
                     Animation.RELATIVE_TO_SELF, 0.5f);
@@ -1673,11 +1718,11 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                     updateControlsState();
                 }
             };
-            mFtsResponseCall = FtsHelper.downloadProductEntryList(transaction, downloadProductsListener, this);
+            unsubscribeOnDestroy(mFtsHelper.downloadProductEntryList(transaction, downloadProductsListener));
         } else {
             mLayoutLoadingProducts.setVisibility(View.GONE);
             fillProductList();
-            if (!preferences.getBoolean(FgConst.PREF_FTS_DO_NOT_SHOW_AGAIN, false)) {
+            if (!mPreferences.getBoolean(FgConst.PREF_FTS_DO_NOT_SHOW_AGAIN, false)) {
                 startActivityForResult(
                         new Intent(ActivityEditTransaction.this, ActivityFtsLogin.class),
                         RequestCodes.REQUEST_CODE_ENTER_FTS_LOGIN);
@@ -1696,12 +1741,9 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
 
         mExpandableIndicator.setImageDrawable(mProductListExpanded ? getDrawable(R.drawable.ic_expand_more) : getDrawable(R.drawable.ic_expand_less));
 
-        mExpandableIndicator.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mProductListExpanded = !mProductListExpanded;
-                initProductList();
-            }
+        mExpandableIndicator.setOnClickListener(view -> {
+            mProductListExpanded = !mProductListExpanded;
+            initProductList();
         });
 
     }
@@ -1709,7 +1751,6 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     private void fillProductList() {
         isErrorLoadingProducts = false;
         mLayoutLoadingProducts.setVisibility(View.GONE);
-//        mRecyclerViewProductList.setVisibility(View.VISIBLE);
         mAdapterProducts = new AdapterProducts(transaction, this, new AdapterProducts.IProductChangedListener() {
             @Override
             public void onProductChanged(int position, ProductEntry productEntry) {
@@ -1759,45 +1800,36 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
 
     private void initProject() {
         edProject.setText(ProjectsDAO.getInstance(this).getProjectByID(transaction.getProjectID()).getFullName());
-        edProject.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityList.class);
-                intent.putExtra("showHomeButton", false);
-                intent.putExtra("model", ProjectsDAO.getInstance(getApplicationContext()).getProjectByID(transaction.getProjectID()));
-                intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
-                ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
-            }
+        edProject.setOnClickListener(v -> {
+            Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityList.class);
+            intent.putExtra("showHomeButton", false);
+            intent.putExtra("model", ProjectsDAO.getInstance(getApplicationContext()).getProjectByID(transaction.getProjectID()));
+            intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
+            ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
         });
     }
 
     private void initSimpleDebt() {
         mTextViewSimpleDebt.setText("");
         mTextViewSimpleDebt.setText(TransactionManager.getSimpleDebt(transaction, this).getName());
-        mTextViewSimpleDebt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityModelList.class);
-                intent.putExtra("showHomeButton", false);
-                intent.putExtra("model", SimpleDebtsDAO.getInstance(getApplicationContext()).getSimpleDebtByID(transaction.getSimpleDebtID()));
-                intent.putExtra("cabbageID", AccountsDAO.getInstance(getApplicationContext()).getAccountByID(transaction.getAccountID()).getCabbageId());
-                intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
-                ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
-            }
+        mTextViewSimpleDebt.setOnClickListener(v -> {
+            Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityModelList.class);
+            intent.putExtra("showHomeButton", false);
+            intent.putExtra("model", SimpleDebtsDAO.getInstance(getApplicationContext()).getSimpleDebtByID(transaction.getSimpleDebtID()));
+            intent.putExtra("cabbageID", AccountsDAO.getInstance(getApplicationContext()).getAccountByID(transaction.getAccountID()).getCabbageId());
+            intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
+            ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
         });
     }
 
     private void initDepartment() {
         edDepartment.setText(DepartmentsDAO.getInstance(this).getDepartmentByID(transaction.getDepartmentID()).getFullName());
-        edDepartment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityList.class);
-                intent.putExtra("showHomeButton", false);
-                intent.putExtra("model", DepartmentsDAO.getInstance(getApplicationContext()).getDepartmentByID(transaction.getDepartmentID()));
-                intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
-                ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
-            }
+        edDepartment.setOnClickListener(v -> {
+            Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityList.class);
+            intent.putExtra("showHomeButton", false);
+            intent.putExtra("model", DepartmentsDAO.getInstance(getApplicationContext()).getDepartmentByID(transaction.getDepartmentID()));
+            intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
+            ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
         });
     }
 
@@ -1805,26 +1837,23 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         amountEditor.setAmount(transaction.getAmount());
         amountEditor.setType(transaction.getTransactionType());
         amountEditor.setHint(getResources().getString(R.string.ent_amount));
-        amountEditor.mOnAmountChangeListener = new AmountEditor.OnAmountChangeListener() {
-            @Override
-            public void OnAmountChange(BigDecimal newAmount, int newType) {
-                if (!mDoNotChangeIsAmountEdited) {
-                    isAmountEdited = true;
-                }
-                transaction.setAmount(newAmount, newType);
-                destAmountEditor.setAmount(TransferManager.getDestAmount(transaction));
-                if (newType != Transaction.TRANSACTION_TYPE_TRANSFER) {
-                    mLastTrType = newType;
-                }
-                if (srcTransaction != null) {
-                    srcAmount = srcTransaction.getAmount().subtract(transaction.getAmount());
-                    ActivityEditTransaction.this.initSrcAmount();
-                }
-                ActivityEditTransaction.this.updatePayeeHint();
-                if (transaction.getProductEntries().size() > 0) {
+        amountEditor.mOnAmountChangeListener = (newAmount, newType) -> {
+            if (!mDoNotChangeIsAmountEdited) {
+                isAmountEdited = true;
+            }
+            transaction.setAmount(newAmount, newType);
+            destAmountEditor.setAmount(TransferManager.getDestAmount(transaction));
+            if (newType != Transaction.TRANSACTION_TYPE_TRANSFER) {
+                mLastTrType = newType;
+            }
+            if (srcTransaction != null) {
+                srcAmount = srcTransaction.getAmount().subtract(transaction.getAmount());
+                ActivityEditTransaction.this.initSrcAmount();
+            }
+            ActivityEditTransaction.this.updatePayeeHint();
+            if (transaction.getProductEntries().size() > 0) {
 //                    initProductList();
-                    mAdapterProducts.notifyDataSetChanged();
-                }
+                mAdapterProducts.notifyDataSetChanged();
             }
         };
 
@@ -1843,17 +1872,14 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     }
 
     private void initExRate() {
-        mImageButtonInvertExRate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                isExRateInverted = !isExRateInverted;
+        mImageButtonInvertExRate.setOnClickListener(view -> {
+            isExRateInverted = !isExRateInverted;
 
-                preferences.edit().putBoolean(String.format("%s/%s",
-                        TransactionManager.getSrcCabbage(transaction, ActivityEditTransaction.this).getCode(),
-                        TransactionManager.getDstCabbage(transaction, ActivityEditTransaction.this).getCode()),
-                        isExRateInverted).apply();
-                updateControlsState();
-            }
+            mPreferences.edit().putBoolean(String.format("%s/%s",
+                    TransactionManager.getSrcCabbage(transaction, ActivityEditTransaction.this).getCode(),
+                    TransactionManager.getDstCabbage(transaction, ActivityEditTransaction.this).getCode()),
+                    isExRateInverted).apply();
+            updateControlsState();
         });
         edExchangeRate.setText(String.valueOf(transaction.getExchangeRate().doubleValue()));
         if (onExRateTextChangedListener == null) {
@@ -1901,15 +1927,12 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 }
             }
 
-            edLocation.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityList.class);
-                    intent.putExtra("showHomeButton", false);
-                    intent.putExtra("model", LocationsDAO.getInstance(getApplicationContext()).getLocationByID(transaction.getLocationID()));
-                    intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
-                    ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
-                }
+            edLocation.setOnClickListener(v -> {
+                Intent intent = new Intent(ActivityEditTransaction.this.getApplicationContext(), ActivityList.class);
+                intent.putExtra("showHomeButton", false);
+                intent.putExtra("model", LocationsDAO.getInstance(getApplicationContext()).getLocationByID(transaction.getLocationID()));
+                intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
+                ActivityEditTransaction.this.startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
             });
 
             if (allowUpdateLocation) {
@@ -2019,7 +2042,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     void onLocationNeverAskAgain() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 & ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            preferences.edit().putBoolean("detect_locations", false).apply();
+            mPreferences.edit().putBoolean("detect_locations", false).apply();
         } else {
             allowUpdateLocation = true;
         }
@@ -2030,18 +2053,8 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
 
     private void showRationaleDialog(@StringRes int messageResId, final PermissionRequest request) {
         new AlertDialog.Builder(this)
-                .setPositiveButton(R.string.act_next, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        request.proceed();
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        request.cancel();
-                    }
-                })
+                .setPositiveButton(R.string.act_next, (dialog, which) -> request.proceed())
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> request.cancel())
                 .setCancelable(false)
                 .setMessage(messageResId)
                 .show();
@@ -2076,9 +2089,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
                 case IAbstractModel.MODEL_TYPE_PAYEE:
                     Payee payee = (Payee) model;
                     transaction.setPayeeID(payee.getID());
-                    setPayeeName(payee.getFullName());
-//                    initViewPagerPayee();
-
+                    mPayeeName = payee.getFullName();
                     if (transaction.getPayeeID() >= 0) {
                         Category defCategory = PayeeManager.getDefCategory(payee, ActivityEditTransaction.this);
                         if (defCategory.getID() >= 0) {
@@ -2136,9 +2147,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
             getIntent().putExtra("load_products", true);
             initUI();
         } else if (requestCode == RequestCodes.REQUEST_CODE_ENTER_FTS_LOGIN) {
-            if (resultCode == RESULT_OK) {
-
-            } else {
+            if (resultCode != RESULT_OK) {
                 getIntent().removeExtra("load_products");
             }
         } else {
@@ -2156,15 +2165,12 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     public void onDateClick(View view) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(transaction.getDateTime());
-        new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(transaction.getDateTime());
-                calendar.set(year, monthOfYear, dayOfMonth);
-                transaction.setDateTime(calendar.getTime());
-                initDateTimeButtons();
-            }
+        new DatePickerDialog(this, (datePicker, year, monthOfYear, dayOfMonth) -> {
+            Calendar calendar1 = Calendar.getInstance();
+            calendar1.setTime(transaction.getDateTime());
+            calendar1.set(year, monthOfYear, dayOfMonth);
+            transaction.setDateTime(calendar1.getTime());
+            initDateTimeButtons();
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
                 .show();
     }
@@ -2173,15 +2179,12 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(transaction.getDateTime());
         new TimePickerDialog(this,
-                new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(transaction.getDateTime());
-                        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), hourOfDay, minute);
-                        transaction.setDateTime(calendar.getTime());
-                        initDateTimeButtons();
-                    }
+                (timePicker, hourOfDay, minute) -> {
+                    Calendar calendar1 = Calendar.getInstance();
+                    calendar1.setTime(transaction.getDateTime());
+                    calendar1.set(calendar1.get(Calendar.YEAR), calendar1.get(Calendar.MONTH), calendar1.get(Calendar.DAY_OF_MONTH), hourOfDay, minute);
+                    transaction.setDateTime(calendar1.getTime());
+                    initDateTimeButtons();
                 },
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE),
@@ -2311,6 +2314,7 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
     }
 
     private void updatePayeeHint() {
+        FragmentPayee fragmentPayee = getFragmentPayee();
         if (fragmentPayee != null) {
             switch (transaction.getTransactionType()) {
                 case Transaction.TRANSACTION_TYPE_EXPENSE:
@@ -2325,8 +2329,8 @@ public class ActivityEditTransaction extends ToolbarActivity /*implements TimePi
 
     private void setPayeeName(String payeeName) {
         mPayeeName = payeeName;
-        if (fragmentPayee != null) {
-            fragmentPayee.setPayeeName(payeeName);
+        if (getFragmentPayee() != null) {
+            getFragmentPayee().setPayeeName(payeeName);
         }
     }
 

@@ -2,9 +2,8 @@ package com.yoshione.fingen.fts;
 
 import com.yoshione.fingen.fts.models.FtsResponse;
 
-import java.util.List;
-
-import retrofit2.Call;
+import io.reactivex.Single;
+import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Url;
@@ -16,7 +15,7 @@ import retrofit2.http.Url;
 
 public interface FtsApi {
     @GET
-    Call<FtsResponse> getData(
+    Single<Response<FtsResponse>> getData(
             @Url String url,
             @Header("Authorization") String authorization,
             @Header("User-Agent") String userAgent,

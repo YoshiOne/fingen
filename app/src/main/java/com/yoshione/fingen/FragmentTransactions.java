@@ -8,13 +8,11 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Animatable;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
@@ -57,7 +55,6 @@ import com.yoshione.fingen.iab.BillingService;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ILoadMoreFinish;
 import com.yoshione.fingen.interfaces.IOnLoadMore;
-import com.yoshione.fingen.interfaces.IUpdateMainListsEvents;
 import com.yoshione.fingen.managers.AccountsSetManager;
 import com.yoshione.fingen.managers.FilterManager;
 import com.yoshione.fingen.managers.SumsManager;
@@ -102,13 +99,13 @@ import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_SELECT_MODEL;
  */
 
 public class FragmentTransactions extends BaseListFragment implements AdapterFilters.OnFilterChangeListener,
-        AdapterTransactions.OnTransactionItemEventListener, IUpdateMainListsEvents, IOnLoadMore {
+        AdapterTransactions.OnTransactionItemEventListener, IOnLoadMore {
 
     private static final String TAG = "FragmentTransactions";
     public static final int NUMBER_ITEMS_TO_BE_LOADED = 25;
-
     private static final int CONTEXT_MENU_TRANSACTIONS = 0;
-    AdapterFilters adapterFilters;
+
+    //<editor-fold desc="Bind views" defaultstate="collapsed">
     @BindView(R.id.layoutSummaryTable)
     TableLayout layoutSumTable;
     @BindView(R.id.switch_all_filters)
@@ -151,7 +148,6 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     Button mButtonAddFilter;
     @BindView(R.id.buttonClearfilters)
     Button mButtonClearFilters;
-    boolean isNewVersion = false;
     @BindView(R.id.fabSelectAllLayout)
     LinearLayout mFabSelectAllLayout;
     @BindView(R.id.fabUnselectAllLayout)
@@ -169,15 +165,27 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     Unbinder unbinder;
     @BindView(R.id.fabBGLayout)
     View mFabBGLayout;
+    //</editor-fold>
+
     private AdapterTransactions adapter;
+    AdapterFilters adapterFilters;
     private int contextMenuTarget = -1;
     private boolean isInSelectionMode;
-    private TransactionsDAO mTransactionsDAO;
     private StickyHeaderDecoration stickyHeaderDecoration;
     FabMenuController mFabMenuController;
 
     @Inject
     BillingService mBillingService;
+    @Inject
+    SharedPreferences mPreferences;
+    @Inject
+    Context mContext;
+    @Inject
+    TransactionsDAO mTransactionsDAO;
+    @Inject
+    AccountsDAO mAccountsDAO;
+    @Inject
+    CabbagesDAO mCabbagesDAO;
 
     public static FragmentTransactions newInstance(String forceUpdateParam, int layoutID) {
         FragmentTransactions fragment = new FragmentTransactions();
@@ -186,16 +194,6 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         args.putInt(LAYOUT_NAME_PARAM, layoutID);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        setUpdateListsEvents(this);
-    }
-
-    public AdapterTransactions getAdapter() {
-        return adapter;
     }
 
     @Override
@@ -211,8 +209,6 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 mSlidingLayoutTransactions.setEnabled(false);
             }
         }
-
-        mTransactionsDAO = TransactionsDAO.getInstance(getActivity());
 
         FgLinearLayoutManager layoutManagerFilters = new FgLinearLayoutManager(getActivity());
         recyclerViewFilters.setLayoutManager(layoutManagerFilters);
@@ -353,7 +349,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 if (firstVisiblePosition < 10) {
                     mFabGoTop.setVisibility(View.GONE);
                 } else {
-                    if (PreferenceManager.getDefaultSharedPreferences(FGApplication.getContext()).getBoolean("show_tr_go_top_button", true)) {
+                    if (mPreferences.getBoolean("show_tr_go_top_button", true)) {
                         mFabGoTop.setVisibility(View.VISIBLE);
                     }
                 }
@@ -380,8 +376,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             }
         }
         if (getActivity() != null) {
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            preferences.edit().putString("filters", sb.toString()).apply();
+            mPreferences.edit().putString("filters", sb.toString()).apply();
         }
     }
 
@@ -405,7 +400,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
     private void loadFilters() {
         adapterFilters.getFilterList().clear();
-        adapterFilters.getFilterList().addAll(FilterManager.loadFiltersFromPreferences(getActivity()));
+        adapterFilters.getFilterList().addAll(FilterManager.loadFiltersFromPreferences(mPreferences, mContext));
     }
 
     private void setAccountSetFilter() {
@@ -437,7 +432,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RequestCodes.REQUEST_CODE_EDIT_TRANSACTION & resultCode == RESULT_OK & data != null) {
-            Toast.makeText(getActivity(), R.string.ttl_transaction_splitted, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.ttl_transaction_splitted, Toast.LENGTH_SHORT).show();
         }
         if (data != null && resultCode == RESULT_OK && requestCode == RequestCodes.REQUEST_CODE_SELECT_MODEL) {
             IAbstractModel model = data.getParcelableExtra("model");
@@ -451,7 +446,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                     case IAbstractModel.MODEL_TYPE_DEPARTMENT:
                     case IAbstractModel.MODEL_TYPE_SIMPLEDEBT:
                         try {
-                            TransactionsDAO.getInstance(getActivity()).bulkUpdateEntity(data.getStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS), model, true);
+                            mTransactionsDAO.bulkUpdateEntity(data.getStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS), model, true);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -679,10 +674,9 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
     private void editFilterAccounts(final AccountFilter filter) {
         AlertDialog dialog;
-        final AccountsDAO accountsDAO = AccountsDAO.getInstance(getActivity());
         List<Account> accountList;
         try {
-            accountList = accountsDAO.getAllAccounts(PreferenceManager.getDefaultSharedPreferences(Objects.requireNonNull(getActivity())).getBoolean(FgConst.PREF_SHOW_CLOSED_ACCOUNTS, true));
+            accountList = mAccountsDAO.getAllAccounts(mPreferences.getBoolean(FgConst.PREF_SHOW_CLOSED_ACCOUNTS, true));
         } catch (Exception e) {
             accountList = new ArrayList<>();
         }
@@ -694,7 +688,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             items[i] = accountList.get(i).getName();
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
         builder.setTitle(getActivity().getResources().getString(R.string.ttl_select_accounts));
         builder.setMultiChoiceItems(items, checkedItems,
                 (dialog1, indexSelected, isChecked) -> {
@@ -708,7 +702,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                     for (int i = 0; i < ad.getListView().getCount(); i++) {
                         name = ad.getListView().getAdapter().getItem(i).toString();
                         try {
-                            accId = accountsDAO.getModelByName(name).getID();
+                            accId = mAccountsDAO.getModelByName(name).getID();
                         } catch (Exception e) {
                             accId = -1;
                         }
@@ -828,7 +822,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                         .setTitle(R.string.ttl_confirm_action)
                         .setMessage(R.string.msg_confirm_delete_transaction)
                         .setPositiveButton(R.string.ok, (dialog, which) -> {
-                            TransactionsDAO.getInstance(getActivity()).bulkDeleteModel(transactionsToDelete, true);
+                            mTransactionsDAO.bulkDeleteModel(transactionsToDelete, true);
                             onSelectionChange(0);
                         }).setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
                 break;
@@ -968,7 +962,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             long curTime = System.currentTimeMillis();
             ToolbarActivity activity = (ToolbarActivity) getActivity();
             Objects.requireNonNull(activity).unsubscribeOnDestroy(
-                    TransactionsDAO.getInstance(getActivity()).getRangeTransactionsRx(
+                    mTransactionsDAO.getRangeTransactionsRx(
                             start,
                             numberItems,
                             new FilterListHelper(adapterFilters.getFilterList(), mEditTextSearch.getText().toString(), getActivity()),
@@ -992,17 +986,15 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
     public void loadSums() {
         ToolbarActivity activity = (ToolbarActivity) getActivity();
-        HashMap<Long, Cabbage> cabbages = CabbagesDAO.getInstance(getActivity()).getCabbagesMap();
+        HashMap<Long, Cabbage> cabbages = mCabbagesDAO.getCabbagesMap();
         Objects.requireNonNull(activity).unsubscribeOnDestroy(
             mTransactionsDAO.getGroupedSumsRx(new FilterListHelper(adapterFilters.getFilterList(),
                     mEditTextSearch.getText().toString(), getActivity()), true, adapter.getSelectedTransactionsIDsAsLong(), getActivity())
                     .map(listSumsByCabbage -> SumsManager.formatSums(listSumsByCabbage, cabbages, false))
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(listSumsByCabbage -> {
-                SumsManager.updateSummaryTableWithFormattedStrings(getActivity(), layoutSumTable, false, listSumsByCabbage,
-                        cabbages, null);
-            })
+            .subscribe(listSumsByCabbage -> SumsManager.updateSummaryTableWithFormattedStrings(getActivity(),
+                    layoutSumTable, false, listSumsByCabbage, null))
         );
     }
 
@@ -1016,7 +1008,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     }
 
     public void updateSums(ListSumsByCabbage listSumsByCabbage) {
-        SumsManager.updateSummaryTable(getActivity(), layoutSumTable, false, listSumsByCabbage, CabbagesDAO.getInstance(getActivity()).getCabbagesMap(), null);
+        SumsManager.updateSummaryTable(getActivity(), layoutSumTable, false, listSumsByCabbage, mCabbagesDAO.getCabbagesMap(), null);
 //        Debug.stopMethodTracing();
     }
 
@@ -1105,7 +1097,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                             .setTitle(R.string.ttl_confirm_action)
                             .setMessage(R.string.msg_confirm_delete_selected_transactions)
                             .setPositiveButton(R.string.ok, (dialog, which) -> {
-                                TransactionsDAO.getInstance(getActivity()).bulkDeleteModel(transactionsToDelete, true);
+                                mTransactionsDAO.bulkDeleteModel(transactionsToDelete, true);
                                 onSelectionChange(0);
                             }).setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
 

@@ -143,6 +143,9 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         return -1;
     }
 
+    private int lastYear;
+    private int lastDay;
+
     public void addTransactions(List<Transaction> input, boolean clearLists) {
         synchronized (headerList) {
             if (clearLists) {
@@ -158,8 +161,6 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
                 return;
             }
 
-            int lastYear = 0;
-            int lastDay = 0;
             int curYear;
             int curDay;
             Calendar c = Calendar.getInstance();

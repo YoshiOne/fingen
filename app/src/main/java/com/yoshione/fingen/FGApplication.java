@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
@@ -22,10 +23,6 @@ import android.widget.PopupWindow;
 
 import com.evernote.android.job.JobManager;
 import com.github.omadahealth.lollipin.lib.managers.LockManager;
-import android.util.Log;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.yoshione.fingen.backup.BackupJob;
 import com.yoshione.fingen.backup.BackupJobCreator;
 import com.yoshione.fingen.backup.BackupTestJobCreator;
@@ -33,27 +30,15 @@ import com.yoshione.fingen.di.AppComponent;
 import com.yoshione.fingen.di.DaggerAppComponent;
 import com.yoshione.fingen.di.modules.ContextModule;
 import com.yoshione.fingen.fts.FtsApi;
-import com.yoshione.fingen.fts.ReceiptDeserializer;
-import com.yoshione.fingen.fts.models.FtsResponse;
 import com.yoshione.fingen.interfaces.ISyncAnimMethods;
 import com.yoshione.fingen.receivers.CustomIntentReceiver;
 import com.yoshione.fingen.widgets.CustomPinActivity;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class FGApplication extends Application implements ISyncAnimMethods {
 
-    private static String TAG = "FGApplication";
+    private static final String TAG = "FGApplication";
     public static final int MSG_SHOW_ANIM = 1;
     public static final int MSG_HIDE_ANIM = 2;
     public static final int MSG_SHOW_DIALOG = 3;
@@ -80,12 +65,6 @@ public class FGApplication extends Application implements ISyncAnimMethods {
     public boolean mAppPaused = true;
 
     public UpdateUIHandler mUpdateUIHandler;
-
-    public static FtsApi getFtsApi() {
-        return sFtsApi;
-    }
-
-    private static FtsApi sFtsApi;
 
     private static AppComponent sAppComponent;
 
@@ -126,25 +105,6 @@ public class FGApplication extends Application implements ISyncAnimMethods {
 
         registerActivityLifecycleCallbacks(new FgActivityLifecycleCallbacks());
 
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(1, TimeUnit.MINUTES)
-                .readTimeout(15, TimeUnit.SECONDS)
-                .writeTimeout(15, TimeUnit.SECONDS)
-                .addInterceptor(interceptor)
-                .build();
-
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(FtsResponse.class, new ReceiptDeserializer())
-                .create();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://proverkacheka.nalog.ru:8888/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .client(okHttpClient)
-                .build();
-        sFtsApi = retrofit.create(FtsApi.class);
         mCustomIntentReceiver = new CustomIntentReceiver();
 
         BackupJob.schedule();
@@ -205,14 +165,10 @@ public class FGApplication extends Application implements ISyncAnimMethods {
             // its safe to assume that the application
             // has been paused, in which case, dismiss
             // the popup
-            new Handler().postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (numOfRunning == 0) {
-                        hideSyncAnim();
-                        mAppPaused = true;
-                    }
+            new Handler().postDelayed(() -> {
+                if (numOfRunning == 0) {
+                    hideSyncAnim();
+                    mAppPaused = true;
                 }
             }, 100L);
 

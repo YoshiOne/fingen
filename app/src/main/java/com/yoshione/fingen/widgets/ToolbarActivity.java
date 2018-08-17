@@ -18,9 +18,12 @@ import android.view.View;
 import com.github.omadahealth.lollipin.lib.PinCompatActivity;
 import com.yoshione.fingen.ActivityMain;
 import com.yoshione.fingen.BuildConfig;
+import com.yoshione.fingen.FGApplication;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.interfaces.IUnsubscribeOnDestroy;
 import com.yoshione.fingen.utils.ViewServer;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,6 +42,9 @@ public abstract class ToolbarActivity extends PinCompatActivity implements IUnsu
     public Toolbar toolbar;
     private CompositeDisposable mCompositeDisposable;
 
+    @Inject
+    public SharedPreferences mPreferences;
+
     @Override
     public void unsubscribeOnDestroy(Disposable disposable) {
         mCompositeDisposable.add(disposable);
@@ -53,6 +59,8 @@ public abstract class ToolbarActivity extends PinCompatActivity implements IUnsu
         setContentView(getLayoutResourceId());
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+
+        FGApplication.getAppComponent().inject(this);
 
         mCompositeDisposable = new CompositeDisposable();
 

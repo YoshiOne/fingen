@@ -2,9 +2,7 @@ package com.yoshione.fingen.fts;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 
@@ -13,7 +11,6 @@ import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.dao.ProductEntrysDAO;
 import com.yoshione.fingen.dao.ProductsDAO;
-import com.yoshione.fingen.fts.models.FtsResponse;
 import com.yoshione.fingen.fts.models.Item;
 import com.yoshione.fingen.model.Product;
 import com.yoshione.fingen.model.ProductEntry;
@@ -25,9 +22,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import javax.inject.Inject;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by slv on 30.01.2018.
@@ -35,9 +34,18 @@ import retrofit2.Response;
  */
 
 public class FtsHelper {
-    public static Call<FtsResponse> downloadProductEntryList(final Transaction transaction,
-                                                final IDownloadProductsListener downloadProductsListener,
-                                                final Context context) {
+
+    @Inject
+    FtsApi mApi;
+    @Inject
+    Context mContext;
+
+    public FtsHelper() {
+        FGApplication.getAppComponent().inject(this);
+    }
+
+    public Disposable downloadProductEntryList(final Transaction transaction,
+                                               final IDownloadProductsListener downloadProductsListener) {
         String url = String.format("http://proverkacheka.nalog.ru:8888/v1/inns/*/kkts/*/" +
                 "fss/%s/" +
                 "tickets/%s" +
@@ -46,8 +54,8 @@ public class FtsHelper {
                 String.valueOf(transaction.getFN()),
                 String.valueOf(transaction.getFD()),
                 String.valueOf(transaction.getFP()));
-        String auth = getAuth(context).replaceAll("\n", "");
-        Call<FtsResponse> call = FGApplication.getFtsApi().getData(url,
+        String auth = getAuth(mContext).replaceAll("\n", "");
+        return mApi.getData(url,
                 "Basic " + auth,
                 "okhttp/3.0.1",
                 "748036d688ec41c6",
@@ -55,72 +63,66 @@ public class FtsHelper {
                 "2",
                 "1.4.4.1",
                 "proverkacheka.nalog.ru:8888",
-                "proverkacheka.nalog.ru:8888"
-        );
-        call.enqueue(new Callback<FtsResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<FtsResponse> call, @NonNull Response<FtsResponse> response) {
-                if (response.code() == 202) {
-                    downloadProductsListener.onAccepted();
-                } else if (response.code() == 200 & response.body() != null) {
-                    List<Item> items = new ArrayList<>(response.body().getDocument().getReceipt().getItems());
-                    List<ProductEntry> productEntries = new ArrayList<ProductEntry>();
-                    ProductsDAO productsDAO = ProductsDAO.getInstance(context);
-                    Product product;
-                    ProductEntry productEntry;
-                    ProductEntrysDAO productEntrysDAO = ProductEntrysDAO.getInstance(context);
-                    for (Item item : items) {
+                "proverkacheka.nalog.ru:8888")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    if (response.code() == 202) {
+                        downloadProductsListener.onAccepted();
+                    } else if (response.code() == 200 & response.body() != null) {
+                        List<Item> items = new ArrayList<>(response.body().getDocument().getReceipt().getItems());
+                        List<ProductEntry> productEntries = new ArrayList<>();
+                        ProductsDAO productsDAO = ProductsDAO.getInstance(mContext);
+                        Product product;
+                        ProductEntry productEntry;
+                        ProductEntrysDAO productEntrysDAO = ProductEntrysDAO.getInstance(mContext);
+                        for (Item item : items) {
 //                        product = new Product(-1, item.getName());
-                        if (item.getName() == null) {
-                            item.setName(context.getString(R.string.ent_unknown_product));
-                        }
-                        try {
-                            product = (Product) productsDAO.getModelByName(item.getName());
-                        } catch (Exception e) {
-                            product = new Product();
-                        }
-                        if (product.getID() < 0) {
-                            try {
-                                product.setName(item.getName());
-                                product = (Product) productsDAO.createModel(product);
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                            if (item.getName() == null) {
+                                item.setName(mContext.getString(R.string.ent_unknown_product));
                             }
-                        }
-                        if (product.getID() > 0) {
-                            productEntry = new ProductEntry();
-                            productEntry.setPrice(new BigDecimal(item.getPrice() / -100d));
-                            productEntry.setQuantity(new BigDecimal(item.getQuantity()));
+                            try {
+                                product = (Product) productsDAO.getModelByName(item.getName());
+                            } catch (Exception e) {
+                                product = new Product();
+                            }
+                            if (product.getID() < 0) {
+                                try {
+                                    product.setName(item.getName());
+                                    product = (Product) productsDAO.createModel(product);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            if (product.getID() > 0) {
+                                productEntry = new ProductEntry();
+                                productEntry.setPrice(new BigDecimal(item.getPrice() / -100d));
+                                productEntry.setQuantity(new BigDecimal(item.getQuantity()));
 //                            productEntry.setCategoryID(productEntrysDAO.getLastCategoryID(product.getName()));
 //                            productEntry.setProjectID(productEntrysDAO.getLastProjectID(product.getID()));
-                            productEntry.setTransactionID(transaction.getID());
-                            productEntry.setProductID(product.getID());
-                            productEntries.add(productEntry);
+                                productEntry.setTransactionID(transaction.getID());
+                                productEntry.setProductID(product.getID());
+                                productEntries.add(productEntry);
+                            }
+                            downloadProductsListener.onDownload(productEntries, response.body().getDocument().getReceipt().getUser());
                         }
-                        downloadProductsListener.onDownload(productEntries, response.body().getDocument().getReceipt().getUser());
+                    } else {
+                        try {
+                            downloadProductsListener.onFailure(response.errorBody().string(), false);
+                        } catch (IOException e) {
+                            downloadProductsListener.onFailure("", false);
+                            e.printStackTrace();
+                        }
                     }
-                } else {
-                    try {
-                        downloadProductsListener.onFailure(response.errorBody().string(), false);
-                    } catch (IOException e) {
-                        downloadProductsListener.onFailure("", false);
-                        e.printStackTrace();
+                }, throwable -> {
+                    if (throwable.getMessage() != null) {
+                        Log.d(getClass().getName(), throwable.getMessage());
                     }
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<FtsResponse> call, @NonNull Throwable t) {
-                if (t.getMessage() != null ) {
-                    Log.d(getClass().getName(), t.getMessage());
-                }
-                downloadProductsListener.onFailure(t.getMessage(), true);
-            }
-        });
-        return call;
+                    downloadProductsListener.onFailure(throwable.getMessage(), true);
+                });
     }
 
-    private static String getAuth(Context context) {
+    private String getAuth(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String phone = preferences.getString(FgConst.PREF_FTS_LOGIN, "");
         String code = preferences.getString(FgConst.PREF_FTS_PASS, "");
@@ -139,7 +141,7 @@ public class FtsHelper {
         return auth;
     }
 
-    public static boolean isFtsCredentialsAvailiable(Context context) {
+    public boolean isFtsCredentialsAvailiable(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return !preferences.getString(FgConst.PREF_FTS_LOGIN, "").isEmpty()
                 & !preferences.getString(FgConst.PREF_FTS_PASS, "").isEmpty();

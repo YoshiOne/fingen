@@ -6,9 +6,9 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.util.Pair;
 
-import android.util.Log;
 import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.db.IOnConflict;
 import com.yoshione.fingen.interfaces.IAbstractModel;
@@ -63,10 +63,6 @@ public class BaseDAO implements AbstractDAO {
 
     String[] getAllColumns() {
         return mAllColumns;
-    }
-
-    public void setAllColumns(String[] allColumns) {
-        mAllColumns = allColumns;
     }
 
     private String mAllColumns[];
@@ -142,6 +138,7 @@ public class BaseDAO implements AbstractDAO {
         if (aClass.equals(Sender.class)) return SendersDAO.getInstance(context);
         if (aClass.equals(BudgetDAO.class)) return BudgetDAO.getInstance(context);
         if (aClass.equals(BudgetCreditsDAO.class)) return BudgetCreditsDAO.getInstance(context);
+        if (aClass.equals(ProductsDAO.class)) return ProductsDAO.getInstance(context);
         return null;
     }
 
