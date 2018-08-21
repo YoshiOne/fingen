@@ -91,6 +91,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="com.yoshione.fingen.intent.action.CREATE_TRANSACTION"/>
+                <action android:name="com.yoshione.fingen.intent.action.CREATE_SMS"/>
             </intent-filter>
         </receiver>
         <receiver android:name=".WidgetExpense">

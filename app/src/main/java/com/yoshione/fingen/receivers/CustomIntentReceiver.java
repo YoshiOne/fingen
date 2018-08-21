@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 
 import com.yoshione.fingen.ActivityEditTransaction;
 import com.yoshione.fingen.dao.AccountsDAO;
@@ -12,11 +11,13 @@ import com.yoshione.fingen.dao.CategoriesDAO;
 import com.yoshione.fingen.dao.LocationsDAO;
 import com.yoshione.fingen.dao.PayeesDAO;
 import com.yoshione.fingen.dao.ProjectsDAO;
+import com.yoshione.fingen.dao.SendersDAO;
 import com.yoshione.fingen.dao.TemplatesDAO;
 import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.managers.TransactionManager;
 import com.yoshione.fingen.model.Category;
 import com.yoshione.fingen.model.Payee;
+import com.yoshione.fingen.model.Sms;
 import com.yoshione.fingen.model.Template;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.utils.PrefUtils;
@@ -35,29 +36,54 @@ import java.util.Date;
 public class CustomIntentReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Transaction transaction = createTransactionFromIntent(context, intent);
+        String action = intent.getAction();
+        if (action != null) {
+            if (action.equals("com.yoshione.fingen.intent.action.CREATE_SMS")) {
+                String senderName = intent.getStringExtra("sender");
+                long senderID = -1;
+                if (senderName != null) {
+                    try {
+                        senderID = SendersDAO.getInstance(context).getModelByName(senderName).getID();
+                    } catch (Exception e) {
+                        senderID = -1;
+                    }
+                }
+                String body = intent.getStringExtra("body").replaceAll("%s", " ");
+                if (senderID >= 0 && body != null && !body.isEmpty()) {
+                    Sms sms = new Sms(-1, new Date(), senderID, body);
+                    try {
+                        SMSReceiver smsReceiver = new SMSReceiver();
+                        smsReceiver.parseSMS(context, sms);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (action.equals("com.yoshione.fingen.intent.action.CREATE_TRANSACTION")) {
+                Transaction transaction = createTransactionFromIntent(context, intent);
 
-        String showEditorS;
-        if (intent.getIntExtra("show_editor", Integer.MAX_VALUE) < Integer.MAX_VALUE) {
-            showEditorS = String.valueOf(intent.getIntExtra("show_editor", Integer.MAX_VALUE));
-        } else {
-            showEditorS = intent.getStringExtra("show_editor");
-        }
-        boolean showEditor = false;
-        if (showEditorS != null) {
-            showEditor = showEditorS.equals("1");
-        }
+                String showEditorS;
+                if (intent.getIntExtra("show_editor", Integer.MAX_VALUE) < Integer.MAX_VALUE) {
+                    showEditorS = String.valueOf(intent.getIntExtra("show_editor", Integer.MAX_VALUE));
+                } else {
+                    showEditorS = intent.getStringExtra("show_editor");
+                }
+                boolean showEditor = false;
+                if (showEditorS != null) {
+                    showEditor = showEditorS.equals("1");
+                }
 
-        if (!transaction.isValidToAutoCreate() || showEditor) {
-            Intent intent1 = new Intent(context, ActivityEditTransaction.class);
-            intent1.putExtra("transaction", transaction);
-            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent1);
-        } else {
-            try {
-                TransactionsDAO.getInstance(context).createModel(transaction);
-            } catch (Exception e) {
-                e.printStackTrace();
+                if (!transaction.isValidToAutoCreate() || showEditor) {
+                    Intent intent1 = new Intent(context, ActivityEditTransaction.class);
+                    intent1.putExtra("transaction", transaction);
+                    intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent1);
+                } else {
+                    try {
+                        TransactionsDAO.getInstance(context).createModel(transaction);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
@@ -67,9 +93,8 @@ public class CustomIntentReceiver extends BroadcastReceiver {
 
         String templateName = intent.getStringExtra("template");
         if (templateName != null) {
-            Template template = null;
             try {
-                template = (Template) TemplatesDAO.getInstance(context).getModelByName(templateName);
+                Template template = (Template) TemplatesDAO.getInstance(context).getModelByName(templateName);
                 transaction = TransactionManager.templateToTransaction(template, context);
             } catch (Exception e) {
                 transaction = new Transaction(PrefUtils.getDefDepID(context));
@@ -78,7 +103,7 @@ public class CustomIntentReceiver extends BroadcastReceiver {
         
         String accountName = intent.getStringExtra("account");
         if (accountName != null) {
-            long accID = 0;
+            long accID;
             try {
                 accID = AccountsDAO.getInstance(context).getModelByName(accountName).getID();
             } catch (Exception e) {
@@ -129,7 +154,7 @@ public class CustomIntentReceiver extends BroadcastReceiver {
         if (transaction.getTransactionType() == Transaction.TRANSACTION_TYPE_TRANSFER) {
             String destAccountName = intent.getStringExtra("dest_account");
             if (accountName != null) {
-                long accID = 0;
+                long accID;
                 try {
                     accID = AccountsDAO.getInstance(context).getModelByName(destAccountName).getID();
                 } catch (Exception e) {
