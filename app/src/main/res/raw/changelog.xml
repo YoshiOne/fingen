@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.6" changeDate=">2018.08.21">
+        <changelogtext>Add create SMS from intent</changelogtext>
+        <changelogtext>Fix clear notification after edit transaction from it</changelogtext>
+        <changelogtext>Speedup database restore process</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.5.7" changeDate=">2018.08.03">
         <changelogtext>Bug fixes</changelogtext>
     </changelogversion>
