@@ -12,6 +12,8 @@ public class FgConst {
     public static final String FRAGMENT_TRANSACTIONS = "transactions";
     //</editor-fold>
 
+    public static final int NUMBER_ITEMS_TO_BE_LOADED = 25;
+
     public static final String TEI_DATETIME = "datetime";
     public static final String TEI_ACCOUNT = "account";
     public static final String TEI_PAYEE_DEST_ACC = "payee_dest_acc";

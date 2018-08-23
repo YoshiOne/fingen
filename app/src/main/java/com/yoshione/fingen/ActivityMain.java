@@ -55,7 +55,6 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import com.yoshione.fingen.adapter.AdapterTransactions;
 import com.yoshione.fingen.adapter.TransactionsArrayAdapter;
 import com.yoshione.fingen.dao.SendersDAO;
 import com.yoshione.fingen.dao.SmsDAO;
@@ -66,6 +65,7 @@ import com.yoshione.fingen.filters.AccountFilter;
 import com.yoshione.fingen.fts.ActivityScanQR;
 import com.yoshione.fingen.iab.BillingService;
 import com.yoshione.fingen.interfaces.IAbstractModel;
+import com.yoshione.fingen.interfaces.ITransactionItemEventListener;
 import com.yoshione.fingen.managers.AccountsSetManager;
 import com.yoshione.fingen.managers.TransactionManager;
 import com.yoshione.fingen.model.AccountsSet;
@@ -900,7 +900,7 @@ public class ActivityMain extends ToolbarActivity {
 
                 final Dialog[] dialog = new Dialog[]{null};
                 final TransactionsArrayAdapter arrayAdapter = new TransactionsArrayAdapter(
-                        this, transactions, new AdapterTransactions.OnTransactionItemEventListener() {
+                        this, transactions, new ITransactionItemEventListener() {
                     @Override
                     public void onTransactionItemClick(Transaction foundTransaction) {
                         dialog[0].dismiss();

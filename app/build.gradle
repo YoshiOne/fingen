@@ -28,8 +28,8 @@ android {
         applicationId "com.yoshione.fingen"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 125
-        versionName "2.6"
+        versionCode 127
+        versionName "2.6.2"
         resValue "string", "app_name", "Fingen"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

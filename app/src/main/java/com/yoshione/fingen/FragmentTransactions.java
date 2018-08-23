@@ -55,6 +55,7 @@ import com.yoshione.fingen.iab.BillingService;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ILoadMoreFinish;
 import com.yoshione.fingen.interfaces.IOnLoadMore;
+import com.yoshione.fingen.interfaces.ITransactionItemEventListener;
 import com.yoshione.fingen.managers.AccountsSetManager;
 import com.yoshione.fingen.managers.FilterManager;
 import com.yoshione.fingen.managers.SumsManager;
@@ -99,10 +100,9 @@ import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_SELECT_MODEL;
  */
 
 public class FragmentTransactions extends BaseListFragment implements AdapterFilters.OnFilterChangeListener,
-        AdapterTransactions.OnTransactionItemEventListener, IOnLoadMore {
+        ITransactionItemEventListener, IOnLoadMore {
 
     private static final String TAG = "FragmentTransactions";
-    public static final int NUMBER_ITEMS_TO_BE_LOADED = 25;
     private static final int CONTEXT_MENU_TRANSACTIONS = 0;
 
     //<editor-fold desc="Bind views" defaultstate="collapsed">
@@ -167,12 +167,15 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     View mFabBGLayout;
     //</editor-fold>
 
-    private AdapterTransactions adapter;
-    AdapterFilters adapterFilters;
+    private AdapterTransactions adapterT;
+    AdapterFilters adapterF;
     private int contextMenuTarget = -1;
     private boolean isInSelectionMode;
     private StickyHeaderDecoration stickyHeaderDecoration;
     FabMenuController mFabMenuController;
+    private volatile boolean loading;
+    private final int visibleThreshold = 10;
+    public volatile boolean endOfList = false;
 
     @Inject
     BillingService mBillingService;
@@ -213,20 +216,38 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         FgLinearLayoutManager layoutManagerFilters = new FgLinearLayoutManager(getActivity());
         recyclerViewFilters.setLayoutManager(layoutManagerFilters);
 
-        adapter = new AdapterTransactions(recyclerView, this, (ToolbarActivity) getActivity());
-        adapter.setHasStableIds(true);
-        adapter.setmOnTransactionItemClickListener(this);
-        adapterFilters = new AdapterFilters(getActivity(), this, this::editFilter);
-        adapterFilters.setHasStableIds(true);
+        adapterT = new AdapterTransactions(this, this, (ToolbarActivity) getActivity());
+        adapterT.setHasStableIds(true);
+        adapterF = new AdapterFilters(getActivity(), this, this::editFilter);
+        adapterF.setHasStableIds(true);
 
-        stickyHeaderDecoration = new StickyHeaderDecoration(adapter);
+        stickyHeaderDecoration = new StickyHeaderDecoration(adapterT);
 
-        recyclerView.setAdapter(adapter);
+        final LinearLayoutManager linearLayoutManager = new FgLinearLayoutManager(getActivity());
+
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public synchronized void onScrolled(RecyclerView recyclerView,int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int totalItemCount = linearLayoutManager.getItemCount();
+                int lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                    // End has been reached
+                    // Do something
+                    if (!endOfList) {
+                        loading = true;
+                        loadMore(FgConst.NUMBER_ITEMS_TO_BE_LOADED, () -> /*new Handler().postDelayed(() -> */adapterT.notifyDataSetChanged()/*, 100)*/);
+                    }
+                }
+            }
+        });
+        recyclerView.setAdapter(adapterT);
         recyclerView.addItemDecoration(stickyHeaderDecoration);
-        recyclerViewFilters.setAdapter(adapterFilters);
+        recyclerViewFilters.setAdapter(adapterF);
 
         switchAllFilters.setOnClickListener(v -> {
-            for (AbstractFilter filter : adapterFilters.getFilterList()) {
+            for (AbstractFilter filter : adapterF.getFilterList()) {
                 filter.setEnabled(switchAllFilters.isChecked());
             }
 
@@ -250,7 +271,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
                 if (previousState != newState && newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-                    onSelectionChange(adapter.getSelectedCount());
+                    onSelectionChange(adapterT.getSelectedCount());
                 }
 //                if (previousState == SlidingUpPanelLayout.PanelState.HIDDEN & newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
 //                    animatePullMe();
@@ -268,7 +289,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.setSearchString(s.toString());
+                adapterT.setSearchString(s.toString());
                 fullUpdate(-1);
             }
 
@@ -334,7 +355,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
         mFabGoTop.setOnClickListener(v -> {
             FgLinearLayoutManager linearLayoutManager = (FgLinearLayoutManager) recyclerView.getLayoutManager();
-            if (adapter.getTransactionListSize() > 0) {
+            if (adapterT.getTransactionListSize() > 0) {
                 linearLayoutManager.scrollToPositionWithOffset(0, 0);
             }
         });
@@ -361,7 +382,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
     private void saveFilters() {
         StringBuilder sb = new StringBuilder();
-        for (AbstractFilter filter : adapterFilters.getFilterList()) {
+        for (AbstractFilter filter : adapterF.getFilterList()) {
             if (!filter.getClass().equals(AccountFilter.class) || !((AccountFilter) filter).isSystem()) {
                 sb.append(filter.getId());
                 sb.append("/");
@@ -389,7 +410,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             if (filters == null || filters.isEmpty()) {
                 return false;
             } else {
-                adapterFilters.setFilterList(filters);
+                adapterF.setFilterList(filters);
                 onFilterChange(false);
                 return true;
             }
@@ -399,19 +420,19 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     }
 
     private void loadFilters() {
-        adapterFilters.getFilterList().clear();
-        adapterFilters.getFilterList().addAll(FilterManager.loadFiltersFromPreferences(mPreferences, mContext));
+        adapterF.getFilterList().clear();
+        adapterF.getFilterList().addAll(FilterManager.loadFiltersFromPreferences(mPreferences, mContext));
     }
 
     private void setAccountSetFilter() {
-        if (adapterFilters.getFilterList().size() > 0
-                && adapterFilters.getFilterList().get(0).getClass().equals(AccountFilter.class)
-                && ((AccountFilter) adapterFilters.getFilterList().get(0)).isSystem()) {
-            adapterFilters.getFilterList().remove(0);
+        if (adapterF.getFilterList().size() > 0
+                && adapterF.getFilterList().get(0).getClass().equals(AccountFilter.class)
+                && ((AccountFilter) adapterF.getFilterList().get(0)).isSystem()) {
+            adapterF.getFilterList().remove(0);
         }
 
         //Если в списке фильтров уже есть фильтр по счету, то фильтр набора счетов не добавляем
-        for (AbstractFilter filter : adapterFilters.getFilterList()) {
+        for (AbstractFilter filter : adapterF.getFilterList()) {
             if (filter.getClass().equals(AccountFilter.class)) {
                 return;
             }
@@ -423,7 +444,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             AccountFilter accountFilter = new AccountFilter(0);
             accountFilter.addList(accountsIDs);
             accountFilter.setSystem(true);
-            adapterFilters.getFilterList().add(0, accountFilter);
+            adapterF.getFilterList().add(0, accountFilter);
         }
     }
 
@@ -436,7 +457,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         }
         if (data != null && resultCode == RESULT_OK && requestCode == RequestCodes.REQUEST_CODE_SELECT_MODEL) {
             IAbstractModel model = data.getParcelableExtra("model");
-            if (adapter.getSelectedCount() >= 0 & data.getStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS) != null) {
+            if (adapterT.getSelectedCount() >= 0 & data.getStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS) != null) {
                 switch (model.getModelType()) {
                     case IAbstractModel.MODEL_TYPE_ACCOUNT:
                     case IAbstractModel.MODEL_TYPE_PAYEE:
@@ -460,7 +481,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 ArrayList<Long> checkedIDs = (ArrayList<Long>) data.getSerializableExtra("checked_ids");
 
                 NestedModelFilter filter = null;
-                for (AbstractFilter f : adapterFilters.getFilterList()) {
+                for (AbstractFilter f : adapterF.getFilterList()) {
                     if (f instanceof NestedModelFilter) {
                         if (f.getId() == filterID) {
                             filter = (NestedModelFilter) f;
@@ -474,22 +495,22 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                         filter.getIDsSet().addAll(checkedIDs);
                     }
                 } else {
-                    adapterFilters.getFilterList().remove(filter);
+                    adapterF.getFilterList().remove(filter);
                 }
 
-                adapterFilters.notifyDataSetChanged();
+                adapterF.notifyDataSetChanged();
                 FragmentTransactions.this.onFilterChange(true);
             } else {
-                for (int i = adapterFilters.getItemCount() - 1; i >= 0; i--) {
-                    AbstractFilter filter = adapterFilters.getFilterList().get(i);
+                for (int i = adapterF.getItemCount() - 1; i >= 0; i--) {
+                    AbstractFilter filter = adapterF.getFilterList().get(i);
                     if (filter.getClass().equals(NestedModelFilter.class)) {
                         if ((filter).getIDsSet().isEmpty()) {
-                            adapterFilters.getFilterList().remove(i);
+                            adapterF.getFilterList().remove(i);
                         }
                     }
 
                 }
-                adapterFilters.notifyDataSetChanged();
+                adapterF.notifyDataSetChanged();
                 FragmentTransactions.this.onFilterChange(true);
             }
         }
@@ -520,8 +541,8 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
         ListSumsByCabbage listSumsByCabbage;
         try {
-            listSumsByCabbage = mTransactionsDAO.getGroupedSums(new FilterListHelper(adapterFilters.getFilterList(),
-                    mEditTextSearch.getText().toString(), getActivity()), true, adapter.getSelectedTransactionsIDsAsLong(), getActivity());
+            listSumsByCabbage = mTransactionsDAO.getGroupedSums(new FilterListHelper(adapterF.getFilterList(),
+                    mEditTextSearch.getText().toString(), getActivity()), true, adapterT.getSelectedTransactionsIDsAsLong(), getActivity());
         } catch (Exception e) {
             listSumsByCabbage = new ListSumsByCabbage();
         }
@@ -562,7 +583,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                     });
             builderSingle.show();
         });
-        mButtonClearFilters.setOnClickListener(v -> adapterFilters.clearData());
+        mButtonClearFilters.setOnClickListener(v -> adapterF.clearData());
         mButtonReports.setOnClickListener(v -> ((ToolbarActivity) Objects.requireNonNull(getActivity())).unsubscribeOnDestroy(
                 mBillingService.getReportsIapInfo()
                         .subscribeOn(Schedulers.io())
@@ -572,7 +593,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                                     Intent intent;
                                     if (skuDetailsWrapper.isPurchased()) {
                                         intent = new Intent(getActivity(), ActivityReports.class);
-                                        intent.putParcelableArrayListExtra("filter_list", adapterFilters.getFilterList());
+                                        intent.putParcelableArrayListExtra("filter_list", adapterF.getFilterList());
                                         mSlidingLayoutTransactions.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                                         startActivity(intent);
                                     } else {
@@ -712,7 +733,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                             filter.removeAccount(accId);
                         }
                     }
-                    adapterFilters.notifyDataSetChanged();
+                    adapterF.notifyDataSetChanged();
                     FragmentTransactions.this.onFilterChange(true);
                 });
 
@@ -766,7 +787,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                                     addFilter(checkedModel.getModelType(), checkedModel.getID());
                                     break;
                                 case R.id.action_select_on_selected:
-                                    adapter.selectByModel(checkedModel);
+                                    adapterT.selectByModel(checkedModel);
                                     break;
                             }
                         });
@@ -832,7 +853,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
     private void addFilter(int filtType, long modelID) {
         AbstractFilter filter = null;
-        long id = adapterFilters.getFilterList().size();
+        long id = adapterF.getFilterList().size();
         switch (filtType) {
             case IAbstractModel.MODEL_TYPE_AMOUNT_FILTER:
                 filter = new AmountFilter(id);
@@ -856,8 +877,8 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             if (modelID >= 0) {
                 filter.getIDsSet().add(modelID);
             }
-            adapterFilters.getFilterList().add(filter);
-            adapterFilters.notifyItemInserted(adapterFilters.getFilterList().size() - 1);
+            adapterF.getFilterList().add(filter);
+            adapterF.notifyItemInserted(adapterF.getFilterList().size() - 1);
             if (modelID < 0) {
                 saveFilters();
                 editFilter(filter);
@@ -879,12 +900,12 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             saveFilters();
         }
         fullUpdate(-1);
-        onSelectionChange(adapter.getSelectedCount());
+        onSelectionChange(adapterT.getSelectedCount());
     }
 
     private boolean isFiltersEnabled() {
         boolean result = false;
-        for (AbstractFilter filter : adapterFilters.getFilterList()) {
+        for (AbstractFilter filter : adapterF.getFilterList()) {
             if (!filter.getClass().equals(AccountFilter.class) || !((AccountFilter) filter).isSystem()) {
                 result = result | filter.getEnabled();
             }
@@ -893,7 +914,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     }
 
     private boolean isFiltersAdded() {
-        return adapterFilters.getFilterList().size() > 0;
+        return adapterF.getFilterList().size() > 0;
     }
 
     private void showSearchView() {
@@ -937,14 +958,15 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         FgLinearLayoutManager linearLayoutManager = (FgLinearLayoutManager) recyclerView.getLayoutManager();
         int currentItem = linearLayoutManager.findFirstVisibleItemPosition();
 
-        adapter.clearTransactionList();
+        endOfList = false;
+        adapterT.clearTransactionList();
 
-        int count = Math.max(adapter.getItemCount(), NUMBER_ITEMS_TO_BE_LOADED);
+        int count = Math.max(adapterT.getItemCount(), FgConst.NUMBER_ITEMS_TO_BE_LOADED);
 
         loadMore(count, () -> {
-            adapter.getParams().clearCaches();
+            adapterT.getParams().clearCaches();
             if (itemID >= 0) {
-                int ind = adapter.getItemIndexByID(itemID);
+                int ind = adapterT.getItemIndexByID(itemID);
                 if (ind >= 0) {
                     updateLists(ind);
                 }
@@ -957,26 +979,26 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
     @Override
     public void loadMore(int numberItems, ILoadMoreFinish loadMoreFinish) {
-        int start = adapter.getTransactionListSize();
-        if (!adapter.endOfList) {
+        int start = adapterT.getTransactionListSize();
+        if (!endOfList) {
             long curTime = System.currentTimeMillis();
             ToolbarActivity activity = (ToolbarActivity) getActivity();
             Objects.requireNonNull(activity).unsubscribeOnDestroy(
                     mTransactionsDAO.getRangeTransactionsRx(
                             start,
                             numberItems,
-                            new FilterListHelper(adapterFilters.getFilterList(), mEditTextSearch.getText().toString(), getActivity()),
+                            new FilterListHelper(adapterF.getFilterList(), mEditTextSearch.getText().toString(), getActivity()),
                             getActivity())
 
                             .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(transactions -> {
-                                adapter.endOfList = transactions.size() < numberItems;
-                                adapter.addTransactions(transactions, false);
+                                endOfList = transactions.size() < numberItems;
+                                adapterT.addTransactions(transactions, false);
                                 if (loadMoreFinish != null) {
                                     loadMoreFinish.onLoadMoreFinish();
                                 }
-                                adapter.setLoaded();
+                                loading = false;
                             }, throwable -> {
                             }));
             curTime = System.currentTimeMillis() - curTime;
@@ -988,8 +1010,8 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         ToolbarActivity activity = (ToolbarActivity) getActivity();
         HashMap<Long, Cabbage> cabbages = mCabbagesDAO.getCabbagesMap();
         Objects.requireNonNull(activity).unsubscribeOnDestroy(
-            mTransactionsDAO.getGroupedSumsRx(new FilterListHelper(adapterFilters.getFilterList(),
-                    mEditTextSearch.getText().toString(), getActivity()), true, adapter.getSelectedTransactionsIDsAsLong(), getActivity())
+            mTransactionsDAO.getGroupedSumsRx(new FilterListHelper(adapterF.getFilterList(),
+                    mEditTextSearch.getText().toString(), getActivity()), true, adapterT.getSelectedTransactionsIDsAsLong(), getActivity())
                     .map(listSumsByCabbage -> SumsManager.formatSums(listSumsByCabbage, cabbages, false))
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -999,8 +1021,8 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     }
 
     public void updateLists(long itemID) {
-        adapter.notifyDataSetChanged();
-        adapterFilters.notifyDataSetChanged();
+        adapterT.notifyDataSetChanged();
+        adapterF.notifyDataSetChanged();
         if (recyclerView != null && itemID >= 0) {
             FgLinearLayoutManager linearLayoutManager = (FgLinearLayoutManager) recyclerView.getLayoutManager();
             linearLayoutManager.scrollToPosition((int) itemID);
@@ -1023,11 +1045,11 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.fabSelectAll: {
-                    adapter.selectAll();
+                    adapterT.selectAll();
                     break;
                 }
                 case R.id.fabUnselectAll: {
-                    adapter.unselectAll();
+                    adapterT.unselectAll();
                     break;
                 }
                 case R.id.fabEditSelected: {
@@ -1063,7 +1085,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                                         intent.putExtra("showHomeButton", false);
                                         intent.putExtra("model", new Account());
                                         intent.putExtra("destAccount", false);
-                                        intent.putStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS, adapter.getSelectedTransactionsIDs());
+                                        intent.putStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS, adapterT.getSelectedTransactionsIDs());
                                         startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
                                         break;
                                     case IAbstractModel.MODEL_TYPE_PAYEE:
@@ -1076,7 +1098,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                                         intent.putExtra("showHomeButton", false);
                                         intent.putExtra("model", BaseModel.createModelByType(checkedItem.getID()));
                                         intent.putExtra("requestCode", REQUEST_CODE_SELECT_MODEL);
-                                        intent.putStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS, adapter.getSelectedTransactionsIDs());
+                                        intent.putStringArrayListExtra(FgConst.SELECTED_TRANSACTIONS_IDS, adapterT.getSelectedTransactionsIDs());
                                         startActivityForResult(intent, REQUEST_CODE_SELECT_MODEL);
                                         break;
                                 }
@@ -1086,12 +1108,12 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 }
                 case R.id.fabExportSelected: {
                     Intent intent = new Intent(getActivity(), ActivityExportCSV.class);
-                    intent.putParcelableArrayListExtra("transactions", adapter.getSelectedTransactions());
+                    intent.putParcelableArrayListExtra("transactions", adapterT.getSelectedTransactions());
                     startActivity(intent);
                     break;
                 }
                 case R.id.fabDeleteSelected: {
-                    final List<IAbstractModel> transactionsToDelete = adapter.removeSelectedTransactions();
+                    final List<IAbstractModel> transactionsToDelete = adapterT.removeSelectedTransactions();
                     final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
                     alertDialogBuilder
                             .setTitle(R.string.ttl_confirm_action)

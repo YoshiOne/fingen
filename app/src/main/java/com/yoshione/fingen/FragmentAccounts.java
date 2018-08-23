@@ -386,7 +386,7 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
             case R.id.action_show_transactions: {
                 if (Objects.requireNonNull(getActivity()).getClass().equals(ActivityMain.class)) {
                     ActivityMain activityMain = (ActivityMain) getActivity();
-                    if (activityMain.fragmentTransactions.adapterFilters != null) {
+                    if (activityMain.fragmentTransactions.adapterF != null) {
                         Account account = mAccountsDAO.get().getAccountByID(info.id);
                         AccountFilter filter = new AccountFilter(0);
                         filter.addAccount(account.getID());

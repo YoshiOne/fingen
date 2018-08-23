@@ -216,6 +216,24 @@
             tools:ignore="ContentDescription" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/textViewProductList"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="?vertical_spacimg_tr_list"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
+        android:maxLines="1"
+        android:textColor="@color/light_gray_text"
+        android:textSize="@dimen/text_size_small"
+        android:textStyle="normal"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/flipViewIcon"
+        app:layout_constraintTop_toBottomOf="@+id/textViewComment"
+        tools:text="Product list"/>
+
     <FrameLayout
         android:id="@+id/spaceBottom"
         android:layout_width="0dp"
@@ -226,6 +244,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/flipViewIcon"
-        app:layout_constraintTop_toBottomOf="@id/textViewComment" />
+        app:layout_constraintTop_toBottomOf="@id/textViewProductList" />
 
 </android.support.constraint.ConstraintLayout>

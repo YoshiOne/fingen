@@ -8,6 +8,7 @@ import com.yoshione.fingen.ActivityPro;
 import com.yoshione.fingen.FragmentAccounts;
 import com.yoshione.fingen.FragmentSummary;
 import com.yoshione.fingen.FragmentTransactions;
+import com.yoshione.fingen.adapter.viewholders.TransactionViewHolderParams;
 import com.yoshione.fingen.di.modules.BillingModule;
 import com.yoshione.fingen.di.modules.ContextModule;
 import com.yoshione.fingen.di.modules.DaoModule;
@@ -38,4 +39,5 @@ public interface AppComponent {
 	void inject(ToolbarActivity toolbarActivity);
 	void inject(ActivityEditTransaction activityEditTransaction);
 	void inject(FtsHelper ftsHelper);
+	void inject(TransactionViewHolderParams transactionViewHolderParams);
 }

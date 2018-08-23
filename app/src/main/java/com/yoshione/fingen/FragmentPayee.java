@@ -1,5 +1,6 @@
 package com.yoshione.fingen;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -115,9 +116,12 @@ public class FragmentPayee extends Fragment {
                 if (mCallback.isShowKeyboard()) {
                     if (hasFocus) {
                         new Handler().postDelayed(() -> {
-                            InputMethodManager imm = (InputMethodManager) FragmentPayee.this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                            if (imm != null) {
-                                imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
+                            Activity activity = FragmentPayee.this.getActivity();
+                            if (activity != null) {
+                                InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                                if (imm != null) {
+                                    imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
+                                }
                             }
                         }, 200);
                     }

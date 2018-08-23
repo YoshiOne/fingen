@@ -80,11 +80,11 @@ public class ActivityPro extends ToolbarActivity {
                                     if (!skuDetailsWrapper.isPurchased()) {
                                         mBillingService.getBillingProcessor().purchase(ActivityPro.this, skuDetailsWrapper.getSkuDetails().productId);
                                     } else {
-                                        unsubscribeOnDestroy(
-                                                mBillingService.consumePurchase(skuDetailsWrapper.getSkuDetails().productId)
-                                                        .subscribeOn(Schedulers.io())
-                                                        .observeOn(AndroidSchedulers.mainThread())
-                                                        .subscribe(() -> mAdapterSku.notifyDataSetChanged()));
+//                                        unsubscribeOnDestroy(
+//                                                mBillingService.consumePurchase(skuDetailsWrapper.getSkuDetails().productId)
+//                                                        .subscribeOn(Schedulers.io())
+//                                                        .observeOn(AndroidSchedulers.mainThread())
+//                                                        .subscribe(() -> mAdapterSku.notifyDataSetChanged()));
                                     }
                                 });
                                 mAdapterSku.getItemList().add(reportsItem);

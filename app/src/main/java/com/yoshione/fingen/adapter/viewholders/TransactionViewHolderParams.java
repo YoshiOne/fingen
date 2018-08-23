@@ -4,12 +4,22 @@ import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
+import android.util.LongSparseArray;
 import android.view.ContextThemeWrapper;
 
+import com.yoshione.fingen.FGApplication;
 import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.adapter.AdapterTransactions;
+import com.yoshione.fingen.dao.AccountsDAO;
+import com.yoshione.fingen.dao.CabbagesDAO;
+import com.yoshione.fingen.dao.CategoriesDAO;
+import com.yoshione.fingen.dao.DepartmentsDAO;
+import com.yoshione.fingen.dao.LocationsDAO;
+import com.yoshione.fingen.dao.PayeesDAO;
+import com.yoshione.fingen.dao.ProjectsDAO;
 import com.yoshione.fingen.model.Account;
+import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.model.Category;
 import com.yoshione.fingen.model.Department;
 import com.yoshione.fingen.model.Location;
@@ -22,12 +32,15 @@ import com.yoshione.fingen.utils.ScreenUtils;
 
 import java.util.HashMap;
 
+import javax.inject.Inject;
+
 public class TransactionViewHolderParams {
 
     public final AmountColorizer mAmountColorizer;
     public final Drawable iconSelected;
     public final DateTimeFormatter mDateTimeFormatter;
     public final int mColorSpan;
+    public final int mWhiteColor;
     public int mPositiveAmountColor;
     public int mNegativeAmountColor;
     public int mColorInactive;
@@ -35,45 +48,58 @@ public class TransactionViewHolderParams {
     public int mColorTag;
     public String mSplitStringCategory;
     public String mSplitStringProject;
-    public HashMap<Long, Account> mAccountCache;
-    public HashMap<Long, Payee> mPayeeCache;
-    public HashMap<Long, Category> mCategoryCache;
-    public HashMap<Long, Department> mDepartmentCache;
-    public HashMap<Long, Project> mProjectCache;
-    public HashMap<Long, Location> mLocationCache;
-    public HashMap<Long, CabbageFormatter> mCabbageCache;
+    public LongSparseArray<Account> mAccountCache;
+    public LongSparseArray<Payee> mPayeeCache;
+    public LongSparseArray<Category> mCategoryCache;
+    public LongSparseArray<Department> mDepartmentCache;
+    public LongSparseArray<Project> mProjectCache;
+    public LongSparseArray<Location> mLocationCache;
+    public LongSparseArray<CabbageFormatter> mCabbageCache;
     public String mSearchString;
     public ContextThemeWrapper mContextThemeWrapper;
     public Float mTagTextSize;
     public boolean isTagsColored;
-    public AdapterTransactions.OnTransactionItemEventListener mOnTransactionItemEventListener;
     public boolean mShowDateInsteadOfRunningBalance;
-    public final Activity mContext;
+    @Inject
+    public AccountsDAO mAccountsDAO;
+    @Inject
+    public DepartmentsDAO mDepartmentsDAO;
+    @Inject
+    public CabbagesDAO mCabbagesDAO;
+    @Inject
+    public PayeesDAO mPayeesDAO;
+    @Inject
+    public LocationsDAO mLocationsDAO;
+    @Inject
+    public CategoriesDAO mCategoriesDAO;
+    @Inject
+    public ProjectsDAO  mProjectsDAO;
 
     public TransactionViewHolderParams(Activity context) {
-        mContext = context;
+        FGApplication.getAppComponent().inject(this);
         mSearchString = "";
 
         mAmountColorizer = new AmountColorizer(context);
-        iconSelected = ContextCompat.getDrawable(mContext, R.drawable.ic_check_circle_blue);
+        iconSelected = ContextCompat.getDrawable(context, R.drawable.ic_check_circle_blue);
 
         mDateTimeFormatter = DateTimeFormatter.getInstance(context);
 
-        mPositiveAmountColor = ContextCompat.getColor(mContext, R.color.positive_color);
-        mNegativeAmountColor = ContextCompat.getColor(mContext, R.color.negative_color);
-        mColorInactive = ContextCompat.getColor(mContext, R.color.light_gray_text);
-        mColorSplit = ContextCompat.getColor(mContext, R.color.blue_color);
-        mColorTag = ContextCompat.getColor(mContext, R.color.ColorAccent);
+        mPositiveAmountColor = ContextCompat.getColor(context, R.color.positive_color);
+        mNegativeAmountColor = ContextCompat.getColor(context, R.color.negative_color);
+        mColorInactive = ContextCompat.getColor(context, R.color.light_gray_text);
+        mColorSplit = ContextCompat.getColor(context, R.color.blue_color);
+        mColorTag = ContextCompat.getColor(context, R.color.ColorAccent);
         mColorSpan = ContextCompat.getColor(context, R.color.ColorPrimary);
-        mSplitStringCategory = mContext.getString(R.string.ent_split_category);
-        mSplitStringProject = mContext.getString(R.string.ent_split_project);
-        mAccountCache = new HashMap<>();
-        mPayeeCache = new HashMap<>();
-        mCategoryCache = new HashMap<>();
-        mDepartmentCache = new HashMap<>();
-        mProjectCache = new HashMap<>();
-        mLocationCache = new HashMap<>();
-        mCabbageCache = new HashMap<>();
+        mWhiteColor = ContextCompat.getColor(context, R.color.fg_white_color);
+        mSplitStringCategory = context.getString(R.string.ent_split_category);
+        mSplitStringProject = context.getString(R.string.ent_split_project);
+        mAccountCache = new LongSparseArray<>();
+        mPayeeCache = new LongSparseArray<>();
+        mCategoryCache = new LongSparseArray<>();
+        mDepartmentCache = new LongSparseArray<>();
+        mProjectCache = new LongSparseArray<>();
+        mLocationCache = new LongSparseArray<>();
+        mCabbageCache = new LongSparseArray<>();
 
         if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FgConst.PREF_COMPACT_VIEW_MODE, false)) {
             mContextThemeWrapper = new ContextThemeWrapper(context, R.style.StyleListItemTransationsCompact);
@@ -82,7 +108,7 @@ public class TransactionViewHolderParams {
         }
 
         isTagsColored = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FgConst.PREF_COLORED_TAGS, true);
-        mTagTextSize = ScreenUtils.PxToDp(mContext, mContext.getResources().getDimension(R.dimen.text_size_micro));
+        mTagTextSize = ScreenUtils.PxToDp(context, context.getResources().getDimension(R.dimen.text_size_micro));
     }
 
     public void clearCaches() {

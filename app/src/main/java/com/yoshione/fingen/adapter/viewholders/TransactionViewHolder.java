@@ -2,7 +2,6 @@ package com.yoshione.fingen.adapter.viewholders;
 
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -15,15 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yoshione.fingen.R;
-import com.yoshione.fingen.adapter.AdapterTransactions;
-import com.yoshione.fingen.dao.CabbagesDAO;
-import com.yoshione.fingen.dao.CategoriesDAO;
-import com.yoshione.fingen.dao.DepartmentsDAO;
-import com.yoshione.fingen.dao.LocationsDAO;
-import com.yoshione.fingen.dao.PayeesDAO;
-import com.yoshione.fingen.dao.ProjectsDAO;
+import com.yoshione.fingen.interfaces.ITransactionClickListener;
 import com.yoshione.fingen.interfaces.IUnsubscribeOnDestroy;
-import com.yoshione.fingen.managers.TransactionManager;
 import com.yoshione.fingen.model.Account;
 import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.model.Category;
@@ -82,15 +74,15 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
 
     private TransactionViewHolderParams mParams;
 
-    private AdapterTransactions mAdapterTransactions;
-
     private IUnsubscribeOnDestroy mUnsubscriber;
 
-    public TransactionViewHolder(TransactionViewHolderParams params, AdapterTransactions adapterTransactions, IUnsubscribeOnDestroy unsubscriber, View v) {
+    private ITransactionClickListener mTransactionClickListener;
+
+    public TransactionViewHolder(TransactionViewHolderParams params, ITransactionClickListener transactionClickListener, IUnsubscribeOnDestroy unsubscriber, View v) {
         super(v);
         ButterKnife.bind(this, v);
         mParams = params;
-        mAdapterTransactions = adapterTransactions;
+        mTransactionClickListener = transactionClickListener;
         mUnsubscriber = unsubscriber;
     }
 
@@ -100,17 +92,17 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
         //<editor-fold desc="Get accounts data">
         Account srcAccount;
         Account destAccount;
-        if (mParams.mAccountCache.containsKey(t.getAccountID())) {
+        if (mParams.mAccountCache.indexOfKey(t.getAccountID()) >= 0) {
             srcAccount = mParams.mAccountCache.get(t.getAccountID());
         } else {
-            srcAccount = TransactionManager.getSrcAccount(t, mParams.mContext);
+            srcAccount = mParams.mAccountsDAO.getAccountByID(t.getAccountID());
             mParams.mAccountCache.put(srcAccount.getID(), srcAccount);
         }
 
-        if (mParams.mAccountCache.containsKey(t.getDestAccountID())) {
+        if (mParams.mAccountCache.indexOfKey(t.getDestAccountID()) >= 0) {
             destAccount = mParams.mAccountCache.get(t.getDestAccountID());
         } else {
-            destAccount = TransactionManager.getDestAccount(t, mParams.mContext);
+            destAccount = mParams.mAccountsDAO.getAccountByID(t.getDestAccountID());
             mParams.mAccountCache.put(destAccount.getID(), destAccount);
         }
         //</editor-fold>
@@ -123,10 +115,10 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
             text = srcAccount.getName();
         } else {
             Department department;
-            if (mParams.mDepartmentCache.containsKey(t.getDepartmentID())) {
+            if (mParams.mDepartmentCache.indexOfKey(t.getDepartmentID()) >= 0) {
                 department = mParams.mDepartmentCache.get(t.getDepartmentID());
             } else {
-                department = DepartmentsDAO.getInstance(mParams.mContext).getDepartmentByID(t.getDepartmentID());
+                department = mParams.mDepartmentsDAO.getDepartmentByID(t.getDepartmentID());
                 mParams.mDepartmentCache.put(department.getID(), department);
             }
 
@@ -143,10 +135,10 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
 
         //<editor-fold desc="Running balance & Amount">
         CabbageFormatter cabbageFormatter;
-        if (mParams.mCabbageCache.containsKey(srcAccount.getCabbageId())) {
+        if (mParams.mCabbageCache.indexOfKey(srcAccount.getCabbageId()) >= 0) {
             cabbageFormatter = mParams.mCabbageCache.get(srcAccount.getCabbageId());
         } else {
-            Cabbage cabbage = CabbagesDAO.getInstance(mParams.mContext).getCabbageByID(srcAccount.getCabbageId());
+            Cabbage cabbage = mParams.mCabbagesDAO.getCabbageByID(srcAccount.getCabbageId());
             cabbageFormatter = new CabbageFormatter(cabbage);
             mParams.mCabbageCache.put(cabbage.getID(), cabbageFormatter);
         }
@@ -158,12 +150,6 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
                         .subscribe(s -> textViewAmount.setText(s))
         );
 
-//        if (t.getTransactionType() == Transaction.TRANSACTION_TYPE_TRANSFER) {
-//            textViewAmount.setText(cabbageFormatter.format(t.getAmount().abs()));
-//        } else {
-//            textViewAmount.setText(cabbageFormatter.format(t.getAmount()));
-//        }
-
         textViewAccountBalance.setTextColor(getAmountColor(t.getFromAccountBalance()));
         mUnsubscriber.unsubscribeOnDestroy(
                 cabbageFormatter.formatRx(t.getFromAccountBalance())
@@ -172,14 +158,11 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
                         .subscribe(s -> textViewAccountBalance.setText(s))
         );
 
-//        String fromAmount = cabbageFormatter.format(t.getFromAccountBalance());
-//        textViewAccountBalance.setText(fromAmount);
-
         if (t.getDestAccountID() >= 0) {
-            if (mParams.mCabbageCache.containsKey(destAccount.getCabbageId())) {
+            if (mParams.mCabbageCache.indexOfKey(destAccount.getCabbageId()) >= 0) {
                 cabbageFormatter = mParams.mCabbageCache.get(destAccount.getCabbageId());
             } else {
-                Cabbage cabbage = CabbagesDAO.getInstance(mParams.mContext).getCabbageByID(destAccount.getCabbageId());
+                Cabbage cabbage = mParams.mCabbagesDAO.getCabbageByID(destAccount.getCabbageId());
                 cabbageFormatter = new CabbageFormatter(cabbage);
                 mParams.mCabbageCache.put(cabbage.getID(), cabbageFormatter);
             }
@@ -192,8 +175,6 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
                             .subscribe(s -> textViewDestAccountBalance.setText(s))
             );
 
-//            String toAmount = cabbageFormatter.format(t.getToAccountBalance());
-//            textViewDestAccountBalance.setText(toAmount);
             imageViewChevronRight.setVisibility(View.VISIBLE);
             textViewDestAccountBalance.setVisibility(View.VISIBLE);
         } else {
@@ -219,10 +200,10 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
         } else {
             mImageViewDestAccount.setVisibility(View.GONE);
             Payee payee;
-            if (mParams.mPayeeCache.containsKey(t.getPayeeID())) {
+            if (mParams.mPayeeCache.indexOfKey(t.getPayeeID()) >= 0) {
                 payee = mParams.mPayeeCache.get(t.getPayeeID());
             } else {
-                payee = PayeesDAO.getInstance(mParams.mContext).getPayeeByID(t.getPayeeID());
+                payee = mParams.mPayeesDAO.getPayeeByID(t.getPayeeID());
                 mParams.mPayeeCache.put(payee.getID(), payee);
             }
             String payeeFullName = payee.getFullName();
@@ -230,10 +211,10 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
                 text = payeeFullName;
             } else {
                 Location location;
-                if (mParams.mLocationCache.containsKey(t.getLocationID())) {
+                if (mParams.mLocationCache.indexOfKey(t.getLocationID()) >= 0) {
                     location = mParams.mLocationCache.get(t.getLocationID());
                 } else {
-                    location = LocationsDAO.getInstance(mParams.mContext).getLocationByID(t.getLocationID());
+                    location = mParams.mLocationsDAO.getLocationByID(t.getLocationID());
                     mParams.mLocationCache.put(location.getID(), location);
                 }
                 text = payeeFullName + " (" + location.getFullName() + ")";
@@ -293,10 +274,10 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
             }
         }
         if (!isSplitCategory) {//это не сплит, выводим имя категории транзакции
-            if (mParams.mCategoryCache.containsKey(t.getCategoryID())) {
+            if (mParams.mCategoryCache.indexOfKey(t.getCategoryID()) >= 0) {
                 category = mParams.mCategoryCache.get(t.getCategoryID());
             } else {
-                category = CategoriesDAO.getInstance(mParams.mContext).getCategoryByID(t.getCategoryID());
+                category = mParams.mCategoriesDAO.getCategoryByID(t.getCategoryID());
                 mParams.mCategoryCache.put(category.getID(), category);
             }
         } else if (!sameCategory) {//это сплит и у товаров разные категории, выводим надпись "Сплит"
@@ -312,18 +293,18 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
             } else {
                 catID = entry.getCategoryID();
             }
-            if (mParams.mCategoryCache.containsKey(catID)) {
+            if (mParams.mCategoryCache.indexOfKey(catID) >= 0) {
                 category = mParams.mCategoryCache.get(catID);
             } else {
-                category = CategoriesDAO.getInstance(mParams.mContext).getCategoryByID(catID);
+                category = mParams.mCategoriesDAO.getCategoryByID(catID);
                 mParams.mCategoryCache.put(category.getID(), category);
             }
         }
         if (!isSplitProject) {//это не сплит, выводим имя проекта транзакции
-            if (mParams.mProjectCache.containsKey(t.getProjectID())) {
+            if (mParams.mProjectCache.indexOfKey(t.getProjectID()) >= 0) {
                 project = mParams.mProjectCache.get(t.getProjectID());
             } else {
-                project = ProjectsDAO.getInstance(mParams.mContext).getProjectByID(t.getProjectID());
+                project = mParams.mProjectsDAO.getProjectByID(t.getProjectID());
                 mParams.mProjectCache.put(project.getID(), project);
             }
         } else if (!sameProject) {//это сплит и у товаров разные проекты, выводим надпись "Сплит"
@@ -339,10 +320,10 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
             } else {
                 catID = entry.getProjectID();
             }
-            if (mParams.mProjectCache.containsKey(catID)) {
+            if (mParams.mProjectCache.indexOfKey(catID) >= 0) {
                 project = mParams.mProjectCache.get(catID);
             } else {
-                project = ProjectsDAO.getInstance(mParams.mContext).getProjectByID(catID);
+                project = mParams.mProjectsDAO.getProjectByID(catID);
                 mParams.mProjectCache.put(project.getID(), project);
             }
         }
@@ -388,7 +369,7 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
                 textViewComment.setText(text);
             } else {
                 spannable = new SpannableString(text);
-                spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mParams.mContext, R.color.fg_white_color)), text.toLowerCase().indexOf(search), text.toLowerCase().indexOf(search) + search.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannable.setSpan(new ForegroundColorSpan(mParams.mWhiteColor), text.toLowerCase().indexOf(search), text.toLowerCase().indexOf(search) + search.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 spannable.setSpan(new BackgroundColorSpan(mParams.mColorSpan), text.toLowerCase().indexOf(search), text.toLowerCase().indexOf(search) + search.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 textViewComment.setText(spannable);
             }
@@ -431,14 +412,22 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
         flipViewIcon.getRearImageView().setScaleType(ImageView.ScaleType.CENTER);
         flipViewIcon.flipSilently(t.isSelected());
 
-        flipViewIcon.setOnClickListener(new ImageViewIconClickListener(t));
+        flipViewIcon.setOnClickListener(view -> {
+            t.setSelected(!t.isSelected());
+            flipViewIcon.flip(t.isSelected());
+            if (mTransactionClickListener != null) {
+                mTransactionClickListener.onSelectButtonClick();
+            }
+        });
 
         itemView.setOnClickListener(v -> {
-            if (mParams.mOnTransactionItemEventListener != null) {
-                mParams.mOnTransactionItemEventListener.onTransactionItemClick(t);
+            if (mTransactionClickListener != null) {
+                mTransactionClickListener.onTransactionItemClick(t);
             }
         });
         //</editor-fold>
+
+
 
         spaceBottom.setVisibility(t.isDayLast() ? View.INVISIBLE : View.VISIBLE);
     }
@@ -456,7 +445,7 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
         tag.radius = radius;
         tag.isDeletable = false;
         tag.tagTextSize = mParams.mTagTextSize;
-        tag.tagTextColor = Color.WHITE;//ColorUtils.ContrastColor(color);
+        tag.tagTextColor = Color.WHITE;
         return tag;
     }
 
@@ -470,23 +459,6 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
                 return mParams.mPositiveAmountColor;
             default:
                 return mParams.mColorInactive;
-        }
-    }
-
-    private class ImageViewIconClickListener implements View.OnClickListener {
-        private final Transaction mTransaction;
-
-        ImageViewIconClickListener(Transaction transaction) {
-            mTransaction = transaction;
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (mAdapterTransactions != null) {
-                mTransaction.setSelected(!mTransaction.isSelected());
-                flipViewIcon.flip(mTransaction.isSelected());
-                mParams.mOnTransactionItemEventListener.onSelectionChange(mAdapterTransactions.getSelectedCount());
-            }
         }
     }
 

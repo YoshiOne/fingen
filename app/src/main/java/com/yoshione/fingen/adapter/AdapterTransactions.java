@@ -1,25 +1,22 @@
 package com.yoshione.fingen.adapter;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.l4digital.fastscroll.FastScroller;
-import com.yoshione.fingen.FragmentTransactions;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.adapter.viewholders.TransactionViewHolder;
 import com.yoshione.fingen.adapter.viewholders.TransactionViewHolderParams;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ILoadMoreFinish;
 import com.yoshione.fingen.interfaces.IOnLoadMore;
+import com.yoshione.fingen.interfaces.ITransactionClickListener;
+import com.yoshione.fingen.interfaces.ITransactionItemEventListener;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.utils.DateTimeFormatter;
 import com.yoshione.fingen.widgets.ToolbarActivity;
@@ -38,18 +35,16 @@ import ca.barrenechea.widget.recyclerview.decoration.StickyHeaderAdapter;
  * a
  */
 public class AdapterTransactions extends RecyclerView.Adapter implements FastScroller.SectionIndexer,
-        StickyHeaderAdapter<AdapterTransactions.HeaderViewHolder> {
+        StickyHeaderAdapter<AdapterTransactions.HeaderViewHolder>, ITransactionClickListener {
 //    private static final String TAG = "AdapterTransactions";
 
-    protected final Handler handler;
+    private int lastYear;
+    private int lastDay;
+    private Date lastDate;
     private final ArrayList<Transaction> transactionList;
     private final List<String> headerList;
-    private final int visibleThreshold = 10;
-    public volatile boolean endOfList = false;
-    private int lastVisibleItem, totalItemCount;
-    private volatile boolean loading;
-    private Date lastDate;
     private IOnLoadMore mOnLoadMore;
+    private ITransactionItemEventListener mTransactionItemEventListener;
     private ToolbarActivity mActivity;
 
     public TransactionViewHolderParams getParams() {
@@ -64,57 +59,15 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
 
     //Конструктор
     @SuppressLint("UseSparseArrays")
-    public AdapterTransactions(RecyclerView recyclerView, IOnLoadMore onLoadMore, ToolbarActivity activity) {
+    public AdapterTransactions(IOnLoadMore onLoadMore, ITransactionItemEventListener transactionItemEventListener, ToolbarActivity activity) {
         mActivity = activity;
 
         setHasStableIds(true);
 
+        mTransactionItemEventListener = transactionItemEventListener;
         mOnLoadMore = onLoadMore;
         transactionList = new ArrayList<>();
         headerList = new ArrayList<>();
-
-        LinearLayout linearLayout = new LinearLayout(activity);
-        linearLayout.layout(0, 0, 56, 56);
-        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(56, 56));
-        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        handler = new Handler();
-
-        if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
-
-            final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView
-                    .getLayoutManager();
-
-
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public synchronized void onScrolled(RecyclerView recyclerView,
-                                       int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-
-                    totalItemCount = linearLayoutManager.getItemCount();
-                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                    if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                        // End has been reached
-                        // Do something
-                        if (!endOfList) {
-                            loading = true;
-                            loadMore(FragmentTransactions.NUMBER_ITEMS_TO_BE_LOADED, new ILoadMoreFinish() {
-                                @Override
-                                public void onLoadMoreFinish() {
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            notifyDataSetChanged();
-                                        }
-                                    }, 100);
-
-                                }
-                            });
-                        }
-                    }
-                }
-            });
-        }
 
         mParams = new TransactionViewHolderParams(activity);
         mParams.mShowDateInsteadOfRunningBalance = false;
@@ -127,7 +80,6 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
     public void clearTransactionList() {
         transactionList.clear();
         headerList.clear();
-        endOfList = false;
     }
 
     public int getTransactionListSize() {
@@ -143,9 +95,6 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         return -1;
     }
 
-    private int lastYear;
-    private int lastDay;
-
     public void addTransactions(List<Transaction> input, boolean clearLists) {
         synchronized (headerList) {
             if (clearLists) {
@@ -154,7 +103,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
             }
 
             Transaction transaction;
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.getInstance(mParams.mContext);
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.getInstance(mActivity);
 
             if (input.size() == 0) {
                 headerList.add(dateTimeFormatter.getDateLongStringWithDayOfWeekName(new Date()));
@@ -203,15 +152,10 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         }
     }
 
-    public void setmOnTransactionItemClickListener(OnTransactionItemEventListener onTransactionItemEventListener) {
-        mParams.mOnTransactionItemEventListener = onTransactionItemEventListener;
-    }
-
     @Override
     public long getItemId(int position) {
         return transactionList.get(position).getID();
     }
-
 
     @NonNull
     @Override
@@ -240,10 +184,6 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
 
         TransactionViewHolder tvh = (TransactionViewHolder) viewHolder;
         tvh.bindTransaction(transaction);
-    }
-
-    public void setLoaded() {
-        loading = false;
     }
 
     @Override
@@ -279,60 +219,54 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
     }
 
     public void selectAll() {
-        loadMore(Integer.MAX_VALUE, new ILoadMoreFinish() {
-            @Override
-            public void onLoadMoreFinish() {
-                for (Transaction transaction : transactionList) {
-                    transaction.setSelected(true);
-                }
-                mParams.mOnTransactionItemEventListener.onSelectionChange(AdapterTransactions.this.getSelectedCount());
-                AdapterTransactions.this.notifyDataSetChanged();
+        loadMore(Integer.MAX_VALUE, () -> {
+            for (Transaction transaction : transactionList) {
+                transaction.setSelected(true);
             }
+            mTransactionItemEventListener.onSelectionChange(AdapterTransactions.this.getSelectedCount());
+            AdapterTransactions.this.notifyDataSetChanged();
         });
     }
 
     public void selectByModel(final IAbstractModel model) {
-        loadMore(Integer.MAX_VALUE, new ILoadMoreFinish() {
-            @Override
-            public void onLoadMoreFinish() {
-                for (Transaction transaction : transactionList) {
-                    switch (model.getModelType()) {
-                        case IAbstractModel.MODEL_TYPE_ACCOUNT:
-                            if (transaction.getAccountID() == model.getID()) {
-                                transaction.setSelected(true);
-                            }
-                            break;
-                        case IAbstractModel.MODEL_TYPE_CATEGORY:
-                            if (transaction.getCategoryID() == model.getID()) {
-                                transaction.setSelected(true);
-                            }
-                            break;
-                        case IAbstractModel.MODEL_TYPE_PAYEE:
-                            if (transaction.getPayeeID() == model.getID()) {
-                                transaction.setSelected(true);
-                            }
-                            break;
-                        case IAbstractModel.MODEL_TYPE_LOCATION:
-                            if (transaction.getLocationID() == model.getID()) {
-                                transaction.setSelected(true);
-                            }
-                            break;
-                        case IAbstractModel.MODEL_TYPE_DEPARTMENT:
-                            if (transaction.getDepartmentID() == model.getID()) {
-                                transaction.setSelected(true);
-                            }
-                            break;
-                        case IAbstractModel.MODEL_TYPE_PROJECT:
-                            if (transaction.getProjectID() == model.getID()) {
-                                transaction.setSelected(true);
-                            }
-                            break;
-                    }
-
+        loadMore(Integer.MAX_VALUE, () -> {
+            for (Transaction transaction : transactionList) {
+                switch (model.getModelType()) {
+                    case IAbstractModel.MODEL_TYPE_ACCOUNT:
+                        if (transaction.getAccountID() == model.getID()) {
+                            transaction.setSelected(true);
+                        }
+                        break;
+                    case IAbstractModel.MODEL_TYPE_CATEGORY:
+                        if (transaction.getCategoryID() == model.getID()) {
+                            transaction.setSelected(true);
+                        }
+                        break;
+                    case IAbstractModel.MODEL_TYPE_PAYEE:
+                        if (transaction.getPayeeID() == model.getID()) {
+                            transaction.setSelected(true);
+                        }
+                        break;
+                    case IAbstractModel.MODEL_TYPE_LOCATION:
+                        if (transaction.getLocationID() == model.getID()) {
+                            transaction.setSelected(true);
+                        }
+                        break;
+                    case IAbstractModel.MODEL_TYPE_DEPARTMENT:
+                        if (transaction.getDepartmentID() == model.getID()) {
+                            transaction.setSelected(true);
+                        }
+                        break;
+                    case IAbstractModel.MODEL_TYPE_PROJECT:
+                        if (transaction.getProjectID() == model.getID()) {
+                            transaction.setSelected(true);
+                        }
+                        break;
                 }
-                mParams.mOnTransactionItemEventListener.onSelectionChange(AdapterTransactions.this.getSelectedCount());
-                AdapterTransactions.this.notifyDataSetChanged();
+
             }
+            mTransactionItemEventListener.onSelectionChange(AdapterTransactions.this.getSelectedCount());
+            AdapterTransactions.this.notifyDataSetChanged();
         });
     }
 
@@ -340,7 +274,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         for (Transaction transaction : transactionList) {
             transaction.setSelected(false);
         }
-        mParams.mOnTransactionItemEventListener.onSelectionChange(getSelectedCount());
+        mTransactionItemEventListener.onSelectionChange(getSelectedCount());
         notifyDataSetChanged();
     }
 
@@ -389,10 +323,14 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         return selectedTransactions;
     }
 
-    public interface OnTransactionItemEventListener {
-        void onTransactionItemClick(Transaction transaction);
+    @Override
+    public void onSelectButtonClick() {
+        mTransactionItemEventListener.onSelectionChange(getSelectedCount());
+    }
 
-        void onSelectionChange(int selectedCount);
+    @Override
+    public void onTransactionItemClick(Transaction transaction) {
+        mTransactionItemEventListener.onTransactionItemClick(transaction);
     }
 
     class HeaderViewHolder extends RecyclerView.ViewHolder {
@@ -410,5 +348,4 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
             text.setText(s);
         }
     }
-
 }
