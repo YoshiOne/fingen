@@ -139,12 +139,17 @@ public class ActivityEditCredit extends ToolbarActivity implements FragmentPayee
         fragmentPayee = (FragmentPayee) getSupportFragmentManager().findFragmentById(R.id.fragmentPayee);
         Payee payee = DebtsManager.getPayee(mCredit, this);
         setPayeeName(payee.getFullName());
-        fragmentPayee.setHint(getString(R.string.ent_payee));
+//        fragmentPayee.setHint(getString(R.string.ent_payee));
     }
 
     @Override
     public String getPayeeName() {
         return mPayeeName;
+    }
+
+    @Override
+    public String getPayeeHint() {
+        return getString(R.string.ent_payee);
     }
 
     @Override

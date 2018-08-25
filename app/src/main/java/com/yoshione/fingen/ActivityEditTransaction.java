@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -69,7 +70,6 @@ import com.yoshione.fingen.fts.ActivityFtsLogin;
 import com.yoshione.fingen.fts.ActivityScanQR;
 import com.yoshione.fingen.fts.FtsHelper;
 import com.yoshione.fingen.fts.IDownloadProductsListener;
-import com.yoshione.fingen.fts.models.FtsResponse;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.managers.AccountManager;
 import com.yoshione.fingen.managers.PayeeManager;
@@ -131,7 +131,6 @@ import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
-import retrofit2.Call;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
@@ -633,7 +632,10 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                 e.printStackTrace();
             }
             if (updateAutocompleteAdapter) {
-                getFragmentPayee().setAutocompleteAdapter();
+                FragmentPayee fragmentPayee = getFragmentPayee();
+                if (fragmentPayee != null) {
+                    fragmentPayee.setAutocompleteAdapter();
+                }
             }
         }
 
@@ -1508,8 +1510,15 @@ public class ActivityEditTransaction extends ToolbarActivity implements
         }
     }
 
+    @Nullable
     private FragmentPayee getFragmentPayee() {
-        return (FragmentPayee) fragmentPagerAdapter.getRegisteredFragment(0);
+        FragmentPayee fragmentPayee;
+        try {
+            fragmentPayee = (FragmentPayee) fragmentPagerAdapter.getRegisteredFragment(0);
+        } catch (Exception e) {
+            fragmentPayee = null;
+        }
+        return fragmentPayee;
     }
 
     private void initViewPagerPayee() {
@@ -1519,6 +1528,21 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     @Override
     public String getPayeeName() {
         return mPayeeName;
+    }
+
+    @Override
+    public String getPayeeHint() {
+        String hint;
+        switch (transaction.getTransactionType()) {
+            default:
+            case Transaction.TRANSACTION_TYPE_EXPENSE:
+                hint = getString(R.string.ent_payee);
+                break;
+            case Transaction.TRANSACTION_TYPE_INCOME:
+                hint = getString(R.string.ent_payer);
+                break;
+        }
+        return hint;
     }
 
     @Override
@@ -2316,14 +2340,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     private void updatePayeeHint() {
         FragmentPayee fragmentPayee = getFragmentPayee();
         if (fragmentPayee != null) {
-            switch (transaction.getTransactionType()) {
-                case Transaction.TRANSACTION_TYPE_EXPENSE:
-                    fragmentPayee.setHint(getString(R.string.ent_payee));
-                    break;
-                case Transaction.TRANSACTION_TYPE_INCOME:
-                    fragmentPayee.setHint(getString(R.string.ent_payer));
-                    break;
-            }
+            fragmentPayee.setHint(getPayeeHint());
         }
     }
 

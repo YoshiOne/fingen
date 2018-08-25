@@ -43,6 +43,8 @@ public class FragmentPayee extends Fragment {
     public interface FragmentPayeeListener {
         String getPayeeName();
 
+        String getPayeeHint();
+
         void onPayeeTextViewClick();
 
         void onPayeeItemClick(long payeeID);
@@ -86,6 +88,7 @@ public class FragmentPayee extends Fragment {
         super.onResume();
 
         edPayee.setText(mCallback.getPayeeName(), TextView.BufferType.EDITABLE);
+        mTextInputLayoutPayee.setHint(mCallback.getPayeeHint());
 
         if (mCallback.getPayeeSelectionStyle() == 0 && Objects.requireNonNull(getActivity()).getClass().equals(ActivityEditTransaction.class)) {
             setAutocompleteAdapter();

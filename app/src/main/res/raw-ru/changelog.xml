@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
-    <changelogversion versionName="2.6.2" changeDate=">2018.08.22">
-        <changelogtext>Исправлена ошибка</changelogtext>
+    <changelogversion versionName="2.6.3" changeDate=">2018.08.25">
+        <changelogtext>Исправлены ошибки</changelogtext>
     </changelogversion>
     <changelogversion versionName="2.6" changeDate=">2018.08.21">
         <changelogtext>Возможность создания СМС из интента с последующим парсингом</changelogtext>
