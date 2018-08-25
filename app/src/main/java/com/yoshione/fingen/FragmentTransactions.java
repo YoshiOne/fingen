@@ -1003,6 +1003,10 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                             }));
             curTime = System.currentTimeMillis() - curTime;
             Log.d(TAG, "Query length " + String.valueOf(curTime));
+        } else {
+            if (loadMoreFinish != null) {
+                loadMoreFinish.onLoadMoreFinish();
+            }
         }
     }
 

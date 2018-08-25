@@ -424,7 +424,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
                 "SELECT " +
                 "   t._id,\n" +
                 "   t.SrcAccount AS Account,\n" +
-                "   prod.Price*prod.Quantity AS Amount,\n" +
+                "   ROUND(prod.Price*prod.Quantity, 2) AS Amount,\n" +
                 "   DateTime,\n" +
                 "   Payee,\n" +
                 "   CASE WHEN prod.CategoryID < 0 THEN t.Category ELSE prod.CategoryID END AS Category,\n" +
@@ -506,8 +506,8 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
 
                 "SELECT t._id,\n" +
                 "   t.SrcAccount     AS AccountID,\n" +
-                "   prod.Price*prod.Quantity AS Amount,DateTime, a.Currency,\n" +
-                "   prod.Price*prod.Quantity > 0       AS Income,\n" +
+                "   ROUND(prod.Price*prod.Quantity, 2) AS Amount,DateTime, a.Currency,\n" +
+                "   ROUND(prod.Price*prod.Quantity, 2) > 0       AS Income,\n" +
                 "   IFNULL(a.Currency = b.Currency AND DestAccount IN(" + filteredAccountsString + "), 0) AS ExcludeTransfer,\n" +
                 "   a.Name           AS AccountName,\n" +
                 "   s.Name           AS SimpleDebtName,\n" +
@@ -631,7 +631,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
 
     public void getSumForSimpleDebt(SimpleDebt simpleDebt) {
 
-        String sql = "SELECT Sum(amount) AS Sum,\n" +
+        String sql = "SELECT TOTAL(amount) AS Sum,\n" +
                 "SUM ( CASE WHEN Amount < 0 THEN Amount ELSE 0 END) AS OweMe,\n" +
                 "SUM ( CASE WHEN Amount > 0 THEN Amount ELSE 0 END) AS IOwe\n" +
                 "FROM ref_Accounts a JOIN ref_Currencies ON ref_Currencies._id = Currency\n" +
@@ -700,9 +700,9 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
 
         String sql = "SELECT\n" +
                 "c._id,\n" +
-                "IFNULL((SELECT SUM(CASE WHEN Income = 1 THEN Amount ELSE 0 END) FROM temp_all_Transactions" + selectedTransactionsTable + " WHERE c._id = Currency AND NOT (ExcludeTransfer = 1)), 0) AS InAmountSum,\n" +
-                "IFNULL((SELECT SUM(CASE WHEN Income = 0 THEN Amount ELSE 0 END) FROM temp_all_Transactions" + selectedTransactionsTable + " WHERE c._id = Currency AND NOT (ExcludeTransfer = 1)), 0) AS OutAmountSum,\n" +
-                "IFNULL((SELECT SUM(StartBalance) FROM ref_Accounts WHERE Currency = c._id AND _id IN (" + accIDsString + ")), 0) AS StartBalance\n" +
+                "IFNULL((SELECT TOTAL(CASE WHEN Income = 1 THEN Amount ELSE 0 END) FROM temp_all_Transactions" + selectedTransactionsTable + " WHERE c._id = Currency AND NOT (ExcludeTransfer = 1)), 0) AS InAmountSum,\n" +
+                "IFNULL((SELECT TOTAL(CASE WHEN Income = 0 THEN Amount ELSE 0 END) FROM temp_all_Transactions" + selectedTransactionsTable + " WHERE c._id = Currency AND NOT (ExcludeTransfer = 1)), 0) AS OutAmountSum,\n" +
+                "IFNULL((SELECT TOTAL(StartBalance) FROM ref_Accounts WHERE Currency = c._id AND _id IN (" + accIDsString + ")), 0) AS StartBalance\n" +
                 "FROM ref_Currencies c\n" +
                 "ORDER BY c.OrderNumber ASC";
         if (BuildConfig.DEBUG) {
@@ -763,8 +763,8 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
             maxDate = DateRangeFilter.getRangeEnd(intervalStart, intervalEnd, context);
             cursor = mDatabase.rawQuery("SELECT\n" +
                     "Currency,\n" +
-                    "SUM(CASE WHEN Income = 1 THEN Amount ELSE 0 END) AS InAmountSum,\n" +
-                    "SUM(CASE WHEN Income = 0 THEN Amount ELSE 0 END) AS OutAmountSum\n" +
+                    "TOTAL(CASE WHEN Income = 1 THEN Amount ELSE 0 END) AS InAmountSum,\n" +
+                    "TOTAL(CASE WHEN Income = 0 THEN Amount ELSE 0 END) AS OutAmountSum\n" +
                     "FROM temp_all_Transactions\n" +
                     "WHERE DateTime >= " + String.valueOf(minDate.getTime()) + " AND DateTime <= " + String.valueOf(maxDate.getTime()) + " AND NOT (ExcludeTransfer = 1)\n" +
                     "GROUP BY Currency;", null);
@@ -823,8 +823,8 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
 
         String sql = "SELECT\n" +
                 "Currency, " + entityField + ",\n" +
-                "SUM(CASE WHEN Income = 1 THEN Amount ELSE 0 END) AS InAmountSum,\n" +
-                "SUM(CASE WHEN Income = 0 THEN Amount ELSE 0 END) AS OutAmountSum\n" +
+                "TOTAL(CASE WHEN Income = 1 THEN Amount ELSE 0 END) AS InAmountSum,\n" +
+                "TOTAL(CASE WHEN Income = 0 THEN Amount ELSE 0 END) AS OutAmountSum\n" +
                 "FROM temp_all_Transactions\n" +
                 excludeTransfers +
                 "GROUP BY Currency, " + entityField + ";";
@@ -876,8 +876,8 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
         String sql = "SELECT \n" +
                 "Currency, \n" +
                 "strftime('" + datePattern + "', DateTime/1000, 'unixepoch', 'localtime') AS Date,\n" +
-                "SUM(CASE WHEN Income = 1 THEN Amount ELSE 0 END) AS InAmountSum,\n" +
-                "SUM(CASE WHEN Income = 0 THEN Amount ELSE 0 END) AS OutAmountSum\n" +
+                "TOTAL(CASE WHEN Income = 1 THEN Amount ELSE 0 END) AS InAmountSum,\n" +
+                "TOTAL(CASE WHEN Income = 0 THEN Amount ELSE 0 END) AS OutAmountSum\n" +
                 "FROM temp_all_Transactions\n" +
                 "WHERE  ExcludeTransfer != 1\n" +
                 "GROUP BY Currency, strftime('" + datePattern + "', DateTime/1000, 'unixepoch', 'localtime');";
