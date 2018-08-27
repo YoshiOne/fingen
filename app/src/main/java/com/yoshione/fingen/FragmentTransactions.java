@@ -68,6 +68,7 @@ import com.yoshione.fingen.model.StringIntItem;
 import com.yoshione.fingen.model.Template;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.utils.FabMenuController;
+import com.yoshione.fingen.utils.Lg;
 import com.yoshione.fingen.utils.PrefUtils;
 import com.yoshione.fingen.utils.RequestCodes;
 import com.yoshione.fingen.utils.ScreenUtils;
@@ -81,6 +82,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.inject.Inject;
 
@@ -963,6 +965,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
 
         int count = Math.max(adapterT.getItemCount(), FgConst.NUMBER_ITEMS_TO_BE_LOADED);
 
+        Lg.d(TAG, "loadData");
         loadMore(count, () -> {
             adapterT.getParams().clearCaches();
             if (itemID >= 0) {
@@ -981,8 +984,9 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     public void loadMore(int numberItems, ILoadMoreFinish loadMoreFinish) {
         int start = adapterT.getTransactionListSize();
         if (!endOfList) {
-            long curTime = System.currentTimeMillis();
+            AtomicLong curTime = new AtomicLong(System.currentTimeMillis());
             ToolbarActivity activity = (ToolbarActivity) getActivity();
+            Lg.d(TAG, "loadMore");
             Objects.requireNonNull(activity).unsubscribeOnDestroy(
                     mTransactionsDAO.getRangeTransactionsRx(
                             start,
@@ -993,7 +997,10 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                             .subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(transactions -> {
+                                curTime.set(System.currentTimeMillis() - curTime.get());
+                                Log.d(TAG, "Query length " + String.valueOf(curTime.get()));
                                 endOfList = transactions.size() < numberItems;
+                                Lg.d(TAG, "addTransactions");
                                 adapterT.addTransactions(transactions, false);
                                 if (loadMoreFinish != null) {
                                     loadMoreFinish.onLoadMoreFinish();
@@ -1001,8 +1008,6 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                                 loading = false;
                             }, throwable -> {
                             }));
-            curTime = System.currentTimeMillis() - curTime;
-            Log.d(TAG, "Query length " + String.valueOf(curTime));
         } else {
             if (loadMoreFinish != null) {
                 loadMoreFinish.onLoadMoreFinish();

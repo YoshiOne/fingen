@@ -87,8 +87,8 @@ android {
         }
         debug {
             ext.enableCrashlytics = false
-            resValue "string", "app_name", "FG debug"
-            applicationIdSuffix ".debug"
+//            resValue "string", "app_name", "FG debug"
+//            applicationIdSuffix ".debug"
         }
     }
     flavorDimensions "main"
