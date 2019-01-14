@@ -5,7 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.25.2'
+        classpath 'io.fabric.tools:gradle:1.27.0'
     }
 
 }
@@ -22,14 +22,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "com.yoshione.fingen"
         minSdkVersion 21
-        targetSdkVersion 27
-        versionCode 128
-        versionName "2.6.3"
+        targetSdkVersion 28
+        versionCode 129
+        versionName "2.6.4"
         resValue "string", "app_name", "Fingen"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -115,15 +115,15 @@ android {
     }
 }
 
-def support = '27.1.1'
-def play = '15.0.1'
+def support = '28.0.0'
+//def play = '15.0.1'
 def retrofit = '2.4.0'
 def dagger = '2.16'
 def butterKnife = "8.8.1"
-def moxy = "1.5.5"
+//def moxy = "1.5.5"
 
 dependencies {
-    implementation 'com.android.support:support-annotations:27.1.1'
+    implementation "com.android.support:support-annotations:$support"
     repositories {
         mavenCentral()
     }
@@ -134,7 +134,7 @@ dependencies {
     implementation(name: 'HeaderDecor-0.2.7', ext: 'aar')
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:3.1.0'
     implementation 'com.airbnb.android:airmapview:1.6.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation "com.android.support:cardview-v7:$support"
     implementation "com.android.support:design:$support"
     implementation "com.android.support:preference-v7:$support"
@@ -169,7 +169,7 @@ dependencies {
     androidTestImplementation 'junit:junit:4.12'
     androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
 
     implementation "com.squareup.retrofit2:converter-gson:$retrofit"
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
@@ -181,8 +181,8 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger"
     annotationProcessor "com.google.dagger:dagger-compiler:$dagger"
 
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.16'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
 
 //    implementation "com.arello-mobile:moxy:$moxy"
 //    annotationProcessor "com.arello-mobile:moxy-compiler:$moxy"

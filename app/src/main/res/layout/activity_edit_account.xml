@@ -2,7 +2,8 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <include
         android:id="@+id/include_toolbar"
@@ -33,10 +34,12 @@
                 android:hint="@string/ent_name">
 
                 <EditText
+                    tools:text="Account name"
                     android:id="@+id/editTextName"
                     style="@style/EditableEditText"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:autofillHints="" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout

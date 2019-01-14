@@ -56,7 +56,8 @@
                     android:ems="10"
                     android:gravity="center_horizontal"
                     android:onClick="onDateClick"
-                    tools:text="18 сентября 2015"/>
+                    tools:text="18 сентября 2015"
+                    tools:ignore="TextFields" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
