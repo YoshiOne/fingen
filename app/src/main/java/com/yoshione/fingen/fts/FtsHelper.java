@@ -50,7 +50,7 @@ public class FtsHelper {
 
     public Disposable downloadProductEntryList(final Transaction transaction,
                                                final IDownloadProductsListener downloadProductsListener) {
-        String url = String.format("http://proverkacheka.nalog.ru:8888/v1/inns/*/kkts/*/" +
+        String url = String.format("https://proverkacheka.nalog.ru:9999/v1/inns/*/kkts/*/" +
                 "fss/%s/" +
                 "tickets/%s" +
                 "?fiscalSign=%s" +
@@ -61,7 +61,7 @@ public class FtsHelper {
         String auth = getAuth(mContext).replaceAll("\n", "");
         String date = android.text.format.DateFormat.format("yyyy-MM-ddTHH:mm:00", transaction.getDateTime()).toString();
         String sum = Long.toString(Math.round(transaction.getAmount().doubleValue() * -100.0));
-        String checkUrl = String.format("http://proverkacheka.nalog.ru:8888/v1/ofds/*/inns/*/" +
+        String checkUrl = String.format("https://proverkacheka.nalog.ru:9999/v1/ofds/*/inns/*/" +
                         "fss/%s/" +
                         "operations/1/" +
                         "tickets/%s" +
@@ -81,8 +81,8 @@ public class FtsHelper {
                 "Android 8.0",
                 "2",
                 "1.4.4.1",
-                "proverkacheka.nalog.ru:8888",
-                "proverkacheka.nalog.ru:8888"),
+                "https://proverkacheka.nalog.ru:9999",
+                "https://proverkacheka.nalog.ru:9999"),
                 mApi.getData(url,
                         "Basic " + auth,
                         "okhttp/3.0.1",
@@ -90,8 +90,8 @@ public class FtsHelper {
                         "Android 8.0",
                         "2",
                         "1.4.4.1",
-                        "proverkacheka.nalog.ru:8888",
-                        "proverkacheka.nalog.ru:8888"),
+                        "https://proverkacheka.nalog.ru:9999",
+                        "https://proverkacheka.nalog.ru:9999"),
                 mApi.getData(url,
                         "Basic " + auth,
                         "okhttp/3.0.1",
@@ -99,8 +99,8 @@ public class FtsHelper {
                         "Android 8.0",
                         "2",
                         "1.4.4.1",
-                        "proverkacheka.nalog.ru:8888",
-                        "proverkacheka.nalog.ru:8888"),
+                        "https://proverkacheka.nalog.ru:9999",
+                        "https://proverkacheka.nalog.ru:9999"),
                 (u1, u2, u3) -> Arrays.asList(u1, u2, u3))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
