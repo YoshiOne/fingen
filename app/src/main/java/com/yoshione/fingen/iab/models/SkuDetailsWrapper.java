@@ -25,6 +25,6 @@ public class SkuDetailsWrapper {
     }
 
     public void setPurchased(boolean purchased) {
-        mIsPurchased = purchased;
+        mIsPurchased = true;
     }
 }
