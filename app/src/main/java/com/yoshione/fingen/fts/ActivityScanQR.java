@@ -60,7 +60,7 @@ public class ActivityScanQR extends AppCompatActivity
             }
         }
 
-        Pattern pattern = Pattern.compile("^t=\\d{8}T\\d{4}&s=[\\d\\.]{4,12}&fn=\\d+&i=\\d+&fp=\\d+&n=\\d$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^t=\\d+T\\d+&s=[\\d\\.]{4,12}&fn=\\d+&i=\\d+&fp=\\d+&n=\\d$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(text);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
