@@ -124,7 +124,7 @@ public class AmountFilter extends AbstractFilter implements Parcelable {
                     condition = String.format("(%s) OR (%s)", transferIncome, transferExpense);
                 break;
         }
-        if (mInverted) {
+        if (mInverted && !condition.isEmpty()) {
             condition = String.format("NOT(%s)", condition);
         }
 
