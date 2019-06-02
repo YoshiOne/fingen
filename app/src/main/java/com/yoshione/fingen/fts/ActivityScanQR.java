@@ -1,6 +1,8 @@
 package com.yoshione.fingen.fts;
 
 import android.Manifest;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
@@ -8,20 +10,23 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView.OnQRCodeReadListener;
-import com.yoshione.fingen.BuildConfig;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.managers.TransactionManager;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.utils.ColorUtils;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ActivityScanQR extends AppCompatActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback, OnQRCodeReadListener {
@@ -38,12 +43,40 @@ public class ActivityScanQR extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_decoder);
-
         mainLayout = findViewById(R.id.main_layout);
+
+        // clipboard worker copied from ActivitySmsList
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        if (!clipboard.hasPrimaryClip()) return;
+        ClipData data = clipboard.getPrimaryClip();
+        ClipData.Item item = data.getItemAt(0);
+
+        String text = "";
+        if (item != null) {
+            try {
+                text = item.getText().toString();
+            } catch (Exception e) {
+                Toast.makeText(this, getString(R.string.err_parse_clipboard), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        Pattern pattern = Pattern.compile("^t=\\d+T\\d+&s=[\\d\\.]{4,12}&fn=\\d+&i=\\d+&fp=\\d+&n=\\d$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(text);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
             initQRCodeReaderView();
+
+            if (!text.equals("") && matcher.find()) {
+                final String qrCode = text;
+                // show dialog copied from FragmentTransaction
+                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder
+                        .setTitle(R.string.ttl_confirm_action)
+                        .setMessage(R.string.msg_use_qr_from_buffer)
+                        .setPositiveButton(R.string.ok, (dialog, which) ->this.onQRCodeRead(qrCode, null))
+                        .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
+            }
         } else {
             requestCameraPermission();
         }

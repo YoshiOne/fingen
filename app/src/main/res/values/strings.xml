@@ -1982,6 +1982,10 @@
     <string name="msg_permission_is_not_available" formatted="false">Permission is not available. Requesting camera permission</string>
 
     <!-- 26. ScanQR -->
+    <!-- Messages -->
+    <string name="msg_use_qr_from_buffer" formatted="false">Has the clipboard detected a QR code to use it?</string>
+
+    <!-- 26. ScanQR -->
     <!-- Entities -->
     <string name="ent_fn" formatted="false">FN</string>
 
