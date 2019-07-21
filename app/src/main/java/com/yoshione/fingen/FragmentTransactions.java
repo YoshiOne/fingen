@@ -178,6 +178,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     private volatile boolean loading;
     private final int visibleThreshold = 10;
     public volatile boolean endOfList = false;
+    private int mLastFirstVisiblePosition = 0;
 
     @Inject
     BillingService mBillingService;
@@ -237,9 +238,9 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
                     // End has been reached
                     // Do something
-                    if (!endOfList) {
-                        loading = true;
-                        loadMore(FgConst.NUMBER_ITEMS_TO_BE_LOADED, () -> /*new Handler().postDelayed(() -> */adapterT.notifyDataSetChanged()/*, 100)*/);
+                    if (!endOfList && adapterT.getItemCount() > 0) {
+                            loading = true;
+                            loadMore(FgConst.NUMBER_ITEMS_TO_BE_LOADED, () -> /*new Handler().postDelayed(() -> */adapterT.notifyDataSetChanged()/*, 100)*/);
                     }
                 }
             }
@@ -340,6 +341,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         initFabMenu();
         mTextViewSelectedCount.setVisibility(isInSelectionMode ? View.VISIBLE : View.GONE);
 
+        recyclerView.getLayoutManager().scrollToPosition(mLastFirstVisiblePosition);
     }
 
     private void initFabMenu() {
@@ -651,6 +653,8 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     public void onPause() {
         unregisterForContextMenu(recyclerViewFilters);
         super.onPause();
+
+        mLastFirstVisiblePosition = ((LinearLayoutManager)recyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
     }
 
     @Override
@@ -961,9 +965,9 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         int currentItem = linearLayoutManager.findFirstVisibleItemPosition();
 
         endOfList = false;
-        adapterT.clearTransactionList();
 
         int count = Math.max(adapterT.getItemCount(), FgConst.NUMBER_ITEMS_TO_BE_LOADED);
+        adapterT.clearTransactionList();
 
         Lg.d(TAG, "loadData");
         loadMore(count, () -> {
