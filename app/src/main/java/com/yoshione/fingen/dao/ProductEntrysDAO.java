@@ -2,20 +2,16 @@ package com.yoshione.fingen.dao;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Pair;
 
 
 import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
-import com.yoshione.fingen.model.Product;
 import com.yoshione.fingen.model.ProductEntry;
 import com.yoshione.fingen.utils.Translit;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -52,6 +48,7 @@ public class ProductEntrysDAO extends BaseDAO implements AbstractDAO, IDaoInheri
         productEntry.setProjectID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_PRODUCTS_PROJECT_ID)));
         productEntry.setPrice(new BigDecimal(cursor.getDouble(mColumnIndexes.get(DBHelper.C_LOG_PRODUCTS_PRICE))).setScale(2, RoundingMode.HALF_UP));
         productEntry.setQuantity(new BigDecimal(cursor.getDouble(mColumnIndexes.get(DBHelper.C_LOG_PRODUCTS_QUANTITY))));
+        productEntry.setDepartmentID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_PRODUCTS_DEPARTMENT_ID)));
 
         productEntry = (ProductEntry) DBHelper.getSyncDataFromCursor(productEntry, cursor, mColumnIndexes);
 

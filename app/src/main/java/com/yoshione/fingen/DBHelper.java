@@ -61,7 +61,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
 
     private SQLiteDatabase mDatabase;
     private static final String DATABASE_NAME = "fingen.db";
-    public static final int DATABASE_VERSION = 35;
+    public static final int DATABASE_VERSION = 36;
     public static final String TAG = "DBHelper";
 
     //common fields
@@ -577,19 +577,21 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
     public static final String C_LOG_PRODUCTS_PRODUCTID = "ProductID";
     public static final String C_LOG_PRODUCTS_CATEGORY_ID = "CategoryID";
     public static final String C_LOG_PRODUCTS_PROJECT_ID = "ProjectID";
+    public static final String C_LOG_PRODUCTS_DEPARTMENT_ID = "DepartmentID";
     public static final String C_LOG_PRODUCTS_PRICE = "Price";
     public static final String C_LOG_PRODUCTS_QUANTITY = "Quantity";
     private static final String I_LOG_PRODUCTS_IDX = "CREATE INDEX [idx_Products] ON [log_Products] ([Deleted], [TransactionID], [ProductID]);";
     public static final String[] T_LOG_PRODUCTS_ALL_COLUMNS = {
             C_ID, C_SYNC_FBID, C_SYNC_TS, C_SYNC_DELETED, C_SYNC_DIRTY, C_SYNC_LASTEDITED,
             C_LOG_PRODUCTS_TRANSACTIONID, C_LOG_PRODUCTS_PRODUCTID, C_LOG_PRODUCTS_CATEGORY_ID, C_LOG_PRODUCTS_PROJECT_ID,
-            C_LOG_PRODUCTS_PRICE, C_LOG_PRODUCTS_QUANTITY};
+            C_LOG_PRODUCTS_PRICE, C_LOG_PRODUCTS_QUANTITY, C_LOG_PRODUCTS_DEPARTMENT_ID};
     public static final String SQL_CREATE_TABLE_LOG_PRODUCTS = "CREATE TABLE " + T_LOG_PRODUCTS + "\n("
             + COMMON_FIELDS
             + C_LOG_PRODUCTS_TRANSACTIONID  + " INTEGER REFERENCES [" + T_LOG_TRANSACTIONS + "]([" + C_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE,\n"
             + C_LOG_PRODUCTS_PRODUCTID      + " INTEGER REFERENCES [" +   T_REF_PRODUCTS   + "]([" + C_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE,\n"
             + C_LOG_PRODUCTS_CATEGORY_ID     + " INTEGER DEFAULT -1 REFERENCES [" + T_REF_CATEGORIES + "]([" + C_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE,\n"
             + C_LOG_PRODUCTS_PROJECT_ID + " INTEGER DEFAULT -1 REFERENCES [" +  T_REF_PROJECTS  + "]([" + C_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE,\n"
+            + C_LOG_PRODUCTS_DEPARTMENT_ID + " INTEGER DEFAULT -1 REFERENCES [" +  T_REF_DEPARTMENTS  + "]([" + C_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE,\n"
             + C_LOG_PRODUCTS_PRICE          + " REAL NOT NULL DEFAULT 0,\n"
             + C_LOG_PRODUCTS_QUANTITY       + " REAL NOT NULL DEFAULT 1 CHECK (Quantity >= 0));";
     //</editor-fold>
@@ -750,6 +752,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
         if (oldVersion < 31) { UpdateHelper.update31(db, mContext); }
         if (oldVersion < 32) { UpdateHelper.update32(db); }
         if (oldVersion < 34) { UpdateHelper.update33(db); }
+        if (oldVersion < 36) { UpdateHelper.update36(db); }
         if (oldVersion < 25) {
             try {
                 updateRunningBalance(db);
@@ -838,6 +841,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
                         cv.put(DBHelper.C_LOG_PRODUCTS_PRODUCTID, 0);
                         cv.put(DBHelper.C_LOG_PRODUCTS_CATEGORY_ID, -1);
                         cv.put(DBHelper.C_LOG_PRODUCTS_PROJECT_ID, -1);
+                        cv.put(DBHelper.C_LOG_PRODUCTS_DEPARTMENT_ID, -1);
                         cv.put(DBHelper.C_LOG_PRODUCTS_PRICE, cursor.getDouble(1));
                         cv.put(DBHelper.C_LOG_PRODUCTS_QUANTITY, 1);
                         db.insert(DBHelper.T_LOG_PRODUCTS, null, cv);

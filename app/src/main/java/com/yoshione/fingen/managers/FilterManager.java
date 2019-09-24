@@ -168,7 +168,7 @@ public class FilterManager {
         switch (filterType) {
             case IAbstractModel.MODEL_TYPE_PAYEE:
             case IAbstractModel.MODEL_TYPE_SIMPLEDEBT:
-            case IAbstractModel.MODEL_TYPE_DEPARTMENT:
+
             case IAbstractModel.MODEL_TYPE_LOCATION:
                 if (!posIds.isEmpty()) {
                     posCondition = String.format("%s IN (%s)", field, posIDsString);
@@ -176,6 +176,40 @@ public class FilterManager {
                 if (!negIds.isEmpty()) {
                     negCondition = String.format("%s NOT IN (%s)", field, negIDsString);
                 }
+                break;
+            case IAbstractModel.MODEL_TYPE_DEPARTMENT:
+                if (useForList) {
+                    if (!posIds.isEmpty()) {
+                        posCondition = String.format(
+                                "CASE WHEN" +
+                                        " lt.Split\n" +
+                                        "THEN" +
+                                        " EXISTS(SELECT CASE WHEN DepartmentID < 0 THEN Department ELSE DepartmentID END AS cID FROM log_Products WHERE TransactionID = lt._id AND cID IN(%s) LIMIT 1)\n" +
+                                        "ELSE" +
+                                        " Department IN (%s) " +
+                                        "END",
+                                posIDsString, posIDsString);
+                    }
+                    if (!negIds.isEmpty()) {
+                        negCondition = String.format(
+                                "CASE WHEN" +
+                                        " lt.Split\n" +
+                                        "THEN" +
+                                        " EXISTS(SELECT CASE WHEN DepartmentID < 0 THEN Department ELSE DepartmentID END AS cID FROM log_Products WHERE TransactionID = lt._id AND cID NOT IN (%s) LIMIT 1)\n" +
+                                        "ELSE" +
+                                        " Department NOT IN (%s) " +
+                                        "END",
+                                negIDsString, negIDsString);
+                    }
+                } else {
+                    if (!posIds.isEmpty()) {
+                        posCondition = String.format("Department IN (%s)", posIDsString);
+                    }
+                    if (!negIds.isEmpty()) {
+                        negCondition = String.format("Department NOT IN (%s)", negIDsString);
+                    }
+                }
+
                 break;
             case IAbstractModel.MODEL_TYPE_PROJECT:
                 if (useForList) {

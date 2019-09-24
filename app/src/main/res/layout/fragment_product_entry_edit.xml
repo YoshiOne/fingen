@@ -89,7 +89,7 @@
         tools:ignore="ContentDescription" />
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/textInputLayoutDepartament"
+        android:id="@+id/textInputLayoutDepartment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@id/imageButtonDeleteProject"
@@ -98,7 +98,7 @@
         android:hint="@string/ent_department">
 
         <EditText
-            android:id="@+id/textViewDepartament"
+            android:id="@+id/textViewDepartment"
             style="@style/NotEditableEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -107,19 +107,19 @@
     </android.support.design.widget.TextInputLayout>
 
     <ImageButton
-        android:id="@+id/imageButtonDeleteDepartament"
+        android:id="@+id/imageButtonDeleteDepartment"
         style="@style/ClearButtonStyle"
         android:layout_centerVertical="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutDepartament"
-        app:layout_constraintTop_toTopOf="@+id/textInputLayoutDepartament"
+        app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutDepartment"
+        app:layout_constraintTop_toTopOf="@+id/textInputLayoutDepartment"
         tools:ignore="ContentDescription" />
 
     <com.yoshione.fingen.widgets.AmountEditor
         android:id="@+id/amount_editor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutDepartament" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutDepartment" />
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/textInputLayoutQuantity"

@@ -20,6 +20,7 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
     private long mTransactionID;
     private long mCategoryID;
     private long mProjectID;
+    private long mDepartmentID;
     private BigDecimal mPrice;
     private BigDecimal mQuantity;
     private boolean mSelected;
@@ -31,10 +32,11 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
         mPrice = BigDecimal.ZERO;
         mCategoryID = -1;
         mProjectID = -1;
+        mDepartmentID = -1;
         mTransactionID = -1;
     }
 
-    public ProductEntry(long id, long productID, BigDecimal quantity, BigDecimal price, long categoryID, long projectID, long transactionID) {
+    public ProductEntry(long id, long productID, BigDecimal quantity, BigDecimal price, long categoryID, long projectID, long departmentID, long transactionID) {
         super();
         setID(id);
         mProductID = productID;
@@ -42,6 +44,7 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
         mPrice = price;
         mCategoryID = categoryID;
         mProjectID = projectID;
+        mDepartmentID = departmentID;
         mTransactionID = transactionID;
     }
 
@@ -75,6 +78,14 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
 
     public void setProjectID(long projectID) {
         mProjectID = projectID;
+    }
+
+    public long getDepartmentID() {
+        return mDepartmentID;
+    }
+
+    public void setDepartmentID(long departmentID) {
+        mDepartmentID = departmentID;
     }
 
     public BigDecimal getPrice() {
@@ -121,6 +132,7 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
         values.put(DBHelper.C_LOG_PRODUCTS_PRODUCTID, mProductID);
         values.put(DBHelper.C_LOG_PRODUCTS_QUANTITY, mQuantity.doubleValue());
         values.put(DBHelper.C_LOG_PRODUCTS_PRICE, mPrice.doubleValue());
+        values.put(DBHelper.C_LOG_PRODUCTS_DEPARTMENT_ID, mDepartmentID);
         return values;
     }
 
@@ -139,6 +151,7 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
         dest.writeSerializable(this.mPrice);
         dest.writeSerializable(this.mQuantity);
         dest.writeByte(this.mSelected ? (byte) 1 : (byte) 0);
+        dest.writeLong(this.mDepartmentID);
     }
 
     protected ProductEntry(Parcel in) {
@@ -150,6 +163,7 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
         this.mPrice = (BigDecimal) in.readSerializable();
         this.mQuantity = (BigDecimal) in.readSerializable();
         this.mSelected = in.readByte() != 0;
+        this.mDepartmentID = in.readLong();
     }
 
     public static final Creator<ProductEntry> CREATOR = new Creator<ProductEntry>() {

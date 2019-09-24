@@ -850,4 +850,8 @@ public class UpdateHelper {
         }
     }
 
+    public static void update36(SQLiteDatabase db) {
+        db.execSQL("ALTER TABLE " + DBHelper.T_LOG_PRODUCTS + " ADD COLUMN "+DBHelper.C_LOG_PRODUCTS_DEPARTMENT_ID +" INTEGER DEFAULT -1;");
+    }
+
 }

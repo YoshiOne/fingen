@@ -430,7 +430,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
                 "   CASE WHEN prod.CategoryID < 0 THEN t.Category ELSE prod.CategoryID END AS Category,\n" +
                 "   CASE WHEN prod.ProjectID  < 0 THEN t.Project  ELSE prod.ProjectID  END AS Project,\n" +
                 "   SimpleDebt,\n" +
-                "   Department,\n" +
+                "   CASE WHEN prod.DepartmentID < 0 THEN t.Department ELSE prod.DepartmentID END AS Department,\n" +
                 "   Location,\n" +
                 "   a.Currency,\n" +
                 "   Amount > 0 AS Income,\n " +
