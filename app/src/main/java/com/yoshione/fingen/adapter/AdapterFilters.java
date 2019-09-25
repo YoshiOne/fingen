@@ -62,6 +62,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.yoshione.fingen.filters.DateRangeFilter.getFirstDayOfWeek;
+
 /**
  * Created by Leonid on 05.11.2015.
  *
@@ -698,6 +700,7 @@ public class AdapterFilters extends RecyclerView.Adapter {
                         calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
                 );
                 dateType = id;
+                dpd.getDatePicker().setFirstDayOfWeek(getFirstDayOfWeek(v.getContext()));
 
                 dpd.show();
             }

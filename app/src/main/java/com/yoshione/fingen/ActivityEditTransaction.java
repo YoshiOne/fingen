@@ -135,6 +135,7 @@ import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
+import static com.yoshione.fingen.filters.DateRangeFilter.getFirstDayOfWeek;
 import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_SELECT_MODEL;
 import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT;
 
@@ -2189,14 +2190,15 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     public void onDateClick(View view) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(transaction.getDateTime());
-        new DatePickerDialog(this, (datePicker, year, monthOfYear, dayOfMonth) -> {
+        DatePickerDialog dpd = new DatePickerDialog(this, (datePicker, year, monthOfYear, dayOfMonth) -> {
             Calendar calendar1 = Calendar.getInstance();
             calendar1.setTime(transaction.getDateTime());
             calendar1.set(year, monthOfYear, dayOfMonth);
             transaction.setDateTime(calendar1.getTime());
             initDateTimeButtons();
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
-                .show();
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        dpd.getDatePicker().setFirstDayOfWeek(getFirstDayOfWeek(view.getContext()));
+        dpd.show();
     }
 
     public void onTimeClick(View view) {

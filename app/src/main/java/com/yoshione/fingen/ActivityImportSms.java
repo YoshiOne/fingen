@@ -45,6 +45,8 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
+import static com.yoshione.fingen.filters.DateRangeFilter.getFirstDayOfWeek;
+
 /**
  * Created by Leonid on 28.02.2016.
  *
@@ -168,12 +170,14 @@ public class ActivityImportSms extends ToolbarActivity implements IProgressEvent
         }
         calendar.setTime(mStartDate);
         dateType = view.getId();
-        new DatePickerDialog(this,
+        DatePickerDialog dpd = new DatePickerDialog(this,
                 this,
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
-        ).show();
+        );
+        dpd.getDatePicker().setFirstDayOfWeek(getFirstDayOfWeek(view.getContext()));
+        dpd.show();
     }
 
     @Override
