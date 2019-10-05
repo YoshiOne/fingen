@@ -7,6 +7,12 @@
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
+        <name>AHBottomNavigation</name>
+        <url>https://github.com/aurelhubert/ahbottomnavigation</url>
+        <copyright>Aurelien Hubert</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
         <name>MaterialDrawer</name>
         <url>https://github.com/mikepenz/MaterialDrawer</url>
         <copyright>Mike Penz</copyright>

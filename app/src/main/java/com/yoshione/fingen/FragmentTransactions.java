@@ -10,6 +10,7 @@ import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -29,6 +30,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -51,6 +53,7 @@ import com.yoshione.fingen.filters.DateRangeFilter;
 import com.yoshione.fingen.filters.FilterListHelper;
 import com.yoshione.fingen.filters.FilterUtils;
 import com.yoshione.fingen.filters.NestedModelFilter;
+import com.yoshione.fingen.fts.ActivityScanQR;
 import com.yoshione.fingen.iab.BillingService;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ILoadMoreFinish;
@@ -167,6 +170,20 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     Unbinder unbinder;
     @BindView(R.id.fabBGLayout)
     View mFabBGLayout;
+    @BindView(R.id.buttonTemplates)
+    Button mButtonTemplates;
+    @BindView(R.id.buttonScanQR)
+    Button mButtonScanQR;
+    @BindView(R.id.buttonNewExpense)
+    Button mButtonNewExpense;
+    @BindView(R.id.buttonNewIncome)
+    Button mButtonNewIncome;
+    @BindView(R.id.buttonNewTransfer)
+    Button mButtonNewTransfer;
+    @BindView(R.id.buttonsBar)
+    LinearLayout mButtonsBar;
+    @BindView(R.id.buttonsBarContainer)
+    FrameLayout mButtonsBarContainer;
     //</editor-fold>
 
     private AdapterTransactions adapterT;
@@ -325,6 +342,10 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                     }
                 }
             });
+
+            setupBottomBar();
+        } else {
+            mButtonsBarContainer.setVisibility(View.GONE);
         }
 
         if (view != null) {
@@ -1158,6 +1179,52 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             mPullMeBended = false;
             mImageViewPullMe.setImageDrawable(Objects.requireNonNull(getContext()).getDrawable(R.drawable.pull_me_animated_reverse));
             ((Animatable) mImageViewPullMe.getDrawable()).start();
+        }
+    }
+
+    private void setupBottomBar() {
+        FragmentTransactions.BottomButtonClickListener clickListener = new FragmentTransactions.BottomButtonClickListener();
+
+        boolean scanQR = mPreferences.getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true);
+        mButtonScanQR.setVisibility(scanQR ? View.VISIBLE : View.GONE);
+
+        mButtonTemplates.setOnClickListener(clickListener);
+        mButtonScanQR.setOnClickListener(clickListener);
+        mButtonNewExpense.setOnClickListener(clickListener);
+        mButtonNewIncome.setOnClickListener(clickListener);
+        mButtonNewTransfer.setOnClickListener(clickListener);
+    }
+
+    private class BottomButtonClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == R.id.buttonTemplates) {
+                Intent intent = new Intent(getActivity(), ActivityModelList.class);
+                intent.putExtra("showHomeButton", false);
+                intent.putExtra("model", new Template());
+                intent.putExtra("requestCode", RequestCodes.REQUEST_CODE_SELECT_MODEL);
+                getActivity().startActivityForResult(intent, RequestCodes.REQUEST_CODE_SELECT_MODEL);
+            } else if (v.getId() == R.id.buttonScanQR) {
+                Intent intent = new Intent(getActivity(), ActivityScanQR.class);
+                getActivity().startActivityForResult(intent, RequestCodes.REQUEST_CODE_SCAN_QR);
+            } else {
+                Transaction transaction = new Transaction(PrefUtils.getDefDepID(getActivity()));
+                Intent intent = new Intent(getActivity(), ActivityEditTransaction.class);
+                switch (v.getId()) {
+                    case R.id.buttonNewIncome:
+                        transaction.setTransactionType(Transaction.TRANSACTION_TYPE_INCOME);
+                        break;
+                    case R.id.buttonNewExpense:
+                        transaction.setTransactionType(Transaction.TRANSACTION_TYPE_EXPENSE);
+                        break;
+                    case R.id.buttonNewTransfer:
+                        transaction.setTransactionType(Transaction.TRANSACTION_TYPE_TRANSFER);
+                        intent.putExtra("focus_to_amount", true);
+                        break;
+                }
+                intent.putExtra("transaction", transaction);
+                getActivity().startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+            }
         }
     }
 
