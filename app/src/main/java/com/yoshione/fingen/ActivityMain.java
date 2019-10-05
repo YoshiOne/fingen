@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,13 +36,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.crashlytics.android.Crashlytics;
 import com.mikepenz.actionitembadge.library.ActionItemBadge;
 import com.mikepenz.actionitembadge.library.utils.BadgeStyle;
@@ -62,7 +60,6 @@ import com.yoshione.fingen.dao.SmsMarkersDAO;
 import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.filters.AbstractFilter;
 import com.yoshione.fingen.filters.AccountFilter;
-import com.yoshione.fingen.fts.ActivityScanQR;
 import com.yoshione.fingen.iab.BillingService;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ITransactionItemEventListener;
@@ -133,6 +130,8 @@ public class ActivityMain extends ToolbarActivity {
     private static final int DRAWER_ITEM_ID_ABOUT = 10;
     private static final int DRAWER_ITEM_ID_PRO = 12;
 
+    @BindView(R.id.bottomNavigation)
+    AHBottomNavigation mBottomNavigation;
     @BindView(R.id.pager)
     ViewPager viewPager;
     @BindView(R.id.tabLayout)
@@ -149,20 +148,6 @@ public class ActivityMain extends ToolbarActivity {
     AppBarLayout mAppBarLayout;
     @BindView(R.id.textViewSubtitle)
     TextView mTextViewActiveSet;
-    @BindView(R.id.buttonTemplates)
-    Button mButtonTemplates;
-    @BindView(R.id.buttonScanQR)
-    Button mButtonScanQR;
-    @BindView(R.id.buttonNewExpense)
-    Button mButtonNewExpense;
-    @BindView(R.id.buttonNewIncome)
-    Button mButtonNewIncome;
-    @BindView(R.id.buttonNewTransfer)
-    Button mButtonNewTransfer;
-    @BindView(R.id.buttonsBar)
-    LinearLayout mButtonsBar;
-    @BindView(R.id.buttonsBarContainer)
-    FrameLayout mButtonsBarContainer;
 
     private FragmentAccounts fragmentAccounts;
     FragmentTransactions fragmentTransactions;
@@ -247,14 +232,35 @@ public class ActivityMain extends ToolbarActivity {
         }
         addFragments();
 
-        setupBottomBar();
-
         //<editor-fold desc="Setup fragments">
+        mBottomNavigation.setDefaultBackgroundColor(ColorUtils.getlistItemBackgroundColor(ActivityMain.this));
+        mBottomNavigation.setOnTabSelectedListener((position, wasSelected) -> {
+            if (wasSelected) {
+                return true;
+            }
+            viewPager.setCurrentItem(position);
+            return true;
+        });
         fragmentPagerAdapter = new FgFragmentPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(fragmentPagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.setOnDragListener((view, dragEvent) -> true);
-        viewPager.setOffscreenPageLimit(2);
+        viewPager.setOffscreenPageLimit(3);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                mBottomNavigation.setCurrentItem(i);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
+        tabLayout.setVisibility(View.GONE);
         //</editor-fold>
 
 
@@ -276,20 +282,6 @@ public class ActivityMain extends ToolbarActivity {
 
         mPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
         //</editor-fold>
-
-        final View rootView = getWindow().getDecorView().getRootView();
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            Rect rect = new Rect();
-            rootView.getWindowVisibleDisplayFrame(rect);
-
-            int screenHeight = rootView.getHeight();
-            int keyboardHeight = screenHeight - (rect.bottom - rect.top);
-            if (keyboardHeight > screenHeight / 3) {
-                mButtonsBarContainer.setVisibility(View.GONE);
-            } else {
-                mButtonsBarContainer.setVisibility(View.VISIBLE);
-            }
-        });
     }
 
     @Override
@@ -440,16 +432,20 @@ public class ActivityMain extends ToolbarActivity {
         List<String> tabs = PrefUtils.getTabsOrder(mPreferences);
 
         fragments.clear();
+        mBottomNavigation.removeAllItems();
         for (String tabID : tabs) {
             switch (tabID) {
                 case FgConst.FRAGMENT_SUMMARY:
                     fragments.add(fragmentSummary);
+                    mBottomNavigation.addItem(new AHBottomNavigationItem(getString(R.string.ent_summary).toUpperCase(), R.drawable.selector_reports));
                     break;
                 case FgConst.FRAGMENT_ACCOUNTS:
                     fragments.add(fragmentAccounts);
+                    mBottomNavigation.addItem(new AHBottomNavigationItem(getString(R.string.ent_accounts).toUpperCase(), R.drawable.ic_account_gray));
                     break;
                 case FgConst.FRAGMENT_TRANSACTIONS:
                     fragments.add(fragmentTransactions);
+                    mBottomNavigation.addItem(new AHBottomNavigationItem(getString(R.string.ent_transactions).toUpperCase(), R.drawable.ic_transfer_gray));
                     break;
             }
         }
@@ -1024,52 +1020,6 @@ public class ActivityMain extends ToolbarActivity {
                     break;
             }
 
-        }
-    }
-
-    private void setupBottomBar() {
-        BottomButtonClickListener clickListener = new BottomButtonClickListener();
-
-        boolean scanQR = mPreferences.getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true);
-        mButtonScanQR.setVisibility(scanQR ? View.VISIBLE : View.GONE);
-
-        mButtonTemplates.setOnClickListener(clickListener);
-        mButtonScanQR.setOnClickListener(clickListener);
-        mButtonNewExpense.setOnClickListener(clickListener);
-        mButtonNewIncome.setOnClickListener(clickListener);
-        mButtonNewTransfer.setOnClickListener(clickListener);
-    }
-
-    private class BottomButtonClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            if (v.getId() == R.id.buttonTemplates) {
-                Intent intent = new Intent(ActivityMain.this, ActivityModelList.class);
-                intent.putExtra("showHomeButton", false);
-                intent.putExtra("model", new Template());
-                intent.putExtra("requestCode", RequestCodes.REQUEST_CODE_SELECT_MODEL);
-                ActivityMain.this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_SELECT_MODEL);
-            } else if (v.getId() == R.id.buttonScanQR) {
-                Intent intent = new Intent(ActivityMain.this, ActivityScanQR.class);
-                startActivityForResult(intent, RequestCodes.REQUEST_CODE_SCAN_QR);
-            } else {
-                Transaction transaction = new Transaction(PrefUtils.getDefDepID(ActivityMain.this));
-                Intent intent = new Intent(ActivityMain.this, ActivityEditTransaction.class);
-                switch (v.getId()) {
-                    case R.id.buttonNewIncome:
-                        transaction.setTransactionType(Transaction.TRANSACTION_TYPE_INCOME);
-                        break;
-                    case R.id.buttonNewExpense:
-                        transaction.setTransactionType(Transaction.TRANSACTION_TYPE_EXPENSE);
-                        break;
-                    case R.id.buttonNewTransfer:
-                        transaction.setTransactionType(Transaction.TRANSACTION_TYPE_TRANSFER);
-                        intent.putExtra("focus_to_amount", true);
-                        break;
-                }
-                intent.putExtra("transaction", transaction);
-                ActivityMain.this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
-            }
         }
     }
 }

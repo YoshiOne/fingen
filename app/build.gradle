@@ -184,6 +184,8 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
 
+    implementation 'com.aurelhubert:ahbottomnavigation:2.2.0'
+
 //    implementation "com.arello-mobile:moxy:$moxy"
 //    annotationProcessor "com.arello-mobile:moxy-compiler:$moxy"
 }

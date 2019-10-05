@@ -201,6 +201,52 @@
                 app:fabSize="normal"
                 app:srcCompat="@drawable/ic_check_circle_white" />
         </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/buttonsBarContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="?listItemBackground"
+            android:elevation="4dp">
+
+            <LinearLayout
+                android:id="@+id/buttonsBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/buttonScanQR"
+                    style="@style/BottomBarButton"
+                    android:drawableTop="@drawable/selector_scan_qr"
+                    android:text="@string/ttl_scan_qr" />
+
+                <Button
+                    android:id="@+id/buttonTemplates"
+                    style="@style/BottomBarButton"
+                    android:drawableTop="@drawable/selector_templates"
+                    android:text="@string/ent_templates" />
+
+                <Button
+                    android:id="@+id/buttonNewExpense"
+                    style="@style/BottomBarButton"
+                    android:drawableTop="@drawable/selector_expense"
+                    android:text="@string/ent_outcome" />
+
+                <Button
+                    android:id="@+id/buttonNewIncome"
+                    style="@style/BottomBarButton"
+                    android:drawableTop="@drawable/selector_income"
+                    android:text="@string/ent_income" />
+
+                <Button
+                    android:id="@+id/buttonNewTransfer"
+                    style="@style/BottomBarButton"
+                    android:drawableTop="@drawable/selector_transfer"
+                    android:text="@string/ent_transfer" />
+            </LinearLayout>
+        </FrameLayout>
 <!--=============================================================================================-->
     </RelativeLayout>
 
