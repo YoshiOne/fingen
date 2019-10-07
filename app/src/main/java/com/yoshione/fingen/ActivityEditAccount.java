@@ -299,18 +299,13 @@ public class ActivityEditAccount extends ToolbarActivity {
         amountEditorStartBalance.setScale(cabbage.getDecimalCount());
         amountEditorCreditLimit.setScale(cabbage.getDecimalCount());
 
-        if (account.getCabbageId() < 0) {
-            editTextCabbage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(ActivityEditAccount.this.getApplicationContext(), ActivityList.class);
-                    intent.putExtra("showHomeButton", false);
-                    intent.putExtra("model", new Cabbage());
-                    intent.putExtra("requestCode", RequestCodes.REQUEST_CODE_SELECT_MODEL);
-                    ActivityEditAccount.this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_SELECT_MODEL);
-                }
-            });
-        }
+        editTextCabbage.setOnClickListener(v -> {
+            Intent intent = new Intent(ActivityEditAccount.this.getApplicationContext(), ActivityList.class);
+            intent.putExtra("showHomeButton", false);
+            intent.putExtra("model", new Cabbage());
+            intent.putExtra("requestCode", RequestCodes.REQUEST_CODE_SELECT_MODEL);
+            ActivityEditAccount.this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_SELECT_MODEL);
+        });
 
         setFieldsVisibility();
     }
