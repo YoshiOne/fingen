@@ -184,7 +184,7 @@ public class FilterManager {
                                 "CASE WHEN" +
                                         " lt.Split\n" +
                                         "THEN" +
-                                        " EXISTS(SELECT CASE WHEN ProjectID < 0 THEN Project ELSE ProjectID END AS cID FROM log_Products WHERE TransactionID = lt._id AND cID IN(%s) LIMIT 1)\n" +
+                                        " EXISTS(SELECT CASE WHEN ProjectID < 0 THEN Project ELSE ProjectID END AS cID FROM log_Products AS prod WHERE prod.Deleted = 0 AND TransactionID = lt._id AND cID IN(%s) LIMIT 1)\n" +
                                         "ELSE" +
                                         " Project IN (%s) " +
                                         "END",
@@ -195,7 +195,7 @@ public class FilterManager {
                                 "CASE WHEN" +
                                         " lt.Split\n" +
                                         "THEN" +
-                                        " EXISTS(SELECT CASE WHEN ProjectID < 0 THEN Project ELSE ProjectID END AS cID FROM log_Products WHERE TransactionID = lt._id AND cID NOT IN (%s) LIMIT 1)\n" +
+                                        " EXISTS(SELECT CASE WHEN ProjectID < 0 THEN Project ELSE ProjectID END AS cID FROM log_Products AS prod WHERE prod.Deleted = 0 AND TransactionID = lt._id AND cID NOT IN (%s) LIMIT 1)\n" +
                                         "ELSE" +
                                         " Project NOT IN (%s) " +
                                         "END",
@@ -218,7 +218,7 @@ public class FilterManager {
                                 "CASE WHEN" +
                                 " lt.Split\n" +
                                 "THEN" +
-                                " EXISTS(SELECT CASE WHEN CategoryID < 0 THEN Category ELSE CategoryID END AS cID FROM log_Products WHERE TransactionID = lt._id AND cID IN(%s) LIMIT 1)\n" +
+                                " EXISTS(SELECT CASE WHEN CategoryID < 0 THEN Category ELSE CategoryID END AS cID FROM log_Products AS prod WHERE prod.Deleted = 0 AND TransactionID = lt._id AND cID IN(%s) LIMIT 1)\n" +
                                 "ELSE" +
                                 " Category IN (%s) " +
                                 "END",
@@ -229,7 +229,7 @@ public class FilterManager {
                                 "CASE WHEN" +
                                         " lt.Split\n" +
                                         "THEN" +
-                                        " EXISTS(SELECT CASE WHEN CategoryID < 0 THEN Category ELSE CategoryID END AS cID FROM log_Products WHERE TransactionID = lt._id AND cID NOT IN (%s) LIMIT 1)\n" +
+                                        " EXISTS(SELECT CASE WHEN CategoryID < 0 THEN Category ELSE CategoryID END AS cID FROM log_Products AS prod WHERE prod.Deleted = 0 AND TransactionID = lt._id AND cID NOT IN (%s) LIMIT 1)\n" +
                                         "ELSE" +
                                         " Category NOT IN (%s) " +
                                         "END",
