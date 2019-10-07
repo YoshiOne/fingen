@@ -6,36 +6,45 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.SparseArray;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.Toast;
 
-import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
-import com.dlazaro66.qrcodereaderview.QRCodeReaderView.OnQRCodeReadListener;
+import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.managers.TransactionManager;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.utils.ColorUtils;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ActivityScanQR extends AppCompatActivity
-        implements ActivityCompat.OnRequestPermissionsResultCallback, OnQRCodeReadListener {
+        implements ActivityCompat.OnRequestPermissionsResultCallback {
 
+    private static final String TAG = "ActivityScanQR";
     private static final int MY_PERMISSION_REQUEST_CAMERA = 0;
 
     private ViewGroup mainLayout;
 
-    private QRCodeReaderView qrCodeReaderView;
+    private CameraSource mCameraSource;
+    private SurfaceView qrCodeReaderView;
     private PointsOverlayView pointsOverlayView;
 
     @Override
@@ -83,24 +92,6 @@ public class ActivityScanQR extends AppCompatActivity
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (qrCodeReaderView != null) {
-            qrCodeReaderView.startCamera();
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (qrCodeReaderView != null) {
-            qrCodeReaderView.stopCamera();
-        }
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode != MY_PERMISSION_REQUEST_CAMERA) {
@@ -123,7 +114,6 @@ public class ActivityScanQR extends AppCompatActivity
     // Called when a QR is decoded
     // "text" : the text encoded in QR
     // "points" : points where QR control points are placed
-    @Override
     public void onQRCodeRead(String text, PointF[] points) {
 //    resultTextView.setText(text);
 //    pointsOverlayView.setPoints(points);
@@ -169,18 +159,63 @@ public class ActivityScanQR extends AppCompatActivity
         CheckBox flashlightCheckBox = content.findViewById(R.id.flashlight_checkbox);
         pointsOverlayView = content.findViewById(R.id.points_overlay_view);
 
-        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) {
-            qrCodeReaderView.setAutofocusInterval(2000L);
-        }
-        qrCodeReaderView.setOnQRCodeReadListener(this);
-        qrCodeReaderView.setBackCamera();
-        flashlightCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(getApplicationContext())
+                .setBarcodeFormats(Barcode.QR_CODE)
+                .build();
+
+        // Creates and starts the camera.  Note that this uses a higher resolution in comparison
+        // to other detection examples to enable the barcode detector to detect small barcodes
+        // at long distances.
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        Log.e("Financisto", "test " + metrics.widthPixels + " / " + metrics.heightPixels + " | " + qrCodeReaderView.getMeasuredWidth() + " / " + qrCodeReaderView.getMeasuredHeight());
+        CameraSource.Builder builder = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
+                .setFacing(CameraSource.CAMERA_FACING_BACK)
+                .setRequestedPreviewSize(metrics.heightPixels, metrics.widthPixels)
+                .setRequestedFps(24.0f)
+                .setFocusMode(Camera.Parameters.FOCUS_MODE_MACRO);
+
+        mCameraSource = builder.build();
+
+        qrCodeReaderView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                qrCodeReaderView.setTorchEnabled(isChecked);
+            public void surfaceCreated(SurfaceHolder holder) {
+                try {
+                    mCameraSource.start(holder);
+                } catch (IOException | SecurityException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) {
+                mCameraSource.stop();
             }
         });
-        qrCodeReaderView.setQRDecodingEnabled(true);
-        qrCodeReaderView.startCamera();
+
+        barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
+            @Override
+            public void release() {
+
+            }
+
+            @Override
+            public void receiveDetections(Detector.Detections<Barcode> detections) {
+                SparseArray<Barcode> qrCode = detections.getDetectedItems();
+
+                if (qrCode.size() != 0) {
+                    onQRCodeRead(qrCode.valueAt(0).displayValue, null);
+                }
+            }
+        });
+
+        qrCodeReaderView.setOnClickListener(view -> mCameraSource.autoFocus(null));
+        flashlightCheckBox.setOnCheckedChangeListener((compoundButton, isChecked) -> mCameraSource.setFlashMode(isChecked ? Camera.Parameters.FLASH_MODE_TORCH : Camera.Parameters.FLASH_MODE_OFF));
     }
 }

@@ -143,7 +143,7 @@ dependencies {
     implementation "com.android.support:support-v13:$support"
 //    implementation "com.google.android.gms:play-services-auth:$play"
 //    implementation "com.google.android.gms:play-services-maps:$play"
-    implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.3'
+    implementation 'com.google.android.gms:play-services-vision:10.2.4'
     implementation 'com.dropbox.core:dropbox-core-sdk:3.0.6'
     implementation 'com.evernote:android-job:1.2.5'
     implementation 'com.github.angads25:filepicker:1.1.1'
