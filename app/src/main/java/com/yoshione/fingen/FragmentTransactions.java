@@ -10,7 +10,6 @@ import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -1012,11 +1011,12 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             AtomicLong curTime = new AtomicLong(System.currentTimeMillis());
             ToolbarActivity activity = (ToolbarActivity) getActivity();
             Lg.d(TAG, "loadMore");
+            FilterListHelper filterListHelper = new FilterListHelper(adapterF.getFilterList(), mEditTextSearch.getText().toString(), getActivity());
             Objects.requireNonNull(activity).unsubscribeOnDestroy(
                     mTransactionsDAO.getRangeTransactionsRx(
                             start,
                             numberItems,
-                            new FilterListHelper(adapterF.getFilterList(), mEditTextSearch.getText().toString(), getActivity()),
+                            filterListHelper,
                             getActivity())
 
                             .subscribeOn(Schedulers.newThread())
@@ -1026,7 +1026,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                                 Log.d(TAG, "Query length " + String.valueOf(curTime.get()));
                                 endOfList = transactions.size() < numberItems;
                                 Lg.d(TAG, "addTransactions");
-                                adapterT.addTransactions(transactions, false);
+                                adapterT.addTransactions(transactions, filterListHelper, false);
                                 if (loadMoreFinish != null) {
                                     loadMoreFinish.onLoadMoreFinish();
                                 }

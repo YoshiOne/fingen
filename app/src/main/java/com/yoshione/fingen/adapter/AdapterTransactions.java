@@ -12,6 +12,7 @@ import com.l4digital.fastscroll.FastScroller;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.adapter.viewholders.TransactionViewHolder;
 import com.yoshione.fingen.adapter.viewholders.TransactionViewHolderParams;
+import com.yoshione.fingen.filters.FilterListHelper;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ILoadMoreFinish;
 import com.yoshione.fingen.interfaces.IOnLoadMore;
@@ -41,6 +42,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
     private int lastYear;
     private int lastDay;
     private Date lastDate;
+    private FilterListHelper filterListHelper;
     private final ArrayList<Transaction> transactionList;
     private final List<String> headerList;
     private IOnLoadMore mOnLoadMore;
@@ -66,6 +68,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
 
         mTransactionItemEventListener = transactionItemEventListener;
         mOnLoadMore = onLoadMore;
+        filterListHelper = null;
         transactionList = new ArrayList<>();
         headerList = new ArrayList<>();
 
@@ -95,7 +98,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         return -1;
     }
 
-    public void addTransactions(List<Transaction> input, boolean clearLists) {
+    public void addTransactions(List<Transaction> input, FilterListHelper filterListHelper, boolean clearLists) {
         synchronized (headerList) {
             if (clearLists) {
                 transactionList.clear();
@@ -109,6 +112,8 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
                 headerList.add(dateTimeFormatter.getDateLongStringWithDayOfWeekName(new Date()));
                 return;
             }
+
+            this.filterListHelper = filterListHelper;
 
             int curYear;
             int curDay;
@@ -183,7 +188,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         Transaction transaction = transactionList.get(position);
 
         TransactionViewHolder tvh = (TransactionViewHolder) viewHolder;
-        tvh.bindTransaction(transaction);
+        tvh.bindTransaction(transaction, filterListHelper, mActivity);
     }
 
     @Override

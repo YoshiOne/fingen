@@ -1,5 +1,6 @@
 package com.yoshione.fingen.adapter.viewholders;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +15,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yoshione.fingen.R;
+import com.yoshione.fingen.filters.AbstractFilter;
+import com.yoshione.fingen.filters.FilterListHelper;
+import com.yoshione.fingen.filters.NestedModelFilter;
+import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ITransactionClickListener;
 import com.yoshione.fingen.interfaces.IUnsubscribeOnDestroy;
 import com.yoshione.fingen.model.Account;
@@ -30,6 +35,8 @@ import com.yoshione.fingen.tag.TagView;
 import com.yoshione.fingen.utils.CabbageFormatter;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.HashSet;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -86,7 +93,7 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
         mUnsubscriber = unsubscriber;
     }
 
-    public void bindTransaction(final Transaction t) {
+    public void bindTransaction(final Transaction t, final FilterListHelper filterListHelper, final Context context) {
         itemView.setLongClickable(true);
 
         //<editor-fold desc="Get accounts data">
@@ -133,7 +140,7 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
         }
         //</editor-fold>
 
-        //<editor-fold desc="Running balance & Amount">
+        //<editor-fold desc="Running balance">
         CabbageFormatter cabbageFormatter;
         if (mParams.mCabbageCache.indexOfKey(srcAccount.getCabbageId()) >= 0) {
             cabbageFormatter = mParams.mCabbageCache.get(srcAccount.getCabbageId());
@@ -142,13 +149,6 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
             cabbageFormatter = new CabbageFormatter(cabbage);
             mParams.mCabbageCache.put(cabbage.getID(), cabbageFormatter);
         }
-
-        mUnsubscriber.unsubscribeOnDestroy(
-                cabbageFormatter.formatRx(t.getTransactionType() == Transaction.TRANSACTION_TYPE_TRANSFER ? t.getAmount().abs() : t.getAmount())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(s -> textViewAmount.setText(s))
-        );
 
         textViewAccountBalance.setTextColor(getAmountColor(t.getFromAccountBalance()));
         mUnsubscriber.unsubscribeOnDestroy(
@@ -237,7 +237,7 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
         }
         //</editor-fold>
 
-        //<editor-fold desc="Category & Project">
+        //<editor-fold desc="Category & Project & Amount">
         Category category;
         Project project;
         boolean isSplitCategory = false;
@@ -326,6 +326,48 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
                 project = mParams.mProjectsDAO.getProjectByID(catID);
                 mParams.mProjectCache.put(project.getID(), project);
             }
+        }
+        HashSet<Long> filterCategory = new HashSet<>();
+        HashSet<Long> filterProject = new HashSet<>();
+        if (filterListHelper != null) {
+            for (AbstractFilter filter : filterListHelper.getFilters()) {
+                if (filter.getClass().equals(NestedModelFilter.class) && filter.getEnabled()) {
+                    NestedModelFilter f = (NestedModelFilter) filter;
+                    switch (f.getModelType()) {
+                        case IAbstractModel.MODEL_TYPE_CATEGORY:
+                            filterCategory = f.getIDsSetWithNestedIDs(context);
+                            break;
+                        case IAbstractModel.MODEL_TYPE_PROJECT:
+                            filterProject = f.getIDsSetWithNestedIDs(context);
+                            break;
+                    }
+                }
+            }
+        }
+        boolean isSplitAmount = false;
+        if ((isSplitCategory  || isSplitProject) && (filterCategory.size() != 0 || filterProject.size() != 0) && t.getTransactionType() != Transaction.TRANSACTION_TYPE_TRANSFER) {
+            BigDecimal sum = BigDecimal.ZERO;
+            boolean allAddedProducts = true;
+            for (ProductEntry entry : t.getProductEntries()) {
+                if (filterCategory.contains(entry.getCategoryID()) || (entry.getCategoryID() < 0 && filterCategory.contains(t.getCategoryID())) ||
+                        filterProject.contains(entry.getProductID()) || (entry.getProjectID() < 0 && filterProject.contains(t.getProjectID()))) {
+                    sum = sum.add(entry.getPrice().multiply(entry.getQuantity())).setScale(cabbageFormatter.getDecimalCount(), RoundingMode.HALF_UP);
+                } else {
+                    allAddedProducts = false;
+                }
+            }
+            if (!allAddedProducts) {
+                textViewAmount.setText(String.format("%s / %s", cabbageFormatter.format(sum), cabbageFormatter.format(t.getAmount())));
+                isSplitAmount = true;
+            }
+        }
+        if (!isSplitAmount) {
+            mUnsubscriber.unsubscribeOnDestroy(
+                    cabbageFormatter.formatRx(t.getTransactionType() == Transaction.TRANSACTION_TYPE_TRANSFER ? t.getAmount().abs() : t.getAmount())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(s -> textViewAmount.setText(s))
+            );
         }
         mTagView.setAlignEnd(true);
         mTagView.getTags().clear();
