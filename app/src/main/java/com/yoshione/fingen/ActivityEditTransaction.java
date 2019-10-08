@@ -1366,7 +1366,8 @@ public class ActivityEditTransaction extends ToolbarActivity implements
             if (account.getID() < 0) {
                 textViewAccount.setText("");
             } else {
-                textViewAccount.setText(String.format("%s (%s)", account.getName(), cabbage.getSimbol()));
+                CabbageFormatter cabbageFormatter = new CabbageFormatter(cabbage);
+                textViewAccount.setText(String.format("%s (%s)", account.getName(), cabbageFormatter.format(account.getCurrentBalance())));
             }
 //            textViewAccountCabbage.setText(cabbage.getCode());
 
