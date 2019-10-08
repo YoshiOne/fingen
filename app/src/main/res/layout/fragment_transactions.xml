@@ -56,15 +56,13 @@
         </android.support.constraint.ConstraintLayout>
 
         <com.yoshione.fingen.widgets.ContextMenuRecyclerView
-            xmlns:android="http://schemas.android.com/apk/res/android"
             style="@style/FastScrollRecyclerVew"
             android:id="@+id/recycler_view"
             android:focusableInTouchMode="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/cardViewSearch"
+            android:layout_above="@id/buttonsBarContainer"
+            android:layout_below="@id/cardViewSearch"
             android:layout_marginBottom="0dp"
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"
@@ -75,7 +73,7 @@
             android:id="@+id/fabGoTop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_above="@id/buttonsBarContainer"
             android:layout_marginBottom="@dimen/fab_margin"
             android:layout_marginStart="@dimen/fab_margin"
             android:visibility="gone"
@@ -86,7 +84,7 @@
             android:id="@+id/textViewSelectedCount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_above="@id/buttonsBarContainer"
             android:gravity="center"
             android:textColor="@color/ColorAccent"
             android:visibility="gone"
@@ -96,7 +94,7 @@
             android:id="@+id/imageViewPullMe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_above="@id/buttonsBarContainer"
             android:layout_centerHorizontal="true"
             android:src="@drawable/pull_me_animated"
             android:visibility="visible" />
@@ -187,7 +185,7 @@
 
         <LinearLayout
             android:id="@+id/fabMenuButtonRootLayout"
-            android:layout_alignParentBottom="true"
+            android:layout_above="@id/buttonsBarContainer"
             android:layout_alignParentEnd="true"
             android:visibility="visible"
             style="@style/FabMenuRootButtonLayout">
