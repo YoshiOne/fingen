@@ -15,6 +15,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/buttonsBarContainer">
+
         <android.support.constraint.ConstraintLayout
             android:id="@+id/cardViewSearch"
             android:layout_width="match_parent"
@@ -61,7 +66,7 @@
             android:focusableInTouchMode="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/buttonsBarContainer"
+            android:layout_alignParentBottom="true"
             android:layout_below="@id/cardViewSearch"
             android:layout_marginBottom="0dp"
             android:layout_marginLeft="0dp"
@@ -73,7 +78,7 @@
             android:id="@+id/fabGoTop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/buttonsBarContainer"
+            android:layout_alignParentBottom="true"
             android:layout_marginBottom="@dimen/fab_margin"
             android:layout_marginStart="@dimen/fab_margin"
             android:visibility="gone"
@@ -84,7 +89,7 @@
             android:id="@+id/textViewSelectedCount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/buttonsBarContainer"
+            android:layout_alignParentBottom="true"
             android:gravity="center"
             android:textColor="@color/ColorAccent"
             android:visibility="gone"
@@ -94,7 +99,7 @@
             android:id="@+id/imageViewPullMe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/buttonsBarContainer"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:src="@drawable/pull_me_animated"
             android:visibility="visible" />
@@ -185,7 +190,7 @@
 
         <LinearLayout
             android:id="@+id/fabMenuButtonRootLayout"
-            android:layout_above="@id/buttonsBarContainer"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:visibility="visible"
             style="@style/FabMenuRootButtonLayout">
@@ -199,6 +204,8 @@
                 app:fabSize="normal"
                 app:srcCompat="@drawable/ic_check_circle_white" />
         </LinearLayout>
+
+        </RelativeLayout>
 
         <FrameLayout
             android:id="@+id/buttonsBarContainer"
