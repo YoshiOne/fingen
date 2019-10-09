@@ -120,24 +120,47 @@ public class PrefUtils {
         return list;
     }
 
-    public static List<String> getTabsOrder(SharedPreferences preferences) {
+    public static List<TrEditItem> getTabsOrder(SharedPreferences preferences, Context context) {
         String order = preferences.getString(FgConst.PREF_TAB_ORDER, "");
         String items[] = order.split(";");
-        List<String> tabs = new ArrayList<>();
+        List<TrEditItem> tabs = new ArrayList<>();
+        String params[];
+        String id;
+        String name;
+        boolean visible;
+        boolean lockVisible;
         try {
-            for (int i = 0; i < 3; i++) {
-                if ((items[i].equals(FgConst.FRAGMENT_SUMMARY) | items[i].equals(FgConst.FRAGMENT_ACCOUNTS)
-                        | items[i].equals(FgConst.FRAGMENT_TRANSACTIONS)) & tabs.indexOf(items[i]) < 0) {
-                    tabs.add(items[i]);
-                } else {
-                    throw new Exception("Parse tabs order preference exception");
+            for (String item : items) {
+                params = item.split("&");
+                id = params[0];
+                visible = Boolean.valueOf(params[1]);
+                lockVisible = false;
+                switch (id) {
+                    case FgConst.FRAGMENT_ACCOUNTS :
+                        name = context.getString(R.string.ent_accounts);
+                        lockVisible = true;
+                        break;
+                    case FgConst.FRAGMENT_TRANSACTIONS :
+                        name = context.getString(R.string.ent_transactions);
+                        lockVisible = true;
+                        break;
+                    case FgConst.FRAGMENT_SUMMARY :
+                        name = context.getString(R.string.ent_summary);
+                        break;
+                    case FgConst.FRAGMENT_DEBTS :
+                        name = context.getString(R.string.ent_debts);
+                        break;
+                    default:
+                        throw new Exception();
                 }
+                tabs.add(new TrEditItem(id, name, visible, false, lockVisible, true));
             }
         } catch (Exception e) {
             tabs.clear();
-            tabs.add(FgConst.FRAGMENT_SUMMARY);
-            tabs.add(FgConst.FRAGMENT_ACCOUNTS);
-            tabs.add(FgConst.FRAGMENT_TRANSACTIONS);
+            tabs.add(new TrEditItem(FgConst.FRAGMENT_SUMMARY, context.getString(R.string.ent_summary),true, false, false, true));
+            tabs.add(new TrEditItem(FgConst.FRAGMENT_ACCOUNTS, context.getString(R.string.ent_accounts),true, false, true, true));
+            tabs.add(new TrEditItem(FgConst.FRAGMENT_TRANSACTIONS, context.getString(R.string.ent_transactions),true, false, true, true));
+            tabs.add(new TrEditItem(FgConst.FRAGMENT_DEBTS, context.getString(R.string.ent_debts),true, false, false, true));
         }
         return tabs;
     }

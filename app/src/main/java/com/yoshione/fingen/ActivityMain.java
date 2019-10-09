@@ -22,7 +22,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -69,8 +69,10 @@ import com.yoshione.fingen.model.AccountsSet;
 import com.yoshione.fingen.model.BaseModel;
 import com.yoshione.fingen.model.Events;
 import com.yoshione.fingen.model.Sender;
+import com.yoshione.fingen.model.SimpleDebt;
 import com.yoshione.fingen.model.SmsMarker;
 import com.yoshione.fingen.model.Template;
+import com.yoshione.fingen.model.TrEditItem;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.receivers.SMSReceiver;
 import com.yoshione.fingen.utils.ColorUtils;
@@ -151,9 +153,10 @@ public class ActivityMain extends ToolbarActivity {
 
     private FragmentAccounts fragmentAccounts;
     FragmentTransactions fragmentTransactions;
+    private FragmentModelList fragmentDebts;
     private FragmentSummary fragmentSummary;
     private Drawer mMaterialDrawer = null;
-    FragmentStatePagerAdapter fragmentPagerAdapter;
+    FragmentPagerAdapter fragmentPagerAdapter;
     private final List<Fragment> fragments = new ArrayList<>();
     private final SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener =
             (prefs, key) -> {
@@ -230,7 +233,6 @@ public class ActivityMain extends ToolbarActivity {
         if (drawerToggle != null) {
             drawerToggle.setImageDrawable(getDrawable(R.drawable.ic_menu_white));
         }
-        addFragments();
 
         //<editor-fold desc="Setup fragments">
         mBottomNavigation.setDefaultBackgroundColor(ColorUtils.getlistItemBackgroundColor(ActivityMain.this));
@@ -328,6 +330,9 @@ public class ActivityMain extends ToolbarActivity {
                     case 2:
                         startTabString = FgConst.FRAGMENT_TRANSACTIONS;
                         break;
+                    case 3:
+                        startTabString = FgConst.FRAGMENT_DEBTS;
+                        break;
                     default:
                         startTabString = FgConst.FRAGMENT_SUMMARY;
                 }
@@ -356,7 +361,7 @@ public class ActivityMain extends ToolbarActivity {
         super.onRestoreInstanceState(savedInstanceState);
     }
 
-    private class FgFragmentPagerAdapter extends FragmentStatePagerAdapter {
+    private class FgFragmentPagerAdapter extends FragmentPagerAdapter {
 
         FgFragmentPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -381,6 +386,8 @@ public class ActivityMain extends ToolbarActivity {
                 return getString(R.string.ent_transactions).toUpperCase();
             } else if (fragments.get(position).getClass().equals(FragmentSummary.class)) {
                 return getString(R.string.ent_summary).toUpperCase();
+            } else if (fragments.get(position).getClass().equals(FragmentModelList.class)) {
+                return getString(R.string.ent_debts).toUpperCase();
             } else {
                 return null;
             }
@@ -399,42 +406,52 @@ public class ActivityMain extends ToolbarActivity {
     }
 
 
-    private void addFragments() {
-        fragmentAccounts = FragmentAccounts.newInstance(FgConst.PREF_FORCE_UPDATE_ACCOUNTS, R.layout.fragment_accounts, this::updateLists);
-        fragmentAccounts.setmAccountEventListener(account -> {
-            int action = Integer.valueOf(mPreferences.getString(FgConst.PREF_ACCOUNT_CLICK_ACTION, String.valueOf(ACCOUNT_CLICK_ACTION_LIST_TRANSACTIONS)));
-            switch (action) {
-                case ACCOUNT_CLICK_ACTION_LIST_TRANSACTIONS:
-                    AccountFilter filter = new AccountFilter(0);
-                    filter.addAccount(account.getID());
-                    ArrayList<AbstractFilter> filters = new ArrayList<>();
-                    filters.add(filter);
-                    Intent intent = new Intent(ActivityMain.this, ActivityTransactions.class);
-                    intent.putParcelableArrayListExtra("filter_list", filters);
-                    intent.putExtra("caption", account.getName());
-                    intent.putExtra(FgConst.HIDE_FAB, true);
-                    intent.putExtra(FgConst.LOCK_SLIDINGUP_PANEL, true);
-                    startActivity(intent);
-                    break;
-                case ACCOUNT_CLICK_ACTION_NEW_TRANSACTION:
-                    Transaction transaction = new Transaction(PrefUtils.getDefDepID(ActivityMain.this));
-                    transaction.setAccountID(account.getID());
-                    Intent intentNT = new Intent(ActivityMain.this, ActivityEditTransaction.class);
-                    intentNT.putExtra("transaction", transaction);
-                    startActivity(intentNT);
-                    break;
-            }
+    private void addFragments(List<TrEditItem> tabs) {
+        if (fragmentAccounts == null) {
+            fragmentAccounts = FragmentAccounts.newInstance(FgConst.PREF_FORCE_UPDATE_ACCOUNTS, R.layout.fragment_accounts, this::updateLists);
+            fragmentAccounts.setmAccountEventListener(account -> {
+                int action = Integer.valueOf(mPreferences.getString(FgConst.PREF_ACCOUNT_CLICK_ACTION, String.valueOf(ACCOUNT_CLICK_ACTION_LIST_TRANSACTIONS)));
+                switch (action) {
+                    case ACCOUNT_CLICK_ACTION_LIST_TRANSACTIONS:
+                        AccountFilter filter = new AccountFilter(0);
+                        filter.addAccount(account.getID());
+                        ArrayList<AbstractFilter> filters = new ArrayList<>();
+                        filters.add(filter);
+                        Intent intent = new Intent(ActivityMain.this, ActivityTransactions.class);
+                        intent.putParcelableArrayListExtra("filter_list", filters);
+                        intent.putExtra("caption", account.getName());
+                        intent.putExtra(FgConst.HIDE_FAB, true);
+                        intent.putExtra(FgConst.LOCK_SLIDINGUP_PANEL, true);
+                        startActivity(intent);
+                        break;
+                    case ACCOUNT_CLICK_ACTION_NEW_TRANSACTION:
+                        Transaction transaction = new Transaction(PrefUtils.getDefDepID(ActivityMain.this));
+                        transaction.setAccountID(account.getID());
+                        Intent intentNT = new Intent(ActivityMain.this, ActivityEditTransaction.class);
+                        intentNT.putExtra("transaction", transaction);
+                        startActivity(intentNT);
+                        break;
+                }
 
-        });
-        fragmentSummary = FragmentSummary.newInstance(FgConst.PREF_FORCE_UPDATE_SUMMARY, R.layout.fragment_summary);
-        fragmentTransactions = FragmentTransactions.newInstance(FgConst.PREF_FORCE_UPDATE_TRANSACTIONS, R.layout.fragment_transactions);
-
-        List<String> tabs = PrefUtils.getTabsOrder(mPreferences);
+            });
+        }
+        if (fragmentSummary == null) {
+            fragmentSummary = FragmentSummary.newInstance(FgConst.PREF_FORCE_UPDATE_SUMMARY, R.layout.fragment_summary);
+        }
+        if (fragmentTransactions == null) {
+            fragmentTransactions = FragmentTransactions.newInstance(FgConst.PREF_FORCE_UPDATE_TRANSACTIONS, R.layout.fragment_transactions);
+        }
+        if (fragmentDebts == null) {
+            fragmentDebts = FragmentModelList.newInstance(new SimpleDebt(), 0);
+        }
 
         fragments.clear();
         mBottomNavigation.removeAllItems();
-        for (String tabID : tabs) {
-            switch (tabID) {
+        for (TrEditItem tab : tabs) {
+            if (!tab.isVisible()) {
+                continue;
+            }
+            switch (tab.getID()) {
                 case FgConst.FRAGMENT_SUMMARY:
                     fragments.add(fragmentSummary);
                     mBottomNavigation.addItem(new AHBottomNavigationItem(getString(R.string.ent_summary).toUpperCase(), R.drawable.selector_reports));
@@ -446,6 +463,10 @@ public class ActivityMain extends ToolbarActivity {
                 case FgConst.FRAGMENT_TRANSACTIONS:
                     fragments.add(fragmentTransactions);
                     mBottomNavigation.addItem(new AHBottomNavigationItem(getString(R.string.ent_transactions).toUpperCase(), R.drawable.ic_transfer_gray));
+                    break;
+                case FgConst.FRAGMENT_DEBTS:
+                    fragments.add(fragmentDebts);
+                    mBottomNavigation.addItem(new AHBottomNavigationItem(getString(R.string.ent_debts).toUpperCase(), R.drawable.ic_debt_gray));
                     break;
             }
         }
@@ -462,37 +483,42 @@ public class ActivityMain extends ToolbarActivity {
         super.onStart();
         EventBus.getDefault().register(this);
 
-        if (getIntent().getIntExtra("action", 0) == ACTION_OPEN_TRANSACTIONS_LIST) {
-            String startTab = FgConst.FRAGMENT_TRANSACTIONS;
-            List<String> tabsOrder = PrefUtils.getTabsOrder(mPreferences);
-            int currentItem = tabsOrder.indexOf(startTab);
-            if (currentItem >= 0 && currentItem < fragments.size()) {
-                viewPager.setCurrentItem(currentItem);
-            }
-        } else {
-            if (mPreferences.getBoolean(FgConst.PREF_SWITCH_TAB_ON_START, false)) {
-                String startTab = mPreferences.getString(FgConst.PREF_START_TAB, FgConst.FRAGMENT_SUMMARY);
-                List<String> tabsOrder = PrefUtils.getTabsOrder(mPreferences);
-                int currentItem = tabsOrder.indexOf(startTab);
-                if (currentItem >= 0 && currentItem < fragments.size()) {
-                    viewPager.setCurrentItem(currentItem);
-                }
-                mPreferences.edit().putBoolean(FgConst.PREF_SWITCH_TAB_ON_START, false).apply();
+        checkPermissionsAndShowAlert();
+
+        List<TrEditItem> tabs = PrefUtils.getTabsOrder(mPreferences, ActivityMain.this);
+
+        int cntVisible = 0;
+        for (TrEditItem tab : tabs) {
+            if (tab.isVisible()) {
+                cntVisible++;
             }
         }
 
-        checkPermissionsAndShowAlert();
-
-        List<String> tabs = PrefUtils.getTabsOrder(mPreferences);
-        boolean actual = true;
-        if (fragments.size() == tabs.size()) {
-            for (int i = 0; i < fragments.size(); i++) {
-                actual = actual & getFragmentID(fragments.get(i)).equals(tabs.get(i));
+        boolean actual = (cntVisible == fragments.size());
+        int i = 0, j = 0;
+        for (; actual && i < tabs.size() && j < fragments.size(); i++, j++) {
+            while (i < tabs.size() && !tabs.get(i).isVisible()) {
+                i++;
+            }
+            if (i < tabs.size()) {
+                actual = getFragmentID(fragments.get(j)).equals(tabs.get(i).getID());
             }
         }
         if (!actual) {
-            addFragments();
+            addFragments(tabs);
             fragmentPagerAdapter.notifyDataSetChanged();
+        }
+
+        int currentItem = -1;
+        boolean switchOnStart = mPreferences.getBoolean(FgConst.PREF_SWITCH_TAB_ON_START, false);
+        if (getIntent().getIntExtra("action", 0) == ACTION_OPEN_TRANSACTIONS_LIST) {
+            currentItem = tabs.indexOf(PrefUtils.getTrEditItemByID(tabs, FgConst.FRAGMENT_TRANSACTIONS));
+        } else if (switchOnStart) {
+            currentItem = tabs.indexOf(PrefUtils.getTrEditItemByID(tabs, mPreferences.getString(FgConst.PREF_START_TAB, FgConst.FRAGMENT_SUMMARY)));
+            mPreferences.edit().putBoolean(FgConst.PREF_SWITCH_TAB_ON_START, false).apply();
+        }
+        if (currentItem >= 0 && currentItem < fragments.size()) {
+            viewPager.setCurrentItem(currentItem);
         }
     }
 
@@ -503,6 +529,8 @@ public class ActivityMain extends ToolbarActivity {
             return FgConst.FRAGMENT_TRANSACTIONS;
         } else if (fragment.getClass().equals(FragmentSummary.class)) {
             return FgConst.FRAGMENT_SUMMARY;
+        } else if (fragment.getClass().equals(FragmentModelList.class)) {
+            return FgConst.FRAGMENT_DEBTS;
         } else {
             return "";
         }
@@ -933,7 +961,7 @@ public class ActivityMain extends ToolbarActivity {
                 dialog[0].getWindow().setAttributes(lp);
             }
         }else if (requestCode == RequestCodes.REQUEST_CODE_OPEN_PREFERENCES) {
-            updateLists();
+//            updateLists();
         } else {
             new Handler().postDelayed(() -> fragments.get(viewPager.getCurrentItem()).onActivityResult(requestCode, resultCode, data), 200);
         }
