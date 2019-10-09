@@ -72,7 +72,9 @@ import com.yoshione.fingen.model.AccountsSet;
 import com.yoshione.fingen.model.BaseModel;
 import com.yoshione.fingen.model.Events;
 import com.yoshione.fingen.model.Sender;
+import com.yoshione.fingen.model.SimpleDebt;
 import com.yoshione.fingen.model.SmsMarker;
+import com.yoshione.fingen.model.TabItem;
 import com.yoshione.fingen.model.Template;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.receivers.SMSReceiver;
@@ -166,6 +168,7 @@ public class ActivityMain extends ToolbarActivity {
 
     private FragmentAccounts fragmentAccounts;
     FragmentTransactions fragmentTransactions;
+    private FragmentModelList fragmentDebts;
     private FragmentSummary fragmentSummary;
     private Drawer mMaterialDrawer = null;
     FragmentStatePagerAdapter fragmentPagerAdapter;
@@ -324,7 +327,7 @@ public class ActivityMain extends ToolbarActivity {
 
         if (prevVersion < 59) {
             try {
-                int startTabInt = Integer.valueOf(mPreferences.getString(FgConst.PREF_START_TAB, "0"));
+                int startTabInt = Integer.valueOf(mPreferences.getString(FgConst.PREF_START_TAB, "2"));
                 String startTabString;
                 switch (startTabInt) {
                     case 0:
@@ -336,8 +339,11 @@ public class ActivityMain extends ToolbarActivity {
                     case 2:
                         startTabString = FgConst.FRAGMENT_TRANSACTIONS;
                         break;
+                    case 3:
+                        startTabString = FgConst.FRAGMENT_DEBTS;
+                        break;
                     default:
-                        startTabString = FgConst.FRAGMENT_SUMMARY;
+                        startTabString = FgConst.FRAGMENT_TRANSACTIONS;
                 }
                 mPreferences.edit().putString(FgConst.PREF_START_TAB, startTabString).apply();
             } catch (NumberFormatException e) {
@@ -389,6 +395,8 @@ public class ActivityMain extends ToolbarActivity {
                 return getString(R.string.ent_transactions).toUpperCase();
             } else if (fragments.get(position).getClass().equals(FragmentSummary.class)) {
                 return getString(R.string.ent_summary).toUpperCase();
+            } else if (fragments.get(position).getClass().equals(FragmentModelList.class)) {
+                return getString(R.string.ent_debts).toUpperCase();
             } else {
                 return null;
             }
@@ -436,12 +444,16 @@ public class ActivityMain extends ToolbarActivity {
         });
         fragmentSummary = FragmentSummary.newInstance(FgConst.PREF_FORCE_UPDATE_SUMMARY, R.layout.fragment_summary);
         fragmentTransactions = FragmentTransactions.newInstance(FgConst.PREF_FORCE_UPDATE_TRANSACTIONS, R.layout.fragment_transactions);
+        fragmentDebts = FragmentModelList.newInstance(new SimpleDebt(), 0);
 
-        List<String> tabs = PrefUtils.getTabsOrder(mPreferences);
+        List<TabItem> tabs = PrefUtils.getTabsOrder(mPreferences, ActivityMain.this);
 
         fragments.clear();
-        for (String tabID : tabs) {
-            switch (tabID) {
+        for (TabItem tab : tabs) {
+            if (!tab.isVisible()) {
+                continue;
+            }
+            switch (tab.getID()) {
                 case FgConst.FRAGMENT_SUMMARY:
                     fragments.add(fragmentSummary);
                     break;
@@ -450,6 +462,9 @@ public class ActivityMain extends ToolbarActivity {
                     break;
                 case FgConst.FRAGMENT_TRANSACTIONS:
                     fragments.add(fragmentTransactions);
+                    break;
+                case FgConst.FRAGMENT_DEBTS:
+                    fragments.add(fragmentDebts);
                     break;
             }
         }
@@ -468,7 +483,7 @@ public class ActivityMain extends ToolbarActivity {
 
         if (getIntent().getIntExtra("action", 0) == ACTION_OPEN_TRANSACTIONS_LIST) {
             String startTab = FgConst.FRAGMENT_TRANSACTIONS;
-            List<String> tabsOrder = PrefUtils.getTabsOrder(mPreferences);
+            List<TabItem> tabsOrder = PrefUtils.getTabsOrder(mPreferences, ActivityMain.this);
             int currentItem = tabsOrder.indexOf(startTab);
             if (currentItem >= 0 && currentItem < fragments.size()) {
                 viewPager.setCurrentItem(currentItem);
@@ -476,7 +491,7 @@ public class ActivityMain extends ToolbarActivity {
         } else {
             if (mPreferences.getBoolean(FgConst.PREF_SWITCH_TAB_ON_START, false)) {
                 String startTab = mPreferences.getString(FgConst.PREF_START_TAB, FgConst.FRAGMENT_SUMMARY);
-                List<String> tabsOrder = PrefUtils.getTabsOrder(mPreferences);
+                List<TabItem> tabsOrder = PrefUtils.getTabsOrder(mPreferences, ActivityMain.this);
                 int currentItem = tabsOrder.indexOf(startTab);
                 if (currentItem >= 0 && currentItem < fragments.size()) {
                     viewPager.setCurrentItem(currentItem);
@@ -487,7 +502,7 @@ public class ActivityMain extends ToolbarActivity {
 
         checkPermissionsAndShowAlert();
 
-        List<String> tabs = PrefUtils.getTabsOrder(mPreferences);
+        List<TabItem> tabs = PrefUtils.getTabsOrder(mPreferences, ActivityMain.this);
         boolean actual = true;
         if (fragments.size() == tabs.size()) {
             for (int i = 0; i < fragments.size(); i++) {
@@ -507,6 +522,8 @@ public class ActivityMain extends ToolbarActivity {
             return FgConst.FRAGMENT_TRANSACTIONS;
         } else if (fragment.getClass().equals(FragmentSummary.class)) {
             return FgConst.FRAGMENT_SUMMARY;
+        } else if (fragment.getClass().equals(FragmentModelList.class)) {
+            return FgConst.FRAGMENT_DEBTS;
         } else {
             return "";
         }

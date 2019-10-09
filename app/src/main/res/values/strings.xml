@@ -1499,6 +1499,10 @@
 
     <!-- 20. Settings -->
     <!-- General -->
+    <string name="pref_show_closed_debts" formatted="false">Show closed debts</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
     <string name="pref_hide_sums_panel" formatted="false">Hide sums panel</string>
 
     <!-- 20. Settings -->

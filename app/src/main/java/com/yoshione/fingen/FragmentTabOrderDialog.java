@@ -19,10 +19,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import com.yoshione.fingen.adapter.AdapterTabOrder;
+import com.yoshione.fingen.adapter.AdapterTabsOrder;
 import com.yoshione.fingen.adapter.helper.OnStartDragListener;
 import com.yoshione.fingen.adapter.helper.SimpleItemTouchHelperCallback;
+import com.yoshione.fingen.utils.PrefUtils;
 import com.yoshione.fingen.widgets.ContextMenuRecyclerView;
+import com.yoshione.fingen.model.TabItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,7 @@ public class FragmentTabOrderDialog extends DialogFragment implements OnStartDra
     @BindView(R.id.recycler_view)
     ContextMenuRecyclerView mRecyclerView;
     Unbinder unbinder;
-    AdapterTabOrder adapter;
+    AdapterTabsOrder adapter;
     private ItemTouchHelper mItemTouchHelper;
 
     @NonNull
@@ -51,8 +53,7 @@ public class FragmentTabOrderDialog extends DialogFragment implements OnStartDra
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_tab_order_dialog, null);
         unbinder = ButterKnife.bind(this, view);
 
-        adapter = new AdapterTabOrder(this,
-                getActivity().getDrawable(R.drawable.ic_drag));
+        adapter = new AdapterTabsOrder(this);
         adapter.setHasStableIds(true);
 
         mRecyclerView.setAdapter(adapter);
@@ -71,8 +72,8 @@ public class FragmentTabOrderDialog extends DialogFragment implements OnStartDra
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String order = "";
-                for (Pair<String, String> pair : adapter.getList()) {
-                    order = String.format("%s%s;", order, pair.first);
+                for (TabItem item : adapter.getList()) {
+                    order = String.format("%s%s&%b;", order, item.getID(), item.isVisible());
                 }
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 preferences.edit().putString(FgConst.PREF_TAB_ORDER, order).apply();
@@ -118,30 +119,7 @@ public class FragmentTabOrderDialog extends DialogFragment implements OnStartDra
 
     private void loadData() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String order = preferences.getString(FgConst.PREF_TAB_ORDER, "");
-        String items[] = order.split(";");
-        List<Pair<String, String>> list = new ArrayList<>();
-
-        String name;
-        try {
-            for (int i = 0; i < 3; i++) {
-                if (items[i].equals(FgConst.FRAGMENT_ACCOUNTS)) {
-                    name = getString(R.string.ent_accounts);
-                } else if (items[i].equals(FgConst.FRAGMENT_TRANSACTIONS)) {
-                    name = getString(R.string.ent_transactions);
-                } else if (items[i].equals(FgConst.FRAGMENT_SUMMARY)) {
-                    name = getString(R.string.ent_summary);
-                } else {
-                    throw new Exception();
-                }
-                list.add(new Pair<>(items[i], name));
-            }
-        } catch (Exception e) {
-            list.add(new Pair<>(FgConst.FRAGMENT_SUMMARY, getString(R.string.ent_summary)));
-            list.add(new Pair<>(FgConst.FRAGMENT_ACCOUNTS, getString(R.string.ent_accounts)));
-            list.add(new Pair<>(FgConst.FRAGMENT_TRANSACTIONS, getString(R.string.ent_transactions)));
-        }
-        adapter.setList(list);
+        adapter.setList(PrefUtils.getTabsOrder(preferences, getActivity()));
         adapter.notifyDataSetChanged();
     }
 }

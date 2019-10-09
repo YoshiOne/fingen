@@ -1503,6 +1503,10 @@
 
     <!-- 20. Settings -->
     <!-- General -->
+    <string name="pref_show_closed_debts" formatted="false">Показывать закрытые долги</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
     <string name="pref_enable_scan_qr" formatted="false">Вкл. сканер чеков</string>
 
     <!-- 20. Settings -->

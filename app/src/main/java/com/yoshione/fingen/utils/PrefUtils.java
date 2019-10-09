@@ -8,6 +8,7 @@ import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.model.Department;
+import com.yoshione.fingen.model.TabItem;
 import com.yoshione.fingen.model.TrEditItem;
 
 import java.util.ArrayList;
@@ -20,6 +21,15 @@ import java.util.List;
 public class PrefUtils {
     public static TrEditItem getTrEditItemByID(List<TrEditItem> items, String id) {
         for (TrEditItem item : items) {
+            if (id.equals(item.getID())) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public static TabItem getTabItemByID(List<TabItem> items, String id) {
+        for (TabItem item : items) {
             if (id.equals(item.getID())) {
                 return item;
             }
@@ -120,26 +130,54 @@ public class PrefUtils {
         return list;
     }
 
-    public static List<String> getTabsOrder(SharedPreferences preferences) {
+    public static List<TabItem> getTabsOrder(SharedPreferences preferences, Context context) {
         String order = preferences.getString(FgConst.PREF_TAB_ORDER, "");
         String items[] = order.split(";");
-        List<String> tabs = new ArrayList<>();
+        List<TabItem> list = new ArrayList<>();
+        String params[];
+        String id;
+        String name;
+        boolean visible;
+        boolean lockVisible;
+        boolean lockHide;
         try {
-            for (int i = 0; i < 3; i++) {
-                if ((items[i].equals(FgConst.FRAGMENT_SUMMARY) | items[i].equals(FgConst.FRAGMENT_ACCOUNTS)
-                        | items[i].equals(FgConst.FRAGMENT_TRANSACTIONS)) & tabs.indexOf(items[i]) < 0) {
-                    tabs.add(items[i]);
-                } else {
-                    throw new Exception("Parse tabs order preference exception");
+            for (String item : items) {
+                params = item.split("&");
+                id = params[0];
+                visible = Boolean.valueOf(params[1]);
+                lockVisible = false;
+                lockHide = false;
+                switch (id) {
+                    case FgConst.FRAGMENT_ACCOUNTS :
+                        name = context.getString(R.string.ent_accounts);
+                        lockVisible = true;
+                        lockHide = true;
+                        break;
+                    case FgConst.FRAGMENT_TRANSACTIONS :
+                        name = context.getString(R.string.ent_transactions);
+                        lockVisible = true;
+                        lockHide = true;
+                        break;
+                    case FgConst.FRAGMENT_SUMMARY :
+                        name = context.getString(R.string.ent_summary);
+                        break;
+                    case FgConst.FRAGMENT_DEBTS :
+                        name = context.getString(R.string.ent_debts);
+                        break;
+                    default:
+                        throw new Exception();
                 }
+                list.add(new TabItem(id, name, visible, lockVisible, lockHide));
             }
+
         } catch (Exception e) {
-            tabs.clear();
-            tabs.add(FgConst.FRAGMENT_SUMMARY);
-            tabs.add(FgConst.FRAGMENT_ACCOUNTS);
-            tabs.add(FgConst.FRAGMENT_TRANSACTIONS);
+            list.clear();
+            list.add(new TabItem(FgConst.FRAGMENT_ACCOUNTS, context.getString(R.string.ent_accounts),true, true, true));
+            list.add(new TabItem(FgConst.FRAGMENT_TRANSACTIONS, context.getString(R.string.ent_transactions),true, true, true));
+            list.add(new TabItem(FgConst.FRAGMENT_SUMMARY, context.getString(R.string.ent_summary),true, false, false));
+            list.add(new TabItem(FgConst.FRAGMENT_DEBTS, context.getString(R.string.ent_debts),true, false, false));
         }
-        return tabs;
+        return list;
     }
 
     public static Department getDefaultDepartment(Context context) {

@@ -64,7 +64,7 @@ public class ActivityDebtsAndCredits extends ToolbarActivity {
                         case 1:
                             return fragmentDebts;
                         default:
-                            return fragmentCredits;
+                            return fragmentDebts;
                     }
                 }
 
@@ -81,14 +81,14 @@ public class ActivityDebtsAndCredits extends ToolbarActivity {
                         case 1:
                             return getString(R.string.ent_debts);
                         default:
-                            return getString(R.string.ent_credits);
+                            return getString(R.string.ent_debts);
                     }
                 }
             };
 
             viewPager.setAdapter(fragmentPagerAdapter);
             tabLayout.setupWithViewPager(viewPager);
-            viewPager.setCurrentItem(0);
+            viewPager.setCurrentItem(1);
 //        }
     }
 

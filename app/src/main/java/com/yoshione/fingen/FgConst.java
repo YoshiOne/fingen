@@ -10,6 +10,7 @@ public class FgConst {
     public static final String FRAGMENT_SUMMARY = "summary";
     public static final String FRAGMENT_ACCOUNTS = "accounts";
     public static final String FRAGMENT_TRANSACTIONS = "transactions";
+    public static final String FRAGMENT_DEBTS = "loans";
     //</editor-fold>
 
     public static final int NUMBER_ITEMS_TO_BE_LOADED = 25;
