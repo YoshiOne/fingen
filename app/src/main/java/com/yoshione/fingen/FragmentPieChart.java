@@ -33,7 +33,6 @@ import com.github.mikephil.charting.interfaces.datasets.IPieDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.renderer.PieChartRenderer;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.Utils;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.yoshione.fingen.dao.AbstractDAO;
 import com.yoshione.fingen.dao.BaseDAO;
