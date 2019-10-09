@@ -6,12 +6,14 @@ package com.yoshione.fingen;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -48,6 +50,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -91,6 +95,8 @@ public class FragmentModelList extends Fragment {
     private AdapterAbstractModel adapter;
     Unbinder unbinder;
     FabMenuController mFabMenuController;
+    @Inject
+    SharedPreferences mPreferences;
 
     void setmFilter(String mFilter) {
         this.mFilter = mFilter;
@@ -322,18 +328,20 @@ public class FragmentModelList extends Fragment {
 
     @SuppressWarnings("unchecked")
     private void loadData() throws Exception {
+        Context context = FGApplication.getContext();
+
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         AbstractDAO abstractDAO = BaseDAO.getDAO(mInputModel.getModelType(), getActivity());
+        boolean showClosed = mPreferences.getBoolean(FgConst.PREF_SHOW_CLOSED_DEBTS, true);
         if (abstractDAO != null) {
             List<IAbstractModel> models = (List<IAbstractModel>) abstractDAO.getAllModels();
             if (mInputModel.getModelType() == IAbstractModel.MODEL_TYPE_SIMPLEDEBT) {
                 long cabbageID = getActivity().getIntent().getLongExtra("cabbageID", -1);
-                if (cabbageID >= 0) {
-                    SimpleDebt debt;
-                    for (int i = models.size() - 1; i >= 0; i--) {
-                        debt = (SimpleDebt) models.get(i);
-                        if (debt.getCabbageID() != cabbageID || !debt.isActive()) {
-                            models.remove(i);
-                        }
+                SimpleDebt debt;
+                for (int i = models.size() - 1; i >= 0; i--) {
+                    debt = (SimpleDebt) models.get(i);
+                    if ((cabbageID >= 0 && debt.getCabbageID() != cabbageID) || (!debt.isActive() && !showClosed)) {
+                        models.remove(i);
                     }
                 }
             }
