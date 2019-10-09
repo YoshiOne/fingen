@@ -13,22 +13,17 @@ import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import com.yoshione.fingen.adapter.AdapterTabOrder;
 import com.yoshione.fingen.adapter.AdapterTrEditConstructor;
 import com.yoshione.fingen.adapter.helper.OnStartDragListener;
 import com.yoshione.fingen.adapter.helper.SimpleItemTouchHelperCallback;
 import com.yoshione.fingen.model.TrEditItem;
 import com.yoshione.fingen.utils.PrefUtils;
 import com.yoshione.fingen.widgets.ContextMenuRecyclerView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

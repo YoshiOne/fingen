@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.github.omadahealth.lollipin.lib.managers.AppLock;
 import com.github.omadahealth.lollipin.lib.managers.LockManager;
-import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.fts.ActivityFtsLogin;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.utils.PrefUtils;

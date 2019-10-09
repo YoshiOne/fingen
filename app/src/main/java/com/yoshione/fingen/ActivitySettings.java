@@ -19,11 +19,8 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import com.github.omadahealth.lollipin.lib.PinCompatActivity;
-import com.yoshione.fingen.utils.IconGenerator;
 
 import net.xpece.android.support.preference.PreferenceScreenNavigationStrategy;
-
-//import net.xpece.android.support.preference.Fixes;
 
 public class ActivitySettings extends PinCompatActivity  implements
         PreferenceFragmentCompat.OnPreferenceStartScreenCallback,

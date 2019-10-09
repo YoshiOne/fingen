@@ -39,8 +39,6 @@ import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 
-//import permissions.dispatcher.RuntimePermissions;
-
 /**
  * Created by slv on 07.03.2016.
  * a

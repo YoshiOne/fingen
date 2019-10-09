@@ -29,7 +29,6 @@ import com.yoshione.fingen.backup.BackupTestJobCreator;
 import com.yoshione.fingen.di.AppComponent;
 import com.yoshione.fingen.di.DaggerAppComponent;
 import com.yoshione.fingen.di.modules.ContextModule;
-import com.yoshione.fingen.fts.FtsApi;
 import com.yoshione.fingen.interfaces.ISyncAnimMethods;
 import com.yoshione.fingen.receivers.CustomIntentReceiver;
 import com.yoshione.fingen.widgets.CustomPinActivity;
