@@ -339,13 +339,14 @@ public class FragmentModelList extends Fragment {
         if (abstractDAO != null) {
             List<IAbstractModel> models = (List<IAbstractModel>) abstractDAO.getAllModels();
             if (mInputModel.getModelType() == IAbstractModel.MODEL_TYPE_SIMPLEDEBT) {
-                    SimpleDebt debt;
-                    for (int i = models.size() - 1; i >= 0; i--) {
-                        debt = (SimpleDebt) models.get(i);
-                        if (!debt.isActive() && !showClosed) {
-                            models.remove(i);
-                        }
+                long cabbageID = getActivity().getIntent().getLongExtra("cabbageID", -1);
+                SimpleDebt debt;
+                for (int i = models.size() - 1; i >= 0; i--) {
+                    debt = (SimpleDebt) models.get(i);
+                    if ((cabbageID >= 0 && debt.getCabbageID() != cabbageID) || (!debt.isActive() && !showClosed)) {
+                        models.remove(i);
                     }
+                }
             }
             if (mInputModel.getModelType() == IAbstractModel.MODEL_TYPE_SMSMARKER) {
                 for (IAbstractModel model : models) {
