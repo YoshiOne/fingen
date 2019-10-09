@@ -125,11 +125,18 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
 
         avh.textViewName.setText(account.getName());
 
-        String[] accountTypes = mActivity.getResources().getStringArray(R.array.account_types);
-        String accountType = accountTypes[account.getAccountType().ordinal()];
-
         Cabbage cabbage = AccountManager.getCabbage(account, mActivity);
-        avh.textViewType.setText(String.format("%s (%s)", accountType, cabbage.getCode()));
+        switch (account.getAccountType()) {
+            case atDebtCard:
+            case atCreditCard:
+                avh.textViewType.setText(String.format("%s #%04d (%s)", account.getEmitent(), account.getLast4Digits(), cabbage.getCode()));
+                break;
+            default:
+                String[] accountTypes = mActivity.getResources().getStringArray(R.array.account_types);
+                String accountType = accountTypes[account.getAccountType().ordinal()];
+                avh.textViewType.setText(String.format("%s (%s)", accountType, cabbage.getCode()));
+                break;
+        }
 
         CabbageFormatter cabbageFormatter = new CabbageFormatter(cabbage);
         Boolean showInEx = PreferenceManager.getDefaultSharedPreferences(mActivity).getBoolean(FgConst.PREF_SHOW_INCOME_EXPENSE_FOR_ACCOUNTS, true);
