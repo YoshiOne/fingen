@@ -1,6 +1,5 @@
 package com.yoshione.fingen.adapter.viewholders;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
@@ -15,10 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yoshione.fingen.R;
-import com.yoshione.fingen.filters.AbstractFilter;
-import com.yoshione.fingen.filters.FilterListHelper;
-import com.yoshione.fingen.filters.NestedModelFilter;
-import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ITransactionClickListener;
 import com.yoshione.fingen.interfaces.IUnsubscribeOnDestroy;
 import com.yoshione.fingen.model.Account;
@@ -93,7 +88,7 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
         mUnsubscriber = unsubscriber;
     }
 
-    public void bindTransaction(final Transaction t, final FilterListHelper filterListHelper, final Context context) {
+    public void bindTransaction(final Transaction t, final HashSet<Long> filterCategory, HashSet<Long> filterProject) {
         itemView.setLongClickable(true);
 
         //<editor-fold desc="Get accounts data">
@@ -328,25 +323,11 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
                 mParams.mProjectCache.put(project.getID(), project);
             }
         }
-        HashSet<Long> filterCategory = new HashSet<>();
-        HashSet<Long> filterProject = new HashSet<>();
-        if (filterListHelper != null) {
-            for (AbstractFilter filter : filterListHelper.getFilters()) {
-                if (filter.getClass().equals(NestedModelFilter.class) && filter.getEnabled()) {
-                    NestedModelFilter f = (NestedModelFilter) filter;
-                    switch (f.getModelType()) {
-                        case IAbstractModel.MODEL_TYPE_CATEGORY:
-                            filterCategory = f.getIDsSetWithNestedIDs(context);
-                            break;
-                        case IAbstractModel.MODEL_TYPE_PROJECT:
-                            filterProject = f.getIDsSetWithNestedIDs(context);
-                            break;
-                    }
-                }
-            }
-        }
         boolean isSplitAmount = false;
-        if ((isSplitCategory  || isSplitProject) && (filterCategory.size() != 0 || filterProject.size() != 0) && t.getTransactionType() != Transaction.TRANSACTION_TYPE_TRANSFER) {
+        if ((isSplitCategory  || isSplitProject)
+                && ((filterCategory != null && filterCategory.size() != 0) || (filterProject != null && filterProject.size() != 0))
+                && t.getTransactionType() != Transaction.TRANSACTION_TYPE_TRANSFER
+        ) {
             BigDecimal sum = BigDecimal.ZERO;
             boolean allAddedProducts = true;
             for (ProductEntry entry : t.getProductEntries()) {

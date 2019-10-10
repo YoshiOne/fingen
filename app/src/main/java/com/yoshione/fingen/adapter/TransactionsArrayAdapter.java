@@ -56,7 +56,7 @@ public class TransactionsArrayAdapter extends ArrayAdapter<Transaction> implemen
         parent.setLayoutParams(lp);
         @SuppressLint("ViewHolder") View view = LayoutInflater.from(mContextThemeWrapper).inflate(R.layout.list_item_transactions_2, parent, false);
         TransactionViewHolder viewHolder = new TransactionViewHolder(mParams, this, mActivity, view);
-        viewHolder.bindTransaction(mTransactionList.get(position), null, mActivity);
+        viewHolder.bindTransaction(mTransactionList.get(position), null, null);
         return viewHolder.itemView;
     }
 
