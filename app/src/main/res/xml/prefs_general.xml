@@ -81,6 +81,10 @@
             android:key="show_closed_accounts"
             android:title="@string/pref_title_accounts_list_show_closed"/>
         <SwitchPreference
+            android:defaultValue="false"
+            android:key="show_closed_account_transactions"
+            android:title="@string/pref_title_show_closed_account_transactions"/>
+        <SwitchPreference
             android:defaultValue="true"
             android:key="show_debt_accounts"
             android:title="@string/pref_title_accounts_list_show_credits"/>

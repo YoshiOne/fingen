@@ -524,7 +524,7 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         ToolbarActivity activity = (ToolbarActivity) getActivity();
         HashMap<Long, Cabbage> cabbages = mCabbagesDAO.get().getCabbagesMap();
         Objects.requireNonNull(activity).unsubscribeOnDestroy(
-                mTransactionsDAO.get().getGroupedSumsRx(new FilterListHelper(filters, "", activity), true, null, getActivity())
+                mTransactionsDAO.get().getGroupedSumsRx(new FilterListHelper(filters, "", activity, mPreferences.get()), true, null, getActivity())
                         .map(listSumsByCabbage -> SumsManager.formatSums(listSumsByCabbage, cabbages, true))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())

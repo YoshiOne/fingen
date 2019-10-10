@@ -300,7 +300,7 @@ public class ReportBuilder {
         try {
             //В данных отчета могут присутсвовать не все модели, например, может не быть родителей.
             //Для решения проблемы загружаем все модели и джойним списки
-            reportData = mTransactionsDAO.getEntityReport(getModelType(), new FilterListHelper(mFilterList, "", context), context);
+            reportData = mTransactionsDAO.getEntityReport(getModelType(), new FilterListHelper(mFilterList, "", context, mPreferences), context);
         } catch (Exception e) {
             reportData = new LongSparseArray<>();
         }
@@ -352,7 +352,7 @@ public class ReportBuilder {
 
     void loadDateDataset(Context context) {
         try {
-            mDatesDataset = mTransactionsDAO.getCommonDateReport(getDatePattern(), getDateFormat(), new FilterListHelper(mFilterList, "", context), context);
+            mDatesDataset = mTransactionsDAO.getCommonDateReport(getDatePattern(), getDateFormat(), new FilterListHelper(mFilterList, "", context, mPreferences), context);
         } catch (Exception e) {
             mDatesDataset = new LinkedHashMap<>();
         }

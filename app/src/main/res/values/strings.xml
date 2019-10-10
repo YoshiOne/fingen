@@ -1531,6 +1531,10 @@
 
     <!-- 20. Settings -->
     <!-- Account list -->
+    <string name="pref_title_show_closed_account_transactions" formatted="false">Show closed account transactions</string>
+
+    <!-- 20. Settings -->
+    <!-- Account list -->
     <string name="pref_title_accounts_list_show_credits" formatted="false">Show credit accounts</string>
 
     <!-- 20. Settings -->
