@@ -158,18 +158,19 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
                         .subscribe(s -> textViewAccountBalance.setText(s))
         );
 
+        CabbageFormatter destCabbageFormatter = null;
         if (t.getDestAccountID() >= 0) {
             if (mParams.mCabbageCache.indexOfKey(destAccount.getCabbageId()) >= 0) {
-                cabbageFormatter = mParams.mCabbageCache.get(destAccount.getCabbageId());
+                destCabbageFormatter = mParams.mCabbageCache.get(destAccount.getCabbageId());
             } else {
                 Cabbage cabbage = mParams.mCabbagesDAO.getCabbageByID(destAccount.getCabbageId());
-                cabbageFormatter = new CabbageFormatter(cabbage);
-                mParams.mCabbageCache.put(cabbage.getID(), cabbageFormatter);
+                destCabbageFormatter = new CabbageFormatter(cabbage);
+                mParams.mCabbageCache.put(cabbage.getID(), destCabbageFormatter);
             }
 
             textViewDestAccountBalance.setTextColor(getAmountColor(t.getToAccountBalance()));
             mUnsubscriber.unsubscribeOnDestroy(
-                    cabbageFormatter.formatRx(t.getToAccountBalance())
+                    destCabbageFormatter.formatRx(t.getToAccountBalance())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(s -> textViewDestAccountBalance.setText(s))
@@ -362,12 +363,16 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
             }
         }
         if (!isSplitAmount) {
-            mUnsubscriber.unsubscribeOnDestroy(
-                    cabbageFormatter.formatRx(t.getTransactionType() == Transaction.TRANSACTION_TYPE_TRANSFER ? t.getAmount().abs() : t.getAmount())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(s -> textViewAmount.setText(s))
-            );
+            if (t.getTransactionType() == Transaction.TRANSACTION_TYPE_TRANSFER && destCabbageFormatter != null && srcAccount.getCabbageId() != destAccount.getCabbageId()) {
+                textViewAmount.setText(String.format("%s \u00BB %s", cabbageFormatter.format(t.getAmount().abs()), destCabbageFormatter.format(t.getAmount().multiply(t.getExchangeRate()).abs())));
+            } else {
+                mUnsubscriber.unsubscribeOnDestroy(
+                        cabbageFormatter.formatRx(t.getTransactionType() == Transaction.TRANSACTION_TYPE_TRANSFER ? t.getAmount().abs() : t.getAmount())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(s -> textViewAmount.setText(s))
+                );
+            }
         }
         mTagView.setAlignEnd(true);
         mTagView.getTags().clear();
