@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -243,8 +242,6 @@ public class ActivityMain extends ToolbarActivity {
             viewPager.setCurrentItem(position);
             return true;
         });
-        fragmentPagerAdapter = new FgFragmentPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(fragmentPagerAdapter);
         viewPager.setOffscreenPageLimit(3);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -378,8 +375,22 @@ public class ActivityMain extends ToolbarActivity {
         }
 
         @Override
-        public CharSequence getPageTitle(final int position) {
+        public long getItemId(int position) {
+            if (fragments.get(position).getClass().equals(FragmentAccounts.class)) {
+                return 1;
+            } else if (fragments.get(position).getClass().equals(FragmentTransactions.class)) {
+                return 2;
+            } else if (fragments.get(position).getClass().equals(FragmentSummary.class)) {
+                return 3;
+            } else if (fragments.get(position).getClass().equals(FragmentModelList.class)) {
+                return 4;
+            } else {
+                return 0;
+            }
+        }
 
+        @Override
+        public CharSequence getPageTitle(final int position) {
             if (fragments.get(position).getClass().equals(FragmentAccounts.class)) {
                 return getString(R.string.ent_accounts).toUpperCase();
             } else if (fragments.get(position).getClass().equals(FragmentTransactions.class)) {
@@ -393,16 +404,6 @@ public class ActivityMain extends ToolbarActivity {
             }
         }
 
-        @Override
-        public Parcelable saveState() {
-            // Do Nothing
-            return null;
-        }
-
-        @Override
-        public int getItemPosition(@NonNull Object object) {
-            return POSITION_NONE;
-        }
     }
 
 
@@ -506,7 +507,10 @@ public class ActivityMain extends ToolbarActivity {
         }
         if (!actual) {
             addFragments(tabs);
-            fragmentPagerAdapter.notifyDataSetChanged();
+            int currentItem = viewPager.getCurrentItem();
+            fragmentPagerAdapter = new FgFragmentPagerAdapter(getSupportFragmentManager());
+            viewPager.setAdapter(fragmentPagerAdapter);
+            viewPager.setCurrentItem(currentItem);
         }
 
         int currentItem = -1;
