@@ -1417,11 +1417,12 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     public String getDestAccountName() {
         Account destAccount = TransactionManager.getDestAccount(transaction, this);
         String name = destAccount.getName();
-        String code = AccountManager.getCabbage(destAccount, this).getSimbol();
         if (name.isEmpty()) {
             return "";
         } else {
-            return String.format("%s (%s)", destAccount.getName(), code);
+            Cabbage cabbage = AccountManager.getCabbage(destAccount, this);
+            CabbageFormatter cabbageFormatter = new CabbageFormatter(cabbage);
+            return String.format("%s (%s)", name, cabbageFormatter.format(destAccount.getCurrentBalance()));
         }
     }
 
