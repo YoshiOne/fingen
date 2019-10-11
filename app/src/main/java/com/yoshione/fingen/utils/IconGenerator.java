@@ -54,7 +54,7 @@ public class IconGenerator {
         } else {
             icon = context.getDrawable(R.drawable.ic_lock_gray);
         }
-        return icon;
+        return icon.mutate();
     }
 
     public static Drawable getExpandIndicatorIcon(boolean expanded, Context context) {
