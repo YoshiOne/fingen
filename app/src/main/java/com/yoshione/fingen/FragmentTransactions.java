@@ -566,7 +566,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         ListSumsByCabbage listSumsByCabbage;
         try {
             listSumsByCabbage = mTransactionsDAO.getGroupedSums(new FilterListHelper(adapterF.getFilterList(),
-                    mEditTextSearch.getText().toString(), getActivity(), mPreferences), true, adapterT.getSelectedTransactionsIDsAsLong(), getActivity());
+                    mEditTextSearch.getText().toString(), getActivity(), mPreferences, true), true, adapterT.getSelectedTransactionsIDsAsLong(), getActivity());
         } catch (Exception e) {
             listSumsByCabbage = new ListSumsByCabbage();
         }
@@ -1011,7 +1011,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             AtomicLong curTime = new AtomicLong(System.currentTimeMillis());
             ToolbarActivity activity = (ToolbarActivity) getActivity();
             Lg.d(TAG, "loadMore");
-            FilterListHelper filterListHelper = new FilterListHelper(adapterF.getFilterList(), mEditTextSearch.getText().toString(), getActivity(), mPreferences);
+            FilterListHelper filterListHelper = new FilterListHelper(adapterF.getFilterList(), mEditTextSearch.getText().toString(), getActivity(), mPreferences, false);
             Objects.requireNonNull(activity).unsubscribeOnDestroy(
                     mTransactionsDAO.getRangeTransactionsRx(
                             start,
@@ -1045,7 +1045,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         HashMap<Long, Cabbage> cabbages = mCabbagesDAO.getCabbagesMap();
         Objects.requireNonNull(activity).unsubscribeOnDestroy(
             mTransactionsDAO.getGroupedSumsRx(new FilterListHelper(adapterF.getFilterList(),
-                    mEditTextSearch.getText().toString(), getActivity(), mPreferences), true, adapterT.getSelectedTransactionsIDsAsLong(), getActivity())
+                    mEditTextSearch.getText().toString(), getActivity(), mPreferences, true), true, adapterT.getSelectedTransactionsIDsAsLong(), getActivity())
                     .map(listSumsByCabbage -> SumsManager.formatSums(listSumsByCabbage, cabbages, false))
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())

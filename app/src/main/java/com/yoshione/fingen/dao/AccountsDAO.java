@@ -71,6 +71,8 @@ public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
 
         account.setCreditLimit(new BigDecimal(cursor.getDouble(mColumnIndexes.get(DBHelper.C_REF_ACCOUNTS_CREDITLIMIT))));
 
+        account.setIsIncludeIntoTotals(cursor.getInt(cursor.getColumnIndex(DBHelper.C_REF_ACCOUNTS_ISINCLUDEINTOTOTALS)) == 1);
+
         account = (Account) DBHelper.getSyncDataFromCursor(account, cursor, mColumnIndexes);
 
         return account;
@@ -150,6 +152,25 @@ public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
 
     public HashSet<Long> getClosedAccountsIDs() {
         String where = DBHelper.C_REF_ACCOUNTS_ISCLOSED +" != 0 AND "+DBHelper.C_SYNC_DELETED+" = 0";
+        Cursor cursor = mDatabase.query(getTableName(), new String[]{DBHelper.C_ID}, where, null, null, null, null);
+        HashSet<Long> ids = new HashSet<>();
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    while (!cursor.isAfterLast()) {
+                        ids.add(cursor.getLong(0));
+                        cursor.moveToNext();
+                    }
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        return ids;
+    }
+
+    public HashSet<Long> getAccountsWithoutIncludeIntoTotalsIDs() {
+        String where = DBHelper.C_REF_ACCOUNTS_ISINCLUDEINTOTOTALS + " = 0";
         Cursor cursor = mDatabase.query(getTableName(), new String[]{DBHelper.C_ID}, where, null, null, null, null);
         HashSet<Long> ids = new HashSet<>();
         if (cursor != null) {

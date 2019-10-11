@@ -42,6 +42,7 @@ public class Account extends BaseModel implements IAbstractModel, IOrderable {
     private boolean mIsClosed;
     private int mOrder;
     private int mSortOrder = SORT_ORDER_ASC;
+    private boolean mIsIncludeIntoTotals;
 
     public Account() {
 //        this.mId = -1;
@@ -58,6 +59,7 @@ public class Account extends BaseModel implements IAbstractModel, IOrderable {
         this.mIsClosed = false;
         this.mOrder = 0;
         this.mCreditLimit = BigDecimal.ZERO;
+        this.mIsIncludeIntoTotals = true;
     }
 
     public Account(long id) {
@@ -65,8 +67,8 @@ public class Account extends BaseModel implements IAbstractModel, IOrderable {
     }
 
     public Account(long mid, String mName, long mCabbageId, String mEmitent, String mComment, BigDecimal mStartBalance,
-                   AccountType mAccountType, int mLast4Digits, boolean mIsClosed, BigDecimal mIncome, BigDecimal mExpense,
-                   int mOrder, BigDecimal mCreditLimit) {
+                   AccountType mAccountType, int mLast4Digits, boolean mIsClosed, boolean mIsIncludeIntoTotals,
+                   BigDecimal mIncome, BigDecimal mExpense, int mOrder, BigDecimal mCreditLimit) {
         super();
         setID(mid);
         this.mName = mName;
@@ -77,6 +79,7 @@ public class Account extends BaseModel implements IAbstractModel, IOrderable {
         this.mAccountType = mAccountType;
         this.mLast4Digits = mLast4Digits;
         this.mIsClosed = mIsClosed;
+        this.mIsIncludeIntoTotals = mIsIncludeIntoTotals;
         this.mIncome = mIncome;
         this.mExpense = mExpense;
         this.mOrder = mOrder;
@@ -147,6 +150,14 @@ public class Account extends BaseModel implements IAbstractModel, IOrderable {
 
     public void setIsClosed(boolean mIsClosed) {
         this.mIsClosed = mIsClosed;
+    }
+
+    public boolean getIsIncludeIntoTotals() {
+        return mIsIncludeIntoTotals;
+    }
+
+    public void setIsIncludeIntoTotals(boolean mIsIncludeIntoTotals) {
+        this.mIsIncludeIntoTotals = mIsIncludeIntoTotals;
     }
 
     public String getName() {
@@ -275,6 +286,7 @@ public class Account extends BaseModel implements IAbstractModel, IOrderable {
         dest.writeByte(this.mIsClosed ? (byte) 1 : (byte) 0);
         dest.writeInt(this.mOrder);
         dest.writeInt(this.mSortOrder);
+        dest.writeByte(this.mIsIncludeIntoTotals ? (byte) 1 : (byte) 0);
     }
 
     protected Account(Parcel in) {
@@ -293,6 +305,7 @@ public class Account extends BaseModel implements IAbstractModel, IOrderable {
         this.mIsClosed = in.readByte() != 0;
         this.mOrder = in.readInt();
         this.mSortOrder = in.readInt();
+        this.mIsIncludeIntoTotals = in.readByte() != 0;
     }
 
     public static final Creator<Account> CREATOR = new Creator<Account>() {
@@ -321,6 +334,7 @@ public class Account extends BaseModel implements IAbstractModel, IOrderable {
         values.put(DBHelper.C_REF_ACCOUNTS_ISCLOSED, getIsClosed() ? 1 : 0);
         values.put(DBHelper.C_REF_ACCOUNTS_ORDER, getOrder());
         values.put(DBHelper.C_REF_ACCOUNTS_CREDITLIMIT, getCreditLimit().doubleValue());
+        values.put(DBHelper.C_REF_ACCOUNTS_ISINCLUDEINTOTOTALS, getIsIncludeIntoTotals() ? 1 : 0);
         return values;
     }
 

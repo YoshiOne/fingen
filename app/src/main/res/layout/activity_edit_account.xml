@@ -123,6 +123,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/ent_account_isclosed" />
 
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/checkboxIncludeIntoTotals"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ent_account_isincludeintototals" />
+
         </LinearLayout>
     </ScrollView>
 

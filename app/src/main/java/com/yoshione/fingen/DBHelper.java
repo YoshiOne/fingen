@@ -61,7 +61,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
 
     private SQLiteDatabase mDatabase;
     private static final String DATABASE_NAME = "fingen.db";
-    public static final int DATABASE_VERSION = 35;
+    public static final int DATABASE_VERSION = 36;
     public static final String TAG = "DBHelper";
 
     //common fields
@@ -117,6 +117,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
     public static final String C_REF_ACCOUNTS_ISCLOSED = "IsClosed";
     public static final String C_REF_ACCOUNTS_ORDER = "CustomOrder";
     public static final String C_REF_ACCOUNTS_CREDITLIMIT = "CreditLimit";
+    public static final String C_REF_ACCOUNTS_ISINCLUDEINTOTOTALS = "IsIncludeIntoTotals";
     private static final String C_REF_ACCOUNTS_INCOME = "(SELECT Income FROM log_Running_Balance WHERE AccountID = _id AND DateTimeRB = (SELECT MAX(DateTimeRB) FROM log_Running_Balance WHERE AccountID = _id )) AS Income";
     private static final String C_REF_ACCOUNTS_EXPENSE = "(SELECT Expense FROM log_Running_Balance WHERE AccountID = _id AND DateTimeRB = (SELECT MAX(DateTimeRB) FROM log_Running_Balance WHERE AccountID = _id )) AS Expense";
     public static final String[] T_REF_ACCOUNTS_ALL_COLUMNS = {
@@ -124,7 +125,8 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
             C_REF_ACCOUNTS_TYPE, C_REF_ACCOUNTS_NAME, C_REF_ACCOUNTS_CURRENCY,
             C_REF_ACCOUNTS_EMITENT, C_REF_ACCOUNTS_LAST4DIGITS, C_REF_ACCOUNTS_COMMENT,
             C_REF_ACCOUNTS_STARTBALANCE, C_REF_ACCOUNTS_ISCLOSED, C_REF_ACCOUNTS_ORDER,
-            C_REF_ACCOUNTS_CREDITLIMIT, C_REF_ACCOUNTS_INCOME, C_REF_ACCOUNTS_EXPENSE, C_SEARCH_STRING};
+            C_REF_ACCOUNTS_CREDITLIMIT, C_REF_ACCOUNTS_ISINCLUDEINTOTOTALS,
+            C_REF_ACCOUNTS_INCOME, C_REF_ACCOUNTS_EXPENSE, C_SEARCH_STRING};
     private static final String SQL_CREATE_TABLE_REF_ACCOUNTS = "CREATE TABLE " + T_REF_ACCOUNTS + " ("
             + COMMON_FIELDS
             + C_REF_ACCOUNTS_TYPE + " INTEGER NOT NULL, "
@@ -137,6 +139,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
             + C_REF_ACCOUNTS_ISCLOSED + " INTEGER NOT NULL, "
             + C_REF_ACCOUNTS_ORDER + " INTEGER, "
             + C_REF_ACCOUNTS_CREDITLIMIT + " REAL, "
+            + C_REF_ACCOUNTS_ISINCLUDEINTOTOTALS + " INTEGER NOT NULL DEFAULT 1, "
             + C_SEARCH_STRING + " TEXT, "
             + "UNIQUE (" + C_REF_ACCOUNTS_NAME + ", " + C_SYNC_DELETED + ") ON CONFLICT ABORT);";
     //private static TableInfo infoAccounts = new TableInfo(T_REF_ACCOUNTS, SQL_CREATE_TABLE_REF_ACCOUNTS, T_REF_ACCOUNTS_ALL_COLUMNS, IAbstractModel.MODEL_TYPE_ACCOUNT,
@@ -750,6 +753,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
         if (oldVersion < 31) { UpdateHelper.update31(db, mContext); }
         if (oldVersion < 32) { UpdateHelper.update32(db); }
         if (oldVersion < 34) { UpdateHelper.update33(db); }
+        if (oldVersion < 36) { UpdateHelper.update35(db); }
         if (oldVersion < 25) {
             try {
                 updateRunningBalance(db);

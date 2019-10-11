@@ -335,6 +335,10 @@
 
     <!-- 2. Accounts -->
     <!-- Entities -->
+    <string name="ent_account_isincludeintototals" formatted="false">Включать в итог</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
     <string name="ent_new_account" formatted="false">Новый счет</string>
 
     <!-- 2. Accounts -->

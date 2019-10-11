@@ -62,6 +62,8 @@ public class ActivityEditAccount extends ToolbarActivity {
     AmountEditor amountEditorStartBalance;
     @BindView(R.id.checkboxAccountClosed)
     AppCompatCheckBox checkboxAccountClosed;
+    @BindView(R.id.checkboxIncludeIntoTotals)
+    AppCompatCheckBox checkboxIncludeIntoTotals;
     @BindView(R.id.amountEditorCreditLimit)
     AmountEditor amountEditorCreditLimit;
     @BindView(R.id.textInputLayoutEmitent)
@@ -254,6 +256,9 @@ public class ActivityEditAccount extends ToolbarActivity {
                 account.setIsClosed(isChecked);
             }
         });
+
+        checkboxIncludeIntoTotals.setChecked(account.getIsIncludeIntoTotals());
+        checkboxIncludeIntoTotals.setOnCheckedChangeListener((buttonView, isChecked) -> account.setIsIncludeIntoTotals(isChecked));
 
         final String accTypes[] = getResources().getStringArray(R.array.account_types);
         editTextType.setText(accTypes[account.getAccountType().ordinal()]);

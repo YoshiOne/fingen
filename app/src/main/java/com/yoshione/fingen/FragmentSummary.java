@@ -235,7 +235,7 @@ public class FragmentSummary extends BaseListFragment {
         ToolbarActivity activity = (ToolbarActivity) getActivity();
         Objects.requireNonNull(activity).unsubscribeOnDestroy(
                 mTransactionsDAO.getSummaryGroupedSumsRx(
-                        items, new FilterListHelper(filters, "", getActivity(), mPreferences),
+                        items, new FilterListHelper(filters, "", getActivity(), mPreferences, true),
                         getActivity())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())

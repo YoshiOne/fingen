@@ -595,7 +595,7 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
 
         TransactionsDAO transactionsDAO = TransactionsDAO.getInstance(getActivity());
 
-        return transactionsDAO.getGroupedSums(new FilterListHelper(filters, "", getActivity(), null), false, null, getActivity());
+        return transactionsDAO.getGroupedSums(new FilterListHelper(filters, "", getActivity(), null, true), false, null, getActivity());
     }
 
     private void createBudgetFromFact(int srcYear, int srcMonth, boolean replace, long id) {

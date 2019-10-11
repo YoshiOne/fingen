@@ -22,12 +22,14 @@ public class FilterListHelper {
     private String mSearchString;
     private Context mContext;
     private SharedPreferences mPreferences;
+    private boolean mExcludeFromTotals;
 
-    public FilterListHelper(List<AbstractFilter> filters, String searchString, Context context, SharedPreferences preferences) {
+    public FilterListHelper(List<AbstractFilter> filters, String searchString, Context context, SharedPreferences preferences, boolean excludeFromTotals) {
         mFilters = filters;
         mSearchString = searchString;
         mContext = context;
         mPreferences = preferences;
+        mExcludeFromTotals = excludeFromTotals;
     }
 
     public String getSearchString() {
@@ -51,6 +53,15 @@ public class FilterListHelper {
 
             //Добавляем новый фильтр к списку фильтров и возвращаем общий список
             filters.add(filter);
+        }
+        if (mExcludeFromTotals) {
+            HashSet<Long> accountsWithoutIncludeIntoTotalsIDs = AccountsDAO.getInstance(mContext).getAccountsWithoutIncludeIntoTotalsIDs();
+            if (accountsWithoutIncludeIntoTotalsIDs.size() > 0) {
+                AccountFilter filter = new AccountFilter(new Random().nextInt());
+                filter.getIDsSet().addAll(accountsWithoutIncludeIntoTotalsIDs);
+                filter.setInverted(true);
+                filters.add(filter);
+            }
         }
         return filters;
     }

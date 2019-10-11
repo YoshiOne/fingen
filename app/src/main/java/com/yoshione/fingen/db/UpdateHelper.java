@@ -850,4 +850,8 @@ public class UpdateHelper {
         }
     }
 
+    public static void update35(SQLiteDatabase db) {
+        db.execSQL("ALTER TABLE ref_Accounts ADD COLUMN IsIncludeIntoTotals INTEGER NOT NULL DEFAULT 1;");
+    }
+
 }

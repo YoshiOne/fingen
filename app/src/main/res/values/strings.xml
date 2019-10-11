@@ -335,6 +335,10 @@
 
     <!-- 2. Accounts -->
     <!-- Entities -->
+    <string name="ent_account_isincludeintototals" formatted="false">Include into totals</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
     <string name="ent_new_account" formatted="false">New account</string>
 
     <!-- 2. Accounts -->

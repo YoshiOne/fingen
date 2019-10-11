@@ -125,6 +125,9 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
 
         avh.textViewName.setText(account.getName());
 
+//        avh.imageViewIncludeIntoTotals.setImageResource(account.getIsIncludeIntoTotals() ? R.drawable.ic_chart_darkblue : R.drawable.ic_chart_gray);
+        avh.imageViewIncludeIntoTotals.setVisibility(account.getIsIncludeIntoTotals() ? View.VISIBLE : View.GONE);
+
         Cabbage cabbage = AccountManager.getCabbage(account, mActivity);
         switch (account.getAccountType()) {
             case atDebtCard:
@@ -272,6 +275,8 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
         ImageView imageViewIcon;
         @BindView(R.id.textViewAccountName)
         TextView textViewName;
+        @BindView(R.id.imageViewIncludeIntoTotals)
+        ImageView imageViewIncludeIntoTotals;
         @BindView(R.id.textViewAccountType)
         TextView textViewType;
         @BindView(R.id.textViewAccountCurBalance)
