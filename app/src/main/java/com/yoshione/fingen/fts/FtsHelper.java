@@ -144,8 +144,8 @@ public class FtsHelper {
                                     productEntry.setProductID(product.getID());
                                     productEntries.add(productEntry);
                                 }
-                                downloadProductsListener.onDownload(productEntries, response.body().getDocument().getReceipt().getUser());
                             }
+                            downloadProductsListener.onDownload(productEntries, response.body().getDocument().getReceipt().getUser());
                             break;
                         } else {
                             try {
