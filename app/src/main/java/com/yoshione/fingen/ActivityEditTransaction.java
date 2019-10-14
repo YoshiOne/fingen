@@ -647,6 +647,8 @@ public class ActivityEditTransaction extends ToolbarActivity implements
         if (transaction.getPayeeID() < 0) return;
         Category category = TransactionManager.getCategory(transaction, this);
         Payee payee = TransactionManager.getPayee(transaction, this);
+        if (payee.getID() < 0)
+            return;
         Category defCategory = PayeeManager.getDefCategory(payee, this);
         if (defCategory.getID() != category.getID() & category.getID() >= 0) {
             PayeesDAO payeesDAO = PayeesDAO.getInstance(getApplicationContext());
