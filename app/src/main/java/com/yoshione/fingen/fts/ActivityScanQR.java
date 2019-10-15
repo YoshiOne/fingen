@@ -47,25 +47,21 @@ public class ActivityScanQR extends AppCompatActivity
 
         // clipboard worker copied from ActivitySmsList
         ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        if (!clipboard.hasPrimaryClip()) return;
-        ClipData data = clipboard.getPrimaryClip();
-        ClipData.Item item = data.getItemAt(0);
+        if (clipboard.hasPrimaryClip()) {
+            ClipData data = clipboard.getPrimaryClip();
+            ClipData.Item item = data.getItemAt(0);
 
-        String text = "";
-        if (item != null) {
-            try {
-                text = item.getText().toString();
-            } catch (Exception e) {
-                Toast.makeText(this, getString(R.string.err_parse_clipboard), Toast.LENGTH_SHORT).show();
+            String text = "";
+            if (item != null) {
+                try {
+                    text = item.getText().toString();
+                } catch (Exception e) {
+                    Toast.makeText(this, getString(R.string.err_parse_clipboard), Toast.LENGTH_SHORT).show();
+                }
             }
-        }
 
-        Pattern pattern = Pattern.compile("^t=\\d+T\\d+&s=[\\d\\.]{4,12}&fn=\\d+&i=\\d+&fp=\\d+&n=\\d$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(text);
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED) {
-            initQRCodeReaderView();
+            Pattern pattern = Pattern.compile("^t=\\d+T\\d+&s=[\\d\\.]{4,12}&fn=\\d+&i=\\d+&fp=\\d+&n=\\d$", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(text);
 
             if (!text.equals("") && matcher.find()) {
                 final String qrCode = text;
@@ -75,8 +71,14 @@ public class ActivityScanQR extends AppCompatActivity
                         .setTitle(R.string.ttl_confirm_action)
                         .setMessage(R.string.msg_use_qr_from_buffer)
                         .setPositiveButton(R.string.ok, (dialog, which) ->this.onQRCodeRead(qrCode, null))
-                        .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
+                        .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
+                        .show();
             }
+        }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+            initQRCodeReaderView();
         } else {
             requestCameraPermission();
         }
