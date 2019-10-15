@@ -14,7 +14,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -56,25 +55,21 @@ public class ActivityScanQR extends AppCompatActivity
 
         // clipboard worker copied from ActivitySmsList
         ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        if (!clipboard.hasPrimaryClip()) return;
-        ClipData data = clipboard.getPrimaryClip();
-        ClipData.Item item = data.getItemAt(0);
+        if (clipboard.hasPrimaryClip()) {
+            ClipData data = clipboard.getPrimaryClip();
+            ClipData.Item item = data.getItemAt(0);
 
-        String text = "";
-        if (item != null) {
-            try {
-                text = item.getText().toString();
-            } catch (Exception e) {
-                Toast.makeText(this, getString(R.string.err_parse_clipboard), Toast.LENGTH_SHORT).show();
+            String text = "";
+            if (item != null) {
+                try {
+                    text = item.getText().toString();
+                } catch (Exception e) {
+                    Toast.makeText(this, getString(R.string.err_parse_clipboard), Toast.LENGTH_SHORT).show();
+                }
             }
-        }
 
-        Pattern pattern = Pattern.compile("^t=\\d+T\\d+&s=[\\d\\.]{4,12}&fn=\\d+&i=\\d+&fp=\\d+&n=\\d$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(text);
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED) {
-            initQRCodeReaderView();
+            Pattern pattern = Pattern.compile("^t=\\d+T\\d+&s=[\\d\\.]{4,12}&fn=\\d+&i=\\d+&fp=\\d+&n=\\d$", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(text);
 
             if (!text.equals("") && matcher.find()) {
                 final String qrCode = text;
@@ -84,8 +79,14 @@ public class ActivityScanQR extends AppCompatActivity
                         .setTitle(R.string.ttl_confirm_action)
                         .setMessage(R.string.msg_use_qr_from_buffer)
                         .setPositiveButton(R.string.ok, (dialog, which) ->this.onQRCodeRead(qrCode, null))
-                        .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
+                        .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
+                        .show();
             }
+        }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+            initQRCodeReaderView();
         } else {
             requestCameraPermission();
         }
@@ -169,7 +170,6 @@ public class ActivityScanQR extends AppCompatActivity
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-        Log.e("Financisto", "test " + metrics.widthPixels + " / " + metrics.heightPixels + " | " + qrCodeReaderView.getMeasuredWidth() + " / " + qrCodeReaderView.getMeasuredHeight());
         CameraSource.Builder builder = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
                 .setRequestedPreviewSize(metrics.heightPixels, metrics.widthPixels)
