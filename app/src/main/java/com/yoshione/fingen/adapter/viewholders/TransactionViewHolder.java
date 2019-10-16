@@ -222,6 +222,7 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
             lp.setMarginStart(0);
         }
 
+        boolean isEmptyPayee = false;
         if (!text.isEmpty()) {
             if (search.isEmpty() || !text.toLowerCase().contains(search)) {
                 textViewPayee.setText(text);
@@ -233,6 +234,7 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
             textViewPayee.setVisibility(View.VISIBLE);
             textViewPayee.setLayoutParams(lp);
         } else {
+            isEmptyPayee = true;
             textViewPayee.setVisibility(View.GONE);
         }
         //</editor-fold>
@@ -365,15 +367,21 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
         } else {
             text = t.getComment();
 
+            TextView textView = textViewComment;
+            if (isEmptyPayee) {
+                textView = textViewPayee;
+                textViewComment.setVisibility(View.GONE);
+            }
+
             if (search.isEmpty() || !text.toLowerCase().contains(search)) {
-                textViewComment.setText(text);
+                textView.setText(text);
             } else {
                 spannable = new SpannableString(text);
                 spannable.setSpan(new ForegroundColorSpan(mParams.mWhiteColor), text.toLowerCase().indexOf(search), text.toLowerCase().indexOf(search) + search.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 spannable.setSpan(new BackgroundColorSpan(mParams.mColorSpan), text.toLowerCase().indexOf(search), text.toLowerCase().indexOf(search) + search.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                textViewComment.setText(spannable);
+                textView.setText(spannable);
             }
-            textViewComment.setVisibility(View.VISIBLE);
+            textView.setVisibility(View.VISIBLE);
         }
         //</editor-fold>
 
