@@ -444,6 +444,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
                 "   AND (SrcAccount != DestAccount) " + filterSrc
                     .replaceAll("Category","CASE WHEN prod.CategoryID < 0 THEN t.Category ELSE prod.CategoryID END")
                     .replaceAll("Project", "CASE WHEN prod.ProjectID  < 0 THEN t.Project  ELSE prod.ProjectID  END")
+                    .replaceAll("Department", "CASE WHEN prod.DepartmentID  < 0 THEN t.Department  ELSE prod.DepartmentID  END")
                 + "\n" +
 
                 "UNION ALL\n" +
