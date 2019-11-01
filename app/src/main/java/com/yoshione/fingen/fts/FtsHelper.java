@@ -107,7 +107,7 @@ public class FtsHelper {
                 .subscribe(responseList -> {
                     for (Response<FtsResponse> response : responseList) {
                         if (response.code() == 202 || response.code() == 204) {
-                          downloadProductsListener.onAccepted();
+                            downloadProductsListener.onAccepted();
                             continue;
                         } else if (response.code() == 200 & response.body() != null) {
                             List<Item> items = new ArrayList<>(response.body().getDocument().getReceipt().getItems());
@@ -115,7 +115,7 @@ public class FtsHelper {
                             ProductsDAO productsDAO = ProductsDAO.getInstance(mContext);
                             Product product;
                             ProductEntry productEntry;
-                            ProductEntrysDAO productEntrysDAO = ProductEntrysDAO.getInstance(mContext);
+//                            ProductEntrysDAO productEntrysDAO = ProductEntrysDAO.getInstance(mContext);
                             for (Item item : items) {
 //                              product = new Product(-1, item.getName());
                                 if (item.getName() == null) {
