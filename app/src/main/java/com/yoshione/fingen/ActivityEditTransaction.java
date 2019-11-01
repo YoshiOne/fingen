@@ -1733,7 +1733,6 @@ public class ActivityEditTransaction extends ToolbarActivity implements
 
                 @Override
                 public void onAccepted() {
-                    initProductList();
                 }
 
                 @Override
