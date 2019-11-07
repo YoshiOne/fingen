@@ -17,6 +17,7 @@ public class Department extends BaseModel implements IAbstractModel {
     public static final String TAG = "com.yoshione.fingen.Model.Department";
 
 //    private long mId = -1;
+    private int mColor;
     private String mName;
     private Boolean mIsActive;
     private long mParentID;
@@ -118,6 +119,7 @@ public class Department extends BaseModel implements IAbstractModel {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(this.mName);
+        dest.writeInt(this.mColor);
         dest.writeValue(this.mIsActive);
         dest.writeLong(this.mParentID);
         dest.writeInt(this.mOrderNum);
@@ -127,6 +129,7 @@ public class Department extends BaseModel implements IAbstractModel {
     protected Department(Parcel in) {
         super(in);
         this.mName = in.readString();
+        this.mColor = in.readInt();
         this.mIsActive = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.mParentID = in.readLong();
         this.mOrderNum = in.readInt();
@@ -147,7 +150,11 @@ public class Department extends BaseModel implements IAbstractModel {
 
     @Override
     public int getColor() {
-        return Color.TRANSPARENT;
+        return mColor;
+    }
+
+    public void setColor(int mColor) {
+        this.mColor = mColor;
     }
 
     @Override
