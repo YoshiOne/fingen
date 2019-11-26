@@ -152,7 +152,7 @@ public class ActivityMain extends ToolbarActivity {
 
     private FragmentAccounts fragmentAccounts;
     FragmentTransactions fragmentTransactions;
-    private FragmentModelList fragmentDebts;
+    private FragmentSimpleDebts fragmentDebts;
     private FragmentSummary fragmentSummary;
     private Drawer mMaterialDrawer = null;
     FragmentPagerAdapter fragmentPagerAdapter;
@@ -382,7 +382,7 @@ public class ActivityMain extends ToolbarActivity {
                 return 2;
             } else if (fragments.get(position).getClass().equals(FragmentSummary.class)) {
                 return 3;
-            } else if (fragments.get(position).getClass().equals(FragmentModelList.class)) {
+            } else if (fragments.get(position).getClass().equals(FragmentSimpleDebts.class)) {
                 return 4;
             } else {
                 return 0;
@@ -397,7 +397,7 @@ public class ActivityMain extends ToolbarActivity {
                 return getString(R.string.ent_transactions).toUpperCase();
             } else if (fragments.get(position).getClass().equals(FragmentSummary.class)) {
                 return getString(R.string.ent_summary).toUpperCase();
-            } else if (fragments.get(position).getClass().equals(FragmentModelList.class)) {
+            } else if (fragments.get(position).getClass().equals(FragmentSimpleDebts.class)) {
                 return getString(R.string.ent_debts).toUpperCase();
             } else {
                 return null;
@@ -443,7 +443,7 @@ public class ActivityMain extends ToolbarActivity {
             fragmentTransactions = FragmentTransactions.newInstance(FgConst.PREF_FORCE_UPDATE_TRANSACTIONS, R.layout.fragment_transactions);
         }
         if (fragmentDebts == null) {
-            fragmentDebts = FragmentModelList.newInstance(new SimpleDebt(), 0);
+            fragmentDebts = FragmentSimpleDebts.newInstance(FgConst.PREF_FORCE_UPDATE_DEBTS, R.layout.fragment_simpledebts);
         }
 
         fragments.clear();
@@ -533,7 +533,7 @@ public class ActivityMain extends ToolbarActivity {
             return FgConst.FRAGMENT_TRANSACTIONS;
         } else if (fragment.getClass().equals(FragmentSummary.class)) {
             return FgConst.FRAGMENT_SUMMARY;
-        } else if (fragment.getClass().equals(FragmentModelList.class)) {
+        } else if (fragment.getClass().equals(FragmentSimpleDebts.class)) {
             return FgConst.FRAGMENT_DEBTS;
         } else {
             return "";
@@ -866,6 +866,15 @@ public class ActivityMain extends ToolbarActivity {
         }
     }
 
+    private void updateDebts() {
+        if (fragmentDebts != null && fragmentDebts.recyclerView != null
+                && fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentSimpleDebts.class)) {
+            fragmentDebts.fullUpdate(-1);
+        } else {
+            mPreferences.edit().putBoolean(FgConst.PREF_FORCE_UPDATE_DEBTS, true).apply();
+        }
+    }
+
     private void updateLists() {
         AccountsSet currentAccountsSet = AccountsSetManager.getInstance().getCurrentAccountSet(this);
 
@@ -879,6 +888,7 @@ public class ActivityMain extends ToolbarActivity {
         updateSummary();
         updateAccounts();
         updateTransactions(-1);
+        updateDebts();
     }
 
     private void updateCounters() {

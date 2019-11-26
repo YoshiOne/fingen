@@ -6,16 +6,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?listItemBackground">
 
-    <ImageView
-        android:id="@+id/imageViewIcon"
+    <eu.davidea.flipview.FlipView
+        android:id="@+id/flipViewIcon"
         android:layout_width="56dp"
         android:layout_height="0dp"
-        android:scaleType="center"
+        android:clickable="true"
+        android:inAnimation="@anim/grow_from_middle_x_axis"
+        android:outAnimation="@anim/grow_from_middle_x_axis"
+        app:checked="false"
+        app:enableInitialAnimation="false"
+        app:frontBackgroundColor="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/ic_credit_card_gray"
-        tools:ignore="ContentDescription" />
+        app:rearBackgroundColor="@android:color/transparent"
+        app:rearImageAnimationDelay="100"
+        tools:frontImage="@drawable/ic_expense"
+        tools:ignore="KeyboardInaccessibleWidget" />
 
     <TextView
         android:id="@+id/textViewName"
@@ -26,9 +33,9 @@
         android:layout_marginTop="8dp"
         android:ellipsize="end"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/imageViewIcon"
+        app:layout_constraintStart_toEndOf="@id/flipViewIcon"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Debt nameewfjewjfewfj oijfewjfweoifjewf444444444444444" />
+        tools:text="Debt name" />
 
     <TextView
         android:id="@+id/textViewOweMe"
@@ -117,7 +124,7 @@
         android:background="@color/lightListDividerColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/imageViewIcon"
+        app:layout_constraintStart_toEndOf="@id/flipViewIcon"
         app:layout_constraintTop_toBottomOf="@+id/textViewAccountTotal"/>
 
     <FrameLayout

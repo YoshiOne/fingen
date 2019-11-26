@@ -6,6 +6,7 @@ import com.yoshione.fingen.ActivityEditTransaction;
 import com.yoshione.fingen.ActivityMain;
 import com.yoshione.fingen.ActivityPro;
 import com.yoshione.fingen.FragmentAccounts;
+import com.yoshione.fingen.FragmentSimpleDebts;
 import com.yoshione.fingen.FragmentSummary;
 import com.yoshione.fingen.FragmentTransactions;
 import com.yoshione.fingen.adapter.viewholders.TransactionViewHolderParams;
@@ -35,6 +36,7 @@ public interface AppComponent {
 	void inject(FragmentAccounts fragmentAccounts);
 	void inject(FragmentSummary fragmentSummary);
 	void inject(FragmentTransactions fragmentTransactions);
+	void inject(FragmentSimpleDebts fragmentSimpleDebts);
 	void inject(ActivityPro activityPro);
 	void inject(ToolbarActivity toolbarActivity);
 	void inject(ActivityEditTransaction activityEditTransaction);
