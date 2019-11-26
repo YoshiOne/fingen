@@ -3,17 +3,19 @@ package com.yoshione.fingen.dao;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Pair;
-
 
 import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.classes.ListSumsByCabbage;
+import com.yoshione.fingen.classes.SumsByCabbage;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.model.SimpleDebt;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Single;
 
 /**
  * Created by slv on 13.08.2015.
@@ -76,5 +78,32 @@ public class SimpleDebtsDAO extends BaseDAO implements AbstractDAO, IDaoInherito
         TransactionsDAO.getInstance(context).bulkUpdateItem(DBHelper.C_LOG_TRANSACTIONS_SIMPLEDEBT + " = " + model.getID(), values, resetTS);
 
         super.deleteModel(model, resetTS, context);
+    }
+
+    public synchronized Single<ListSumsByCabbage> getGroupedSumsRx(boolean takeSearchString,
+                                                                   ArrayList<Long> selectedIDs,
+                                                                   Context context) {
+        return Single.fromCallable(() -> getGroupedSums(takeSearchString, selectedIDs, context));
+    }
+
+    @SuppressWarnings("unchecked")
+    public synchronized ListSumsByCabbage getGroupedSums(boolean takeSearchString,
+                                                         ArrayList<Long> selectedIDs,
+                                                         Context context) {
+        //Создаем экземпляр результирующей записи "валюта - сумма"
+        ListSumsByCabbage listSumsByCabbage = new ListSumsByCabbage();
+
+        try {
+            for (SimpleDebt dept : getAllSimpleDebts()) {
+                SumsByCabbage sumsByCabbage = new SumsByCabbage(dept.getCabbageID(),
+                        dept.getAmount() != null ? dept.getAmount() : BigDecimal.ZERO,
+                        dept.getOweMe() != null ? dept.getOweMe() : BigDecimal.ZERO);
+                sumsByCabbage.setStartBalance(dept.getStartAmount());
+                listSumsByCabbage.getmList().add(sumsByCabbage);
+            }
+        } catch (Exception e) {
+        }
+
+        return listSumsByCabbage;
     }
 }

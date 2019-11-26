@@ -3,22 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/sliding_layout_transactions"
+    android:id="@+id/sliding_layout_debts"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:umanoDragView="@+id/dragView"
-    app:umanoScrollableView="@+id/recycler_view_filters"
+    app:umanoDragView="@id/dragView"
+    app:umanoScrollableView="@id/recycler_view_filters"
     style="@style/StyleSlidingUpPanel">
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@id/buttonsBarContainer">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/cardViewSearch"
@@ -49,6 +44,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="0dp"
                     android:inputType="textNoSuggestions" />
+
             </android.support.design.widget.TextInputLayout>
 
             <ImageButton
@@ -58,6 +54,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ContentDescription" />
+
         </android.support.constraint.ConstraintLayout>
 
         <com.yoshione.fingen.widgets.ContextMenuRecyclerView
@@ -72,18 +69,7 @@
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"
             android:layout_marginStart="0dp"
-            tools:listitem="@layout/list_item_transactions_2"/>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fabGoTop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="@dimen/fab_margin"
-            android:layout_marginStart="@dimen/fab_margin"
-            android:visibility="gone"
-            app:fabSize="mini"
-            app:srcCompat = "@drawable/ic_arrow_up_white"/>
+            tools:listitem="@layout/list_item_simple_dept"/>
 
         <TextView
             android:id="@+id/textViewSelectedCount"
@@ -141,54 +127,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/fabEditSelectedLayout"
-            style="@style/FabMenuButtonChildLayout"
-            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
-            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
-            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/act_edit_selected" />
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fabEditSelected"
-                style="@style/FabMenuButtonChild"
-                app:srcCompat="@drawable/ic_edit_white" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/fabExportSelectedLayout"
-            style="@style/FabMenuButtonChildLayout"
-            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
-            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
-            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/ent_export_selected" />
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fabExportSelected"
-                style="@style/FabMenuButtonChild"
-                app:srcCompat="@drawable/ic_export_white" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/fabDeleteSelectedLayout"
-            style="@style/FabMenuButtonChildLayout"
-            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
-            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
-            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/act_delete_selected" />
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fabDeleteSelected"
-                style="@style/FabMenuButtonChild"
-                app:srcCompat="@drawable/ic_trash_white" />
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/fabMenuButtonRootLayout"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
@@ -204,54 +142,6 @@
                 app:fabSize="normal"
                 app:srcCompat="@drawable/ic_check_circle_white" />
         </LinearLayout>
-
-        </RelativeLayout>
-
-        <FrameLayout
-            android:id="@+id/buttonsBarContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="?listItemBackground"
-            android:elevation="4dp">
-
-            <LinearLayout
-                android:id="@+id/buttonsBar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/buttonScanQR"
-                    style="@style/BottomBarButton"
-                    android:drawableTop="@drawable/selector_scan_qr"
-                    android:text="@string/ttl_scan_qr" />
-
-                <Button
-                    android:id="@+id/buttonTemplates"
-                    style="@style/BottomBarButton"
-                    android:drawableTop="@drawable/selector_templates"
-                    android:text="@string/ent_templates" />
-
-                <Button
-                    android:id="@+id/buttonNewExpense"
-                    style="@style/BottomBarButton"
-                    android:drawableTop="@drawable/selector_expense"
-                    android:text="@string/ent_outcome" />
-
-                <Button
-                    android:id="@+id/buttonNewIncome"
-                    style="@style/BottomBarButton"
-                    android:drawableTop="@drawable/selector_income"
-                    android:text="@string/ent_income" />
-
-                <Button
-                    android:id="@+id/buttonNewTransfer"
-                    style="@style/BottomBarButton"
-                    android:drawableTop="@drawable/selector_transfer"
-                    android:text="@string/ent_transfer" />
-            </LinearLayout>
-        </FrameLayout>
 <!--=============================================================================================-->
     </RelativeLayout>
 
@@ -318,11 +208,12 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        <com.yoshione.fingen.widgets.ContextMenuRecyclerView
-            style="@style/FastScrollRecyclerVew"
-            android:id="@+id/recycler_view_filters"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+
+            <com.yoshione.fingen.widgets.ContextMenuRecyclerView
+                style="@style/FastScrollRecyclerVew"
+                android:id="@+id/recycler_view_filters"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
         </FrameLayout>
 
         <Button
