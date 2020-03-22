@@ -92,7 +92,7 @@
         style="@style/FabMenuBackground" />
 
     <LinearLayout
-        android:id="@+id/fabBackupLayout"
+        android:id="@+id/fabRestoreFromDropboxLayout"
         style="@style/FabMenuButtonChildLayout"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
@@ -102,12 +102,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/act_backup" />
+            android:text="@string/act_restore_from_dropbox" />
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fabBackup"
+            android:id="@+id/fabRestoreFromDropbox"
             style="@style/FabMenuButtonChild"
-            app:srcCompat="@drawable/ic_backup_white" />
+            app:srcCompat="@drawable/ic_dropbox_white" />
     </LinearLayout>
 
     <LinearLayout
@@ -130,7 +130,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/fabRestoreFromDropboxLayout"
+        android:id="@+id/fabBackupLayout"
         style="@style/FabMenuButtonChildLayout"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
@@ -140,12 +140,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/act_restore_from_dropbox" />
+            android:text="@string/act_backup" />
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fabRestoreFromDropbox"
+            android:id="@+id/fabBackup"
             style="@style/FabMenuButtonChild"
-            app:srcCompat="@drawable/ic_dropbox_white" />
+            app:srcCompat="@drawable/ic_backup_white" />
     </LinearLayout>
 
     <LinearLayout

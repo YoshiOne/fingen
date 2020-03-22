@@ -13,7 +13,10 @@ public class ScreenUtils {
 
     public static int dpToPx(float dp, Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        float density = displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT;
+        if (density < 2)
+            density = 2;
+        return Math.round(dp * density);
     }
 
     public static float PxToDp(final Context context, final float px) {
