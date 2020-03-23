@@ -2,9 +2,7 @@ package com.yoshione.fingen.utils;
 
 import android.os.Looper;
 import android.util.Log;
-//import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.yoshione.fingen.BuildConfig;
 
 import java.util.concurrent.TimeUnit;

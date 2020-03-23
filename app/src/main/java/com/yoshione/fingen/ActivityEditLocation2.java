@@ -232,12 +232,10 @@ public class ActivityEditLocation2 extends ToolbarActivity implements OnCameraCh
 
     @Override
     public void onMapClick(LatLng latLng) {
-        if (latLng != null) {
-            removeUpdates();
-            location.setLat(latLng.latitude);
-            location.setLon(latLng.longitude);
-            addMarker(latLng);
-        }
+        removeUpdates();
+        location.setLat(latLng.latitude);
+        location.setLon(latLng.longitude);
+        addMarker(latLng);
     }
 
     @Override

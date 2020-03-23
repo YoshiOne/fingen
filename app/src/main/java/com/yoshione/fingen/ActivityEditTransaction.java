@@ -52,7 +52,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.yoshione.fingen.adapter.AdapterProducts;
 import com.yoshione.fingen.adapter.NestedItemFullNameAdapter;
 import com.yoshione.fingen.dao.AccountsDAO;
@@ -124,7 +123,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.fabric.sdk.android.Fabric;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnPermissionDenied;
@@ -336,12 +334,6 @@ public class ActivityEditTransaction extends ToolbarActivity implements
         super.onCreate(savedInstanceState);
 
         FGApplication.getAppComponent().inject(this);
-
-        if (!BuildConfig.DEBUG) {
-            if (!Fabric.isInitialized()) {
-                Fabric.with(this, new Crashlytics());
-            }
-        }
 
         ButterKnife.bind(this);
 

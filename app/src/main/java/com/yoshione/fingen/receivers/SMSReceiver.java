@@ -13,9 +13,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.telephony.SmsMessage;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
 import com.yoshione.fingen.ActivityEditTransaction;
 import com.yoshione.fingen.ActivityMain;
 import com.yoshione.fingen.BuildConfig;
@@ -42,8 +39,6 @@ import com.yoshione.fingen.utils.SmsParser;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import io.fabric.sdk.android.Fabric;
-
 /**
  * Created by slv on 29.10.2015.
  *
@@ -60,12 +55,6 @@ public class SMSReceiver extends BroadcastReceiver {
         String action = intent.getAction();
 
         if (action != null && action.equals(ACTION_SMS_RECEIVED)) {
-
-            if (!BuildConfig.DEBUG) {
-                if (!Fabric.isInitialized()) {
-                    Fabric.with(context, new Crashlytics());
-                }
-            }
             String address = null;
             StringBuilder str = new StringBuilder();
             SmsMessage[] msgs = getMessagesFromIntent(intent);
@@ -93,11 +82,6 @@ public class SMSReceiver extends BroadcastReceiver {
             Sender sender = SendersDAO.getInstance(context).getSenderByPhoneNo(address);
 
             if (sender.getID() >= 0) {
-                if (!BuildConfig.DEBUG) {
-                    if (!Fabric.isInitialized()) {
-                        Answers.getInstance().logCustom(new CustomEvent("SMS received"));
-                    }
-                }
                 Sms sms = new Sms(-1, new Date(), sender.getID(), str.toString());
                 parseSMS(context, sms);
             }
@@ -117,10 +101,6 @@ public class SMSReceiver extends BroadcastReceiver {
                         transaction = (Transaction) transactionsDAO.createModel(transaction);
                     } catch (Exception e) {
                         return;
-                    }
-
-                    if (!BuildConfig.DEBUG) {
-                        Answers.getInstance().logCustom(new CustomEvent("Transaction created from SMS"));
                     }
 
                     Intent notificationIntent = new Intent(context, ActivityMain.class);

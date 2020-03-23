@@ -1,17 +1,4 @@
-buildscript {
-    repositories {
-        maven { url 'https://maven.fabric.io/public' }
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'io.fabric.tools:gradle:1.27.0'
-    }
-
-}
-
 repositories {
-    maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
     flatDir {
         dirs 'libs'
@@ -19,7 +6,6 @@ repositories {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 28
@@ -28,8 +14,8 @@ android {
         applicationId "com.yoshione.fingen"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 131
-        versionName "2.6.4.1"
+        versionCode 132
+        versionName "2.6.4.2"
         resValue "string", "app_name", "Fingen"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -50,7 +36,6 @@ android {
             keystoreProperties.containsKey('inAppLicenseSalt') &&
             keystoreProperties.containsKey('dropboxApiKey') &&
             keystoreProperties.containsKey('mapsApiKey') &&
-            keystoreProperties.containsKey('fabricApiKey') &&
             keystoreProperties.containsKey('storeFile') && keystoreProperties['storeFile'] != "" &&
             keystoreProperties.containsKey('storePassword') &&
             keystoreProperties.containsKey('oAuthWebClientID') &&
@@ -61,8 +46,7 @@ android {
         android.defaultConfig.resValue "string", "inAppLicenseSalt", keystoreProperties["inAppLicenseSalt"]
         android.defaultConfig.manifestPlaceholders = [
                 dropboxApiKey: keystoreProperties["dropboxApiKey"],
-                mapsApiKey   : keystoreProperties["mapsApiKey"],
-                fabricApiKey : keystoreProperties["fabricApiKey"]
+                mapsApiKey   : keystoreProperties["mapsApiKey"]
         ]
         android.signingConfigs.config.storeFile = file(keystoreProperties['storeFile'])
         android.signingConfigs.config.storePassword = keystoreProperties['storePassword']
@@ -73,8 +57,7 @@ android {
         android.defaultConfig.resValue "string", "inAppLicenseSalt", ""
         android.defaultConfig.manifestPlaceholders = [
                 dropboxApiKey: "",
-                mapsApiKey   : "",
-                fabricApiKey : ""
+                mapsApiKey   : ""
         ]
         android.buildTypes.release.signingConfig = null
     }
@@ -86,7 +69,6 @@ android {
             signingConfig signingConfigs.config
         }
         debug {
-            ext.enableCrashlytics = false
 //            resValue "string", "app_name", "FG debug"
 //            applicationIdSuffix ".debug"
         }
@@ -116,11 +98,9 @@ android {
 }
 
 def support = '28.0.0'
-//def play = '15.0.1'
 def retrofit = '2.4.0'
 def dagger = '2.16'
 def butterKnife = "8.8.1"
-//def moxy = "1.5.5"
 
 dependencies {
     implementation "com.android.support:support-annotations:$support"
@@ -141,9 +121,8 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:$support"
     implementation "com.android.support:support-annotations:$support"
     implementation "com.android.support:support-v13:$support"
-//    implementation "com.google.android.gms:play-services-auth:$play"
-//    implementation "com.google.android.gms:play-services-maps:$play"
     implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.3'
+    implementation 'com.google.android.gms:play-services-vision:10.2.4'
     implementation 'com.dropbox.core:dropbox-core-sdk:3.0.6'
     implementation 'com.evernote:android-job:1.2.5'
     implementation 'com.github.angads25:filepicker:1.1.1'
@@ -163,11 +142,10 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'ru.tinkoff.decoro:decoro:1.3.4'
     implementation('com.anjlab.android.iab.v3:library:1.0.44') { exclude module: 'support-v4' }
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') { transitive = true }
     implementation('com.github.omadahealth:lollipin:2.1.0@aar') { transitive = true }
     implementation('com.mikepenz:materialdrawer:6.0.7@aar') { transitive = true }
-    androidTestImplementation 'junit:junit:4.12'
-    androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
+    androidTestImplementation 'junit:junit:4.13'
+    androidTestImplementation 'org.hamcrest:hamcrest-library:2.2'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
 
@@ -185,7 +163,4 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
 
     implementation 'com.aurelhubert:ahbottomnavigation:2.2.0'
-
-//    implementation "com.arello-mobile:moxy:$moxy"
-//    annotationProcessor "com.arello-mobile:moxy-compiler:$moxy"
 }
