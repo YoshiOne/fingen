@@ -2,7 +2,6 @@ package com.yoshione.fingen.managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.yoshione.fingen.DBHelper;

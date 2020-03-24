@@ -1,10 +1,11 @@
 package com.yoshione.fingen.adapter.viewholders;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import com.yoshione.fingen.managers.SmsMarkerManager;
 import com.yoshione.fingen.model.SmsMarker;

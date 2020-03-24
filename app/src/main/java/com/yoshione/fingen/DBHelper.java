@@ -12,16 +12,18 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import android.util.Log;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.preference.PreferenceManager;
+
 import com.yoshione.fingen.dao.DatabaseUpgradeHelper;
 import com.yoshione.fingen.db.IUpdateRunningBalance;
 import com.yoshione.fingen.db.UpdateHelper;

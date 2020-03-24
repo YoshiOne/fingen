@@ -2,9 +2,10 @@ package com.yoshione.fingen.managers;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.model.Department;

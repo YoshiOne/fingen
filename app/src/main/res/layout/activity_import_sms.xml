@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:visibility="invisible" />
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/ent_sender">
@@ -35,14 +35,14 @@
                 style="@style/NotEditableEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -58,9 +58,9 @@
                     android:onClick="onDateClick"
                     tools:text="18 сентября 2015"
                     tools:ignore="TextFields" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -75,7 +75,7 @@
                     android:gravity="center_horizontal"
                     android:onClick="onTimeClick"
                     tools:text="11:51"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -83,7 +83,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -98,9 +98,9 @@
                     android:gravity="center_horizontal"
                     android:onClick="onDateClick"
                     tools:text="18 сентября 2015"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -115,10 +115,10 @@
                     android:gravity="center_horizontal"
                     android:onClick="onTimeClick"
                     tools:text="11:51"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
-        <android.support.v7.widget.AppCompatCheckBox
+        <androidx.appcompat.widget.AppCompatCheckBox
             android:id="@+id/checkboxAutoCreateTransactions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

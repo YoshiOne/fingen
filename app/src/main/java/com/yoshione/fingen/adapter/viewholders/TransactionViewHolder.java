@@ -1,8 +1,6 @@
 package com.yoshione.fingen.adapter.viewholders;
 
 import android.graphics.Color;
-import android.support.constraint.ConstraintLayout;
-import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -12,6 +10,9 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.interfaces.ITransactionClickListener;

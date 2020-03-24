@@ -25,7 +25,7 @@
         style="@style/ListDividerText"
         tools:text="date"/>
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -46,7 +46,7 @@
         android:paddingBottom="0dp"
         android:layout_alignStart="@+id/pager">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2.5"
@@ -60,9 +60,9 @@
                 android:layout_margin="0dp"
                 android:gravity="left"
                 tools:text="RUB" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutData"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -78,9 +78,9 @@
                 android:layout_margin="0dp"
                 android:gravity="left"
                 tools:text="Категория" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutDateRange"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -96,9 +96,9 @@
                 android:layout_margin="0dp"
                 android:gravity="left"
                 tools:text="" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
@@ -112,6 +112,6 @@
                 android:layout_margin="0dp"
                 android:gravity="left"
                 tools:text="Расход" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 </RelativeLayout>

@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cardViewSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
             android:padding="0dp"
             android:visibility="gone">
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -45,7 +45,7 @@
                     android:layout_margin="0dp"
                     android:inputType="textNoSuggestions" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <ImageButton
                 android:id="@+id/imageButtonClearSearchString"
@@ -55,7 +55,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ContentDescription" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.yoshione.fingen.widgets.ContextMenuRecyclerView
             style="@style/FastScrollRecyclerVew"
@@ -104,7 +104,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/act_select_all" />
-            <android.support.design.widget.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabSelectAll"
                 style="@style/FabMenuButtonChild"
                 app:srcCompat="@drawable/ic_select_all_white" />
@@ -120,7 +120,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/act_unselect_all" />
-            <android.support.design.widget.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabUnselectAll"
                 style="@style/FabMenuButtonChild"
                 app:srcCompat="@drawable/ic_unselect_all_white" />
@@ -133,7 +133,7 @@
             android:visibility="visible"
             style="@style/FabMenuRootButtonLayout">
 
-            <android.support.design.widget.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabMenuButtonRoot"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -193,7 +193,7 @@
             android:paddingRight="4dp"
             android:visibility="gone">
 
-            <android.support.v7.widget.SwitchCompat
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/switch_all_filters"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

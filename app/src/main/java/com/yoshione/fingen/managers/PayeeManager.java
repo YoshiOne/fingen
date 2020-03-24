@@ -7,11 +7,12 @@ package com.yoshione.fingen.managers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.dao.CategoriesDAO;

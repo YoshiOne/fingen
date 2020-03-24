@@ -12,14 +12,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.preference.PreferenceManager;
 
 import com.evernote.android.job.JobManager;
 import com.github.omadahealth.lollipin.lib.managers.LockManager;

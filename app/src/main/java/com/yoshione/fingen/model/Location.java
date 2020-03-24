@@ -3,8 +3,6 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.graphics.Color;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
-
 
 import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.interfaces.IAbstractModel;

@@ -7,9 +7,10 @@ package com.yoshione.fingen.managers;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.preference.PreferenceManager;
 
 import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.dao.AccountsDAO;
@@ -128,7 +129,7 @@ public class SmsMarkerManager {
         return text;
     }
 
-    public static  @Nullable
+    public static @Nullable
     IAbstractModel getObject(SmsMarker smsMarker, Context context) {
         String objectID = smsMarker.getObject();
         switch (smsMarker.getType()) {

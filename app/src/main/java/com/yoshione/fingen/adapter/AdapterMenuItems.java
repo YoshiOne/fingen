@@ -1,12 +1,13 @@
 package com.yoshione.fingen.adapter;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.model.MenuItem;

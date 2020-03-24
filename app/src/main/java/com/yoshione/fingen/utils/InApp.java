@@ -2,8 +2,9 @@ package com.yoshione.fingen.utils;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
-import android.support.annotation.NonNull;
 import android.util.Base64;
+
+import androidx.annotation.NonNull;
 
 import com.yoshione.fingen.FGApplication;
 

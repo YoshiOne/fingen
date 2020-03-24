@@ -1,9 +1,10 @@
 package com.yoshione.fingen.widgets;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by Leonid on 02.02.2018.

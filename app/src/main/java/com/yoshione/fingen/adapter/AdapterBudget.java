@@ -2,17 +2,18 @@ package com.yoshione.fingen.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import android.util.Log;
+
+import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.classes.SumsByCabbage;
 import com.yoshione.fingen.dao.CabbagesDAO;

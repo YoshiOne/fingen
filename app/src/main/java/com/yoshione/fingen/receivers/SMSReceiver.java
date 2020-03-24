@@ -9,9 +9,10 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
 import android.telephony.SmsMessage;
+
+import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import com.yoshione.fingen.ActivityEditTransaction;
 import com.yoshione.fingen.ActivityMain;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.constraint.ConstraintLayout android:id="@+id/container"
+<androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingEnd="16dp"
@@ -38,4 +38,4 @@
         tools:text="Parent"
         style="@style/StyleTextPrimary" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>

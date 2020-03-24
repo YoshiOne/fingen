@@ -4,8 +4,9 @@
 
 package com.yoshione.fingen.filters;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by slv on 09.11.2015.

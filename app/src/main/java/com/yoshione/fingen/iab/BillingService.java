@@ -1,9 +1,10 @@
 package com.yoshione.fingen.iab;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
