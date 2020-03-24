@@ -7,7 +7,8 @@ package com.yoshione.fingen.utils;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
+
+import androidx.core.content.ContextCompat;
 
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.model.Account;

@@ -2,14 +2,14 @@ package com.yoshione.fingen.fts;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
+
+import androidx.preference.PreferenceManager;
 
 import com.yoshione.fingen.FGApplication;
 import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.R;
-import com.yoshione.fingen.dao.ProductEntrysDAO;
 import com.yoshione.fingen.dao.ProductsDAO;
 import com.yoshione.fingen.fts.models.FtsResponse;
 import com.yoshione.fingen.fts.models.Item;

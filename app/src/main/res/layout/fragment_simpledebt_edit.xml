@@ -16,7 +16,7 @@
                   android:layout_height="wrap_content"
                   android:padding="4dp">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/ent_name">
@@ -26,7 +26,7 @@
                 style="@style/EditableEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.yoshione.fingen.widgets.AmountEditor
             android:id="@+id/amountEditorStartAmount"

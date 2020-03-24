@@ -5,9 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.Pair;
+
+import androidx.annotation.Nullable;
 
 import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.db.IOnConflict;

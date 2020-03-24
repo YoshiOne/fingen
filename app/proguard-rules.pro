@@ -103,8 +103,6 @@
 -keep public class com.evernote.android.job.JobRescheduleService
 -keep public class com.evernote.android.job.gcm.PlatformGcmService
 
--keep class android.support.v7.widget.SearchView { *; }
-
 -dontwarn com.sothree.**
 -keep class com.sothree.**
 -keep interface com.sothree.**

@@ -1,7 +1,6 @@
 package com.yoshione.fingen.adapter.viewholders;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.TextView;
 

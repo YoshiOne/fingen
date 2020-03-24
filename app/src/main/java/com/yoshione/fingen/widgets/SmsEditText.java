@@ -2,8 +2,8 @@ package com.yoshione.fingen.widgets;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.EditText;
 
+import androidx.appcompat.widget.AppCompatEditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
  * Created by slv on 02.05.2016.
  *
  */
-public class SmsEditText extends android.support.v7.widget.AppCompatEditText {
+public class SmsEditText extends AppCompatEditText {
     interface onSelectionChangedListener {
         void onSelectionChanged(int selStart, int selEnd);
     }

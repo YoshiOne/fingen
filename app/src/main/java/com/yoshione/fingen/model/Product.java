@@ -2,13 +2,9 @@ package com.yoshione.fingen.model;
 
 import android.content.ContentValues;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
 
 import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.interfaces.IAbstractModel;
-import com.yoshione.fingen.interfaces.IOrderable;
-
-import java.math.BigDecimal;
 
 /**
  * Created by slv on 30.01.2018.

@@ -2,7 +2,8 @@ package com.yoshione.fingen.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
 
 import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.R;

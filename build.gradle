@@ -13,14 +13,14 @@ buildscript {
     }
 }
 
-ext {
-    supportLibVersion = '27.1.1'
-}
-
 allprojects {
     repositories {
         google()
         jcenter()
         maven{ url "https://github.com/omadahealth/omada-nexus/raw/master/release" }
     }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }

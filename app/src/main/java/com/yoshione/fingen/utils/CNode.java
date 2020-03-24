@@ -1,9 +1,10 @@
 package com.yoshione.fingen.utils;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.adapter.AdapterBudget;

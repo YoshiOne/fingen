@@ -3,7 +3,7 @@
   ~ Copyright (c) 2015.
   -->
 
-<android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
@@ -103,4 +103,4 @@
         <!--app:layout_constraintBottom_toBottomOf="@+id/switch_enabled"-->
         <!--app:layout_constraintEnd_toStartOf="@+id/switch_enabled"-->
         <!--app:layout_constraintTop_toTopOf="@+id/switch_enabled" />-->
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,16 +3,16 @@ package com.yoshione.fingen.adapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.textfield.TextInputLayout;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.model.EntityToFieldLink;
 import com.yoshione.fingen.utils.ImportParams;

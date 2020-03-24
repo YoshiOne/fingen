@@ -1,12 +1,12 @@
 package com.yoshione.fingen.widgets;
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
+
+import androidx.preference.PreferenceManager;
 
 import com.github.omadahealth.lollipin.lib.managers.AppLockActivity;
 import com.yoshione.fingen.R;
-
 
 /**
  * Created by oliviergoutay on 1/14/15.

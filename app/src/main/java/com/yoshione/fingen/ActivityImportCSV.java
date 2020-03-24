@@ -7,11 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.SwitchCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +18,13 @@ import android.widget.Toast;
 import com.github.angads25.filepicker.model.DialogConfigs;
 
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.preference.PreferenceManager;
+
 import com.yoshione.fingen.interfaces.IProgressEventsListener;
 import com.yoshione.fingen.csv.CsvImporter;
 import com.yoshione.fingen.utils.FileUtils;

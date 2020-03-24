@@ -1,7 +1,8 @@
 package com.yoshione.fingen.managers;
 
 import android.content.Context;
-import android.support.v4.app.FragmentManager;
+
+import androidx.fragment.app.FragmentManager;
 
 import com.yoshione.fingen.FragmentSenderEdit;
 import com.yoshione.fingen.R;

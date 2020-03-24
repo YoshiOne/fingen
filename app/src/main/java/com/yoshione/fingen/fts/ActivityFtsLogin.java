@@ -3,22 +3,20 @@ package com.yoshione.fingen.fts;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.constraint.Guideline;
-import android.support.design.widget.TextInputLayout;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.constraintlayout.widget.Guideline;
+import androidx.preference.PreferenceManager;
+
+import com.google.android.material.textfield.TextInputLayout;
 import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.R;
-import com.yoshione.fingen.utils.RequestCodes;
 import com.yoshione.fingen.widgets.ToolbarActivity;
 
 import butterknife.BindView;

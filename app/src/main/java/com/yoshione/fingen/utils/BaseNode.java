@@ -1,14 +1,14 @@
 package com.yoshione.fingen.utils;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Pair;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.yoshione.fingen.interfaces.IAbstractNode;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.model.BaseModel;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

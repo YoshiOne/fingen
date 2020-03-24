@@ -44,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/act_add_category" />
-            <android.support.design.widget.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabAddModel"
                 style="@style/FabMenuButtonChild"
                 app:srcCompat="@drawable/ic_category_white" />
@@ -60,7 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/act_add_credit" />
-            <android.support.design.widget.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabAddDebt"
                 style="@style/FabMenuButtonChild"
                 app:srcCompat="@drawable/ic_debt_white" />
@@ -76,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/act_copy_budget" />
-            <android.support.design.widget.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabCopyBudget"
                 style="@style/FabMenuButtonChild"
                 app:srcCompat="@drawable/ic_copy_white" />
@@ -92,7 +92,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/act_create_from_fact" />
-            <android.support.design.widget.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabCreateFromFact"
                 style="@style/FabMenuButtonChild"
                 app:srcCompat="@drawable/ic_create_budget_from_fact_white" />
@@ -108,7 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/act_clear_budget" />
-            <android.support.design.widget.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabClearBudget"
                 style="@style/FabMenuButtonChild"
                 app:srcCompat="@drawable/ic_trash_white" />
@@ -121,7 +121,7 @@
             android:visibility="visible"
             style="@style/FabMenuRootButtonLayout">
 
-            <android.support.design.widget.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fabMenuButtonRoot"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -156,7 +156,7 @@
 
         <include layout="@layout/content_p_f_d" />
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_summary"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"

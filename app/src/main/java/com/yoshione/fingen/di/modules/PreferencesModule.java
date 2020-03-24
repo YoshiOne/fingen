@@ -2,7 +2,8 @@ package com.yoshione.fingen.di.modules;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
 
 import dagger.Module;
 import dagger.Provides;

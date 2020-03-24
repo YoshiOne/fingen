@@ -8,11 +8,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +17,13 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.preference.PreferenceManager;
+
 import com.github.angads25.filepicker.model.DialogConfigs;
+import com.google.android.material.textfield.TextInputLayout;
 import com.yoshione.fingen.csv.CsvImporter;
 import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IProgressEventsListener;

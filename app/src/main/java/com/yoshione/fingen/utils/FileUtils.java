@@ -4,16 +4,15 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
+import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
 
 import com.github.angads25.filepicker.controller.DialogSelectionListener;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
-import android.util.Log;
-
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.interfaces.IOnUnzipComplete;
 import com.yoshione.fingen.utils.winzipaes.AesZipFileDecrypter;
@@ -34,7 +33,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 
 //import de.idyl.winzipaes.AesZipFileEncrypter;
 //import com.yoshione.fingen.utils.winzipaes.impl.AESEncrypterBC;
