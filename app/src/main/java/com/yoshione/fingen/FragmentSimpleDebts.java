@@ -314,11 +314,11 @@ public class FragmentSimpleDebts extends BaseListFragment
 
         ListSumsByCabbage listSumsByCabbage = new ListSumsByCabbage();
         for (SimpleDebt dept : adapterD.getSelectedDebts()) {
+            boolean startAmountIsPositive = dept.getStartAmount().abs().equals(dept.getStartAmount());
             SumsByCabbage sumsByCabbage = new SumsByCabbage(dept.getCabbageID(),
-                    dept.getOweMe(),
-                    BigDecimal.ZERO.subtract(dept.getAmount()));
-            sumsByCabbage.setStartBalance(dept.getStartAmount());
-            listSumsByCabbage.getmList().add(sumsByCabbage);
+                    dept.getOweMe().add(startAmountIsPositive ? dept.getStartAmount() : BigDecimal.ZERO),
+                    BigDecimal.ZERO.subtract(dept.getAmount()).add(!startAmountIsPositive ? dept.getStartAmount() : BigDecimal.ZERO));
+            listSumsByCabbage.appendSumFact(sumsByCabbage);
         }
         updateSums(listSumsByCabbage);
     }
