@@ -30,6 +30,7 @@ import net.xpece.android.support.preference.SharedPreferencesCompat;
 import net.xpece.android.support.preference.SwitchPreference;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static android.app.Activity.RESULT_OK;
@@ -100,33 +101,33 @@ public class FragmentSettings extends XpPreferenceFragment implements ICanPressB
 
         activities[0] = getActivity();
 
-        bindPreferenceSummaryToValue(findPreference("start_tab"));
+        bindPreferenceSummaryToValue(findPreference(FgConst.PREF_START_TAB));
         bindPreferenceSummaryToValue(findPreference("theme"));
         bindPreferenceSummaryToValue(findPreference(FgConst.PREF_ACCOUNT_CLICK_ACTION));
         bindPreferenceSummaryToValue(findPreference("balance_compare_error"));
         bindPreferenceSummaryToValue(findPreference("autocreate_prerequisites"));
         bindPreferenceSummaryToValue(findPreference("payee_selection_style"));
-        bindPreferenceSummaryToValue(findPreference("pin_length"));
+        bindPreferenceSummaryToValue(findPreference(FgConst.PREF_PIN_LENGTH));
         bindPreferenceSummaryToValue(findPreference(FgConst.PREF_DEFAULT_DEPARTMENT));
         bindPreferenceSummaryToValue(findPreference(FgConst.PREF_FIRST_DAY_OF_WEEK));
         bindPreferenceSummaryToValue(findPreference(FgConst.PREF_PIN_LOCK_TIMEOUT));
-        findPreference("enable_pin_lock").setOnPreferenceChangeListener(sCheckBoxPreferenceChangeListener);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        boolean pinEnabled = prefs.getBoolean("enable_pin_lock", false);
-        getPreferenceScreen().findPreference("change_pin").setEnabled(pinEnabled);
-        getPreferenceScreen().findPreference("pin_length").setEnabled(!pinEnabled);
-        findPreference("change_pin").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                if (((SwitchPreference) FragmentSettings.this.findPreference("enable_pin_lock")).isChecked()) {
-                    Intent intent = new Intent(activities[0], CustomPinActivity.class);
-                    intent.putExtra(AppLock.EXTRA_TYPE, AppLock.CHANGE_PIN);
-                    activities[0].startActivity(intent);
-                    return true;
-                } else {
-                    return false;
-                }
+        updateAndReturnPinLockState();
+        findPreference(FgConst.PREF_PIN_LOCK_ENABLE).setOnPreferenceChangeListener((preference, value) -> {
+            boolean isChecked = ((SwitchPreference) preference).isChecked();
+            Intent intent = new Intent(activities[0], CustomPinActivity.class);
+            intent.putExtra(AppLock.EXTRA_TYPE, !isChecked ? AppLock.ENABLE_PINLOCK : AppLock.DISABLE_PINLOCK);
+            activities[0].startActivityForResult(intent, !isChecked ? REQUEST_CODE_ENABLE : REQUEST_CODE_DISABLE);
+            return false;
+        });
+        findPreference("change_pin").setOnPreferenceClickListener(preference -> {
+            if (((SwitchPreference) FragmentSettings.this.findPreference(FgConst.PREF_PIN_LOCK_ENABLE)).isChecked()) {
+                Intent intent = new Intent(activities[0], CustomPinActivity.class);
+                intent.putExtra(AppLock.EXTRA_TYPE, AppLock.CHANGE_PIN);
+                activities[0].startActivity(intent);
+                return true;
+            } else {
+                return false;
             }
         });
         findPreference(FgConst.PREF_TAB_ORDER).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -181,7 +182,7 @@ public class FragmentSettings extends XpPreferenceFragment implements ICanPressB
 
         PreferenceScreenNavigationStrategy.ReplaceFragment.onCreatePreferences(this, rootKey);
 
-        prefs.registerOnSharedPreferenceChangeListener(listener);
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(listener);
     }
 
     @Override
@@ -250,43 +251,35 @@ public class FragmentSettings extends XpPreferenceFragment implements ICanPressB
         return false;
     }
 
-
-    private static final Preference.OnPreferenceChangeListener sCheckBoxPreferenceChangeListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            if (preference.getKey().equals("enable_pin_lock")) {
-                if (!((SwitchPreference) preference).isChecked()) {
-                    Intent intent = new Intent(activities[0], CustomPinActivity.class);
-                    intent.putExtra(AppLock.EXTRA_TYPE, AppLock.ENABLE_PINLOCK);
-                    activities[0].startActivityForResult(intent, REQUEST_CODE_ENABLE);
-                } else {
-                    Intent intent = new Intent(activities[0], CustomPinActivity.class);
-                    intent.putExtra(AppLock.EXTRA_TYPE, AppLock.DISABLE_PINLOCK);
-                    activities[0].startActivityForResult(intent, REQUEST_CODE_DISABLE);
-                }
-            }
-            return true;
-        }
-    };
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
             case REQUEST_CODE_ENABLE:
-                Toast.makeText(getActivity(), getString(R.string.toast_pin_enabled), Toast.LENGTH_SHORT).show();
+                if (updateAndReturnPinLockState())
+                    Toast.makeText(getActivity(), getString(R.string.toast_pin_enabled), Toast.LENGTH_SHORT).show();
                 break;
             case REQUEST_CODE_DISABLE:
-                Toast.makeText(getActivity(), getString(R.string.toast_pin_disabled), Toast.LENGTH_SHORT).show();
+                if (!updateAndReturnPinLockState())
+                    Toast.makeText(getActivity(), getString(R.string.toast_pin_disabled), Toast.LENGTH_SHORT).show();
                 break;
             case REQUEST_CODE_SELECT_MODEL:
                 if (resultCode == RESULT_OK && data != null) {
                     IAbstractModel model = data.getParcelableExtra("model");
-                    PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putString(FgConst.PREF_DEFAULT_DEPARTMENT, String.valueOf(model.getID())).apply();
+                    PreferenceManager.getDefaultSharedPreferences(Objects.requireNonNull(getContext())).edit().putString(FgConst.PREF_DEFAULT_DEPARTMENT, String.valueOf(model.getID())).apply();
                 }
                 break;
         }
+    }
+
+    private boolean updateAndReturnPinLockState() {
+        LockManager lockManager = LockManager.getInstance();
+        boolean pinEnabled = lockManager.getAppLock().isPasscodeSet();
+        ((SwitchPreference) findPreference(FgConst.PREF_PIN_LOCK_ENABLE)).setChecked(pinEnabled);
+        getPreferenceScreen().findPreference("change_pin").setVisible(pinEnabled);
+        getPreferenceScreen().findPreference(FgConst.PREF_PIN_LENGTH).setVisible(!pinEnabled);
+        return pinEnabled;
     }
 
     private String convertValuesToSummary(MultiSelectListPreference preference) {
@@ -323,14 +316,9 @@ public class FragmentSettings extends XpPreferenceFragment implements ICanPressB
                     if (key.equals(FgConst.PREF_DEFAULT_DEPARTMENT)) {
                         bindPreferenceSummaryToValue(findPreference(FgConst.PREF_DEFAULT_DEPARTMENT));
                     }
-                    if (key.equals("enable_pin_lock")) {
-                        boolean pinEnabled = prefs.getBoolean(key, true);
-                        getPreferenceScreen().findPreference("change_pin").setEnabled(pinEnabled);
-                        getPreferenceScreen().findPreference("pin_length").setEnabled(!pinEnabled);
-                    }
                     if (key.equals(FgConst.PREF_PIN_LOCK_TIMEOUT)) {
-                        long timeout = Integer.valueOf(prefs.getString(FgConst.PREF_PIN_LOCK_TIMEOUT, "10"))*1000;
-                        LockManager<CustomPinActivity> lockManager = LockManager.getInstance();
+                        long timeout = Long.parseLong(prefs.getString(FgConst.PREF_PIN_LOCK_TIMEOUT, "10"))*1000;
+                        LockManager lockManager = LockManager.getInstance();
                         lockManager.getAppLock().setTimeout(timeout);
                         lockManager.getAppLock().setOnlyBackgroundTimeout(true);
                         bindPreferenceSummaryToValue(findPreference(key));
