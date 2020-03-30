@@ -17,6 +17,7 @@ import com.yoshione.fingen.dao.CategoriesDAO;
 import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.dao.LocationsDAO;
 import com.yoshione.fingen.dao.PayeesDAO;
+import com.yoshione.fingen.dao.ProductsDAO;
 import com.yoshione.fingen.dao.ProjectsDAO;
 import com.yoshione.fingen.model.Account;
 import com.yoshione.fingen.model.Category;
@@ -71,6 +72,8 @@ public class TransactionViewHolderParams {
     public CategoriesDAO mCategoriesDAO;
     @Inject
     public ProjectsDAO  mProjectsDAO;
+    @Inject
+    public ProductsDAO mProductsDAO;
 
     public TransactionViewHolderParams(Activity context) {
         FGApplication.getAppComponent().inject(this);

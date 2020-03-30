@@ -43,6 +43,7 @@ public class ProductsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         Product product = new Product();
         product.setID(cursor.getLong(mColumnIndexes.get(DBHelper.C_ID)));
         product.setName(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_PRODUCTS_NAME)));
+        product.setSearchString(cursor.getString(mColumnIndexes.get(DBHelper.C_SEARCH_STRING)));
 
         product = (Product) DBHelper.getSyncDataFromCursor(product, cursor, mColumnIndexes);
 

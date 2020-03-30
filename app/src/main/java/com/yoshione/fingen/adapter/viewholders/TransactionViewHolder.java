@@ -29,6 +29,7 @@ import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.tag.Tag;
 import com.yoshione.fingen.tag.TagView;
 import com.yoshione.fingen.utils.CabbageFormatter;
+import com.yoshione.fingen.utils.Translit;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -327,15 +328,19 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
             }
         }
         boolean isSplitAmount = false;
-        if ((isSplitCategory  || isSplitProject)
-                && ((filterCategory != null && filterCategory.size() != 0) || (filterProject != null && filterProject.size() != 0))
+        if (t.getProductEntries().size() > 0 &&
+                (!search.isEmpty() || (
+                    (isSplitCategory  || isSplitProject)
+                    && ((filterCategory != null && filterCategory.size() != 0) || (filterProject != null && filterProject.size() != 0)))
+                )
                 && t.getTransactionType() != Transaction.TRANSACTION_TYPE_TRANSFER
         ) {
             BigDecimal sum = BigDecimal.ZERO;
             boolean allAddedProducts = true;
             for (ProductEntry entry : t.getProductEntries()) {
                 if (filterCategory.contains(entry.getCategoryID()) || (entry.getCategoryID() < 0 && filterCategory.contains(t.getCategoryID())) ||
-                        filterProject.contains(entry.getProductID()) || (entry.getProjectID() < 0 && filterProject.contains(t.getProjectID()))) {
+                        filterProject.contains(entry.getProductID()) || (entry.getProjectID() < 0 && filterProject.contains(t.getProjectID())) ||
+                        (!search.isEmpty() && mParams.mProductsDAO.getProductByID(entry.getProductID()).getSearchString().contains(Translit.toTranslit(search)))) {
                     sum = sum.add(entry.getPrice().multiply(entry.getQuantity())).setScale(cabbageFormatter.getDecimalCount(), RoundingMode.HALF_UP);
                 } else {
                     allAddedProducts = false;

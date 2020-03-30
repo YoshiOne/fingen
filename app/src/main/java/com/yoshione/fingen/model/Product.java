@@ -14,6 +14,7 @@ import com.yoshione.fingen.interfaces.IAbstractModel;
 public class Product extends BaseModel implements IAbstractModel {
 
     private String mName;
+    private String mSearchString;
 
     public Product() {
         super();
@@ -48,7 +49,11 @@ public class Product extends BaseModel implements IAbstractModel {
 
     @Override
     public String getSearchString() {
-        return mName;
+        return mSearchString;
+    }
+
+    public void setSearchString(String searchString) {
+        mSearchString = searchString;
     }
 
     @Override

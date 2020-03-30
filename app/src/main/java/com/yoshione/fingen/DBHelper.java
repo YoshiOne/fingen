@@ -75,7 +75,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
     public static final String C_SYNC_LASTEDITED = "LastEdited";
     public static final String C_ORDERNUMBER = "OrderNumber";
     public static final String C_PARENTID = "ParentID";
-    private static final String C_SEARCH_STRING = "SearchString";
+    public static final String C_SEARCH_STRING = "SearchString";
     public static final String C_FULL_NAME = "FullName";
     private static String getFullNameColumn(String tableName) {
         return "(SELECT path FROM (with recursive m(path, _id, name) AS (SELECT Name, _id, Name FROM "+tableName+" WHERE ParentId = -1 UNION ALL  SELECT path||'\\'||t.Name, t._id, t.Name FROM "+tableName+" t, m WHERE t.ParentId = m._id) SELECT * FROM m where _id = "+tableName+"._id)) AS FullName";
