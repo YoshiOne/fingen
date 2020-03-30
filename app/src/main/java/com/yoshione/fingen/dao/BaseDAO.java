@@ -317,7 +317,6 @@ public class BaseDAO implements AbstractDAO {
         if (cursor != null) {
             try {
                 if (cursor.moveToFirst()) {
-                    cursor.moveToFirst();
                     model = mDaoInheritor.cursorToModel(cursor);
                 }
             } finally {
