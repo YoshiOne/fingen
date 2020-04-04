@@ -1214,6 +1214,10 @@
     <string name="ttl_select_db_file" formatted="false">Выберите файл</string>
 
     <!-- 16. Backup & Restore -->
+    <!-- Actions -->
+    <string name="act_backup_to_origin" formatted="false">Сохранить БД для оригинала</string>
+
+    <!-- 16. Backup & Restore -->
     <!-- Titles -->
     <string name="ttl_enable_auto_backup" formatted="false">Включить ежедневное автоматическое резервное копирование</string>
 

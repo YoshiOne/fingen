@@ -62,8 +62,11 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
     }
 
     private SQLiteDatabase mDatabase;
+    private boolean mOriginDB;
+    private static final String DATABASE_ORIGIN_NAME = "origin_fingen.db";
+    private static final int DATABASE_ORIGIN_VERSION = 35;
     private static final String DATABASE_NAME = "fingen.db";
-    public static final int DATABASE_VERSION = 36;
+    private static final int DATABASE_VERSION = 36;
     public static final String TAG = "DBHelper";
 
     //common fields
@@ -605,8 +608,9 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
 
     private final Context mContext;
 
-    private DBHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    public DBHelper(Context context, boolean isOriginDB) {
+        super(context, isOriginDB ? DATABASE_ORIGIN_NAME : DATABASE_NAME, null, isOriginDB ? DATABASE_ORIGIN_VERSION : DATABASE_VERSION);
+        this.mOriginDB = isOriginDB;
         this.mContext = context.getApplicationContext();
         final DatabaseUpgradeHelper dbh = DatabaseUpgradeHelper.getInstance();
         dbh.setUpgrading(true);
@@ -615,6 +619,10 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
         while (dbh.isUpgrading()) {
             SystemClock.sleep(10);
         }
+    }
+
+    private DBHelper(Context context) {
+        this(context, false);
     }
 
     public synchronized static DBHelper getInstance(Context ctx) {
@@ -736,12 +744,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
         if (oldVersion < 25) { UpdateHelper.update25(db); }
         if (oldVersion < 26) { UpdateHelper.update26(db); }
         if (oldVersion < 27) {
-            UpdateHelper.update27(db, new IUpdateRunningBalance() {
-                @Override
-                public void updateRunningBalance(SQLiteDatabase database) throws IOException {
-                    DBHelper.this.updateRunningBalance(db);
-                }
-            });
+            UpdateHelper.update27(db, database -> DBHelper.this.updateRunningBalance(db));
         }
         if (oldVersion < 28) {
             try {
@@ -763,6 +766,35 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.d(TAG, "Downgrade database " + String.valueOf(oldVersion) + " -> " + String.valueOf(newVersion));
+
+        if (oldVersion == 36 && newVersion == 35) {
+            db.execSQL("ALTER TABLE ref_Accounts RENAME TO ref_Accounts_old");
+            db.execSQL("CREATE TABLE " + T_REF_ACCOUNTS + " ("
+                    + COMMON_FIELDS
+                    + C_REF_ACCOUNTS_TYPE + " INTEGER NOT NULL, "
+                    + C_REF_ACCOUNTS_NAME + " TEXT NOT NULL, "
+                    + C_REF_ACCOUNTS_CURRENCY + " INTEGER REFERENCES [" + T_REF_CURRENCIES + "]([" + C_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+                    + C_REF_ACCOUNTS_EMITENT + " TEXT, "
+                    + C_REF_ACCOUNTS_LAST4DIGITS + " INTEGER, "
+                    + C_REF_ACCOUNTS_COMMENT + " TEXT, "
+                    + C_REF_ACCOUNTS_STARTBALANCE + " REAL NOT NULL, "
+                    + C_REF_ACCOUNTS_ISCLOSED + " INTEGER NOT NULL, "
+                    + C_REF_ACCOUNTS_ORDER + " INTEGER, "
+                    + C_REF_ACCOUNTS_CREDITLIMIT + " REAL, "
+                    + C_SEARCH_STRING + " TEXT, "
+                    + "UNIQUE (" + C_REF_ACCOUNTS_NAME + ", " + C_SYNC_DELETED + ") ON CONFLICT ABORT);");
+            db.execSQL(
+                    "INSERT INTO ref_Accounts (" + C_ID + ", " + C_SYNC_FBID + ", " + C_SYNC_TS + ", " + C_SYNC_DELETED + ", " + C_SYNC_DIRTY + ", " + C_SYNC_LASTEDITED + ", " + C_REF_ACCOUNTS_TYPE + ", " + C_REF_ACCOUNTS_NAME + ", " + C_REF_ACCOUNTS_CURRENCY + ", " + C_REF_ACCOUNTS_EMITENT + ", " + C_REF_ACCOUNTS_LAST4DIGITS + ", " + C_REF_ACCOUNTS_COMMENT + ", " + C_REF_ACCOUNTS_STARTBALANCE + ", " + C_REF_ACCOUNTS_ISCLOSED + ", " + C_REF_ACCOUNTS_ORDER + ", " + C_REF_ACCOUNTS_CREDITLIMIT + ", " + C_SEARCH_STRING + ") " +
+                            "SELECT " + C_ID + ", " + C_SYNC_FBID + ", " + C_SYNC_TS + ", " + C_SYNC_DELETED + ", " + C_SYNC_DIRTY + ", " + C_SYNC_LASTEDITED + ", " + C_REF_ACCOUNTS_TYPE + ", " + C_REF_ACCOUNTS_NAME + ", " + C_REF_ACCOUNTS_CURRENCY + ", " + C_REF_ACCOUNTS_EMITENT + ", " + C_REF_ACCOUNTS_LAST4DIGITS + ", " + C_REF_ACCOUNTS_COMMENT + ", " + C_REF_ACCOUNTS_STARTBALANCE + ", " + C_REF_ACCOUNTS_ISCLOSED + ", " + C_REF_ACCOUNTS_ORDER + ", " + C_REF_ACCOUNTS_CREDITLIMIT + ", " + C_SEARCH_STRING + " " +
+                            "FROM ref_Accounts_old");
+            db.execSQL("DROP TABLE ref_Accounts_old");
+        } else
+            super.onDowngrade(db, oldVersion, newVersion);
     }
 
     String getSqliteVersion() {
@@ -857,24 +889,21 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
     }
 
     public static void updateFullNames(String tableName, boolean useFullName, SQLiteDatabase db) {
-        long t = System.currentTimeMillis();
         String nameColumn;
         if (tableName.equals(T_LOG_TRANSACTIONS)) {
             nameColumn = useFullName ? getFullNameColumn(tableName) : C_LOG_TRANSACTIONS_COMMENT;
         } else {
             nameColumn = useFullName ? getFullNameColumn(tableName) : "Name";
         }
-        String fields[];
+        String[] fields;
         if (useFullName) {
             fields = new String[]{C_ID, nameColumn, C_SEARCH_STRING, C_FULL_NAME};
         } else {
             fields = new String[]{C_ID, nameColumn, C_SEARCH_STRING};
         }
-        Cursor cursor = db.query(tableName, fields, "Deleted = 0", null, null, null, null);
-        ContentValues cv = new ContentValues();
-        String translit;
-        int i = 0;
-        try {
+        try (Cursor cursor = db.query(tableName, fields, "Deleted = 0", null, null, null, null)) {
+            ContentValues cv = new ContentValues();
+            String translit;
             if (cursor.moveToFirst()) {
                 while (!cursor.isAfterLast()) {
                     cv.clear();
@@ -889,19 +918,13 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
                         db.update(tableName, cv, "_id = " + cursor.getString(0), null);
                     }
                     cursor.moveToNext();
-                    i++;
-//                    Log.d(TAG, cursor.getString(0));
                 }
             }
-        } finally {
-            cursor.close();
         }
-//        t = System.currentTimeMillis() - t;
-//        Log.d(TAG, "Update full names in " + tableName + " - " + String.valueOf(t) + "ms");
     }
 
     private String getDbPath() {
-        return mContext.getDatabasePath(DATABASE_NAME).toString();
+        return mContext.getDatabasePath(mOriginDB ? DATABASE_ORIGIN_NAME : DATABASE_NAME).toString();
     }
 
     public File backupDB(boolean vacuum) throws IOException {
@@ -911,21 +934,35 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
         }
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             String backupPath = FileUtils.getExtFingenBackupFolder();
-            String alpha = "";
-            if (BuildConfig.FLAVOR.equals("nd")) alpha = "_alpha";
-            @SuppressLint("SimpleDateFormat") String backupFile = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date()) + alpha + ".zip";
+            @SuppressLint("SimpleDateFormat") String backupFile = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date()) + ".zip";
 
             if (!backupPath.isEmpty()) {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
                 String password = preferences.getString("backup_password", "");
-                Boolean enableProtection = preferences.getBoolean("enable_backup_password", false);
+                boolean enableProtection = preferences.getBoolean("enable_backup_password", false);
                 if (enableProtection && !password.isEmpty()) {
-                    backup = FileUtils.zipAndEncrypt(getDbPath(), backupPath + backupFile, password);
+                    backup = FileUtils.zipAndEncrypt(getDbPath(), backupPath + backupFile, password, DATABASE_NAME);
                 } else {
-                    backup = FileUtils.zip(new String[]{getDbPath()}, backupPath + backupFile);
+                    backup = FileUtils.zip(getDbPath(), backupPath + backupFile, DATABASE_NAME);
                 }
                 Log.d(TAG, String.format("File %s saved", backupFile));
             }
+        }
+        return backup;
+    }
+
+    public File backupToOriginDB(boolean vacuum) throws IOException {
+        File backup = null;
+        if (vacuum) {
+            mDatabase.execSQL("VACUUM");
+        }
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            FileUtils.copyFile(getDbPath(), mContext.getDatabasePath(DATABASE_ORIGIN_NAME).getPath());
+
+            DBHelper dbh = new DBHelper(mContext, true);
+            backup = dbh.backupDB(vacuum);
+            dbh.close();
+            mContext.deleteDatabase(DATABASE_ORIGIN_NAME);
         }
         return backup;
     }
@@ -936,18 +973,8 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
         builder.setMessage(R.string.msg_confirm_restore_db);
 
         // Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                DBHelper.this.restoreDB(filename, activity);
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setPositiveButton("OK", (dialog, which) -> DBHelper.this.restoreDB(filename, activity));
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
     }
