@@ -92,6 +92,25 @@
         style="@style/FabMenuBackground" />
 
     <LinearLayout
+        android:id="@+id/fabBackupToOriginDBLayout"
+        style="@style/FabMenuButtonChildLayout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintTop_toTopOf="@+id/fabMenuButtonRootLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/act_backup_to_origin" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabBackupToOriginDB"
+            style="@style/FabMenuButtonChild"
+            app:srcCompat="@drawable/ic_backup_white" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/fabRestoreFromDropboxLayout"
         style="@style/FabMenuButtonChildLayout"
         android:visibility="gone"

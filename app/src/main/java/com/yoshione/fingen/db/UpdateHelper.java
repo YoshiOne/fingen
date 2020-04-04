@@ -807,7 +807,11 @@ public class UpdateHelper {
         }
     }
 
-    public static void update37(SQLiteDatabase db) {
+    public static void update35(SQLiteDatabase db) {
+        db.execSQL("ALTER TABLE ref_Accounts ADD COLUMN IsIncludeIntoTotals INTEGER NOT NULL DEFAULT 1;");
+    }
+
+    public static void update36(SQLiteDatabase db) {
         db.execSQL("ALTER TABLE " + DepartmentsDAO.TABLE + " ADD COLUMN " + DepartmentsDAO.COL_COLOR + " TEXT DEFAULT '#ffffff';");
         db.execSQL("ALTER TABLE " + ProductEntrysDAO.TABLE + " ADD COLUMN " + ProductEntrysDAO.COL_DEPARTMENT_ID + " INTEGER DEFAULT -1;");
     }

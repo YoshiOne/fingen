@@ -1222,6 +1222,10 @@
     <string name="act_logout_from_dropbox" formatted="false">Logout from Dropbox</string>
 
     <!-- 16. Backup & Restore -->
+    <!-- Actions -->
+    <string name="act_backup_to_origin" formatted="false">Backup to origin DB</string>
+
+    <!-- 16. Backup & Restore -->
     <!-- Titles -->
     <string name="ttl_select_db_file" formatted="false">Select file</string>
 

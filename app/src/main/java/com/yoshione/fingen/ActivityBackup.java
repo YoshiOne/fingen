@@ -76,6 +76,8 @@ public class ActivityBackup extends ToolbarActivity {
     FloatingActionButton fabRestore;
     @BindView(R.id.fabRestoreFromDropbox)
     FloatingActionButton fabRestoreFromDropbox;
+    @BindView(R.id.fabBackupToOriginDB)
+    FloatingActionButton fabBackupToOrigin;
     @BindView(R.id.fabMenuButtonRoot)
     FloatingActionButton fabMenuButtonRoot;
     @BindView(R.id.switchCompatEnablePasswordProtection)
@@ -98,6 +100,8 @@ public class ActivityBackup extends ToolbarActivity {
     LinearLayout mFabRestoreLayout;
     @BindView(R.id.fabRestoreFromDropboxLayout)
     LinearLayout mFabRestoreFromDropboxLayout;
+    @BindView(R.id.fabBackupToOriginDBLayout)
+    LinearLayout mFabBackupToOriginDBLayout;
 
     private SharedPreferences prefs;
     private UpdateRwHandler mHandler;
@@ -243,7 +247,7 @@ public class ActivityBackup extends ToolbarActivity {
     }
 
     private void initFabMenu() {
-        mFabMenuController = new FabMenuController(fabMenuButtonRoot, fabBGLayout, this, mFabBackupLayout, mFabRestoreLayout, mFabRestoreFromDropboxLayout);
+        mFabMenuController = new FabMenuController(fabMenuButtonRoot, fabBGLayout, this, mFabBackupLayout, mFabRestoreLayout, mFabRestoreFromDropboxLayout, mFabBackupToOriginDBLayout);
         fabBackup.setOnClickListener(v -> {
             ActivityBackupPermissionsDispatcher.backupDBWithPermissionCheck((ActivityBackup) v.getContext());
             mFabMenuController.closeFABMenu();
@@ -254,6 +258,10 @@ public class ActivityBackup extends ToolbarActivity {
         });
         fabRestoreFromDropbox.setOnClickListener(v -> {
             ActivityBackupPermissionsDispatcher.restoreDBFromDropboxWithPermissionCheck((ActivityBackup) v.getContext());
+            mFabMenuController.closeFABMenu();
+        });
+        fabBackupToOrigin.setOnClickListener(v -> {
+            ActivityBackupPermissionsDispatcher.backupToOriginDBWithPermissionCheck((ActivityBackup) v.getContext());
             mFabMenuController.closeFABMenu();
         });
     }
@@ -280,6 +288,8 @@ public class ActivityBackup extends ToolbarActivity {
                     preferences.edit().putLong(FgConst.PREF_SHOW_LAST_SUCCESFUL_BACKUP_TO_DROPBOX, new Date().getTime()).apply();
                     initLastDropboxBackupField();
                 }).execute();
+            } else {
+                Toast.makeText(ActivityBackup.this, "File saved successfully", Toast.LENGTH_SHORT).show();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -311,6 +321,27 @@ public class ActivityBackup extends ToolbarActivity {
             mHandler.sendMessage(mHandler.obtainMessage(MSG_SHOW_DIALOG, items));
         });
         t.start();
+    }
+
+    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void backupToOriginDB() {
+        SharedPreferences dropboxPrefs = getSharedPreferences("com.yoshione.fingen.dropbox", Context.MODE_PRIVATE);
+        String token = dropboxPrefs.getString("dropbox-token", null);
+        try {
+            File zip = DBHelper.getInstance(getApplicationContext()).backupToOriginDB(true);
+            if (token != null && zip != null) {
+                new UploadTask(DropboxClient.getClient(token), zip, () -> {
+                    Toast.makeText(ActivityBackup.this, "File uploaded successfully", Toast.LENGTH_SHORT).show();
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ActivityBackup.this);
+                    preferences.edit().putLong(FgConst.PREF_SHOW_LAST_SUCCESFUL_BACKUP_TO_DROPBOX, new Date().getTime()).apply();
+                    initLastDropboxBackupField();
+                }).execute();
+            } else {
+                Toast.makeText(ActivityBackup.this, "File saved successfully", Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

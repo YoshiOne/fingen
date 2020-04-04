@@ -90,27 +90,25 @@ public class FileUtils {
         }
     }
 
-    public static File zip(String[] files, String zipFile) throws IOException {
+    public static File zip(String file, String zipFile, String fileRenaming) throws IOException {
         BufferedInputStream origin;
         ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)));
         File outFile = null;
         try {
             byte data[] = new byte[BUFFER_SIZE];
 
-            for (String file : files) {
-                FileInputStream fi = new FileInputStream(file);
-                origin = new BufferedInputStream(fi, BUFFER_SIZE);
-                try {
-                    ZipEntry entry = new ZipEntry(file.substring(file.lastIndexOf("/") + 1));
-                    out.putNextEntry(entry);
-                    int count;
-                    while ((count = origin.read(data, 0, BUFFER_SIZE)) != -1) {
-                        out.write(data, 0, count);
-                    }
-                } finally {
-                    origin.close();
-                    outFile = new File(zipFile);
+            FileInputStream fi = new FileInputStream(file);
+            origin = new BufferedInputStream(fi, BUFFER_SIZE);
+            try {
+                ZipEntry entry = new ZipEntry(fileRenaming.isEmpty() ? file.substring(file.lastIndexOf("/") + 1) : fileRenaming);
+                out.putNextEntry(entry);
+                int count;
+                while ((count = origin.read(data, 0, BUFFER_SIZE)) != -1) {
+                    out.write(data, 0, count);
                 }
+            } finally {
+                origin.close();
+                outFile = new File(zipFile);
             }
         }
         finally {
@@ -119,15 +117,17 @@ public class FileUtils {
         return outFile;
     }
 
-    public static File zipAndEncrypt(String inFile, String zipFile, String password) throws IOException {
-        File outFile = null;
+    public static File zipAndEncrypt(String inFile, String zipFile, String password, String fileRenaming) throws IOException {
+        AesZipFileEncrypter enc = new AesZipFileEncrypter(zipFile, new AESEncrypterBC());
+        File file = new File(inFile);
+        FileInputStream fis = new FileInputStream(file);
         try {
-            AesZipFileEncrypter.zipAndEncrypt(new File(inFile), new File(zipFile), password, new AESEncrypterBC());
+            enc.add(fileRenaming.isEmpty() ? file.getName() : fileRenaming, fis, password);
+        } finally {
+            fis.close();
+            enc.close();
         }
-        finally {
-            outFile = new File(zipFile);
-        }
-        return outFile;
+        return new File(zipFile);
     }
 
     public static void unzip(String zipFile, String outputFile) throws IOException {
@@ -208,6 +208,18 @@ public class FileUtils {
             }
         }
         return inFiles;
+    }
+
+    public static void copyFile(String src, String dst) throws IOException {
+        try (FileInputStream in = new FileInputStream(src)) {
+            try (FileOutputStream out = new FileOutputStream(dst)) {
+                byte[] buf = new byte[BUFFER_SIZE];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+            }
+        }
     }
 
     public static void SelectFileFromStorage(Activity activity, int selectionType, final IOnSelectFile onSelectFileListener) {

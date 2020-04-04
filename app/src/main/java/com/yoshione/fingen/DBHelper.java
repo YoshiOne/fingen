@@ -78,6 +78,9 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
     }
 
     private SQLiteDatabase mDatabase;
+    private boolean mOriginDB;
+    private static final String DATABASE_ORIGIN_NAME = "origin_fingen.db";
+    private static final int DATABASE_ORIGIN_VERSION = 35;
     private static final String DATABASE_NAME = "fingen.db";
     public static final int DATABASE_VERSION = 37;
     public static final String TAG = "DBHelper";
@@ -109,8 +112,9 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
 
     private final Context mContext;
 
-    private DBHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    public DBHelper(Context context, boolean isOriginDB) {
+        super(context, isOriginDB ? DATABASE_ORIGIN_NAME : DATABASE_NAME, null, isOriginDB ? DATABASE_ORIGIN_VERSION : DATABASE_VERSION);
+        this.mOriginDB = isOriginDB;
         this.mContext = context.getApplicationContext();
         final DatabaseUpgradeHelper dbh = DatabaseUpgradeHelper.getInstance();
         dbh.setUpgrading(true);
@@ -119,6 +123,10 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
         while (dbh.isUpgrading()) {
             SystemClock.sleep(10);
         }
+    }
+
+    private DBHelper(Context context) {
+        this(context, false);
     }
 
     public synchronized static DBHelper getInstance(Context ctx) {
@@ -251,7 +259,8 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
         if (oldVersion < 31) { UpdateHelper.update31(db, mContext); }
         if (oldVersion < 32) { UpdateHelper.update32(db); }
         if (oldVersion < 34) { UpdateHelper.update33(db); }
-        if (oldVersion < 37) { UpdateHelper.update37(db); }
+        if (oldVersion < 36) { UpdateHelper.update35(db); }
+        if (oldVersion < 37) { UpdateHelper.update36(db); }
         if (oldVersion < 25) {
             try {
                 updateRunningBalance(db);
@@ -259,6 +268,85 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.d(TAG, "Downgrade database " + oldVersion + " -> " + newVersion);
+
+        if (oldVersion >= 37 && newVersion == DATABASE_ORIGIN_VERSION) {
+            db.execSQL("ALTER TABLE ref_Departments RENAME TO ref_Departments_old");
+            db.execSQL("CREATE TABLE ref_Departments ("
+                    + BaseDAO.COMMON_FIELDS + ", "
+                    + BaseDAO.COL_NAME + " TEXT NOT NULL, "
+                    + DepartmentsDAO.COL_IS_ACTIVE + " INTEGER NOT NULL, "
+                    + BaseDAO.COL_PARENT_ID + " INTEGER REFERENCES [" + DepartmentsDAO.TABLE + "]([" + BaseDAO.COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+                    + BaseDAO.COL_ORDER_NUMBER + " INTEGER, "
+                    + BaseDAO.COL_FULL_NAME + " TEXT, "
+                    + BaseDAO.COL_SEARCH_STRING + " TEXT, "
+                    + "UNIQUE (" + BaseDAO.COL_NAME + ", " + BaseDAO.COL_PARENT_ID + ", " + BaseDAO.COL_SYNC_DELETED + ") ON CONFLICT ABORT);");
+            db.execSQL(
+                    "INSERT INTO ref_Departments (" + BaseDAO.COL_ID + ", " + BaseDAO.COL_SYNC_FBID + ", " + BaseDAO.COL_SYNC_TS + ", " + BaseDAO.COL_SYNC_DELETED + ", "
+                            + BaseDAO.COL_SYNC_DIRTY + ", " + BaseDAO.COL_SYNC_LAST_EDITED + ", " + BaseDAO.COL_NAME + ", " + DepartmentsDAO.COL_IS_ACTIVE+ ", "
+                            + BaseDAO.COL_PARENT_ID + ", " + BaseDAO.COL_ORDER_NUMBER + ", " + BaseDAO.COL_FULL_NAME + ", " + BaseDAO.COL_SEARCH_STRING + ")"
+                            + " SELECT " + BaseDAO.COL_ID + ", " + BaseDAO.COL_SYNC_FBID + ", " + BaseDAO.COL_SYNC_TS + ", " + BaseDAO.COL_SYNC_DELETED + ", "
+                            + BaseDAO.COL_SYNC_DIRTY + ", " + BaseDAO.COL_SYNC_LAST_EDITED + ", " + BaseDAO.COL_NAME + ", " + DepartmentsDAO.COL_IS_ACTIVE+ ", "
+                            + BaseDAO.COL_PARENT_ID + ", " + BaseDAO.COL_ORDER_NUMBER + ", " + BaseDAO.COL_FULL_NAME + ", " + BaseDAO.COL_SEARCH_STRING
+                            + " FROM ref_Departments_old");
+            db.execSQL("DROP TABLE ref_Departments_old");
+
+            db.execSQL("ALTER TABLE log_Products RENAME TO log_Products_old");
+            db.execSQL("CREATE TABLE log_Products ("
+                    + BaseDAO.COMMON_FIELDS + ", "
+                    + ProductEntrysDAO.COL_TRANSACTION_ID + " INTEGER REFERENCES [" + TransactionsDAO.TABLE + "]([" + BaseDAO.COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+                    + ProductEntrysDAO.COL_PRODUCT_ID     + " INTEGER REFERENCES [" + ProductsDAO.TABLE   + "]([" + BaseDAO.COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+                    + ProductEntrysDAO.COL_CATEGORY_ID    + " INTEGER DEFAULT -1 REFERENCES [" + CategoriesDAO.TABLE + "]([" + BaseDAO.COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+                    + ProductEntrysDAO.COL_PROJECT_ID     + " INTEGER DEFAULT -1 REFERENCES [" + ProjectsDAO.TABLE  + "]([" + BaseDAO.COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+                    + ProductEntrysDAO.COL_PRICE          + " REAL NOT NULL DEFAULT 0, "
+                    + ProductEntrysDAO.COL_QUANTITY       + " REAL NOT NULL DEFAULT 1 CHECK (Quantity >= 0));");
+            db.execSQL(
+                    "INSERT INTO log_Products (" + BaseDAO.COL_ID + ", " + BaseDAO.COL_SYNC_FBID + ", " + BaseDAO.COL_SYNC_TS + ", " + BaseDAO.COL_SYNC_DELETED + ", "
+                            + BaseDAO.COL_SYNC_DIRTY + ", " + BaseDAO.COL_SYNC_LAST_EDITED + ", " + ProductEntrysDAO.COL_TRANSACTION_ID + ", "
+                            + ProductEntrysDAO.COL_PRODUCT_ID + ", " + ProductEntrysDAO.COL_CATEGORY_ID + ", " + ProductEntrysDAO.COL_PROJECT_ID + ", "
+                            + ProductEntrysDAO.COL_PRICE + ", "  + ProductEntrysDAO.COL_QUANTITY + ")"
+                            + " SELECT " + BaseDAO.COL_ID + ", " + BaseDAO.COL_SYNC_FBID + ", " + BaseDAO.COL_SYNC_TS + ", " + BaseDAO.COL_SYNC_DELETED + ", "
+                            + BaseDAO.COL_SYNC_DIRTY + ", " + BaseDAO.COL_SYNC_LAST_EDITED + ", " + ProductEntrysDAO.COL_TRANSACTION_ID + ", "
+                            + ProductEntrysDAO.COL_PRODUCT_ID + ", " + ProductEntrysDAO.COL_CATEGORY_ID + ", " + ProductEntrysDAO.COL_PROJECT_ID + ", "
+                            + ProductEntrysDAO.COL_PRICE + ", "  + ProductEntrysDAO.COL_QUANTITY
+                            + " FROM log_Products_old");
+            db.execSQL("DROP TABLE log_Products_old");
+        }
+        if (oldVersion >= 36 && newVersion == DATABASE_ORIGIN_VERSION) {
+            db.execSQL("ALTER TABLE ref_Accounts RENAME TO ref_Accounts_old");
+            db.execSQL("CREATE TABLE " + AccountsDAO.TABLE + " ("
+                    + AccountsDAO.COMMON_FIELDS + ", "
+                    + AccountsDAO.COL_TYPE + " INTEGER NOT NULL, "
+                    + AccountsDAO.COL_NAME + " TEXT NOT NULL, "
+                    + AccountsDAO.COL_CURRENCY + " INTEGER REFERENCES [" + CabbagesDAO.TABLE + "]([" + BaseDAO.COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+                    + AccountsDAO.COL_EMITENT + " TEXT, "
+                    + AccountsDAO.COL_LAST4DIGITS + " INTEGER, "
+                    + AccountsDAO.COL_COMMENT + " TEXT, "
+                    + AccountsDAO.COL_START_BALANCE + " REAL NOT NULL, "
+                    + AccountsDAO.COL_IS_CLOSED + " INTEGER NOT NULL, "
+                    + AccountsDAO.COL_ORDER + " INTEGER, "
+                    + AccountsDAO.COL_CREDIT_LIMIT + " REAL, "
+                    + AccountsDAO.COL_SEARCH_STRING + " TEXT, "
+                    + "UNIQUE (" + AccountsDAO.COL_NAME + ", " + AccountsDAO.COL_SYNC_DELETED + ") ON CONFLICT ABORT);");
+            db.execSQL(
+                    "INSERT INTO ref_Accounts (" + AccountsDAO.COL_ID + ", " + AccountsDAO.COL_SYNC_FBID + ", " + AccountsDAO.COL_SYNC_TS + ", " + AccountsDAO.COL_SYNC_DELETED + ", "
+                            + AccountsDAO.COL_SYNC_DIRTY + ", " + AccountsDAO.COL_SYNC_LAST_EDITED + ", " + AccountsDAO.COL_TYPE + ", " + AccountsDAO.COL_NAME + ", "
+                            + AccountsDAO.COL_CURRENCY + ", " + AccountsDAO.COL_EMITENT + ", " + AccountsDAO.COL_LAST4DIGITS + ", " + AccountsDAO.COL_COMMENT + ", "
+                            + AccountsDAO.COL_START_BALANCE + ", " + AccountsDAO.COL_IS_CLOSED + ", " + AccountsDAO.COL_ORDER + ", " + AccountsDAO.COL_CREDIT_LIMIT + ", "
+                            + AccountsDAO.COL_SEARCH_STRING + ")"
+                            + " SELECT " + AccountsDAO.COL_ID + ", " + AccountsDAO.COL_SYNC_FBID + ", " + AccountsDAO.COL_SYNC_TS + ", " + AccountsDAO.COL_SYNC_DELETED + ", "
+                            + AccountsDAO.COL_SYNC_DIRTY + ", " + AccountsDAO.COL_SYNC_LAST_EDITED + ", " + AccountsDAO.COL_TYPE + ", " + AccountsDAO.COL_NAME + ", "
+                            + AccountsDAO.COL_CURRENCY + ", " + AccountsDAO.COL_EMITENT + ", " + AccountsDAO.COL_LAST4DIGITS + ", " + AccountsDAO.COL_COMMENT + ", "
+                            + AccountsDAO.COL_START_BALANCE + ", " + AccountsDAO.COL_IS_CLOSED + ", " + AccountsDAO.COL_ORDER + ", " + AccountsDAO.COL_CREDIT_LIMIT + ", "
+                            + AccountsDAO.COL_SEARCH_STRING
+                            + " FROM ref_Accounts_old");
+            db.execSQL("DROP TABLE ref_Accounts_old");
+        } else
+            super.onDowngrade(db, oldVersion, newVersion);
     }
 
     String getSqliteVersion() {
@@ -366,7 +454,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
     }
 
     private String getDbPath() {
-        return mContext.getDatabasePath(DATABASE_NAME).toString();
+        return mContext.getDatabasePath(mOriginDB ? DATABASE_ORIGIN_NAME : DATABASE_NAME).toString();
     }
 
     public File backupDB(boolean vacuum) throws IOException {
@@ -376,21 +464,35 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
         }
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             String backupPath = FileUtils.getExtFingenBackupFolder();
-            String alpha = "";
-            if (BuildConfig.FLAVOR.equals("nd")) alpha = "_alpha";
-            @SuppressLint("SimpleDateFormat") String backupFile = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date()) + alpha + ".zip";
+            @SuppressLint("SimpleDateFormat") String backupFile = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date()) + ".zip";
 
             if (!backupPath.isEmpty()) {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
                 String password = preferences.getString("backup_password", "");
-                Boolean enableProtection = preferences.getBoolean("enable_backup_password", false);
+                boolean enableProtection = preferences.getBoolean("enable_backup_password", false);
                 if (enableProtection && !password.isEmpty()) {
-                    backup = FileUtils.zipAndEncrypt(getDbPath(), backupPath + backupFile, password);
+                    backup = FileUtils.zipAndEncrypt(getDbPath(), backupPath + backupFile, password, DATABASE_NAME);
                 } else {
-                    backup = FileUtils.zip(new String[]{getDbPath()}, backupPath + backupFile);
+                    backup = FileUtils.zip(getDbPath(), backupPath + backupFile, DATABASE_NAME);
                 }
                 Log.d(TAG, String.format("File %s saved", backupFile));
             }
+        }
+        return backup;
+    }
+
+    public File backupToOriginDB(boolean vacuum) throws IOException {
+        File backup = null;
+        if (vacuum) {
+            mDatabase.execSQL("VACUUM");
+        }
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            FileUtils.copyFile(getDbPath(), mContext.getDatabasePath(DATABASE_ORIGIN_NAME).getPath());
+
+            DBHelper dbh = new DBHelper(mContext, true);
+            backup = dbh.backupDB(vacuum);
+            dbh.close();
+            mContext.deleteDatabase(DATABASE_ORIGIN_NAME);
         }
         return backup;
     }
@@ -401,18 +503,8 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
         builder.setMessage(R.string.msg_confirm_restore_db);
 
         // Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                DBHelper.this.restoreDB(filename, activity);
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+        builder.setPositiveButton("OK", (dialog, which) -> DBHelper.this.restoreDB(filename, activity));
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
     }
