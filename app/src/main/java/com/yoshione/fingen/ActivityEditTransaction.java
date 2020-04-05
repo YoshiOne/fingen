@@ -960,7 +960,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                 edExchangeRate.setText(String.valueOf(transaction.getExchangeRate().doubleValue()));
             } else {
                 s = String.format("%s/%s", dstCabbage.getCode(), srcCabbage.getCode());
-                edExchangeRate.setText(String.valueOf(BigDecimal.ONE.divide(transaction.getExchangeRate(), 5, RoundingMode.HALF_UP).doubleValue()));
+                edExchangeRate.setText(String.valueOf((BigDecimal.ZERO.compareTo(transaction.getExchangeRate()) != 0 ? BigDecimal.ONE.divide(transaction.getExchangeRate(), 5, RoundingMode.HALF_UP) : BigDecimal.ZERO).doubleValue()));
             }
             if (onExRateTextChangedListener != null)
                 edExchangeRate.addTextChangedListener(onExRateTextChangedListener);
@@ -2430,8 +2430,10 @@ public class ActivityEditTransaction extends ToolbarActivity implements
             BigDecimal visibleExRate;
             if (!isExRateInverted) {
                 visibleExRate = transaction.getExchangeRate();
-            } else {
+            } else if (BigDecimal.ZERO.compareTo(transaction.getExchangeRate()) != 0) {
                 visibleExRate = BigDecimal.ONE.divide(transaction.getExchangeRate(), 5, RoundingMode.HALF_UP);
+            } else {
+                visibleExRate = BigDecimal.ZERO;
             }
             edExchangeRate.setText(String.valueOf(visibleExRate.doubleValue()));
             edExchangeRate.addTextChangedListener(onExRateTextChangedListener);
