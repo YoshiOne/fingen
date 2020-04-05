@@ -510,7 +510,7 @@ public class FragmentSimpleDebts extends BaseListFragment
     private boolean mPullMeBended = false;
 
     private void animatePullMe() {
-        if (!mPullMeBended) {
+        if (!mPullMeBended && mImageViewPullMe != null) {
             mPullMeBended = true;
             mImageViewPullMe.setImageDrawable(Objects.requireNonNull(getContext()).getDrawable(R.drawable.pull_me_animated));
             ((Animatable) mImageViewPullMe.getDrawable()).start();
@@ -518,7 +518,7 @@ public class FragmentSimpleDebts extends BaseListFragment
     }
 
     private void animatePullMeReverse() {
-        if (mPullMeBended) {
+        if (mPullMeBended && mImageViewPullMe != null) {
             mPullMeBended = false;
             mImageViewPullMe.setImageDrawable(Objects.requireNonNull(getContext()).getDrawable(R.drawable.pull_me_animated_reverse));
             ((Animatable) mImageViewPullMe.getDrawable()).start();
