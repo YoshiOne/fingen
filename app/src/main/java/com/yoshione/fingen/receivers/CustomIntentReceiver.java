@@ -48,7 +48,9 @@ public class CustomIntentReceiver extends BroadcastReceiver {
                         senderID = -1;
                     }
                 }
-                String body = intent.getStringExtra("body").replaceAll("%s", " ");
+                String body = intent.getStringExtra("body");
+                if (body != null)
+                    body = body.replaceAll("%s", " ");
                 if (senderID >= 0 && body != null && !body.isEmpty()) {
                     Sms sms = new Sms(-1, new Date(), senderID, body);
                     try {
