@@ -13,13 +13,15 @@ import com.yoshione.fingen.R;
 import com.yoshione.fingen.dao.ProductsDAO;
 import com.yoshione.fingen.fts.models.FtsResponse;
 import com.yoshione.fingen.fts.models.Item;
+import com.yoshione.fingen.fts.models.RestoreRequest;
+import com.yoshione.fingen.fts.models.SignUpRequest;
 import com.yoshione.fingen.model.Product;
 import com.yoshione.fingen.model.ProductEntry;
 import com.yoshione.fingen.model.Transaction;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +41,8 @@ import retrofit2.Response;
 
 public class FtsHelper {
 
+    private final String HOST_URL = "https://proverkacheka.nalog.ru:9999";
+
     @Inject
     FtsApi mApi;
     @Inject
@@ -50,8 +54,7 @@ public class FtsHelper {
 
     public Disposable downloadProductEntryList(final Transaction transaction,
                                                final IDownloadProductsListener downloadProductsListener) {
-        String hostUrl = "https://proverkacheka.nalog.ru:9999";
-        String url = String.format(hostUrl + "/v1/inns/*/kkts/*/" +
+        String url = String.format(HOST_URL + "/v1/inns/*/kkts/*/" +
                 "fss/%s/" +
                 "tickets/%s" +
                 "?fiscalSign=%s" +
@@ -62,7 +65,7 @@ public class FtsHelper {
         String auth = getAuth(mContext).replaceAll("\n", "");
         String date = android.text.format.DateFormat.format("yyyy-MM-ddTHH:mm:00", transaction.getDateTime()).toString();
         String sum = Long.toString(Math.round(transaction.getAmount().doubleValue() * -100.0));
-        String checkUrl = String.format(hostUrl + "/v1/ofds/*/inns/*/" +
+        String checkUrl = String.format(HOST_URL + "/v1/ofds/*/inns/*/" +
                         "fss/%s/" +
                         "operations/1/" +
                         "tickets/%s" +
@@ -82,8 +85,8 @@ public class FtsHelper {
                 "Android 8.0",
                 "2",
                 "1.4.4.1",
-                hostUrl,
-                hostUrl),
+                HOST_URL,
+                HOST_URL),
                 mApi.getData(url,
                         "Basic " + auth,
                         "okhttp/3.0.1",
@@ -91,8 +94,8 @@ public class FtsHelper {
                         "Android 8.0",
                         "2",
                         "1.4.4.1",
-                        hostUrl,
-                        hostUrl),
+                        HOST_URL,
+                        HOST_URL),
                 mApi.getData(url,
                         "Basic " + auth,
                         "okhttp/3.0.1",
@@ -100,8 +103,8 @@ public class FtsHelper {
                         "Android 8.0",
                         "2",
                         "1.4.4.1",
-                        hostUrl,
-                        hostUrl),
+                        HOST_URL,
+                        HOST_URL),
                 (u1, u2, u3) -> Arrays.asList(u1, u2, u3))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -176,18 +179,89 @@ public class FtsHelper {
                 });
     }
 
-    private String getAuth(Context context) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String phone = preferences.getString(FgConst.PREF_FTS_LOGIN, "");
-        String code = preferences.getString(FgConst.PREF_FTS_PASS, "");
+    private <T> void responseAuth(final int acceptCode, final Response<T> response, final IAuthListener authListener) {
+        if (response.code() == acceptCode) {
+            authListener.onAccepted(response.body());
+        } else {
+            try {
+                String error;
+                if (response.errorBody() != null)
+                    error = "error: " + response.errorBody().string();
+                else
+                    error = "response error, code: " + response.code() + ", content: [" + response.body() +"]";
+
+                authListener.onFailure(error);
+            } catch (IOException e) {
+                authListener.onFailure("system error: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void throwableAuth(final Throwable throwable, final IAuthListener authListener) {
+        if (throwable.getMessage() != null) {
+            Log.d(getClass().getName(), throwable.getMessage());
+        }
+        authListener.onFailure(throwable.getMessage());
+    }
+
+    public Disposable checkAuth(final String phone, final String code, final IAuthListener authListener) {
+        return actionAuth("login", phone, code, null, null, authListener);
+    }
+
+    public Disposable signUpAuth(final String phone, final String name, final String email, final IAuthListener authListener) {
+        return actionAuth("signup", phone, null, name, email, authListener);
+    }
+
+    public Disposable recoveryCode(final String phone, IAuthListener authListener) {
+        return actionAuth("restore", phone, null, null, null, authListener);
+    }
+
+    private Disposable actionAuth(final String action, final String phone, final String code, final String name, final String email, final IAuthListener authListener) {
+        String url = HOST_URL + "/v1/mobile/users/" + action;
+
+        if (action.equals("login")) {
+            String auth = getAuth(phone, code).replaceAll("\n", "");
+
+            return mApi.checkAuth(url,
+                    "Basic " + auth,
+                    "okhttp/3.0.1",
+                    "748036d688ec41c6",
+                    "Android 8.0",
+                    "2",
+                    "1.4.4.1",
+                    HOST_URL,
+                    HOST_URL)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(response -> responseAuth(200, response, authListener), throwable -> throwableAuth(throwable, authListener));
+        } else if (action.equals("signup")) {
+            SignUpRequest signUpBody = new SignUpRequest();
+            signUpBody.setPhone(phone);
+            signUpBody.setName(name);
+            signUpBody.setEmail(email);
+
+            return mApi.signUp(url, signUpBody)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(response -> responseAuth(204, response, authListener), throwable -> throwableAuth(throwable, authListener));
+        } else if (action.equals("restore")) {
+            RestoreRequest restoreBody = new RestoreRequest();
+            restoreBody.setPhone(phone);
+
+            return mApi.restoreCode(url, restoreBody)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(response -> responseAuth(204, response, authListener), throwable -> throwableAuth(throwable, authListener));
+        }
+
+        return null;
+    }
+
+    private String getAuth(String phone, String code) {
         String auth = String.format("%s:%s", phone, code);
 
-        byte[] data = null;
-        try {
-            data = auth.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e1) {
-            e1.printStackTrace();
-        }
+        byte[] data = auth.getBytes(StandardCharsets.UTF_8);
         auth = Base64.encodeToString(data, Base64.DEFAULT);
         if (auth == null) {
             auth = "";
@@ -195,7 +269,14 @@ public class FtsHelper {
         return auth;
     }
 
-    public boolean isFtsCredentialsAvailiable(Context context) {
+    private String getAuth(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String phone = preferences.getString(FgConst.PREF_FTS_LOGIN, "");
+        String code = preferences.getString(FgConst.PREF_FTS_PASS, "");
+        return getAuth(phone, code);
+    }
+
+    public boolean isFtsCredentialsAvailable(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return !preferences.getString(FgConst.PREF_FTS_LOGIN, "").isEmpty()
                 & !preferences.getString(FgConst.PREF_FTS_PASS, "").isEmpty();

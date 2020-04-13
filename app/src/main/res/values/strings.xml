@@ -235,6 +235,10 @@
 
     <!-- 1. General -->
     <!-- Actions -->
+    <string name="act_check_and_save" formatted="false">Check &amp; Save</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
     <string name="act_ask_question" formatted="false">Ask a question</string>
 
     <!-- 1. General -->
@@ -2051,6 +2055,26 @@
 
     <!-- 27. Products -->
     <!-- Entities -->
+    <string name="ent_fts_name" formatted="false">Your name</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ent_fts_email" formatted="false">Your e-mail address</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ttl_create_account" formatted="false">Create account</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ttl_recovery_code" formatted="false">Recovery code</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ttl_exit_account" formatted="false">Exit from account</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
     <string name="ent_unknown_product" formatted="false">Unknown product</string>
 
     <!-- 27. Products -->
@@ -2068,6 +2092,14 @@
     <!-- 27. Products -->
     <!-- Titles -->
     <string name="ttl_loading_products" formatted="false">Loading products...</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_checking_data" formatted="false">Checking input data...</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_auth_success" formatted="false">Auth success</string>
 
     <!-- 27. Products -->
     <!-- Titles -->
@@ -2091,15 +2123,7 @@
 
     <!-- 27. Products -->
     <!-- Titles -->
-    <string name="ttl_not_now" formatted="false">Not now</string>
-
-    <!-- 27. Products -->
-    <!-- Titles -->
-    <string name="ttl_do_not_show_again" formatted="false">Do not show again</string>
-
-    <!-- 27. Products -->
-    <!-- Titles -->
-    <string name="ttl_you_can_edit_later" formatted="false">You can edit credentials later in Preferences</string>
+    <string name="ttl_back" formatted="false">Back</string>
 
     <!-- 27. Products -->
     <!-- Titles -->
@@ -2116,10 +2140,6 @@
     <!-- 27. Products -->
     <!-- Errors -->
     <string name="err_set_product" formatted="false">I must specify product</string>
-
-    <!-- 27. Products -->
-    <!-- Messages -->
-    <string name="msg_fts_login_html" formatted="false"><![CDATA[<p>To download list of products from receipts:</p><p>&nbsp;&nbsp;&nbsp; 1. Install the application "<strong>Проверка касcового чека</strong>" (author of <strong>АО ГНИВЦ</strong>).</p><p>&nbsp;&nbsp;&nbsp; 2. Register in it using your mobile phone number and get the code by SMS.</p><p>&nbsp;&nbsp;&nbsp; 3. Enter the phone number and code in the form below.</p><p>&nbsp;&nbsp;&nbsp; 4. Tap "<strong>Save</strong>".</p>]]></string>
 
     <!-- 28. EditorConstructor -->
     <!-- Entities -->

@@ -1695,7 +1695,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     boolean mProductListExpanded = true;
 
     private void loadProducts() {
-        if (mFtsHelper.isFtsCredentialsAvailiable(this)) {
+        if (mFtsHelper.isFtsCredentialsAvailable(this)) {
             final RotateAnimation spinAnim = new RotateAnimation(360, 0f,
                     Animation.RELATIVE_TO_SELF, 0.5f,
                     Animation.RELATIVE_TO_SELF, 0.5f);
@@ -1743,11 +1743,9 @@ public class ActivityEditTransaction extends ToolbarActivity implements
         } else {
             mLayoutLoadingProducts.setVisibility(View.GONE);
             fillProductList();
-            if (!mPreferences.getBoolean(FgConst.PREF_FTS_DO_NOT_SHOW_AGAIN, false)) {
-                startActivityForResult(
-                        new Intent(ActivityEditTransaction.this, ActivityFtsLogin.class),
-                        RequestCodes.REQUEST_CODE_ENTER_FTS_LOGIN);
-            }
+            startActivityForResult(
+                    new Intent(ActivityEditTransaction.this, ActivityFtsLogin.class),
+                    RequestCodes.REQUEST_CODE_ENTER_FTS_LOGIN);
         }
     }
 
