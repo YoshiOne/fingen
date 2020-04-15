@@ -24,7 +24,7 @@ public class FtsRetrofitModule {
 	@Provides
 	@Singleton
 	public Retrofit provideRetrofit(Retrofit.Builder builder) {
-		return builder.baseUrl("http://proverkacheka.nalog.ru:8888/").build();
+		return builder.baseUrl("https://proverkacheka.nalog.ru:9999").build();
 	}
 
 	@Provides

@@ -60,6 +60,7 @@ import com.yoshione.fingen.dao.CategoriesDAO;
 import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.dao.LocationsDAO;
 import com.yoshione.fingen.dao.PayeesDAO;
+import com.yoshione.fingen.dao.ProductsDAO;
 import com.yoshione.fingen.dao.ProjectsDAO;
 import com.yoshione.fingen.dao.SimpleDebtsDAO;
 import com.yoshione.fingen.dao.SmsDAO;
@@ -69,7 +70,10 @@ import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.fts.ActivityFtsLogin;
 import com.yoshione.fingen.fts.ActivityScanQR;
 import com.yoshione.fingen.fts.FtsHelper;
-import com.yoshione.fingen.fts.IDownloadProductsListener;
+import com.yoshione.fingen.fts.IFtsCallback;
+import com.yoshione.fingen.fts.models.FtsResponse;
+import com.yoshione.fingen.fts.models.Item;
+import com.yoshione.fingen.fts.models.Receipt;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.managers.AccountManager;
 import com.yoshione.fingen.managers.PayeeManager;
@@ -84,6 +88,7 @@ import com.yoshione.fingen.model.Category;
 import com.yoshione.fingen.model.Credit;
 import com.yoshione.fingen.model.Location;
 import com.yoshione.fingen.model.Payee;
+import com.yoshione.fingen.model.Product;
 import com.yoshione.fingen.model.ProductEntry;
 import com.yoshione.fingen.model.Sms;
 import com.yoshione.fingen.model.SmsMarker;
@@ -1708,38 +1713,96 @@ public class ActivityEditTransaction extends ToolbarActivity implements
             mImageViewLoadingProducts.startAnimation(spinAnim);
             mTextViewLoadingProducts.setText(getString(R.string.ttl_loading_products));
             updateControlsState();
-            IDownloadProductsListener downloadProductsListener = new IDownloadProductsListener() {
+
+            IFtsCallback checkCallback = new IFtsCallback() {
+                int attempt = 0;
+
                 @Override
-                public void onDownload(List<ProductEntry> productEntries, String payeeName) {
-                    spinAnim.cancel();
-                    spinAnim.reset();
-                    mLayoutLoadingProducts.setVisibility(View.GONE);
-                    transaction.getProductEntries().clear();
-                    transaction.getProductEntries().addAll(productEntries);
-                    getIntent().removeExtra("load_products");
-                    fillProductList();
-                    if ((viewPager.getCurrentItem() == 0) && mPayeeName != null && mPayeeName.isEmpty()) {
-                        setPayeeName(payeeName);
-                    }
-                    isErrorLoadingProducts = false;
+                public void onAccepted(Object response) {
+                    mTextViewLoadingProducts.setText(getString(R.string.ttl_check_correct_attempt, ++attempt));
+
+                    IFtsCallback getCallback = new IFtsCallback() {
+                        @Override
+                        public void onAccepted(Object response) {
+                            FtsResponse body = (FtsResponse) response;
+                            Receipt receipt = body.getDocument().getReceipt();
+
+                            List<Item> items = new ArrayList<>(receipt.getItems());
+                            List<ProductEntry> productEntries = new ArrayList<>();
+                            ProductsDAO productsDAO = ProductsDAO.getInstance(getApplicationContext());
+                            Product product;
+                            ProductEntry productEntry;
+                            for (Item item : items) {
+                                if (item.getName() == null)
+                                    item.setName(getString(R.string.ent_unknown_product));
+                                try {
+                                    product = (Product) productsDAO.getModelByName(item.getName());
+                                } catch (Exception e) {
+                                    product = new Product();
+                                }
+                                if (product.getID() < 0) {
+                                    try {
+                                        product.setName(item.getName());
+                                        product = (Product) productsDAO.createModel(product);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                if (product.getID() > 0) {
+                                    productEntry = new ProductEntry();
+                                    productEntry.setPrice(new BigDecimal(item.getPrice() / -100d));
+                                    productEntry.setQuantity(new BigDecimal(item.getQuantity()));
+                                    productEntry.setTransactionID(transaction.getID());
+                                    productEntry.setProductID(product.getID());
+                                    productEntries.add(productEntry);
+                                }
+                            }
+                            String payeeName = receipt.getUser();
+                            if (payeeName == null || payeeName.isEmpty())
+                                payeeName = receipt.getUserInn();
+
+                            mImageViewLoadingProducts.clearAnimation();
+                            mLayoutLoadingProducts.setVisibility(View.GONE);
+
+                            transaction.getProductEntries().clear();
+                            transaction.getProductEntries().addAll(productEntries);
+                            getIntent().removeExtra("load_products");
+                            fillProductList();
+                            if ((viewPager.getCurrentItem() == 0) && mPayeeName != null && mPayeeName.isEmpty())
+                                setPayeeName(payeeName);
+                            isErrorLoadingProducts = false;
+                        }
+
+                        @Override
+                        public void onFailure(String errMsg) {
+                            if (attempt < 5) {
+                                mTextViewLoadingProducts.setText(getString(R.string.ttl_check_correct_attempt, ++attempt));
+                                unsubscribeOnDestroy(mFtsHelper.getCheck(transaction, this));
+                            } else {
+                                isErrorLoadingProducts = true;
+                                getIntent().removeExtra("load_products");
+                                mImageViewLoadingProducts.clearAnimation();
+                                mImageViewLoadingProducts.setVisibility(View.GONE);
+                                mTextViewLoadingProducts.setText(errMsg);
+                                updateControlsState();
+                            }
+
+                        }
+                    };
+                    unsubscribeOnDestroy(mFtsHelper.getCheck(transaction, getCallback));
                 }
 
                 @Override
-                public void onAccepted() {
-                }
-
-                @Override
-                public void onFailure(String errorMessage, boolean tryAgain) {
+                public void onFailure(String errMsg) {
                     isErrorLoadingProducts = true;
                     getIntent().removeExtra("load_products");
-                    spinAnim.cancel();
-                    spinAnim.reset();
+                    mImageViewLoadingProducts.clearAnimation();
                     mImageViewLoadingProducts.setVisibility(View.GONE);
-                    mTextViewLoadingProducts.setText(errorMessage);
+                    mTextViewLoadingProducts.setText(errMsg);
                     updateControlsState();
                 }
             };
-            unsubscribeOnDestroy(mFtsHelper.downloadProductEntryList(transaction, downloadProductsListener));
+            unsubscribeOnDestroy(mFtsHelper.isCheckExists(transaction, checkCallback));
         } else {
             mLayoutLoadingProducts.setVisibility(View.GONE);
             fillProductList();

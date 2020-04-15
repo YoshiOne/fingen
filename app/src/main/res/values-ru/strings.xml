@@ -2095,6 +2095,10 @@
 
     <!-- 27. Products -->
     <!-- Titles -->
+    <string name="ttl_check_correct_attempt" formatted="false">Чек найден. Загрузка товаров... Попытка %d</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
     <string name="ttl_checking_data" formatted="false">Проверка введенных данных…</string>
 
     <!-- 27. Products -->

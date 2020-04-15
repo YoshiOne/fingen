@@ -2095,6 +2095,10 @@
 
     <!-- 27. Products -->
     <!-- Titles -->
+    <string name="ttl_check_correct_attempt" formatted="false">The check is correct. Loading products... Attempt %d</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
     <string name="ttl_checking_data" formatted="false">Checking input data...</string>
 
     <!-- 27. Products -->

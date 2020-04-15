@@ -18,37 +18,24 @@ public interface FtsApi {
     Single<Response<FtsResponse>> getData(
             @Url String url,
             @Header("Authorization") String authorization,
-            @Header("User-Agent") String userAgent,
             @Header("Device-Id") String deviceID,
-            @Header("Device-OS") String deviceOS,
-            @Header("Version") String version,
-            @Header("ClientVersion") String clientVersion,
-            @Header("Host") String host,
-            @Header("Connection") String connection
+            @Header("Device-OS") String deviceOS
     );
 
-    @GET
+    @GET("/v1/mobile/users/login")
     Single<Response<AuthResponse>> checkAuth(
-            @Url String url,
             @Header("Authorization") String authorization,
-            @Header("User-Agent") String userAgent,
             @Header("Device-Id") String deviceID,
-            @Header("Device-OS") String deviceOS,
-            @Header("Version") String version,
-            @Header("ClientVersion") String clientVersion,
-            @Header("Host") String host,
-            @Header("Connection") String connection
+            @Header("Device-OS") String deviceOS
     );
 
-    @POST
+    @POST("/v1/mobile/users/signup")
     Single<Response<Object>> signUp(
-            @Url String url,
             @Body SignUpRequest body
     );
 
-    @POST
+    @POST("/v1/mobile/users/restore")
     Single<Response<Object>> restoreCode(
-            @Url String url,
             @Body RestoreRequest body
     );
 

@@ -133,11 +133,11 @@ public class ActivityFtsLogin extends ToolbarActivity {
                 mImageViewCheckingData.startAnimation(spinAnim);
                 mTextViewCheckingData.setText(getString(R.string.ttl_checking_data));
 
-                AuthListener authListener = new AuthListener(spinAnim);
+                FtsCallback authCallback = new FtsCallback(spinAnim);
 
                 switch (mode_current) {
                     case MODE_BLANK:
-                        authListener.callback = auth -> {
+                        authCallback.callback = auth -> {
                             Toast.makeText(this, R.string.ttl_auth_success, Toast.LENGTH_LONG).show();
                             preferences.edit()
                                     .putString(FgConst.PREF_FTS_LOGIN, formatWatcher.getMask().toUnformattedString())
@@ -148,20 +148,20 @@ public class ActivityFtsLogin extends ToolbarActivity {
                             setResult(RESULT_OK);
                             finish();
                         };
-                        unsubscribeOnDestroy(mFtsHelper.checkAuth(formatWatcher.getMask().toUnformattedString(), mEditTextCode.getText().toString(), authListener));
+                        unsubscribeOnDestroy(mFtsHelper.checkAuth(formatWatcher.getMask().toUnformattedString(), mEditTextCode.getText().toString(), authCallback));
                         break;
                     case MODE_CREATE:
                     case MODE_RECOVERY:
-                        authListener.callback = auth -> {
+                        authCallback.callback = auth -> {
                             preferences.edit()
                                     .putString(FgConst.PREF_FTS_LOGIN, formatWatcher.getMask().toUnformattedString())
                                     .apply();
                             setMode(MODE_BLANK);
                         };
                         if (mode_current == MODE_CREATE)
-                            unsubscribeOnDestroy(mFtsHelper.signUpAuth(formatWatcher.getMask().toUnformattedString(), mEditTextName.getText().toString(), mEditTextEmail.getText().toString(), authListener));
+                            unsubscribeOnDestroy(mFtsHelper.signUpAuth(formatWatcher.getMask().toUnformattedString(), mEditTextName.getText().toString(), mEditTextEmail.getText().toString(), authCallback));
                         else
-                            unsubscribeOnDestroy(mFtsHelper.recoveryCode(formatWatcher.getMask().toUnformattedString(), authListener));
+                            unsubscribeOnDestroy(mFtsHelper.recoveryCode(formatWatcher.getMask().toUnformattedString(), authCallback));
                         break;
                     case MODE_AUTH:
                         preferences.edit()
@@ -230,12 +230,16 @@ public class ActivityFtsLogin extends ToolbarActivity {
         mode_current = mode;
     }
 
-    class AuthListener implements IAuthListener {
+    interface OnAuthCallback {
+        void onCallback(AuthResponse auth);
+    }
+
+    class FtsCallback implements IFtsCallback {
 
         final RotateAnimation spinAnim;
-        OnCallback callback;
+        OnAuthCallback callback;
 
-        AuthListener(RotateAnimation spinAnim) {
+        FtsCallback(RotateAnimation spinAnim) {
             this.spinAnim = spinAnim;
             this.callback = null;
         }
