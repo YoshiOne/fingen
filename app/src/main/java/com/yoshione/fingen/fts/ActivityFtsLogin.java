@@ -252,7 +252,7 @@ public class ActivityFtsLogin extends ToolbarActivity {
         }
 
         @Override
-        public void onFailure(String errMsg) {
+        public void onFailure(String errMsg, int responseCode) {
             mImageViewCheckingData.clearAnimation();
             mImageViewCheckingData.setVisibility(View.GONE);
             mTextViewCheckingData.setText(errMsg);

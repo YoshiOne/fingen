@@ -1774,8 +1774,8 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                         }
 
                         @Override
-                        public void onFailure(String errMsg) {
-                            if (attempt < 5) {
+                        public void onFailure(String errMsg, int responseCode) {
+                            if (attempt < 5 || (responseCode == 202 && attempt < 10)) {
                                 mTextViewLoadingProducts.setText(getString(R.string.ttl_check_correct_attempt, ++attempt));
                                 unsubscribeOnDestroy(mFtsHelper.getCheck(transaction, this));
                             } else {
@@ -1793,7 +1793,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                 }
 
                 @Override
-                public void onFailure(String errMsg) {
+                public void onFailure(String errMsg, int responseCode) {
                     isErrorLoadingProducts = true;
                     getIntent().removeExtra("load_products");
                     mImageViewLoadingProducts.clearAnimation();

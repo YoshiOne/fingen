@@ -156,11 +156,12 @@ public class FtsHelper {
                 if (response.errorBody() != null)
                     error = "error: " + response.errorBody().string();
                 else
-                    error = "response error, code: " + response.code() + ", content: [" + response.body() +"]";
+                    error = "response error, url: " + response.raw().request().url() +
+                            ", code: " + response.code() + ", content: [" + response.body() +"]";
 
-                callback.onFailure(error);
+                callback.onFailure(error, response.code());
             } catch (IOException e) {
-                callback.onFailure("system error: " + e.getMessage());
+                callback.onFailure("system error: " + e.getMessage(), -1);
                 e.printStackTrace();
             }
         }
@@ -170,7 +171,7 @@ public class FtsHelper {
         if (throwable.getMessage() != null) {
             Log.d(getClass().getName(), throwable.getMessage());
         }
-        callback.onFailure(throwable.getMessage());
+        callback.onFailure(throwable.getMessage(), -1);
     }
 
     private String getAuth(String phone, String code) {
