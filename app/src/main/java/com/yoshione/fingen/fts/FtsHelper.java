@@ -205,14 +205,38 @@ public class FtsHelper {
         authListener.onFailure(throwable.getMessage());
     }
 
+    /**
+     * Проверка авторизации в ФНС
+     *
+     * @param phone номер телефона в формате "+79001234567"
+     * @param code код из смс KKT.NALOG
+     * @param authListener интерфейс ответа
+     * @return
+     */
     public Disposable checkAuth(final String phone, final String code, final IAuthListener authListener) {
         return actionAuth("login", phone, code, null, null, authListener);
     }
 
+    /**
+     *  Регистрация пользователя. Посылает POST запрос в ФНС для регистрации нового пользователя. В качестве логина будет использован
+     *  его телефон, пароль выдает ФНС через смс.
+     *
+     * @param phone номер телефона в формате "+79001234567"
+     * @param name имя
+     * @param email электронный адрес
+     * @param authListener интерфейс ответа
+     * @return
+     */
     public Disposable signUpAuth(final String phone, final String name, final String email, final IAuthListener authListener) {
         return actionAuth("signup", phone, null, name, email, authListener);
     }
 
+    /**
+     * Процедура восстановления пароля. Отправка POST запроса в ФНС
+     * @param phone номер телефона в формате "+79001234567"
+     * @param authListener интерфейс ответа
+     * @return
+     */
     public Disposable recoveryCode(final String phone, IAuthListener authListener) {
         return actionAuth("restore", phone, null, null, null, authListener);
     }

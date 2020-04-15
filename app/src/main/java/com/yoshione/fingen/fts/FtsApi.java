@@ -13,11 +13,6 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Url;
 
-/**
- * Created by slv on 30.01.2018.
- *
- */
-
 public interface FtsApi {
     @GET
     Single<Response<FtsResponse>> getData(

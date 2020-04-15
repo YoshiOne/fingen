@@ -45,7 +45,6 @@ public class ActivityScanQR extends AppCompatActivity
 
     private CameraSource mCameraSource;
     private SurfaceView qrCodeReaderView;
-    private PointsOverlayView pointsOverlayView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +78,7 @@ public class ActivityScanQR extends AppCompatActivity
                 alertDialogBuilder
                         .setTitle(R.string.ttl_confirm_action)
                         .setMessage(R.string.msg_use_qr_from_buffer)
-                        .setPositiveButton(R.string.ok, (dialog, which) ->this.onQRCodeRead(qrCode, null))
+                        .setPositiveButton(R.string.ok, (dialog, which) ->this.onQRCodeRead(qrCode))
                         .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
                         .show();
             }
@@ -115,10 +114,8 @@ public class ActivityScanQR extends AppCompatActivity
 
     // Called when a QR is decoded
     // "text" : the text encoded in QR
-    // "points" : points where QR control points are placed
-    public void onQRCodeRead(String text, PointF[] points) {
+    public void onQRCodeRead(String text) {
 //    resultTextView.setText(text);
-//    pointsOverlayView.setPoints(points);
         Transaction transaction = getIntent().getParcelableExtra("transaction");
         transaction = TransactionManager.createTransactionFromQR(transaction, text, getApplicationContext());
         Intent intent = new Intent();
@@ -159,7 +156,6 @@ public class ActivityScanQR extends AppCompatActivity
 
         qrCodeReaderView = content.findViewById(R.id.qrdecoderview);
         CheckBox flashlightCheckBox = content.findViewById(R.id.flashlight_checkbox);
-        pointsOverlayView = content.findViewById(R.id.points_overlay_view);
 
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(getApplicationContext())
                 .setBarcodeFormats(Barcode.QR_CODE)
@@ -211,7 +207,7 @@ public class ActivityScanQR extends AppCompatActivity
                 SparseArray<Barcode> qrCode = detections.getDetectedItems();
 
                 if (qrCode.size() != 0) {
-                    onQRCodeRead(qrCode.valueAt(0).displayValue, null);
+                    onQRCodeRead(qrCode.valueAt(0).displayValue);
                 }
             }
         });

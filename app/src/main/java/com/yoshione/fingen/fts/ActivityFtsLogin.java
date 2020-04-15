@@ -13,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.Guideline;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -250,8 +249,7 @@ public class ActivityFtsLogin extends ToolbarActivity {
 
         @Override
         public void onFailure(String errMsg) {
-            spinAnim.cancel();
-            spinAnim.reset();
+            mImageViewCheckingData.clearAnimation();
             mImageViewCheckingData.setVisibility(View.GONE);
             mTextViewCheckingData.setText(errMsg);
         }
