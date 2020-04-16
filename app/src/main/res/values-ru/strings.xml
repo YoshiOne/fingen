@@ -2138,6 +2138,10 @@
     <string name="ttl_move_residue" formatted="false">Добавить %s к сумме транзакции</string>
 
     <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_fts_enabled" formatted="false">Подключаться к ФНС</string>
+
+    <!-- 27. Products -->
     <!-- Messages -->
     <string name="msg_delete_product_confirmation" formatted="false">Удалить товар?</string>
 

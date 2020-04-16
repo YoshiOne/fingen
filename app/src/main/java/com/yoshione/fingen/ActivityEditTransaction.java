@@ -1818,9 +1818,11 @@ public class ActivityEditTransaction extends ToolbarActivity implements
         } else {
             mLayoutLoadingProducts.setVisibility(View.GONE);
             fillProductList();
-            startActivityForResult(
-                    new Intent(ActivityEditTransaction.this, ActivityFtsLogin.class),
-                    RequestCodes.REQUEST_CODE_ENTER_FTS_LOGIN);
+            if (mPreferences.getBoolean(FgConst.PREF_FTS_ENABLED, true)) {
+                startActivityForResult(
+                        new Intent(ActivityEditTransaction.this, ActivityFtsLogin.class),
+                        RequestCodes.REQUEST_CODE_ENTER_FTS_LOGIN);
+            }
         }
     }
 

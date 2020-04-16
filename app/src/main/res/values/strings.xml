@@ -2138,6 +2138,10 @@
     <string name="ttl_move_residue" formatted="false">Add %s to transaction sum</string>
 
     <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_fts_enabled" formatted="false">Enabled FTS request</string>
+
+    <!-- 27. Products -->
     <!-- Messages -->
     <string name="msg_delete_product_confirmation" formatted="false">Delete product?</string>
 

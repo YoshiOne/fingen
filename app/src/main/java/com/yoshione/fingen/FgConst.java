@@ -64,6 +64,7 @@ public class FgConst {
     public static final String PREF_FTS_PASS = "fts_pass";
     public static final String PREF_FTS_EMAIL = "fts_email";
     public static final String PREF_FTS_NAME = "fts_name";
+    public static final String PREF_FTS_ENABLED = "fts_enabled";
     public static final String PREF_FTS_CREDENTIALS = "fts_credentials";
     public static final String PREF_SHOW_INCOME_EXPENSE_FOR_ACCOUNTS = "show_income_expense_for_accounts";
     public static final String PREF_FIRST_DAY_OF_WEEK = "first_day_of_week";

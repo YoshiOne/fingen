@@ -190,7 +190,8 @@ public class FtsHelper {
 
     public boolean isFtsCredentialsAvailable(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return !preferences.getString(FgConst.PREF_FTS_LOGIN, "").isEmpty()
+        return preferences.getBoolean(FgConst.PREF_FTS_ENABLED, true)
+                & !preferences.getString(FgConst.PREF_FTS_LOGIN, "").isEmpty()
                 & !preferences.getString(FgConst.PREF_FTS_PASS, "").isEmpty();
     }
 }

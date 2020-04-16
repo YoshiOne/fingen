@@ -7,6 +7,7 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -63,6 +64,8 @@ public class ActivityFtsLogin extends ToolbarActivity {
     Button mButtonCreateAccount;
     @BindView(R.id.buttonRecoveryCode)
     Button mButtonRecoveryCode;
+    @BindView(R.id.checkBoxFTSEnabled)
+    CheckBox mCheckBoxEnabled;
     @BindView(R.id.layoutChecking)
     ConstraintLayout mLayoutChecking;
     @BindView(R.id.imageViewCheckingData)
@@ -105,11 +108,20 @@ public class ActivityFtsLogin extends ToolbarActivity {
         return getString(R.string.ttl_connection_params);
     }
 
-    @OnClick({R.id.buttonCreateAccount, R.id.buttonRecoveryCode, R.id.buttonBack, R.id.buttonSave})
+    @OnClick({R.id.checkBoxFTSEnabled, R.id.buttonCreateAccount, R.id.buttonRecoveryCode, R.id.buttonBack, R.id.buttonSave})
     public void onViewClicked(View view) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         switch (view.getId()) {
+            case R.id.checkBoxFTSEnabled:
+                preferences.edit().putBoolean(FgConst.PREF_FTS_ENABLED, mCheckBoxEnabled.isChecked()).apply();
+                setMode(mode_current);
+                break;
             case R.id.buttonBack:
+                if (!preferences.getBoolean(FgConst.PREF_FTS_ENABLED, true)) {
+                    setResult(RESULT_OK);
+                    finish();
+                    break;
+                }
                 switch (mode_current) {
                     case MODE_AUTH:
                         setResult(RESULT_OK);
@@ -121,6 +133,11 @@ public class ActivityFtsLogin extends ToolbarActivity {
                 }
                 break;
             case R.id.buttonSave:
+                if (!preferences.getBoolean(FgConst.PREF_FTS_ENABLED, true)) {
+                    setResult(RESULT_OK);
+                    finish();
+                    break;
+                }
                 final RotateAnimation spinAnim = new RotateAnimation(360, 0f,
                         Animation.RELATIVE_TO_SELF, 0.5f,
                         Animation.RELATIVE_TO_SELF, 0.5f);
@@ -213,14 +230,21 @@ public class ActivityFtsLogin extends ToolbarActivity {
                 mButtonSave.setText(R.string.ttl_recovery_code);
                 break;
         }
-        mTextInputLayoutPhoneNo.setVisibility(View.VISIBLE);
-        mTextInputLayoutCode.setVisibility(isModeBlank || isModeAuth ? View.VISIBLE : View.GONE);
-        mTextInputLayoutName.setVisibility(isModeCreate || isModeAuth ? View.VISIBLE : View.GONE);
-        mTextInputLayoutEmail.setVisibility(isModeCreate || isModeAuth ? View.VISIBLE : View.GONE);
+        boolean isEnabled = preferences.getBoolean(FgConst.PREF_FTS_ENABLED, true);
+        mCheckBoxEnabled.setChecked(isEnabled);
+        mCheckBoxEnabled.setVisibility(isModeBlank || isModeAuth ? View.VISIBLE : View.GONE);
+        mTextInputLayoutPhoneNo.setVisibility(isEnabled ? View.VISIBLE : View.GONE);
+        mTextInputLayoutCode.setVisibility(isEnabled && (isModeBlank || isModeAuth) ? View.VISIBLE : View.GONE);
+        mTextInputLayoutName.setVisibility(isEnabled && (isModeCreate || isModeAuth) ? View.VISIBLE : View.GONE);
+        mTextInputLayoutEmail.setVisibility(isEnabled && (isModeCreate || isModeAuth) ? View.VISIBLE : View.GONE);
         mLayoutChecking.setVisibility(View.GONE);
-        mButtonCreateAccount.setVisibility(isModeBlank ? View.VISIBLE : View.GONE);
-        mButtonRecoveryCode.setVisibility(isModeBlank ? View.VISIBLE : View.GONE);
+        mButtonCreateAccount.setVisibility(isEnabled && isModeBlank ? View.VISIBLE : View.GONE);
+        mButtonRecoveryCode.setVisibility(isEnabled && isModeBlank ? View.VISIBLE : View.GONE);
         mButtonSave.setBackgroundResource(isModeAuth ? R.drawable.selector_red_button : R.drawable.selector_blue_button);
+        if (!isEnabled) {
+            mButtonSave.setText(R.string.act_save);
+            mButtonSave.setBackgroundResource(R.drawable.selector_blue_button);
+        }
 
         mEditTextPhoneNo.setEnabled(!isModeAuth);
         mEditTextCode.setEnabled(!isModeAuth);

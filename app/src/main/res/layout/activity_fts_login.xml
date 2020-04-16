@@ -37,6 +37,18 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.5" />
 
+            <CheckBox
+                android:id="@+id/checkBoxFTSEnabled"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/ttl_fts_enabled"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayoutPhoneNo"
                 android:layout_width="match_parent"
@@ -48,7 +60,7 @@
                 android:hint="@string/ent_phoneno"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" >
+                app:layout_constraintTop_toBottomOf="@id/checkBoxFTSEnabled" >
 
                 <EditText
                     android:id="@+id/editTextPhoneNo"
