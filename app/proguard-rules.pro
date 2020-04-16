@@ -106,3 +106,6 @@
 -dontwarn com.sothree.**
 -keep class com.sothree.**
 -keep interface com.sothree.**
+
+# For requests signup and recorevy in FTS
+-keep class com.yoshione.fingen.fts.models.** { *; }
