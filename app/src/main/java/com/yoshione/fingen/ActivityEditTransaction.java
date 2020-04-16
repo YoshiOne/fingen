@@ -1775,7 +1775,19 @@ public class ActivityEditTransaction extends ToolbarActivity implements
 
                         @Override
                         public void onFailure(String errMsg, int responseCode) {
-                            if (attempt < 5 || (responseCode == 202 && attempt < 10)) {
+                            if (responseCode == 403) {
+                                mPreferences.edit()
+                                        .remove(FgConst.PREF_FTS_PASS)
+                                        .remove(FgConst.PREF_FTS_NAME)
+                                        .remove(FgConst.PREF_FTS_EMAIL)
+                                        .apply();
+                                isErrorLoadingProducts = true;
+                                getIntent().removeExtra("load_products");
+                                mImageViewLoadingProducts.clearAnimation();
+                                mImageViewLoadingProducts.setVisibility(View.GONE);
+                                mTextViewLoadingProducts.setText(getString(R.string.ttl_user_incorrect));
+                                updateControlsState();
+                            } else if (attempt < 5 || (responseCode == 202 && attempt < 10)) {
                                 mTextViewLoadingProducts.setText(getString(R.string.ttl_check_correct_attempt, ++attempt));
                                 unsubscribeOnDestroy(mFtsHelper.getCheck(transaction, this));
                             } else {

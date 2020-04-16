@@ -105,7 +105,6 @@ public class FtsHelper {
      * @return
      */
     public Disposable isCheckExists(final Transaction transaction, final IFtsCallback callback) {
-        String auth = getAuth(mContext).replaceAll("\n", "");
         String date = android.text.format.DateFormat.format("yyyy-MM-ddTHH:mm:00", transaction.getDateTime()).toString();
         String sum = Long.toString(Math.round(transaction.getAmount().doubleValue() * -100.0));
         String url = String.format("/v1/ofds/*/inns/*/fss/%s/operations/1/tickets/%s?fiscalSign=%s&date=%s&sum=%s",
@@ -115,10 +114,7 @@ public class FtsHelper {
                 date,
                 sum);
 
-        return mApi.getData(url,
-                "Basic " + auth,
-                "748036d688ec41c6",
-                "Android 8.0")
+        return mApi.checkExists(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> responseAuth(204, response, callback), throwable -> throwableAuth(throwable, callback));

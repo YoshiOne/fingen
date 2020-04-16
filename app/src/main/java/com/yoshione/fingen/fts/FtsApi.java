@@ -15,6 +15,11 @@ import retrofit2.http.Url;
 
 public interface FtsApi {
     @GET
+    Single<Response<Object>> checkExists(
+            @Url String url
+    );
+
+    @GET
     Single<Response<FtsResponse>> getData(
             @Url String url,
             @Header("Authorization") String authorization,

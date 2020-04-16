@@ -2099,6 +2099,10 @@
 
     <!-- 27. Products -->
     <!-- Titles -->
+    <string name="ttl_user_incorrect" formatted="false">Пользователь не найден или указанный код устарел! Параметры аутентификации в ФНС сброшены.</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
     <string name="ttl_checking_data" formatted="false">Проверка введенных данных…</string>
 
     <!-- 27. Products -->
