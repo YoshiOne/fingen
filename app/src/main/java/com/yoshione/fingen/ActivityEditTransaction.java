@@ -159,6 +159,10 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     private static final int ERR_EXRATE_ONE = 2;
     private static final int ERR_EMPTY_SRC_ACCOUNT = 3;
     private static final String SHOWCASE_ID = "Edit transaction showcase";
+    private static final String LOAD_PRODUCTS = "load_products";
+    private static final int LP_NONE = 0;
+    private static final int LP_QUERY = 1;
+    private static final int LP_RECEIVING = 2;
     //</editor-fold>
 
     //<editor-fold desc="Bind views" defaultstate="collapsed">
@@ -932,7 +936,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
             mLayoutProductList.setVisibility(
                     (isErrorLoadingProducts | transaction.getProductEntries().size() > 0
                     | (!item.isHideUnderMore() || mIsBtnMorePressed)
-                    | getIntent().getBooleanExtra("load_products", false))
+                    | (getIntent().getIntExtra(LOAD_PRODUCTS, LP_NONE) != LP_NONE))
                      & item.isVisible() ? View.VISIBLE : View.GONE);
         }
 
@@ -1690,8 +1694,10 @@ public class ActivityEditTransaction extends ToolbarActivity implements
             startActivityForResult(intent, RequestCodes.REQUEST_CODE_SCAN_QR);
         });
 
+        mImageButtonDownloadReceipt.setVisibility(mPreferences.getBoolean(FgConst.PREF_FTS_ENABLED, true) ? View.VISIBLE : View.GONE);
         mImageButtonDownloadReceipt.setOnClickListener(view -> {
-            getIntent().putExtra("load_products", true);
+            if (getIntent().getIntExtra(LOAD_PRODUCTS, LP_NONE) < LP_QUERY)
+                getIntent().putExtra(LOAD_PRODUCTS, LP_QUERY);
             initProductList();
         });
     }
@@ -1766,7 +1772,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
 
                             transaction.getProductEntries().clear();
                             transaction.getProductEntries().addAll(productEntries);
-                            getIntent().removeExtra("load_products");
+                            getIntent().removeExtra(LOAD_PRODUCTS);
                             fillProductList();
                             if ((viewPager.getCurrentItem() == 0) && mPayeeName != null && mPayeeName.isEmpty())
                                 setPayeeName(payeeName);
@@ -1782,7 +1788,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                                         .remove(FgConst.PREF_FTS_EMAIL)
                                         .apply();
                                 isErrorLoadingProducts = true;
-                                getIntent().removeExtra("load_products");
+                                getIntent().removeExtra(LOAD_PRODUCTS);
                                 mImageViewLoadingProducts.clearAnimation();
                                 mImageViewLoadingProducts.setVisibility(View.GONE);
                                 mTextViewLoadingProducts.setText(getString(R.string.ttl_user_incorrect));
@@ -1792,7 +1798,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                                 unsubscribeOnDestroy(mFtsHelper.getCheck(transaction, this));
                             } else {
                                 isErrorLoadingProducts = true;
-                                getIntent().removeExtra("load_products");
+                                getIntent().removeExtra(LOAD_PRODUCTS);
                                 mImageViewLoadingProducts.clearAnimation();
                                 mImageViewLoadingProducts.setVisibility(View.GONE);
                                 mTextViewLoadingProducts.setText(errMsg);
@@ -1807,13 +1813,14 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                 @Override
                 public void onFailure(String errMsg, int responseCode) {
                     isErrorLoadingProducts = true;
-                    getIntent().removeExtra("load_products");
+                    getIntent().removeExtra(LOAD_PRODUCTS);
                     mImageViewLoadingProducts.clearAnimation();
                     mImageViewLoadingProducts.setVisibility(View.GONE);
                     mTextViewLoadingProducts.setText(errMsg);
                     updateControlsState();
                 }
             };
+            getIntent().putExtra(LOAD_PRODUCTS, LP_RECEIVING);
             unsubscribeOnDestroy(mFtsHelper.isCheckExists(transaction, checkCallback));
         } else {
             mLayoutLoadingProducts.setVisibility(View.GONE);
@@ -1827,9 +1834,10 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     }
 
     private void initProductList() {
-        if (getIntent().getBooleanExtra("load_products", false)) {
+        int lp_state = getIntent().getIntExtra(LOAD_PRODUCTS, LP_NONE);
+        if (lp_state == LP_QUERY) {
             loadProducts();
-        } else {
+        } else if (lp_state == LP_NONE) {
             fillProductList();
         }
 
@@ -2240,11 +2248,11 @@ public class ActivityEditTransaction extends ToolbarActivity implements
             updateControlsState();
         } else if (resultCode == RESULT_OK && requestCode == RequestCodes.REQUEST_CODE_SCAN_QR) {
             transaction = data.getParcelableExtra("transaction");
-            getIntent().putExtra("load_products", true);
+            getIntent().putExtra(LOAD_PRODUCTS, LP_QUERY);
             initUI();
         } else if (requestCode == RequestCodes.REQUEST_CODE_ENTER_FTS_LOGIN) {
             if (resultCode != RESULT_OK) {
-                getIntent().removeExtra("load_products");
+                getIntent().removeExtra(LOAD_PRODUCTS);
             }
         } else {
             switch (requestCode) {
