@@ -1986,6 +1986,14 @@
     <string name="ttl_attach_receipt_to" formatted="false">Прикрепить чек к транзакции:</string>
 
     <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_on_off_flashlight">Вкл/Выкл вспышку</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_open_gallery">Из галереи</string>
+
+    <!-- 26. ScanQR -->
     <!-- Messages -->
     <string name="msg_camera_permission_was_granted" formatted="false">Доступ к камере предоставлен</string>
 

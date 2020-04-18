@@ -5,24 +5,30 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.PointF;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.android.material.snackbar.Snackbar;
@@ -40,11 +46,13 @@ public class ActivityScanQR extends AppCompatActivity
 
     private static final String TAG = "ActivityScanQR";
     private static final int MY_PERMISSION_REQUEST_CAMERA = 0;
+    private static final int RESULT_LOAD_IMAGE = 1;
 
     private ViewGroup mainLayout;
 
     private CameraSource mCameraSource;
     private SurfaceView qrCodeReaderView;
+    private BarcodeDetector barcodeDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,8 +164,9 @@ public class ActivityScanQR extends AppCompatActivity
 
         qrCodeReaderView = content.findViewById(R.id.qrdecoderview);
         CheckBox flashlightCheckBox = content.findViewById(R.id.flashlight_checkbox);
+        Button buttonGallery = content.findViewById(R.id.buttonGallery);
 
-        BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(getApplicationContext())
+        barcodeDetector = new BarcodeDetector.Builder(getApplicationContext())
                 .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
 
@@ -214,5 +223,35 @@ public class ActivityScanQR extends AppCompatActivity
 
         qrCodeReaderView.setOnClickListener(view -> mCameraSource.autoFocus(null));
         flashlightCheckBox.setOnCheckedChangeListener((compoundButton, isChecked) -> mCameraSource.setFlashMode(isChecked ? Camera.Parameters.FLASH_MODE_TORCH : Camera.Parameters.FLASH_MODE_OFF));
+        buttonGallery.setOnClickListener(view -> {
+            Intent i = new Intent(
+                    Intent.ACTION_PICK,
+                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+            startActivityForResult(i, RESULT_LOAD_IMAGE);
+        });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+
+            SparseArray<Barcode> qrCode = barcodeDetector.detect(new Frame.Builder().setBitmap(BitmapFactory.decodeFile(picturePath)).build());
+            if (qrCode.size() != 0) {
+                onQRCodeRead(qrCode.valueAt(0).displayValue);
+            }
+        }
+    }
+
 }

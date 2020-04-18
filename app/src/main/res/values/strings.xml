@@ -1986,6 +1986,14 @@
     <string name="ttl_attach_receipt_to" formatted="false">Attach receipt to transaction:</string>
 
     <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_on_off_flashlight">On/Off flashlight</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_open_gallery">Open gallery</string>
+
+    <!-- 26. ScanQR -->
     <!-- Messages -->
     <string name="msg_camera_permission_was_granted" formatted="false">Camera permission was granted</string>
 
