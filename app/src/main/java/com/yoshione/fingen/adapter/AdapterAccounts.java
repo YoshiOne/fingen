@@ -52,6 +52,9 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
     public void setAccountList(List<Account> accountList) {
         this.accountList = accountList;
     }
+    public Account getAccountByPosition(int position) {
+        return accountList.size() > 0 ? accountList.get(position) : null;
+    }
 
     private List<Account> accountList;
 

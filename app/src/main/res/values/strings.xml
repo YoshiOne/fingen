@@ -343,6 +343,14 @@
 
     <!-- 2. Accounts -->
     <!-- Entities -->
+    <string name="ent_close_account" formatted="false">Close account</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_open_account" formatted="false">Open account</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
     <string name="ent_account_isincludeintototals" formatted="false">Include into totals</string>
 
     <!-- 2. Accounts -->
@@ -464,6 +472,14 @@
     <!-- 2. Accounts -->
     <!-- Messages -->
     <string name="msg_delete_account_set_confirmation" formatted="false">Delete account set %s?</string>
+
+    <!-- 2. Accounts -->
+    <!-- Messages -->
+    <string name="msg_close_account_confirmation" formatted="false">Close account?</string>
+
+    <!-- 2. Accounts -->
+    <!-- Messages -->
+    <string name="msg_open_account_confirmation" formatted="false">Open account?</string>
 
     <!-- 2. Accounts -->
     <!-- Messages -->
