@@ -279,8 +279,8 @@ public class ActivityMain extends ToolbarActivity {
             } else if (version_x != -1) {
                 long current_time = new Date().getTime();
                 if (current_time > mPreferences.getLong(FgConst.PREF_VERSION_NEXT_CHECK, -1)) {
-                    mPreferences.edit().putLong(FgConst.PREF_VERSION_NEXT_CHECK, current_time + 24 * 60 * 60 * 1000).apply();
                     ModUtils.checkVersion(this, mPreferences.getInt(FgConst.PREF_VERSION_X_CHECK, version_x), (response) -> {
+                        mPreferences.edit().putLong(FgConst.PREF_VERSION_NEXT_CHECK, current_time + 24 * 60 * 60 * 1000).apply();
                         if (response.getExists()) {
                             FragmentChangelog.show(ActivityMain.this, FragmentChangelog.CHANGELOG_URL);
                         }
