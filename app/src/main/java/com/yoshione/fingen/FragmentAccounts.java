@@ -80,7 +80,7 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
     public static final String TAG = "FragmentAccountsRW";
     private static final int CONTEXT_MENU_ACCOUNTS = 0;
     private static final int CONTEXT_MENU_SETS = 1;
-    public AdapterAccounts adapter;
+
     @BindView(R.id.layoutSummaryTable)
     TableLayout mLayoutSumTable;
     @BindView(R.id.sliding_layout_accounts)
@@ -97,9 +97,12 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
     TextView mTextViewPullToCreateAccount;
     @BindView(R.id.layout_pull_me)
     LinearLayout mLayoutPullMe;
-    AdapterAccountsSets mAdapterAccountsSets;
+
+    public AdapterAccounts adapter;
+    private AdapterAccountsSets mAdapterAccountsSets;
     private AccountEventListener mAccountEventListener;
     private ItemTouchHelper mItemTouchHelper;
+    private IUpdateCallback mFullUpdateCallback;
     private int contextMenuTarget = -1;
     private String mAllAccountsSetCaption;
 
@@ -116,12 +119,6 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
     @Inject
     Lazy<CabbagesDAO> mCabbagesDAO;
 
-    public void setFullUpdateCallback(IUpdateCallback fullUpdateCallback) {
-        mFullUpdateCallback = fullUpdateCallback;
-    }
-
-    private IUpdateCallback mFullUpdateCallback;
-
     public static FragmentAccounts newInstance(String forceUpdateParam, int layoutID, IUpdateCallback fullUpdateCallback) {
         FragmentAccounts fragment = new FragmentAccounts();
         Bundle args = new Bundle();
@@ -134,7 +131,7 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 //        setUpdateListsEvents(this);
     }
@@ -192,25 +189,17 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         return view;
     }
 
+    public void setFullUpdateCallback(IUpdateCallback fullUpdateCallback) {
+        mFullUpdateCallback = fullUpdateCallback;
+    }
+
     private void initAccountsSets() {
-        mButtonAddAccountSet.setOnClickListener(view -> AccountsSetManager.getInstance().createAccountSet(getActivity(), () -> {
-            loadAccountsSets();
-            if (mFullUpdateCallback != null) {
-                mFullUpdateCallback.update();
-            } else {
-                fullUpdate(-1);
-            }
-        }));
+        mButtonAddAccountSet.setOnClickListener(view -> AccountsSetManager.getInstance().createAccountSet(getActivity(), this::fragmentUpdate));
         mAdapterAccountsSets = new AdapterAccountsSets(model -> {
             if (getActivity() != null) {
                 mPreferences.get().edit().putLong(FgConst.PREF_CURRENT_ACCOUNT_SET, model.getID()).apply();
             }
-            loadAccountsSets();
-            if (mFullUpdateCallback != null) {
-                mFullUpdateCallback.update();
-            } else {
-                fullUpdate(-1);
-            }
+            fragmentUpdate();
         });
         mAdapterAccountsSets.setHasStableIds(true);
         FgLinearLayoutManager layoutManagerFilters = new FgLinearLayoutManager(getActivity());
@@ -224,15 +213,8 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         Objects.requireNonNull(activity).unsubscribeOnDestroy(
                 Single.fromCallable(() -> {
                     List<AccountsSet> accountsSetList = AccountsSetManager.getInstance().getAcoountsSets(getActivity());
-                    AccountsSetRef allAccountsSetRef = new AccountsSetRef(-1, mAllAccountsSetCaption);
-                    AccountsSet allAccountsSet = new AccountsSet(allAccountsSetRef, new HashSet<>());
-                    accountsSetList.add(0, allAccountsSet);
-                    long currentSetID;
-                    if (getActivity() != null) {
-                        currentSetID = mPreferences.get().getLong(FgConst.PREF_CURRENT_ACCOUNT_SET, -1);
-                    } else {
-                        currentSetID = -1;
-                    }
+                    accountsSetList.add(0, new AccountsSet(new AccountsSetRef(-1, getString(R.string.ent_all_accounts)), new HashSet<>()));
+                    long currentSetID = getActivity() != null ? mPreferences.get().getLong(FgConst.PREF_CURRENT_ACCOUNT_SET, -1) : -1;
                     for (AccountsSet accountsSet : accountsSetList) {
                         accountsSet.setSelected(accountsSet.getAccountsSetRef().getID() == currentSetID);
                     }
@@ -258,7 +240,7 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         if (getActivity() != null) {
             MenuInflater menuInflater = getActivity().getMenuInflater();
@@ -320,39 +302,23 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
             case R.id.action_edit_name:
                 AccountsSetManager.getInstance().editName(accountsSet, getActivity(),
                         accountsSet1 -> AccountsSetManager.getInstance().writeAccountsSet(accountsSet1, getActivity(),
-                                () -> {
-                                    loadAccountsSets();
-                                    if (mFullUpdateCallback != null) {
-                                        mFullUpdateCallback.update();
-                                    } else {
-                                        fullUpdate(-1);
-                                    }
-                                }));
+                                this::fragmentUpdate));
                 break;
             case R.id.action_edit_accounts:
                 AccountsSetManager.getInstance().editAccounts(accountsSet, getActivity(),
-                        accountsSet12 -> AccountsSetManager.getInstance().writeAccountsSet(accountsSet12, getActivity(),
-                                () -> {
-                                    loadAccountsSets();
-                                    if (mFullUpdateCallback != null) {
-                                        mFullUpdateCallback.update();
-                                    } else {
-                                        fullUpdate(-1);
-                                    }
-                                }));
+                        accountsSet2 -> AccountsSetManager.getInstance().writeAccountsSet(accountsSet2, getActivity(),
+                                this::fragmentUpdate));
                 break;
             case R.id.action_delete:
                 if (getActivity() != null) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle(R.string.ttl_confirm_action);
-                    builder.setMessage(String.format(getString(R.string.msg_delete_account_set_confirmation), accountsSet.getAccountsSetRef().getName()));
-
                     OnDeleteAccountSetDialogOkClickListener clickListener = new OnDeleteAccountSetDialogOkClickListener(accountsSet);
-                    // Set up the buttons
-                    builder.setPositiveButton("OK", clickListener);
-                    builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
-                    builder.show();
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.ttl_confirm_action)
+                            .setMessage(String.format(getString(R.string.msg_delete_account_set_confirmation), accountsSet.getAccountsSetRef().getName()))
+                            .setPositiveButton(android.R.string.ok, clickListener)
+                            .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel())
+                            .show();
                 }
                 break;
         }
@@ -361,6 +327,7 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
     @SuppressLint("StringFormatInvalid")
     public void initContextMenuAccounts(MenuItem item) {
         ContextMenuRecyclerView.RecyclerContextMenuInfo info = (ContextMenuRecyclerView.RecyclerContextMenuInfo) item.getMenuInfo();
+        Account account = adapter.getAccountByPosition(info.position);
         switch (item.getItemId()) {
             case R.id.action_add: {
                 Intent intent = new Intent(getActivity(), ActivityEditAccount.class);
@@ -370,29 +337,25 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
             }
             case R.id.action_edit: {
                 Intent intent = new Intent(getActivity(), ActivityEditAccount.class);
-                intent.putExtra("account", mAccountsDAO.get().getAccountByID(info.id));
+                intent.putExtra("account", account);
                 Objects.requireNonNull(getActivity()).startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_ACCOUNT);
                 break;
             }
             case R.id.action_delete: {
-                AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
-                builder.setTitle(R.string.ttl_confirm_action);
-                Account account = mAccountsDAO.get().getAccountByID(info.id);
-                builder.setMessage(String.format(getString(R.string.msg_delete_account_confirmation), account.getName()));
-
                 OnDeleteAccountDialogOkClickListener clickListener = new OnDeleteAccountDialogOkClickListener(account);
-                // Set up the buttons
-                builder.setPositiveButton("OK", clickListener);
-                builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
-                builder.show();
+                new AlertDialog.Builder(Objects.requireNonNull(getActivity()))
+                        .setTitle(R.string.ttl_confirm_action)
+                        .setMessage(String.format(getString(R.string.msg_delete_account_confirmation), account.getName()))
+                        .setPositiveButton(android.R.string.ok, clickListener)
+                        .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel())
+                        .show();
                 break;
             }
             case R.id.action_show_transactions: {
                 if (Objects.requireNonNull(getActivity()).getClass().equals(ActivityMain.class)) {
                     ActivityMain activityMain = (ActivityMain) getActivity();
                     if (activityMain.fragmentTransactions.adapterF != null) {
-                        Account account = mAccountsDAO.get().getAccountByID(info.id);
                         AccountFilter filter = new AccountFilter(0);
                         filter.addAccount(account.getID());
                         ArrayList<AbstractFilter> filters = new ArrayList<>();
@@ -407,65 +370,54 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
                 }
                 break;
             }
-            case R.id.action_show_report:
-                Account acc = mAccountsDAO.get().getAccountByID(info.id);
+            case R.id.action_show_report: {
                 AccountFilter filter = new AccountFilter(0);
-                filter.addAccount(acc.getID());
+                filter.addAccount(account.getID());
                 ArrayList<AbstractFilter> filters = new ArrayList<>();
                 filters.add(filter);
                 Intent intent = new Intent(getActivity(), ActivityReports.class);
                 intent.putParcelableArrayListExtra("filter_list", filters);
                 startActivity(intent);
                 break;
+            }
             case R.id.action_balance_adjustment: {
-                AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
-                final Account account = mAccountsDAO.get().getAccountByID(info.id);
                 Cabbage cabbage = AccountManager.getCabbage(account, getActivity());
-                builder.setTitle(getString(R.string.ttl_enter_actual_balance));
-                final AmountEditor amountEditor = new AmountEditor(getActivity(), (newAmount, newType) -> {
-                }, (account.getCurrentBalance().compareTo(BigDecimal.ZERO) <= 0) ? Transaction.TRANSACTION_TYPE_EXPENSE : Transaction.TRANSACTION_TYPE_INCOME,
+                final AmountEditor amountEditor = new AmountEditor(getActivity(), (newAmount, newType) -> {},
+                        (account.getCurrentBalance().compareTo(BigDecimal.ZERO) <= 0) ? Transaction.TRANSACTION_TYPE_EXPENSE : Transaction.TRANSACTION_TYPE_INCOME,
                         cabbage.getDecimalCount(), getActivity());
-
                 amountEditor.setAmount(account.getCurrentBalance());
-                builder.setView(amountEditor);
 
-                builder.setPositiveButton("OK", (dialog, which) -> {
-                    BigDecimal amount = amountEditor.getAmount().multiply(new BigDecimal((amountEditor.getType() > 0) ? 1 : -1));
-                    BigDecimal adjustment = amount.subtract(account.getCurrentBalance());
-                    Transaction transaction = new Transaction(PrefUtils.getDefDepID(getActivity()));
-                    transaction.setAccountID(account.getID());
-                    transaction.setAmount(adjustment, (adjustment.compareTo(BigDecimal.ZERO) <= 0) ? Transaction.TRANSACTION_TYPE_EXPENSE : Transaction.TRANSACTION_TYPE_INCOME);
-                    Intent intent1 = new Intent(getActivity(), ActivityEditTransaction.class);
-                    intent1.putExtra("transaction", transaction);
-                    getActivity().startActivityForResult(intent1, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
-                });
-
-                builder.show();
+                new AlertDialog.Builder(Objects.requireNonNull(getActivity()))
+                        .setTitle(getString(R.string.ttl_enter_actual_balance))
+                        .setView(amountEditor)
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                            BigDecimal amount = amountEditor.getAmount().multiply(new BigDecimal((amountEditor.getType() > 0) ? 1 : -1));
+                            BigDecimal adjustment = amount.subtract(account.getCurrentBalance());
+                            Transaction transaction = new Transaction(PrefUtils.getDefDepID(getActivity()));
+                            transaction.setAccountID(account.getID());
+                            transaction.setAmount(adjustment, (adjustment.compareTo(BigDecimal.ZERO) <= 0) ? Transaction.TRANSACTION_TYPE_EXPENSE : Transaction.TRANSACTION_TYPE_INCOME);
+                            Intent intent1 = new Intent(getActivity(), ActivityEditTransaction.class);
+                            intent1.putExtra("transaction", transaction);
+                            getActivity().startActivityForResult(intent1, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+                        })
+                        .show();
                 break;
             }
             case R.id.action_toggle_close_account:
-                if (getActivity() != null) {
-                    Account account = adapter.getAccountByPosition(info.position);
-
-                    new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.ttl_confirm_action)
-                        .setMessage(String.format(getString(account.getIsClosed() ? R.string.msg_open_account_confirmation : R.string.msg_close_account_confirmation), account.getName()))
-                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                            try {
-                                account.setIsClosed(!account.getIsClosed());
-                                mAccountsDAO.get().createModelWithoutEvent(account);
-                                if (mFullUpdateCallback != null) {
-                                    mFullUpdateCallback.update();
-                                } else {
-                                    fullUpdate(-1);
-                                }
-                            } catch (Exception e) {
-                                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel())
-                        .show();
-                }
+                new AlertDialog.Builder(Objects.requireNonNull(getActivity()))
+                    .setTitle(R.string.ttl_confirm_action)
+                    .setMessage(String.format(getString(account.getIsClosed() ? R.string.msg_open_account_confirmation : R.string.msg_close_account_confirmation), account.getName()))
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        try {
+                            account.setIsClosed(!account.getIsClosed());
+                            mAccountsDAO.get().createModelWithoutEvent(account);
+                            fragmentUpdate();
+                        } catch (Exception e) {
+                            Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel())
+                    .show();
                 break;
             case R.id.action_sort: {
                 AccountManager.showSortDialog(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), getActivity());
@@ -562,6 +514,15 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         );
     }
 
+    private void fragmentUpdate() {
+        loadAccountsSets();
+        if (mFullUpdateCallback != null) {
+            mFullUpdateCallback.update();
+        } else {
+            fullUpdate(-1);
+        }
+    }
+
     interface AccountEventListener {
         void OnItemClick(Account account);
     }
@@ -577,12 +538,7 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         public void onClick(DialogInterface dialogInterface, int i) {
             AccountsSetManager.getInstance().deleteAccountSet(mAccountsSet, getActivity());
             mPreferences.get().edit().putLong(FgConst.PREF_CURRENT_ACCOUNT_SET, -1).apply();
-            loadAccountsSets();
-            if (mFullUpdateCallback != null) {
-                mFullUpdateCallback.update();
-            } else {
-                fullUpdate(-1);
-            }
+            fragmentUpdate();
         }
     }
 

@@ -195,13 +195,11 @@ public class ActivityMain extends ToolbarActivity {
         FGApplication.getAppComponent().inject(this);
         getIntent().putExtra("showHomeButton", false);
 
-        switch (Integer.valueOf(mPreferences.getString("theme", "0"))) {
-            case THEME_LIGHT:
-                setTheme(R.style.AppThemeLight);
-                break;
+        switch (Integer.parseInt(mPreferences.getString("theme", "0"))) {
             case THEME_DARK:
                 setTheme(R.style.AppThemeDark);
                 break;
+            case THEME_LIGHT:
             default:
                 setTheme(R.style.AppThemeLight);
                 break;
@@ -258,7 +256,6 @@ public class ActivityMain extends ToolbarActivity {
         tabLayout.setVisibility(View.GONE);
         //</editor-fold>
 
-
         //<editor-fold desc="Check version and show changelog if necessary">
         PackageInfo pInfo;
         int version;
@@ -274,9 +271,9 @@ public class ActivityMain extends ToolbarActivity {
                 onUpdateVersion(prevVersion, version);
             }
         }
+        //</editor-fold>
 
         mPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
-        //</editor-fold>
     }
 
     @Override
