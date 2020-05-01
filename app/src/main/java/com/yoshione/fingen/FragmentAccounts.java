@@ -101,7 +101,6 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
     private AccountEventListener mAccountEventListener;
     private ItemTouchHelper mItemTouchHelper;
     private int contextMenuTarget = -1;
-    private String mAllAccountsSetCaption;
 
     @Inject
     Lazy<BillingService> mBillingService;
@@ -144,8 +143,6 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         FGApplication.getAppComponent().inject(this);
-
-        mAllAccountsSetCaption = getString(R.string.ent_all_accounts);
 
         adapter = new AdapterAccounts((ToolbarActivity) getActivity(), this);
         adapter.setHasStableIds(true);
@@ -224,9 +221,8 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         Objects.requireNonNull(activity).unsubscribeOnDestroy(
                 Single.fromCallable(() -> {
                     List<AccountsSet> accountsSetList = AccountsSetManager.getInstance().getAcoountsSets(getActivity());
-                    AccountsSetRef allAccountsSetRef = new AccountsSetRef(-1, mAllAccountsSetCaption);
-                    AccountsSet allAccountsSet = new AccountsSet(allAccountsSetRef, new HashSet<>());
-                    accountsSetList.add(0, allAccountsSet);
+                    accountsSetList.add(0, new AccountsSet(new AccountsSetRef(-1, getString(R.string.ent_all_accounts)), new HashSet<>()));
+                    accountsSetList.add(1, new AccountsSet(new AccountsSetRef(-2, getString(R.string.ent_all_closed_accounts)), new HashSet<>()));
                     long currentSetID;
                     if (getActivity() != null) {
                         currentSetID = mPreferences.get().getLong(FgConst.PREF_CURRENT_ACCOUNT_SET, -1);
@@ -466,13 +462,14 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
 //        if (Looper.myLooper() == Looper.getMainLooper()) {
 //            Log.d(TAG, "Main thread!!!");
 //        }
-        boolean showClosed = mPreferences.get().getBoolean(FgConst.PREF_SHOW_CLOSED_ACCOUNTS, true);
+        boolean isOnlyClosed = mPreferences.get().getLong(FgConst.PREF_CURRENT_ACCOUNT_SET, -1) == -2;
+        boolean showClosed = isOnlyClosed || mPreferences.get().getBoolean(FgConst.PREF_SHOW_CLOSED_ACCOUNTS, true);
         int sortType = mPreferences.get().getInt("accounts_sort_type", 0);
         int sortOrder = mPreferences.get().getInt("accounts_sort_order", 0);
 
         ToolbarActivity activity = (ToolbarActivity) getActivity();
         Objects.requireNonNull(activity).unsubscribeOnDestroy(
-            mAccountsDAO.get().getAllAccountsRx(showClosed)
+            mAccountsDAO.get().getAllAccountsRx(showClosed, isOnlyClosed)
                     .subscribeOn(Schedulers.newThread())
                     .map(accounts -> {
                         if (!mPreferences.get().getBoolean("show_debt_accounts", true)) {

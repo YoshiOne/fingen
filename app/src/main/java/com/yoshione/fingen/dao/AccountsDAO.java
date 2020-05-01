@@ -116,18 +116,24 @@ public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         super.deleteModel(model, resetTS, context);
     }
 
-    public Single<List<Account>> getAllAccountsRx(boolean includeClosed) {
-        return Single.fromCallable(() -> getAllAccounts(includeClosed));
+    public Single<List<Account>> getAllAccountsRx(boolean includeClosed, boolean isOnlyClosed) {
+        return Single.fromCallable(() -> getAllAccounts(includeClosed, isOnlyClosed));
     }
 
     @SuppressWarnings("unchecked")
-    public List<Account> getAllAccounts(boolean includeClosed) throws Exception {
+    public List<Account> getAllAccounts(boolean includeClosed, boolean isOnlyClosed) throws Exception {
         String selection = null;
         if (!includeClosed) {
             selection = String.format("%s = 0", DBHelper.C_REF_ACCOUNTS_ISCLOSED);
+        } else if (isOnlyClosed) {
+            selection = String.format("%s = 1", DBHelper.C_REF_ACCOUNTS_ISCLOSED);
         }
 
         return (List<Account>) getItems(getTableName(), DBHelper.T_REF_ACCOUNTS_ALL_COLUMNS, selection, null, DBHelper.C_REF_ACCOUNTS_NAME, null);
+    }
+
+    public List<Account> getAllAccounts(boolean includeClosed) throws Exception {
+        return getAllAccounts(includeClosed, false);
     }
 
     HashSet<Long> getAccountsIDsByCabbageID(long cabbageID) {

@@ -359,6 +359,10 @@
 
     <!-- 2. Accounts -->
     <!-- Entities -->
+    <string name="ent_all_closed_accounts" formatted="false">Все закрытые счета</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
     <string name="ent_active_account_set" formatted="false">Активный набор счетов</string>
 
     <!-- 2. Accounts -->

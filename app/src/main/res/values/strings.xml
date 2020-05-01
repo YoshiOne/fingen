@@ -359,6 +359,10 @@
 
     <!-- 2. Accounts -->
     <!-- Entities -->
+    <string name="ent_all_closed_accounts" formatted="false">All closed accounts</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
     <string name="ent_active_account_set" formatted="false">Active accounts set</string>
 
     <!-- 2. Accounts -->
