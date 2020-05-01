@@ -35,6 +35,11 @@
         android:orderInCategory="100"
         />
     <item
+        android:id="@+id/action_toggle_close_account"
+        android:title="@string/ent_close_account"
+        android:orderInCategory="100"
+        />
+    <item
         android:id="@+id/action_sort"
         android:title="@string/act_sort"
         android:orderInCategory="100"

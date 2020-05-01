@@ -335,6 +335,14 @@
 
     <!-- 2. Accounts -->
     <!-- Entities -->
+    <string name="ent_close_account" formatted="false">Закрыть счет</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_open_account" formatted="false">Открыть счет</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
     <string name="ent_new_account" formatted="false">Новый счет</string>
 
     <!-- 2. Accounts -->
@@ -448,6 +456,14 @@
     <!-- 2. Accounts -->
     <!-- Messages -->
     <string name="msg_delete_account_set_confirmation" formatted="false">Удалить набор счетов %s?</string>
+
+    <!-- 2. Accounts -->
+    <!-- Messages -->
+    <string name="msg_close_account_confirmation" formatted="false">Закрыть счет %s?</string>
+
+    <!-- 2. Accounts -->
+    <!-- Messages -->
+    <string name="msg_open_account_confirmation" formatted="false">Открыть счет %s?</string>
 
     <!-- 2. Accounts -->
     <!-- Messages -->

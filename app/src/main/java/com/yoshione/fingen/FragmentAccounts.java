@@ -266,6 +266,10 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
                 case R.id.recycler_view:
                     contextMenuTarget = CONTEXT_MENU_ACCOUNTS;
                     menuInflater.inflate(R.menu.context_menu_accounts, menu);
+                    ContextMenuRecyclerView.RecyclerContextMenuInfo info = (ContextMenuRecyclerView.RecyclerContextMenuInfo) menuInfo;
+                    Account account = adapter.getAccountByPosition(info.position);
+                    if (account.getIsClosed())
+                        menu.findItem(R.id.action_toggle_close_account).setTitle(R.string.ent_open_account);
                     break;
                 case R.id.recycler_view_accounts_sets:
                     contextMenuTarget = CONTEXT_MENU_SETS;
@@ -439,6 +443,30 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
                 builder.show();
                 break;
             }
+            case R.id.action_toggle_close_account:
+                if (getActivity() != null) {
+                    Account account = adapter.getAccountByPosition(info.position);
+
+                    new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.ttl_confirm_action)
+                        .setMessage(String.format(getString(account.getIsClosed() ? R.string.msg_open_account_confirmation : R.string.msg_close_account_confirmation), account.getName()))
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                            try {
+                                account.setIsClosed(!account.getIsClosed());
+                                mAccountsDAO.get().createModelWithoutEvent(account);
+                                if (mFullUpdateCallback != null) {
+                                    mFullUpdateCallback.update();
+                                } else {
+                                    fullUpdate(-1);
+                                }
+                            } catch (Exception e) {
+                                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel())
+                        .show();
+                }
+                break;
             case R.id.action_sort: {
                 AccountManager.showSortDialog(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), getActivity());
                 break;
