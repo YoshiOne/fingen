@@ -254,6 +254,10 @@
     <string name="act_new_transfer" formatted="false">Новый перевод</string>
 
     <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_do_not_remind" formatted="false">Не напоминать</string>
+
+    <!-- 1. General -->
     <!-- Titles -->
     <string name="ttl_enter_new_name" formatted="false">Введите новое название</string>
 
@@ -1448,6 +1452,10 @@
     <!-- 19. About -->
     <!-- Titles -->
     <string name="ttl_changelog" formatted="false">Список изменений</string>
+
+    <!-- 19. About -->
+    <!-- Titles -->
+    <string name="ttl_changelog_new" formatted="false">Новые изменения</string>
 
     <!-- 19. About -->
     <!-- Titles -->

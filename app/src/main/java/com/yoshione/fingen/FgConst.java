@@ -76,6 +76,8 @@ public class FgConst {
     public static final String PREF_NEW_ACCOUNT_BUTTON_COUNTER = "new_account_button_counter";
     public static final String PREF_COLORED_TAGS = "colored_tags";
     public static final String PREF_REMEMBER_LAST_ACCOUNT = "remember_last_account";
+    public static final String PREF_VERSION_NEXT_CHECK = "version_next_check";
+    public static final String PREF_VERSION_X_CHECK = "version_x_check";
     //</editor-fold>
 
     //<editor-fold Intent actions

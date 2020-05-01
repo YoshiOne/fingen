@@ -19,13 +19,18 @@ package com.yoshione.fingen;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.yoshione.fingen.utils.ModUtils;
+import com.yoshione.fingen.widgets.ToolbarActivity;
 
 import it.gmariotti.changelibs.library.view.ChangeLogRecyclerView;
 
@@ -36,7 +41,18 @@ import it.gmariotti.changelibs.library.view.ChangeLogRecyclerView;
  */
 public class FragmentChangelog extends DialogFragment {
 
+        public static final int CHANGELOG_DEFAULT = R.layout.fragment_changelog;
+        public static final int CHANGELOG_X = R.layout.fragment_changelog_x;
+        public static final int CHANGELOG_URL = R.layout.fragment_changelog_from_url;
+
+        private int resourceChangelog;
+
         public FragmentChangelog() {
+            this(CHANGELOG_DEFAULT);
+        }
+
+        public FragmentChangelog(int resourceChangelog) {
+            this.resourceChangelog = resourceChangelog;
         }
 
         @NonNull
@@ -44,21 +60,29 @@ public class FragmentChangelog extends DialogFragment {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(
                     Context.LAYOUT_INFLATER_SERVICE);
-            ChangeLogRecyclerView chgList= (ChangeLogRecyclerView) layoutInflater.inflate(R.layout.fragment_changelog, null);
+            ChangeLogRecyclerView chgList= (ChangeLogRecyclerView) layoutInflater.inflate(resourceChangelog, null);
 
-            return new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.ttl_changelog)
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                    .setTitle(resourceChangelog == CHANGELOG_URL ? R.string.ttl_changelog : R.string.ttl_changelog)
                     .setView(chgList)
-                    .setPositiveButton(android.R.string.ok,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    dialog.dismiss();
-                                }
-                            }
-                    )
-                    .create();
-
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
+            if (resourceChangelog == CHANGELOG_URL) {
+                builder.setNeutralButton(R.string.act_do_not_remind, (dialog, which) -> {
+                    ((ToolbarActivity) getActivity()).mPreferences.edit().putInt(FgConst.PREF_VERSION_X_CHECK, ModUtils.LAST_VERSION_CHECKED).apply();
+                    dialog.dismiss();
+                });
+            }
+            return builder.create();
         }
 
+        static void show(ToolbarActivity activity, int resourceChangelog) {
+            FragmentChangelog fragmentChangelog = new FragmentChangelog(resourceChangelog);
+            FragmentManager fm = activity.getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            Fragment prev = fm.findFragmentByTag("changelogdemo_dialog");
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            fragmentChangelog.show(ft, "changelogdemo_dialog");
+        }
 }

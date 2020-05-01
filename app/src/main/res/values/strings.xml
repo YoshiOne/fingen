@@ -254,6 +254,10 @@
     <string name="act_new_transfer" formatted="false">New transfer</string>
 
     <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_do_not_remind" formatted="false">Don\'t remind</string>
+
+    <!-- 1. General -->
     <!-- Titles -->
     <string name="ttl_enter_new_name" formatted="false">Enter new name</string>
 
@@ -1448,6 +1452,10 @@
     <!-- 19. About -->
     <!-- Titles -->
     <string name="ttl_changelog" formatted="false">Change log</string>
+
+    <!-- 19. About -->
+    <!-- Titles -->
+    <string name="ttl_changelog_new" formatted="false">New changes</string>
 
     <!-- 19. About -->
     <!-- Titles -->

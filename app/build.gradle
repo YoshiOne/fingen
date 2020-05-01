@@ -61,6 +61,17 @@ android {
         ]
         android.buildTypes.release.signingConfig = null
     }
+    if (keystorePropertiesFile.exists() &&
+            keystoreProperties.containsKey('xVersion') &&
+            keystoreProperties.containsKey('urlWebAPI'))
+    {
+        android.defaultConfig.versionName = android.defaultConfig.versionName.concat("-X." + keystoreProperties["xVersion"])
+        android.defaultConfig.resValue "string", "urlWebAPI", keystoreProperties["urlWebAPI"]
+        android.defaultConfig.resValue "string", "urlChangelogX", keystoreProperties["urlWebAPI"] + "changelog?version=" + keystoreProperties["xVersion"]
+    } else {
+        android.defaultConfig.resValue "string", "urlWebAPI", ""
+        android.defaultConfig.resValue "string", "urlChangelogX", ""
+    }
     buildTypes {
         release {
             minifyEnabled true
@@ -123,7 +134,7 @@ dependencies {
     implementation 'com.dropbox.core:dropbox-core-sdk:3.0.6'
     implementation 'com.evernote:android-job:1.2.5'
     implementation 'com.github.angads25:filepicker:1.1.1'
-    implementation 'com.github.gabrielemariotti.changeloglib:changelog:2.1.0'
+    implementation 'de.mdxdave:changeloglib:-SNAPSHOT'
     implementation 'com.github.hotchemi:permissionsdispatcher:3.1.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v2.2.5'
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'

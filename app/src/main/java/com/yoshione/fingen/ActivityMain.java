@@ -24,7 +24,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.util.Log;
@@ -69,7 +68,6 @@ import com.yoshione.fingen.model.AccountsSet;
 import com.yoshione.fingen.model.BaseModel;
 import com.yoshione.fingen.model.Events;
 import com.yoshione.fingen.model.Sender;
-import com.yoshione.fingen.model.SimpleDebt;
 import com.yoshione.fingen.model.SmsMarker;
 import com.yoshione.fingen.model.Template;
 import com.yoshione.fingen.model.TrEditItem;
@@ -77,6 +75,7 @@ import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.receivers.SMSReceiver;
 import com.yoshione.fingen.utils.ColorUtils;
 import com.yoshione.fingen.utils.Lg;
+import com.yoshione.fingen.utils.ModUtils;
 import com.yoshione.fingen.utils.NotificationCounter;
 import com.yoshione.fingen.utils.NotificationHelper;
 import com.yoshione.fingen.utils.PrefUtils;
@@ -91,6 +90,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -262,9 +262,13 @@ public class ActivityMain extends ToolbarActivity {
         //<editor-fold desc="Check version and show changelog if necessary">
         PackageInfo pInfo;
         int version;
+        int version_x = -1;
         try {
             pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             version = pInfo.versionCode;
+            int index = pInfo.versionName.lastIndexOf("-X");
+            if (index != -1)
+                version_x = Integer.parseInt(pInfo.versionName.substring(index + 3));
         } catch (PackageManager.NameNotFoundException e) {
             version = -1;
         }
@@ -272,6 +276,16 @@ public class ActivityMain extends ToolbarActivity {
             int prevVersion = mPreferences.getInt("version_code", -1);
             if (version != prevVersion) {
                 onUpdateVersion(prevVersion, version);
+            } else if (version_x != -1) {
+                long current_time = new Date().getTime();
+                if (current_time > mPreferences.getLong(FgConst.PREF_VERSION_NEXT_CHECK, -1)) {
+                    mPreferences.edit().putLong(FgConst.PREF_VERSION_NEXT_CHECK, current_time + 24 * 60 * 60 * 1000).apply();
+                    ModUtils.checkVersion(this, mPreferences.getInt(FgConst.PREF_VERSION_X_CHECK, version_x), (response) -> {
+                        if (response.getExists()) {
+                            FragmentChangelog.show(ActivityMain.this, FragmentChangelog.CHANGELOG_URL);
+                        }
+                    });
+                }
             }
         }
 
@@ -339,14 +353,7 @@ public class ActivityMain extends ToolbarActivity {
             mPreferences.edit().putInt(FgConst.PREF_NEW_ACCOUNT_BUTTON_COUNTER, 4).apply();
         }
 
-        FragmentChangelog fragmentChangelog = new FragmentChangelog();
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        Fragment prev = fm.findFragmentByTag("changelogdemo_dialog");
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        fragmentChangelog.show(ft, "changelogdemo_dialog");
+        FragmentChangelog.show(ActivityMain.this, FragmentChangelog.CHANGELOG_X);
     }
 
     @Override
