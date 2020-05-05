@@ -34,7 +34,7 @@ public class ModUtils {
             public void onResponse(Call<CheckVersionResponse> call, Response<CheckVersionResponse> response) {
                 Log.d(TAG, response.toString());
                 if (response.isSuccessful()) {
-                    LAST_VERSION_CHECKED = version;
+                    LAST_VERSION_CHECKED = version + 1;
                     if (callback != null) {
                         callback.callback(response.body());
                     }
