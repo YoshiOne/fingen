@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2015.
- */
-
 package com.yoshione.fingen.filters;
 
 import android.content.Context;
@@ -11,8 +7,8 @@ import android.os.Parcelable;
 
 import androidx.preference.PreferenceManager;
 
-import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.FgConst;
+import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.utils.LocaleUtils;
 
@@ -20,9 +16,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 
-/**
- * Created by slv on 05.11.2015.
- */
 public class DateRangeFilter extends AbstractFilter implements Parcelable {
     public static final int DATE_RANGE_DAY = Calendar.DAY_OF_MONTH;
     public static final int DATE_RANGE_WEEK = Calendar.DAY_OF_WEEK;
@@ -253,8 +246,8 @@ public class DateRangeFilter extends AbstractFilter implements Parcelable {
     @Override
     public String getSelectionString(HashSet<Long> allAccountIDS) {
         if (getEnabled()) {
-            String condition = String.format("(%s >= %s AND %s <= %s)", DBHelper.C_LOG_TRANSACTIONS_DATETIME, String.valueOf(mStartDate.getTime()),
-                    DBHelper.C_LOG_TRANSACTIONS_DATETIME, String.valueOf(mEndDate.getTime()));
+            String condition = String.format("(%s >= %s AND %s <= %s)", TransactionsDAO.COL_DATE_TIME, String.valueOf(mStartDate.getTime()),
+                    TransactionsDAO.COL_DATE_TIME, String.valueOf(mEndDate.getTime()));
             if (mInverted) {
                 condition = String.format("NOT(%s)", condition);
             }
@@ -267,7 +260,7 @@ public class DateRangeFilter extends AbstractFilter implements Parcelable {
 
     @Override
     public String saveToString() {
-        return String.valueOf(mStartDate.getTime()) + "@" + String.valueOf(mEndDate.getTime());
+        return mStartDate.getTime() + "@" + mEndDate.getTime();
     }
 
     @Override
@@ -277,8 +270,8 @@ public class DateRangeFilter extends AbstractFilter implements Parcelable {
             return false;
         }
         try {
-            mStartDate = new Date(Long.valueOf(strings[0]));
-            mEndDate = new Date(Long.valueOf(strings[1]));
+            mStartDate = new Date(Long.parseLong(strings[0]));
+            mEndDate = new Date(Long.parseLong(strings[1]));
             return true;
         } catch (NumberFormatException e) {
             return false;

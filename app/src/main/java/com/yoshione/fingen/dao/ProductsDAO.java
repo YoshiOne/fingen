@@ -1,25 +1,31 @@
 package com.yoshione.fingen.dao;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Pair;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.db.DbUtil;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.model.Product;
 
-import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by slv on 30.01.2018.
- * 
- */
 public class ProductsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
-    public static final String TAG = "ProductDAO";
+
+    //<editor-fold desc="ref_Products">
+    public static final String TABLE = "ref_Products";
+
+    public static final String[] ALL_COLUMNS = joinArrays(COMMON_COLUMNS, new String[]{
+            COL_NAME, COL_SEARCH_STRING
+    });
+
+    public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + " ("
+            + COMMON_FIELDS +       ", "
+            + COL_NAME +            " TEXT NOT NULL DEFAULT '', "
+            + COL_SEARCH_STRING +   " TEXT NOT NULL DEFAULT '', "
+            + "UNIQUE (" + COL_NAME + ", " + COL_SYNC_DELETED + ") ON CONFLICT ABORT);";
+    //</editor-fold>
+
     private static ProductsDAO sInstance;
 
     public synchronized static ProductsDAO getInstance(Context context) {
@@ -30,8 +36,13 @@ public class ProductsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
     }
 
     private ProductsDAO(Context context) {
-        super(context, DBHelper.T_REF_PRODUCTS, IAbstractModel.MODEL_TYPE_PRODUCT , DBHelper.T_REF_PRODUCTS_ALL_COLUMNS);
+        super(context, TABLE, ALL_COLUMNS);
         super.setDaoInheritor(this);
+    }
+
+    @Override
+    public IAbstractModel createEmptyModel() {
+        return new Product();
     }
 
     @Override
@@ -41,11 +52,9 @@ public class ProductsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
 
     private Product cursorToProduct(Cursor cursor) {
         Product product = new Product();
-        product.setID(cursor.getLong(mColumnIndexes.get(DBHelper.C_ID)));
-        product.setName(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_PRODUCTS_NAME)));
-        product.setSearchString(cursor.getString(mColumnIndexes.get(DBHelper.C_SEARCH_STRING)));
-
-        product = (Product) DBHelper.getSyncDataFromCursor(product, cursor, mColumnIndexes);
+        product.setID(DbUtil.getLong(cursor, COL_ID));
+        product.setName(DbUtil.getString(cursor, COL_NAME));
+        product.setSearchString(DbUtil.getString(cursor, COL_SEARCH_STRING));
 
         return product;
     }
@@ -54,15 +63,14 @@ public class ProductsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
     public void deleteModel(IAbstractModel model, boolean resetTS, Context context) {
         //удаляем из таблиы log_Products все записи с данным товаром
         ProductEntrysDAO productEntrysDAO = ProductEntrysDAO.getInstance(context);
-        productEntrysDAO.bulkDeleteModel(productEntrysDAO.getModels(DBHelper.C_LOG_PRODUCTS_PRODUCTID
-                        + " = " + String.valueOf(model.getID())), true);
+        productEntrysDAO.bulkDeleteModel(productEntrysDAO.getModels(ProductEntrysDAO.COL_PRODUCT_ID + " = " + model.getID()), true);
 
         super.deleteModel(model, resetTS, context);
     }
 
     @SuppressWarnings("unchecked")
-    public List<Product> getAllProducts() throws Exception {
-        return (List<Product>) getItems(getTableName(), null, null, null, DBHelper.C_REF_PRODUCTS_NAME, null);
+    public List<Product> getAllProducts() {
+        return (List<Product>) getItems(getTableName(), null, null, null, COL_NAME, null);
     }
 
     public Product getProductByID(long id) {
@@ -70,7 +78,7 @@ public class ProductsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
     }
 
     @Override
-    public List<?> getAllModels() throws Exception {
+    public List<?> getAllModels() {
         return getAllProducts();
     }
 }

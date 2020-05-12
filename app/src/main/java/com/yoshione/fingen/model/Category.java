@@ -3,26 +3,21 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.CategoriesDAO;
+import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IOrderable;
 
-/**
- * Created by Leonid on 13.08.2015.
- * a
- */
 public class Category extends BaseModel implements IAbstractModel, IOrderable {
 
     private int mColor;
     private long mParentID;
     private int mOrderNum;
-//    private boolean mSign;
     private boolean mExpanded;
     private BudgetForCategory mBudget;
 
     public Category() {
         super();
-//        mName = "";
         mParentID = -1;
         mExpanded = true;
     }
@@ -107,7 +102,6 @@ public class Category extends BaseModel implements IAbstractModel, IOrderable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-//        dest.writeString(this.mName);
         dest.writeInt(this.mColor);
         dest.writeLong(this.mParentID);
         dest.writeInt(this.mOrderNum);
@@ -116,7 +110,6 @@ public class Category extends BaseModel implements IAbstractModel, IOrderable {
 
     protected Category(Parcel in) {
         super(in);
-//        this.mName = in.readString();
         this.mColor = in.readInt();
         this.mParentID = in.readLong();
         this.mOrderNum = in.readInt();
@@ -138,15 +131,15 @@ public class Category extends BaseModel implements IAbstractModel, IOrderable {
     @Override
     public ContentValues getCV() {
         ContentValues values = super.getCV();
-        values.put(DBHelper.C_REF_CATEGORIES_NAME,getName());
-        values.put(DBHelper.C_REF_CATEGORIES_COLOR,String.format("#%06X", (0xFFFFFF & getColor())));
-        values.put(DBHelper.C_PARENTID, mParentID);
-        values.put(DBHelper.C_ORDERNUMBER, getOrderNum());
+        values.put(CategoriesDAO.COL_NAME, getName());
+        values.put(CategoriesDAO.COL_COLOR, String.format("#%06X", (0xFFFFFF & getColor())));
+        values.put(CategoriesDAO.COL_PARENT_ID, mParentID);
+        values.put(CategoriesDAO.COL_ORDER_NUMBER, getOrderNum());
         return values;
     }
 
     @Override
     public String getLogTransactionsField() {
-        return DBHelper.C_LOG_TRANSACTIONS_CATEGORY;
+        return TransactionsDAO.COL_CATEGORY;
     }
 }

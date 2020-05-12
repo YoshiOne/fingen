@@ -3,18 +3,11 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.SendersDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
-
-/**
- * Created by Leonid on 30.07.2016.
- *
- */
 
 public class Sender extends BaseModel implements IAbstractModel {
 
-//    private long mId = -1;
     private String mName;
     private Boolean mIsActive;
     private String mPhoneNo;
@@ -145,14 +138,14 @@ public class Sender extends BaseModel implements IAbstractModel {
     @Override
     public ContentValues getCV() {
         ContentValues values = super.getCV();
-        values.put(DBHelper.C_REF_SENDERS_NAME, getName());
-        values.put(DBHelper.C_REF_SENDERS_PHONENO, getPhoneNo());
-        values.put(DBHelper.C_REF_SENDERS_AMOUNTPOS, getAmountPos());
-        values.put(DBHelper.C_REF_SENDERS_BALANCEPOS, getBalancePos());
-        values.put(DBHelper.C_REF_SENDERS_DATEFORMAT, getDateFormat());
-        values.put(DBHelper.C_REF_SENDERS_LEADING_CURRENCY_SYMBOL, isLeadingCurrencySymbol());
-        values.put(DBHelper.C_REF_SENDERS_ADD_CREDIT_LIMIT_TO_BALANCE, isAddCreditLimitToBalance());
-        values.put(DBHelper.C_REF_SENDERS_ISACTIVE, getActive() ? 1 : 0);
+        values.put(SendersDAO.COL_NAME, getName());
+        values.put(SendersDAO.COL_PHONE_NO, getPhoneNo());
+        values.put(SendersDAO.COL_AMOUNT_POS, getAmountPos());
+        values.put(SendersDAO.COL_BALANCE_POS, getBalancePos());
+        values.put(SendersDAO.COL_DATE_FORMAT, getDateFormat());
+        values.put(SendersDAO.COL_LEADING_CURRENCY_SYMBOL, isLeadingCurrencySymbol());
+        values.put(SendersDAO.COL_ADD_CREDIT_LIMIT_TO_BALANCE, isAddCreditLimitToBalance());
+        values.put(SendersDAO.COL_IS_ACTIVE, getActive() ? 1 : 0);
         return values;
     }
 

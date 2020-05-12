@@ -4,17 +4,12 @@ import android.content.ContentValues;
 import android.graphics.Color;
 import android.os.Parcel;
 
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.DepartmentsDAO;
+import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
-/**
- * Created by slv on 13.08.2015.
- *
- */
 public class Department extends BaseModel implements IAbstractModel {
-    public static final String TAG = "com.yoshione.fingen.Model.Department";
 
-//    private long mId = -1;
     private String mName;
     private Boolean mIsActive;
     private long mParentID;
@@ -100,10 +95,10 @@ public class Department extends BaseModel implements IAbstractModel {
     @Override
     public ContentValues getCV() {
         ContentValues values = super.getCV();
-        values.put(DBHelper.C_REF_DEPARTMENTS_NAME,getName());
-        values.put(DBHelper.C_REF_DEPARTMENTS_ISACTIVE, getIsActive());
-        values.put(DBHelper.C_PARENTID, mParentID);
-        values.put(DBHelper.C_ORDERNUMBER, getOrderNum());
+        values.put(DepartmentsDAO.COL_NAME, getName());
+        values.put(DepartmentsDAO.COL_IS_ACTIVE, getIsActive());
+        values.put(DepartmentsDAO.COL_PARENT_ID, mParentID);
+        values.put(DepartmentsDAO.COL_ORDER_NUMBER, getOrderNum());
         return values;
     }
 
@@ -150,6 +145,6 @@ public class Department extends BaseModel implements IAbstractModel {
 
     @Override
     public String getLogTransactionsField() {
-        return DBHelper.C_LOG_TRANSACTIONS_DEPARTMENT;
+        return TransactionsDAO.COL_DEPARTMENT;
     }
 }

@@ -4,17 +4,13 @@ import android.content.ContentValues;
 import android.graphics.Color;
 import android.os.Parcel;
 
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.ProjectsDAO;
+import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IOrderable;
 
-/**
- * Created by slv on 13.08.2015.
- *
- */
 public class Project extends BaseModel implements IAbstractModel, IOrderable {
 
-    //    private long mId = -1;
     private String mName;
     private Boolean mIsActive;
     private long mParentID;
@@ -40,15 +36,6 @@ public class Project extends BaseModel implements IAbstractModel, IOrderable {
     public Project(long id) {
         super(id);
     }
-
-//    public Project(long id, String name, Boolean isActive, long parentID, int orderNum, boolean expanded) {
-//        setID(id);
-//        mName = name;
-//        mIsActive = isActive;
-//        mParentID = parentID;
-//        mOrderNum = orderNum;
-//        mExpanded = expanded;
-//    }
 
     public String getName() {
         return mName;
@@ -114,17 +101,17 @@ public class Project extends BaseModel implements IAbstractModel, IOrderable {
     @Override
     public ContentValues getCV() {
         ContentValues values = super.getCV();
-        values.put(DBHelper.C_REF_PROJECTS_NAME, getName());
-        values.put(DBHelper.C_REF_PROJECTS_ISACTIVE, getIsActive());
-        values.put(DBHelper.C_PARENTID, mParentID);
-        values.put(DBHelper.C_ORDERNUMBER, getOrderNum());
-        values.put(DBHelper.C_REF_PROJECTS_COLOR,String.format("#%06X", (0xFFFFFF & getColor())));
+        values.put(ProjectsDAO.COL_NAME, getName());
+        values.put(ProjectsDAO.COL_IS_ACTIVE, getIsActive());
+        values.put(ProjectsDAO.COL_PARENT_ID, getParentID());
+        values.put(ProjectsDAO.COL_ORDER_NUMBER, getOrderNum());
+        values.put(ProjectsDAO.COL_COLOR, String.format("#%06X", (0xFFFFFF & getColor())));
         return values;
     }
 
     @Override
     public String getLogTransactionsField() {
-        return DBHelper.C_LOG_TRANSACTIONS_PROJECT;
+        return TransactionsDAO.COL_PROJECT;
     }
 
     @Override

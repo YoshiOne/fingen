@@ -633,7 +633,7 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
         }
 
         categories = CreditsDAO.getInstance(getActivity()).getDebtsAsCategoriesWithPlanFact(srcYear, srcMonth, getActivity());
-        BudgetCreditsDAO budgetCreditsDAO = BudgetCreditsDAO.getInstance(getActivity());
+        BudgetCreditsDAO budgetDebtsDAO = BudgetCreditsDAO.getInstance(getActivity());
         long creditId;
         for (Category category : categories) {
             if ((id == -1) ^ (id == category.getID())) {
@@ -643,15 +643,15 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
                         if (!sumsByCabbage.isEmpty(false)) {
                             if (replace) {
                                 try {
-                                    budgetCreditsDAO.createBudget(mYear, mMonth, creditId,
+                                    budgetDebtsDAO.createBudget(mYear, mMonth, creditId,
                                             sumsByCabbage.getInTrSum().add(sumsByCabbage.getOutTrSum()));
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             } else {
-                                if (!budgetCreditsDAO.budgetExists(mYear, mMonth, creditId)) {
+                                if (!budgetDebtsDAO.budgetExists(mYear, mMonth, creditId)) {
                                     try {
-                                        budgetCreditsDAO.createBudget(mYear, mMonth, creditId,
+                                        budgetDebtsDAO.createBudget(mYear, mMonth, creditId,
                                                 sumsByCabbage.getInTrSum().add(sumsByCabbage.getOutTrSum()));
                                     } catch (Exception e) {
                                         e.printStackTrace();

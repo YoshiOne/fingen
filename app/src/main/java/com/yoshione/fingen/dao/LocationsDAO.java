@@ -3,34 +3,60 @@ package com.yoshione.fingen.dao;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Pair;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.db.DbUtil;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.model.Location;
 
-import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by Leonid on 13.08.2015.
- *
- */
 public class LocationsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
-    private static LocationsDAO sInstance;
 
-    private LocationsDAO(Context context) {
-        super(context, DBHelper.T_REF_LOCATIONS, IAbstractModel.MODEL_TYPE_LOCATION , DBHelper.T_REF_LOCATIONS_ALL_COLUMNS);
-        super.setDaoInheritor(this);
-    }
+    //<editor-fold desc="ref_Locations">
+    public static final String TABLE = "ref_Locations";
+
+    public static final String COL_LON = "Lon";
+    public static final String COL_LAT = "Lat";
+    public static final String COL_RADIUS = "Radius";
+    public static final String COL_ADDRESS = "Address";
+
+    public static final String[] ALL_COLUMNS = joinArrays(COMMON_COLUMNS, new String[]{
+            COL_NAME, COL_LON, COL_LAT, COL_ADDRESS,
+            COL_PARENT_ID, COL_ORDER_NUMBER, COL_FULL_NAME, COL_SEARCH_STRING
+    });
+
+    public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + " ("
+            + COMMON_FIELDS +       ", "
+            + COL_NAME +            " TEXT NOT NULL, "
+            + COL_LON +             " REAL NOT NULL, "
+            + COL_LAT +             " REAL NOT NULL, "
+            + COL_RADIUS +          " INTEGER, "
+            + COL_ADDRESS +         " TEXT, "
+            + COL_PARENT_ID +       " INTEGER REFERENCES [" + TABLE + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+            + COL_ORDER_NUMBER +    " INTEGER, "
+            + COL_FULL_NAME +       " TEXT, "
+            + COL_SEARCH_STRING +   " TEXT, "
+            + "UNIQUE (" + COL_NAME + ", " + COL_PARENT_ID + ", " + COL_SYNC_DELETED + ") ON CONFLICT ABORT);";
+    //</editor-fold>
+
+    private static LocationsDAO sInstance;
 
     public synchronized static LocationsDAO getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new LocationsDAO(context);
         }
         return sInstance;
+    }
+
+    private LocationsDAO(Context context) {
+        super(context, TABLE, ALL_COLUMNS);
+        super.setDaoInheritor(this);
+    }
+
+    @Override
+    public IAbstractModel createEmptyModel() {
+        return new Location();
     }
 
     @Override
@@ -41,16 +67,16 @@ public class LocationsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor 
     private Location cursorToLocation(Cursor cursor) {
         Location location = new Location();
 
-        location.setID(cursor.getLong(mColumnIndexes.get(DBHelper.C_ID)));
-        location.setName(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_LOCATIONS_NAME)));
-        location.setFullName(cursor.getString(mColumnIndexes.get(DBHelper.C_FULL_NAME)));
-        location.setParentID(cursor.getLong(mColumnIndexes.get(DBHelper.C_PARENTID)));
-        location.setAddress(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_LOCATIONS_ADDRESS)));
-        location.setLat(cursor.getDouble(mColumnIndexes.get(DBHelper.C_REF_LOCATIONS_LAT)));
-        location.setLon(cursor.getDouble(mColumnIndexes.get(DBHelper.C_REF_LOCATIONS_LON)));
-        location.setOrderNum(cursor.getInt(mColumnIndexes.get(DBHelper.C_ORDERNUMBER)));
+        location.setID(DbUtil.getLong(cursor, COL_ID));
+        location.setName(DbUtil.getString(cursor, COL_NAME));
+        location.setFullName(DbUtil.getString(cursor, COL_FULL_NAME));
+        location.setParentID(DbUtil.getLong(cursor, COL_PARENT_ID));
+        location.setAddress(DbUtil.getString(cursor, COL_ADDRESS));
+        location.setLat(DbUtil.getDouble(cursor, COL_LAT));
+        location.setLon(DbUtil.getDouble(cursor, COL_LON));
+        location.setOrderNum(DbUtil.getInt(cursor, COL_ORDER_NUMBER));
 
-        location = (Location) DBHelper.getSyncDataFromCursor(location, cursor, mColumnIndexes);
+//        location = (Location) DBHelper.getSyncDataFromCursor(location, cursor, mColumnIndexes);
 
         return location;
     }
@@ -58,16 +84,16 @@ public class LocationsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor 
     @Override
     public void deleteModel(IAbstractModel model, boolean resetTS, Context context) {
         ContentValues values = new ContentValues();
-        values.put(DBHelper.C_LOG_TRANSACTIONS_LOCATION, -1);
-        TransactionsDAO.getInstance(context).bulkUpdateItem(DBHelper.C_LOG_TRANSACTIONS_LOCATION + " = " + model.getID(), values, resetTS);
+        values.put(TransactionsDAO.COL_LOCATION, -1);
+        TransactionsDAO.getInstance(context).bulkUpdateItem(TransactionsDAO.COL_LOCATION + " = " + model.getID(), values, resetTS);
 
         super.deleteModel(model, resetTS, context);
     }
 
     @SuppressWarnings("unchecked")
-    public List<Location> getAllLocations() throws Exception {
+    public List<Location> getAllLocations() {
         return (List<Location>) getItems(getTableName(), null, null,
-                null, DBHelper.C_ORDERNUMBER + "," + DBHelper.C_REF_LOCATIONS_NAME, null);
+                null, COL_ORDER_NUMBER + "," + COL_NAME, null);
     }
 
     public Location getLocationByID(long id) {
@@ -75,7 +101,7 @@ public class LocationsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor 
     }
 
     @Override
-    public List<?> getAllModels() throws Exception {
+    public List<?> getAllModels() {
         return getAllLocations();
     }
 }

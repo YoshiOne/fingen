@@ -4,13 +4,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.util.Pair;
 
-
-import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.adapter.AdapterBudget;
 import com.yoshione.fingen.classes.ListSumsByCabbage;
 import com.yoshione.fingen.classes.SumsByCabbage;
+import com.yoshione.fingen.db.DbUtil;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.model.BudgetForCategory;
@@ -21,22 +19,34 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-/**
- * Created by Leonid on 13.08.2015.
- * CategoriesDAO
- */
 public class CategoriesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
-    public static final String TAG = "CategoryDAO";
-    private static CategoriesDAO sInstance;
 
-    private CategoriesDAO(Context context) {
-        super(context, DBHelper.T_REF_CATEGORIES, IAbstractModel.MODEL_TYPE_CATEGORY , DBHelper.T_REF_CATEGORIES_ALL_COLUMNS);
-        super.setDaoInheritor(this);
-    }
+    //<editor-fold desc="ref_Categories">
+    public static final String TABLE = "ref_Categories";
+
+    public static final String COL_COLOR = "COLOR";
+    public static final String COL_SIGN = "Sign"; // ToDo: Remove field "Sign" from Database
+
+    public static final String[] ALL_COLUMNS = joinArrays(COMMON_COLUMNS, new String[]{
+            COL_NAME, COL_COLOR, COL_PARENT_ID, COL_ORDER_NUMBER, COL_SIGN, COL_FULL_NAME, COL_SEARCH_STRING
+    });
+
+    public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + " ("
+            + COMMON_FIELDS +       ", "
+            + COL_NAME +            " TEXT NOT NULL, "
+            + COL_COLOR +           " TEXT, "
+            + COL_PARENT_ID +       " INTEGER REFERENCES [" + TABLE + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+            + COL_ORDER_NUMBER +    " INTEGER NOT NULL, "
+            + COL_SIGN +            " INTEGER NOT NULL, "
+            + COL_FULL_NAME +       " TEXT, "
+            + COL_SEARCH_STRING +   " TEXT, "
+            + "UNIQUE (" + COL_NAME + ", " + COL_PARENT_ID + ", " + COL_SYNC_DELETED + ") ON CONFLICT ABORT);";
+    //</editor-fold>
+
+    private static CategoriesDAO sInstance;
 
     public synchronized static CategoriesDAO getInstance(Context context) {
         if (sInstance == null) {
@@ -45,12 +55,22 @@ public class CategoriesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
         return sInstance;
     }
 
+    private CategoriesDAO(Context context) {
+        super(context, TABLE, ALL_COLUMNS);
+        super.setDaoInheritor(this);
+    }
+
+    @Override
+    public IAbstractModel createEmptyModel() {
+        return new Category();
+    }
+
     public Category createCategory(Category category, Context context) throws Exception {
         List<?> models = getItems(getTableName(), null,
                 String.format("%s = '%s' AND %s = %s AND %s != %s",
-                        DBHelper.C_REF_CATEGORIES_NAME, category.getName(),
-                        DBHelper.C_PARENTID, category.getParentID(),
-                        DBHelper.C_ID, String.valueOf(category.getID()))
+                        COL_NAME, category.getName(),
+                        COL_PARENT_ID, category.getParentID(),
+                        COL_ID, String.valueOf(category.getID()))
                 , null, null, null);
         if (!models.isEmpty()) {
             return category;
@@ -69,16 +89,14 @@ public class CategoriesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
     private Category cursorToCategory(Cursor cursor) {
         Category category = new Category();
 
-        category.setID(cursor.getLong(mColumnIndexes.get(DBHelper.C_ID)));
-        category.setName(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_CATEGORIES_NAME)));
-        category.setParentID(cursor.getLong(mColumnIndexes.get(DBHelper.C_PARENTID)));
+        category.setID(DbUtil.getLong(cursor, COL_ID));
+        category.setName(DbUtil.getString(cursor, COL_NAME));
+        category.setParentID(DbUtil.getLong(cursor, COL_PARENT_ID));
 
-        category.setColor(Color.parseColor(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_CATEGORIES_COLOR))));
-        category.setOrderNum(cursor.getInt(mColumnIndexes.get(DBHelper.C_ORDERNUMBER)));
+        category.setColor(Color.parseColor(DbUtil.getString(cursor, COL_COLOR)));
+        category.setOrderNum(DbUtil.getInt(cursor, COL_ORDER_NUMBER));
 
-        category = (Category) DBHelper.getSyncDataFromCursor(category, cursor, mColumnIndexes);
-
-        category.setFullName(cursor.getString(mColumnIndexes.get(DBHelper.C_FULL_NAME)));
+        category.setFullName(DbUtil.getString(cursor, COL_FULL_NAME));
 
         return category;
     }
@@ -103,7 +121,7 @@ public class CategoriesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
             sums.setInTrSum(fact);
         }
 
-        long categoryId = cursor.getLong(mColumnIndexes.get(DBHelper.C_ID));
+        long categoryId = DbUtil.getLong(cursor, COL_ID);
 
         Category category;
 
@@ -112,15 +130,11 @@ public class CategoriesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
         } else {
             category = new Category();
             category.setID(categoryId);
-            category.setName(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_CATEGORIES_NAME)));
-//            category.setColor(Color.parseColor(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_CATEGORIES_COLOR))));
-            if (!cursor.isNull(mColumnIndexes.get(DBHelper.C_PARENTID))) {
-                category.setParentID(cursor.getLong(mColumnIndexes.get(DBHelper.C_PARENTID)));
-            } else {
-                category.setParentID(-1);
-            }
-            category.setOrderNum(cursor.getInt(mColumnIndexes.get(DBHelper.C_ORDERNUMBER)));
-            category.setFullName(cursor.getString(mColumnIndexes.get(DBHelper.C_FULL_NAME)));
+            category.setName(DbUtil.getString(cursor, COL_NAME));
+            category.setColor(Color.parseColor(DbUtil.getString(cursor, COL_COLOR)));
+            category.setParentID(!DbUtil.isNull(cursor, COL_PARENT_ID) ? DbUtil.getLong(cursor, COL_PARENT_ID) : -1);
+            category.setOrderNum(DbUtil.getInt(cursor, COL_ORDER_NUMBER));
+            category.setFullName(DbUtil.getString(cursor, COL_FULL_NAME));
             category.setBudget(new BudgetForCategory(new ListSumsByCabbage(), AdapterBudget.INFO_TYPE_ALL_TOTAL));
         }
 
@@ -134,44 +148,43 @@ public class CategoriesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
         ContentValues values = new ContentValues();
         //Удаляем бюджеты
         BudgetDAO budgetDAO = BudgetDAO.getInstance(context);
-        budgetDAO.bulkDeleteModel(budgetDAO.getModels(DBHelper.C_LOG_BUDGET_CATEGORY + " = " + model.getID()), resetTS);
+        budgetDAO.bulkDeleteModel(budgetDAO.getModels(BudgetDAO.COL_CATEGORY + " = " + model.getID()), resetTS);
 
         //Обнуляем эту категорию в таблице транзакций
         values.clear();
-        values.put(DBHelper.C_LOG_TRANSACTIONS_CATEGORY, -1);
-        TransactionsDAO.getInstance(context).bulkUpdateItem(DBHelper.C_LOG_TRANSACTIONS_CATEGORY + " = " + model.getID(), values, resetTS);
+        values.put(TransactionsDAO.COL_CATEGORY, -1);
+        TransactionsDAO.getInstance(context).bulkUpdateItem(TransactionsDAO.COL_CATEGORY + " = " + model.getID(), values, resetTS);
 
         //Обнуляем эту категорию в таблице шаблонов
         values.clear();
-        values.put(DBHelper.C_LOG_TEMPLATES_CATEGORY, -1);
-        TemplatesDAO.getInstance(context).bulkUpdateItem(DBHelper.C_LOG_TEMPLATES_CATEGORY + " = " + model.getID(), values, resetTS);
+        values.put(TemplatesDAO.COL_CATEGORY, -1);
+        TemplatesDAO.getInstance(context).bulkUpdateItem(TemplatesDAO.COL_CATEGORY + " = " + model.getID(), values, resetTS);
 
         //Обнуляем эту категорию в таблице Получателей
         values.clear();
-        values.put(DBHelper.C_REF_PAYEES_DEFCATEGORY, -1);
-        PayeesDAO.getInstance(context).bulkUpdateItem(DBHelper.C_REF_PAYEES_DEFCATEGORY + " = " + model.getID(), values, resetTS);
+        values.put(PayeesDAO.COL_DEF_CATEGORY, -1);
+        PayeesDAO.getInstance(context).bulkUpdateItem(PayeesDAO.COL_DEF_CATEGORY + " = " + model.getID(), values, resetTS);
 
         //Обнуляем эту категорию в таблице долгов
         values.clear();
-        values.put(DBHelper.C_REF_DEBTS_CATEGORY, -1);
-        CreditsDAO.getInstance(context).bulkUpdateItem(DBHelper.C_REF_DEBTS_CATEGORY + " = " + model.getID(), values, resetTS);
+        values.put(CreditsDAO.COL_CATEGORY, -1);
+        CreditsDAO.getInstance(context).bulkUpdateItem(CreditsDAO.COL_CATEGORY + " = " + model.getID(), values, resetTS);
 
         super.deleteModel(model, resetTS, context);
     }
 
     @SuppressWarnings("unchecked")
-    public List<Category> getAllCategories() throws Exception {
+    public List<Category> getAllCategories() {
         return (List<Category>) getItems(getTableName(), null,
-                null, null, DBHelper.C_ORDERNUMBER + " ASC", null);
+                null, null, COL_ORDER_NUMBER + " ASC", null);
     }
 
-    public /*synchronized*/ List<Category> getAllCategoriesWithPlanFact(int year, int month) {
+    public List<Category> getAllCategoriesWithPlanFact(int year, int month) {
         Calendar c = Calendar.getInstance();
         c.set(year, month, 1, 0, 0, 0);
         Date start = c.getTime();
         c.set(year, month, c.getActualMaximum(Calendar.DAY_OF_MONTH), 23, 59, 59);
         Date end = c.getTime();
-//        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.getInstance(context);
 
         String sql = String.format(
                 "SELECT DISTINCT ref_Categories.*, ref_Currencies._id as Currency,\n" +
@@ -227,7 +240,7 @@ public class CategoriesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
     }
 
     @Override
-    public List<?> getAllModels() throws Exception {
+    public List<?> getAllModels() {
         return getAllCategories();
     }
 }

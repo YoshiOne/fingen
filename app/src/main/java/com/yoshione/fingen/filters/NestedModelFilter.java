@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2015. 
- */
-
 package com.yoshione.fingen.filters;
 
 import android.content.Context;
@@ -9,9 +5,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.dao.AbstractDAO;
 import com.yoshione.fingen.dao.BaseDAO;
+import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.managers.TreeManager;
 import com.yoshione.fingen.utils.BaseNode;
@@ -20,10 +16,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-/**
- * Created by slv on 11.11.2015.
- * a
- */
 public class NestedModelFilter extends AbstractFilter implements Parcelable {
 
     private final HashSet<Long> mIdList;
@@ -101,22 +93,22 @@ public class NestedModelFilter extends AbstractFilter implements Parcelable {
             String field;
             switch (mModelType) {
                 case IAbstractModel.MODEL_TYPE_CATEGORY:
-                    field = DBHelper.C_LOG_TRANSACTIONS_CATEGORY;
+                    field = TransactionsDAO.COL_CATEGORY;
                     break;
                 case IAbstractModel.MODEL_TYPE_PAYEE:
-                    field = DBHelper.C_LOG_TRANSACTIONS_PAYEE;
+                    field = TransactionsDAO.COL_PAYEE;
                     break;
                 case IAbstractModel.MODEL_TYPE_PROJECT:
-                    field = DBHelper.C_LOG_TRANSACTIONS_PROJECT;
+                    field = TransactionsDAO.COL_PROJECT;
                     break;
                 case IAbstractModel.MODEL_TYPE_SIMPLEDEBT:
-                    field = DBHelper.C_LOG_TRANSACTIONS_SIMPLEDEBT;
+                    field = TransactionsDAO.COL_SIMPLE_DEBT;
                     break;
                 case IAbstractModel.MODEL_TYPE_LOCATION:
-                    field = DBHelper.C_LOG_TRANSACTIONS_LOCATION;
+                    field = TransactionsDAO.COL_LOCATION;
                     break;
                 case IAbstractModel.MODEL_TYPE_DEPARTMENT:
-                    field = DBHelper.C_LOG_TRANSACTIONS_DEPARTMENT;
+                    field = TransactionsDAO.COL_DEPARTMENT;
                     break;
                 default:
                     field = "";

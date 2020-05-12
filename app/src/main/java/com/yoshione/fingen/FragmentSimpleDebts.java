@@ -435,24 +435,20 @@ public class FragmentSimpleDebts extends BaseListFragment
         adapterD.clearDebtList();
 
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        AbstractDAO abstractDAO = BaseDAO.getDAO(IAbstractModel.MODEL_TYPE_SIMPLEDEBT, getActivity());
+        SimpleDebtsDAO simpleDebtsDAO = SimpleDebtsDAO.getInstance(getActivity());
         boolean showClosed = mPreferences.getBoolean(FgConst.PREF_SHOW_CLOSED_DEBTS, true);
-        if (abstractDAO != null) {
-            try {
-                List<SimpleDebt> models = (List<SimpleDebt>) abstractDAO.getAllModels();
-                long cabbageID = getActivity().getIntent().getLongExtra("cabbageID", -1);
-                SimpleDebt debt;
-                for (int i = models.size() - 1; i >= 0; i--) {
-                    debt = models.get(i);
-                    if ((cabbageID >= 0 && debt.getCabbageID() != cabbageID) || (!debt.isActive() && !showClosed)) {
-                        models.remove(i);
-                    }
+        try {
+            List<SimpleDebt> models = simpleDebtsDAO.getAllSimpleDebts();
+            long cabbageID = getActivity().getIntent().getLongExtra("cabbageID", -1);
+            SimpleDebt debt;
+            for (int i = models.size() - 1; i >= 0; i--) {
+                debt = models.get(i);
+                if ((cabbageID >= 0 && debt.getCabbageID() != cabbageID) || (!debt.isActive() && !showClosed)) {
+                    models.remove(i);
                 }
-                adapterD.addDebts(models, true);
-            } catch (Exception e) {
-
             }
-        }
+            adapterD.addDebts(models, true);
+        } catch (Exception ignored) { }
 
         adapterD.notifyDataSetChanged();
 

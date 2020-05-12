@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.filters.AbstractFilter;
 import com.yoshione.fingen.filters.AccountFilter;
 import com.yoshione.fingen.filters.AmountFilter;
@@ -17,11 +17,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-
-/**
- * Created by slv on 14.06.2016.
- * a
- */
 
 public class FilterManager {
 
@@ -38,18 +33,18 @@ public class FilterManager {
     };
 
     public static List<AbstractFilter> loadFiltersFromPreferences(SharedPreferences preferences, Context context) {
-        String filters[] = preferences.getString("filters", "").split(";");
+        String[] filters = preferences.getString("filters", "").split(";");
         List<AbstractFilter> filterList = new ArrayList<>();
         AbstractFilter filter;
-        String parts[];
+        String[] parts;
         try {
             for (String s : filters) {
                 parts = s.split("/");
                 if (parts.length != 5) {
                     continue;
                 }
-                long id = Integer.valueOf(parts[0]);
-                int filterType = Integer.valueOf(parts[1]);
+                long id = Integer.parseInt(parts[0]);
+                int filterType = Integer.parseInt(parts[1]);
                 switch (filterType) {
                     case IAbstractModel.MODEL_TYPE_ACCOUNT:
                         filter = new AccountFilter(id);
@@ -72,8 +67,8 @@ public class FilterManager {
                         continue;
                 }
                 if (filter.loadFromString(parts[4])) {
-                    filter.setEnabled(Boolean.valueOf(parts[2]));
-                    filter.setInverted(Boolean.valueOf(parts[3]));
+                    filter.setEnabled(Boolean.parseBoolean(parts[2]));
+                    filter.setInverted(Boolean.parseBoolean(parts[3]));
                     filterList.add(filter);
                 }
             }
@@ -133,16 +128,16 @@ public class FilterManager {
         HashSet<Long> ids = getAccountIDsFromFilters(filters, allAccountIDS);
 
         if (ids.isEmpty()) {
-            return String.format("(%s = -1 AND %s = -1)", DBHelper.C_LOG_TRANSACTIONS_SRCACCOUNT, DBHelper.C_LOG_TRANSACTIONS_DESTACCOUNT);
+            return String.format("(%s = -1 AND %s = -1)", TransactionsDAO.COL_SRC_ACCOUNT, TransactionsDAO.COL_DEST_ACCOUNT);
         } else {
             String s = TextUtils.join(",", ids);
             if (filtersForList) {
-                return String.format("(%s IN (%s) OR %s IN (%s))", DBHelper.C_LOG_TRANSACTIONS_SRCACCOUNT, s, DBHelper.C_LOG_TRANSACTIONS_DESTACCOUNT, s);
+                return String.format("(%s IN (%s) OR %s IN (%s))", TransactionsDAO.COL_SRC_ACCOUNT, s, TransactionsDAO.COL_DEST_ACCOUNT, s);
             } else {
                 if (src) {
-                    return String.format("%s IN (%s)", DBHelper.C_LOG_TRANSACTIONS_SRCACCOUNT, s);
+                    return String.format("%s IN (%s)", TransactionsDAO.COL_SRC_ACCOUNT, s);
                 } else {
-                    return String.format("%s IN (%s)", DBHelper.C_LOG_TRANSACTIONS_DESTACCOUNT, s);
+                    return String.format("%s IN (%s)", TransactionsDAO.COL_DEST_ACCOUNT, s);
                 }
             }
         }
@@ -318,8 +313,6 @@ public class FilterManager {
         }
 
         condition = TextUtils.join(" AND ", conditions);
-
-
 
         return condition;
     }

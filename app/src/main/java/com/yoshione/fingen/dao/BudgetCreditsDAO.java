@@ -2,28 +2,40 @@ package com.yoshione.fingen.dao;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Pair;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.db.DbUtil;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.model.BudgetCreditSync;
-import com.yoshione.fingen.model.Credit;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by Leonid on 07.03.2016.
- *
- */
 public class BudgetCreditsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
-    public static final String TAG = "BudgetDAO";
+
+    //<editor-fold desc="ref_budget_debts">
+    public static final String TABLE = "ref_budget_debts";
+
+    public static final String COL_YEAR = "Year";
+    public static final String COL_MONTH = "Month";
+    public static final String COL_DEBT = "Debt";
+    public static final String COL_AMOUNT = "Amount";
+
+    public static final String[] ALL_COLUMNS = joinArrays(COMMON_COLUMNS, new String[]{
+            COL_YEAR, COL_MONTH, COL_DEBT, COL_AMOUNT
+    });
+
+    public static final String SQL_CREATE_TABLE = "CREATE TABLE [" + TABLE + "] ("
+            + COMMON_FIELDS +   ", "
+            + COL_YEAR +        " INTEGER NOT NULL, "
+            + COL_MONTH +       " INTEGER NOT NULL, "
+            + COL_DEBT +        " INTEGER NOT NULL REFERENCES [" + CreditsDAO.TABLE + "]([" + COL_ID + "]) ON DELETE CASCADE ON UPDATE CASCADE, "
+            + COL_AMOUNT +      " REAL NOT NULL, "
+            + "UNIQUE (" + COL_SYNC_DELETED + ", " + COL_YEAR + ", " + COL_MONTH + ", " + COL_DEBT + ") ON CONFLICT REPLACE);";
+    //</editor-fold>
 
     private static BudgetCreditsDAO sInstance;
+
     public synchronized static BudgetCreditsDAO getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new BudgetCreditsDAO(context);
@@ -32,8 +44,13 @@ public class BudgetCreditsDAO extends BaseDAO implements AbstractDAO, IDaoInheri
     }
 
     private BudgetCreditsDAO(Context context) {
-        super(context, DBHelper.T_LOG_BUDGET_DEBTS, IAbstractModel.MODEL_TYPE_BUDGET_DEBT , DBHelper.T_LOG_BUDGET_DEBTS_ALL_COLUMNS);
+        super(context, TABLE, ALL_COLUMNS);
         super.setDaoInheritor(this);
+    }
+
+    @Override
+    public IAbstractModel createEmptyModel() {
+        return new BudgetCreditSync();
     }
 
     public void createBudget(int year, int month, long creditId, BigDecimal amount) throws Exception {
@@ -47,18 +64,15 @@ public class BudgetCreditsDAO extends BaseDAO implements AbstractDAO, IDaoInheri
 
     public void clearBudget(int year, int month) {
         String where = String.format("%s = %s AND %s = %s",
-                DBHelper.C_LOG_BUDGET_DEBTS_YEAR, String.valueOf(year),
-                DBHelper.C_LOG_BUDGET_DEBTS_MONTH, String.valueOf(month));
+                COL_YEAR, String.valueOf(year),
+                COL_MONTH, String.valueOf(month));
         bulkDeleteModel(getModels(where), true);
     }
 
     public boolean budgetExists(int year, int month, long creditId) {
-
-        Cursor cursor = mDatabase.query(DBHelper.T_LOG_BUDGET_DEBTS, null,
-                DBHelper.C_LOG_BUDGET_DEBTS_YEAR + " = ? AND " +
-                DBHelper.C_LOG_BUDGET_DEBTS_MONTH + " = ? AND " +
-                DBHelper.C_LOG_BUDGET_DEBTS_CREDIT + " = ? AND Deleted = 0", new String[]{String.valueOf(year),
-                        String.valueOf(month),String.valueOf(creditId)},
+        Cursor cursor = mDatabase.query(TABLE, null,
+                COL_YEAR + " = ? AND " + COL_MONTH + " = ? AND " + COL_DEBT + " = ? AND " + COL_SYNC_DELETED + " = 0",
+                new String[] { String.valueOf(year), String.valueOf(month), String.valueOf(creditId) },
                 null, null, null);
         boolean result = cursor.getCount() > 0;
         cursor.close();
@@ -95,8 +109,6 @@ public class BudgetCreditsDAO extends BaseDAO implements AbstractDAO, IDaoInheri
 
     }
 
-
-
     @Override
     public IAbstractModel cursorToModel(Cursor cursor) {
         return cursorToBudgetDebtSync(cursor);
@@ -104,25 +116,22 @@ public class BudgetCreditsDAO extends BaseDAO implements AbstractDAO, IDaoInheri
 
     private BudgetCreditSync cursorToBudgetDebtSync(Cursor cursor) {
         BudgetCreditSync budgetCreditSync = new BudgetCreditSync();
-        budgetCreditSync.setID(cursor.getLong(mColumnIndexes.get(DBHelper.C_ID)));
-        budgetCreditSync.setYear(cursor.getInt(mColumnIndexes.get(DBHelper.C_LOG_BUDGET_DEBTS_YEAR)));
-        budgetCreditSync.setMonth(cursor.getInt(mColumnIndexes.get(DBHelper.C_LOG_BUDGET_DEBTS_MONTH)));
-        budgetCreditSync.setCreditID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_BUDGET_DEBTS_CREDIT)));
-        budgetCreditSync.setAmount(cursor.getDouble(mColumnIndexes.get(DBHelper.C_LOG_BUDGET_AMOUNT)));
-
-        budgetCreditSync = (BudgetCreditSync) DBHelper.getSyncDataFromCursor(budgetCreditSync, cursor, mColumnIndexes);
+        budgetCreditSync.setID(DbUtil.getLong(cursor, COL_ID));
+        budgetCreditSync.setYear(DbUtil.getInt(cursor, COL_YEAR));
+        budgetCreditSync.setMonth(DbUtil.getInt(cursor, COL_MONTH));
+        budgetCreditSync.setCreditID(DbUtil.getLong(cursor, COL_DEBT));
+        budgetCreditSync.setAmount(DbUtil.getDouble(cursor, COL_AMOUNT));
 
         return budgetCreditSync;
     }
 
     @SuppressWarnings("unchecked")
-    public List<BudgetCreditSync> getAllBudgets() throws Exception {
-
+    public List<BudgetCreditSync> getAllBudgets() {
         return (List<BudgetCreditSync>) getItems(getTableName(), null, null, null, null, null);
     }
 
     @Override
-    public List<?> getAllModels() throws Exception {
+    public List<?> getAllModels() {
         return getAllBudgets();
     }
 }

@@ -6,27 +6,15 @@ import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.AccountsDAO;
+import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IOrderable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-
-/**
- * Created by slv on 12.08.2015.
- *
- */
 public class Account extends BaseModel implements IAbstractModel, IOrderable {
-
-    public static final String TAG = "com.yoshione.fingen.Model.Account";
-//    public static final int SORT_TYPE_CUSTOM = 0;
-//    private static final int SORT_TYPE_DATE_CREATION = 1;
-//    private static final int SORT_TYPE_DATE_LASTOP = 2;
-//    private static final int SORT_TYPE_BALANCE = 3;
-//    private static final int SORT_TYPE_TYPE = 4;
-//    private static final int SORT_TYPE_ALPHABET = 5;
 
     private static final int SORT_ORDER_ASC = 0;
 //    private long mId = -1;
@@ -325,17 +313,17 @@ public class Account extends BaseModel implements IAbstractModel, IOrderable {
     public ContentValues getCV() {
         ContentValues values = super.getCV();
 
-        values.put(DBHelper.C_REF_ACCOUNTS_NAME, getName());
-        values.put(DBHelper.C_REF_ACCOUNTS_CURRENCY, getCabbageId());
-        values.put(DBHelper.C_REF_ACCOUNTS_EMITENT, getEmitent());
-        values.put(DBHelper.C_REF_ACCOUNTS_COMMENT, getComment());
-        values.put(DBHelper.C_REF_ACCOUNTS_STARTBALANCE, getStartBalance().doubleValue());
-        values.put(DBHelper.C_REF_ACCOUNTS_TYPE, getAccountType().ordinal());
-        values.put(DBHelper.C_REF_ACCOUNTS_LAST4DIGITS, getLast4Digits());
-        values.put(DBHelper.C_REF_ACCOUNTS_ISCLOSED, getIsClosed() ? 1 : 0);
-        values.put(DBHelper.C_REF_ACCOUNTS_ORDER, getOrder());
-        values.put(DBHelper.C_REF_ACCOUNTS_CREDITLIMIT, getCreditLimit().doubleValue());
-        values.put(DBHelper.C_REF_ACCOUNTS_ISINCLUDEINTOTOTALS, getIsIncludeIntoTotals() ? 1 : 0);
+        values.put(AccountsDAO.COL_NAME, getName());
+        values.put(AccountsDAO.COL_CURRENCY, getCabbageId());
+        values.put(AccountsDAO.COL_EMITENT, getEmitent());
+        values.put(AccountsDAO.COL_COMMENT, getComment());
+        values.put(AccountsDAO.COL_START_BALANCE, getStartBalance().doubleValue());
+        values.put(AccountsDAO.COL_TYPE, getAccountType().ordinal());
+        values.put(AccountsDAO.COL_LAST4DIGITS, getLast4Digits());
+        values.put(AccountsDAO.COL_IS_CLOSED, getIsClosed() ? 1 : 0);
+        values.put(AccountsDAO.COL_ORDER, getOrder());
+        values.put(AccountsDAO.COL_CREDIT_LIMIT, getCreditLimit().doubleValue());
+        values.put(AccountsDAO.COL_IS_INCLUDE_INTO_TOTALS, getIsIncludeIntoTotals() ? 1 : 0);
         return values;
     }
 
@@ -376,6 +364,6 @@ public class Account extends BaseModel implements IAbstractModel, IOrderable {
 
     @Override
     public String getLogTransactionsField() {
-        return DBHelper.C_LOG_TRANSACTIONS_SRCACCOUNT;
+        return TransactionsDAO.COL_SRC_ACCOUNT;
     }
 }
