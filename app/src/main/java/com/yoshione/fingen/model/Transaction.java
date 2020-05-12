@@ -3,7 +3,7 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
 import java.math.BigDecimal;
@@ -12,11 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by slv on 14.08.2015.
- */
 public class Transaction extends BaseModel implements IAbstractModel {
-    public static final String TAG = "com.yoshione.fingen.Model.Transaction";
 
     public static final int TRANSACTION_TYPE_INCOME = 1;
     public static final int TRANSACTION_TYPE_EXPENSE = -1;
@@ -419,27 +415,27 @@ public class Transaction extends BaseModel implements IAbstractModel {
     public ContentValues getCV() {
         ContentValues values = super.getCV();
 
-        values.put(DBHelper.C_LOG_TRANSACTIONS_DATETIME, getDateTime().getTime());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_SRCACCOUNT, getAccountID());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_PAYEE, getPayeeID());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_CATEGORY, getCategoryID());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_AMOUNT, getAmount().doubleValue());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_EXCHANGERATE, getExchangeRate().doubleValue());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_PROJECT, getProjectID());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_SIMPLEDEBT, getSimpleDebtID());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_DEPARTMENT, getDepartmentID());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_LOCATION, getLocationID());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_COMMENT, getComment());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_FILE, getFile());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_DESTACCOUNT, getDestAccountID());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_AUTOCREATED, isAutoCreated() ? 1 : 0);
-        values.put(DBHelper.C_LOG_TRANSACTIONS_LAT, getLat());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_LON, getLon());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_ACCURACY, getAccuracy());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_FN, getFN());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_FD, getFD());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_FP, getFP());
-        values.put(DBHelper.C_LOG_TRANSACTIONS_SPLIT, getProductEntries().size() == 0 ? 0 : 1);
+        values.put(TransactionsDAO.COL_DATE_TIME, getDateTime().getTime());
+        values.put(TransactionsDAO.COL_SRC_ACCOUNT, getAccountID());
+        values.put(TransactionsDAO.COL_PAYEE, getPayeeID());
+        values.put(TransactionsDAO.COL_CATEGORY, getCategoryID());
+        values.put(TransactionsDAO.COL_AMOUNT, getAmount().doubleValue());
+        values.put(TransactionsDAO.COL_EXCHANGE_RATE, getExchangeRate().doubleValue());
+        values.put(TransactionsDAO.COL_PROJECT, getProjectID());
+        values.put(TransactionsDAO.COL_SIMPLE_DEBT, getSimpleDebtID());
+        values.put(TransactionsDAO.COL_DEPARTMENT, getDepartmentID());
+        values.put(TransactionsDAO.COL_LOCATION, getLocationID());
+        values.put(TransactionsDAO.COL_COMMENT, getComment());
+        values.put(TransactionsDAO.COL_FILE, getFile());
+        values.put(TransactionsDAO.COL_DEST_ACCOUNT, getDestAccountID());
+        values.put(TransactionsDAO.COL_AUTO_CREATED, isAutoCreated() ? 1 : 0);
+        values.put(TransactionsDAO.COL_LAT, getLat());
+        values.put(TransactionsDAO.COL_LON, getLon());
+        values.put(TransactionsDAO.COL_ACCURACY, getAccuracy());
+        values.put(TransactionsDAO.COL_FN, getFN());
+        values.put(TransactionsDAO.COL_FD, getFD());
+        values.put(TransactionsDAO.COL_FP, getFP());
+        values.put(TransactionsDAO.COL_SPLIT, getProductEntries().size() == 0 ? 0 : 1);
         return values;
     }
 

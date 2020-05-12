@@ -1,22 +1,14 @@
-/*
- * Copyright (c) 2015.
- */
-
 package com.yoshione.fingen.model;
 
 import android.content.ContentValues;
 import android.os.Parcel;
 
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.CabbagesDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IOrderable;
 
-/**
- * Created by slv on 04.12.2015.
- *
- */
 public class Cabbage extends BaseModel implements IAbstractModel, IOrderable {
-//    private long mId;
+
     private String mCode;
     private String mSimbol;
     private String mName;
@@ -25,7 +17,6 @@ public class Cabbage extends BaseModel implements IAbstractModel, IOrderable {
 
     public Cabbage() {
         super();
-//        mId = -1;
         mCode = "";
         mSimbol = "";
         mName = "";
@@ -109,10 +100,10 @@ public class Cabbage extends BaseModel implements IAbstractModel, IOrderable {
     @Override
     public ContentValues getCV() {
         ContentValues values = super.getCV();
-        values.put(DBHelper.C_REF_CURRENCIES_CODE,getCode());
-        values.put(DBHelper.C_REF_CURRENCIES_SYMBOL, getSimbol());
-        values.put(DBHelper.C_REF_CURRENCIES_NAME, getName());
-        values.put(DBHelper.C_REF_CURRENCIES_DECIMALCOUNT, getDecimalCount());
+        values.put(CabbagesDAO.COL_CODE, getCode());
+        values.put(CabbagesDAO.COL_SYMBOL, getSimbol());
+        values.put(CabbagesDAO.COL_NAME, getName());
+        values.put(CabbagesDAO.COL_DECIMAL_COUNT, getDecimalCount());
         return values;
     }
 

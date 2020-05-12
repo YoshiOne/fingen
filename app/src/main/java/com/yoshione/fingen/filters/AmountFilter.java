@@ -1,24 +1,15 @@
-/*
- * Copyright (c) 2015.
- */
-
 package com.yoshione.fingen.filters;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
 
-/**
- * Created by slv on 05.11.2015.
- * a
- */
 public class AmountFilter extends AbstractFilter implements Parcelable {
     public static final int TRANSACTION_TYPE_TRANSACTION = 1;
     public static final int TRANSACTION_TYPE_TRANSFER = 2;
@@ -131,77 +122,14 @@ public class AmountFilter extends AbstractFilter implements Parcelable {
         return condition;
     }
 
-    public String getSelectionString1() {
-        if (getEnabled()) {
-            String pos;
-            String neg;
-            String type;
-            if (mIncome) {
-                pos = String.format("%s BETWEEN %s AND %s", DBHelper.C_LOG_TRANSACTIONS_AMOUNT, mMinAmount.abs().toString(), mMaxAmount.abs().toString());
-            } else {
-                pos = "";
-            }
-
-            if (mExpense) {
-                neg = String.format("%s BETWEEN %s AND %s", DBHelper.C_LOG_TRANSACTIONS_AMOUNT, mMaxAmount.abs().
-                        multiply(new BigDecimal(-1)).toString(), mMinAmount.multiply(new BigDecimal(-1)).toString());
-            } else {
-                neg = "";
-            }
-
-            type = "";
-            switch (mType) {
-                case TRANSACTION_TYPE_BOTH: {
-                    type = "";
-                    break;
-                }
-                case TRANSACTION_TYPE_TRANSACTION: {
-                    type = String.format("%s < 0", DBHelper.C_LOG_TRANSACTIONS_DESTACCOUNT);
-                    break;
-                }
-
-                case TRANSACTION_TYPE_TRANSFER: {
-                    type = String.format("%s >= 0", DBHelper.C_LOG_TRANSACTIONS_DESTACCOUNT);
-                    break;
-                }
-            }
-
-            boolean or = !pos.isEmpty() & !neg.isEmpty();
-
-            String amount;
-            if (or) {
-                amount = String.format("(%s) OR (%s)", pos, neg);
-            } else {
-                amount = String.format("%s%s", pos, neg);
-            }
-
-            boolean and = !amount.isEmpty() & !type.isEmpty();
-
-            String condition;
-            if (and) {
-                condition = String.format("((%s) AND (%s))", amount, type);
-            } else {
-                condition = String.format("(%s%s)", amount, type);
-            }
-
-            if (mInverted) {
-                condition = String.format("NOT(%s)", condition);
-            }
-
-            return condition;
-        } else {
-            return "";
-        }
-    }
-
     @Override
     public String saveToString() {
         return
-                String.valueOf(mMinAmount.doubleValue()) + "@" +
-                        String.valueOf(mMaxAmount.doubleValue()) + "@" +
-                        String.valueOf(mIncome) + "@" +
-                        String.valueOf(mExpense) + "@" +
-                        String.valueOf(mType);
+                mMinAmount.doubleValue() + "@" +
+                        mMaxAmount.doubleValue() + "@" +
+                        mIncome + "@" +
+                        mExpense + "@" +
+                        mType;
     }
 
     @Override
@@ -213,9 +141,9 @@ public class AmountFilter extends AbstractFilter implements Parcelable {
         try {
             mMinAmount = new BigDecimal(strings[0]);
             mMaxAmount = new BigDecimal(strings[1]);
-            mIncome = Boolean.valueOf(strings[2]);
-            mExpense = Boolean.valueOf(strings[3]);
-            mType = Integer.valueOf(strings[4]);
+            mIncome = Boolean.parseBoolean(strings[2]);
+            mExpense = Boolean.parseBoolean(strings[3]);
+            mType = Integer.parseInt(strings[4]);
             return true;
         } catch (NumberFormatException e) {
             return false;
@@ -260,10 +188,6 @@ public class AmountFilter extends AbstractFilter implements Parcelable {
     public void setmOutcome(boolean mOutcome) {
         this.mExpense = mOutcome;
     }
-
-//    public int ismTransfer() {
-//        return mType;
-//    }
 
     public void setmTransfer(int mTransfer) {
         this.mType = mTransfer;

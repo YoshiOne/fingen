@@ -3,37 +3,54 @@ package com.yoshione.fingen.dao;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Pair;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.db.DbUtil;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.interfaces.IAbstractModel;
-import com.yoshione.fingen.model.Category;
 import com.yoshione.fingen.model.Payee;
 import com.yoshione.fingen.utils.SmsParser;
 
-import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by slv on 14.08.2015.
- * +
- */
 public class PayeesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
 
-    private static PayeesDAO sInstance;
+    //<editor-fold desc="ref_Payees">
+    public static final String TABLE = "ref_Payees";
 
-    private PayeesDAO(Context context) {
-        super(context, DBHelper.T_REF_PAYEES, IAbstractModel.MODEL_TYPE_PAYEE , DBHelper.T_REF_PAYEES_ALL_COLUMNS);
-        super.setDaoInheritor(this);
-    }
+    public static final String COL_DEF_CATEGORY = "DefCategory";
+
+    public static final String[] ALL_COLUMNS = joinArrays(COMMON_COLUMNS, new String[]{
+            COL_NAME, COL_DEF_CATEGORY, COL_PARENT_ID, COL_ORDER_NUMBER, COL_FULL_NAME, COL_SEARCH_STRING
+    });
+
+    public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + " ("
+            + COMMON_FIELDS +       ", "
+            + COL_NAME +            " TEXT NOT NULL, "
+            + COL_DEF_CATEGORY +    " INTEGER REFERENCES [" + CategoriesDAO.TABLE + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+            + COL_PARENT_ID +       " INTEGER REFERENCES [" + TABLE + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+            + COL_ORDER_NUMBER +    " INTEGER, "
+            + COL_FULL_NAME +       " TEXT, "
+            + COL_SEARCH_STRING +   " TEXT, "
+            + "UNIQUE (" + COL_NAME + ", " + COL_PARENT_ID + ", " + COL_SYNC_DELETED + ") ON CONFLICT ABORT);";
+    //</editor-fold>
+
+    private static PayeesDAO sInstance;
 
     public synchronized static PayeesDAO getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new PayeesDAO(context);
         }
         return sInstance;
+    }
+
+    private PayeesDAO(Context context) {
+        super(context, TABLE, ALL_COLUMNS);
+        super.setDaoInheritor(this);
+    }
+
+    @Override
+    public IAbstractModel createEmptyModel() {
+        return new Payee();
     }
 
     @Override
@@ -44,20 +61,14 @@ public class PayeesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
     private Payee cursorToPayee(Cursor cursor) {
         Payee payee = new Payee();
 
-        payee.setID(cursor.getLong(mColumnIndexes.get(DBHelper.C_ID)));
-        payee.setName(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_PAYEES_NAME)));
-        payee.setFullName(cursor.getString(mColumnIndexes.get(DBHelper.C_FULL_NAME)));
-        payee.setParentID(cursor.getLong(mColumnIndexes.get(DBHelper.C_PARENTID)));
+        payee.setID(DbUtil.getLong(cursor, COL_ID));
+        payee.setName(DbUtil.getString(cursor, COL_NAME));
+        payee.setFullName(DbUtil.getString(cursor, COL_FULL_NAME));
+        payee.setParentID(DbUtil.getLong(cursor, COL_PARENT_ID));
 
-        payee.setOrderNum(cursor.getInt(mColumnIndexes.get(DBHelper.C_ORDERNUMBER)));
+        payee.setOrderNum(DbUtil.getInt(cursor, COL_ORDER_NUMBER));
 
-        if (!cursor.isNull(mColumnIndexes.get(DBHelper.C_REF_PAYEES_DEFCATEGORY))) {
-            payee.setDefCategoryID(cursor.getLong(mColumnIndexes.get(DBHelper.C_REF_PAYEES_DEFCATEGORY)));
-        } else {
-            payee.setDefCategoryID(-1);
-        }
-
-        payee = (Payee) DBHelper.getSyncDataFromCursor(payee, cursor, mColumnIndexes);
+        payee.setDefCategoryID(!DbUtil.isNull(cursor, COL_DEF_CATEGORY) ? DbUtil.getLong(cursor, COL_DEF_CATEGORY) : -1);
 
         return payee;
     }
@@ -67,24 +78,24 @@ public class PayeesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         ContentValues values = new ContentValues();
         //Обнуляем таблице транзакций
         values.clear();
-        values.put(DBHelper.C_LOG_TRANSACTIONS_PAYEE, -1);
-        TransactionsDAO.getInstance(context).bulkUpdateItem(DBHelper.C_LOG_TRANSACTIONS_PAYEE + " = " + model.getID(), values, resetTS);
+        values.put(TransactionsDAO.COL_PAYEE, -1);
+        TransactionsDAO.getInstance(context).bulkUpdateItem(TransactionsDAO.COL_PAYEE + " = " + model.getID(), values, resetTS);
 
         //Обнуляем таблице шаблонов
         values.clear();
-        values.put(DBHelper.C_LOG_TEMPLATES_PAYEE, -1);
-        TemplatesDAO.getInstance(context).bulkUpdateItem(DBHelper.C_LOG_TEMPLATES_PAYEE + " = " + model.getID(), values, resetTS);
+        values.put(TemplatesDAO.COL_PAYEE, -1);
+        TemplatesDAO.getInstance(context).bulkUpdateItem(TemplatesDAO.COL_PAYEE + " = " + model.getID(), values, resetTS);
 
         //Обнуляем таблице долгов
         values.clear();
-        values.put(DBHelper.C_REF_DEBTS_PAYEE, -1);
-        CreditsDAO.getInstance(context).bulkUpdateItem(DBHelper.C_REF_DEBTS_PAYEE + " = " + model.getID(), values, resetTS);
+        values.put(CreditsDAO.COL_PAYEE, -1);
+        CreditsDAO.getInstance(context).bulkUpdateItem(CreditsDAO.COL_PAYEE + " = " + model.getID(), values, resetTS);
 
         //Удаляем все маркеры
         SmsMarkersDAO smsMarkersDAO = SmsMarkersDAO.getInstance(context);
         smsMarkersDAO.bulkDeleteModel(smsMarkersDAO.getModels(String.format("%s = %s AND %s = %s",
-                DBHelper.C_LOG_SMS_PARSER_PATTERNS_TYPE, String.valueOf(SmsParser.MARKER_TYPE_PAYEE),
-                DBHelper.C_LOG_SMS_PARSER_PATTERNS_OBJECT, String.valueOf(model.getID()))), resetTS);
+                SmsMarkersDAO.COL_TYPE, String.valueOf(SmsParser.MARKER_TYPE_PAYEE),
+                SmsMarkersDAO.COL_OBJECT, String.valueOf(model.getID()))), resetTS);
 
         super.deleteModel(model, resetTS, context);
     }
@@ -92,7 +103,7 @@ public class PayeesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
     @SuppressWarnings("unchecked")
     public List<Payee> getAllPayees() throws Exception {
         return (List<Payee>) getItems(getTableName(), null, null, null,
-                DBHelper.C_ORDERNUMBER + "," + DBHelper.C_REF_PAYEES_NAME, null);
+                COL_ORDER_NUMBER + "," + COL_NAME, null);
     }
 
     public Payee getPayeeByID(long id) {

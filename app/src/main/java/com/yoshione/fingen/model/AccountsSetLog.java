@@ -3,14 +3,8 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.AccountsSetsLogDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
-
-/**
- * Created by slv on 01.12.2016.
- * a
- */
 
 public class AccountsSetLog extends BaseModel implements IAbstractModel {
     private long mAccountSetID;
@@ -51,8 +45,8 @@ public class AccountsSetLog extends BaseModel implements IAbstractModel {
     @Override
     public ContentValues getCV() {
         ContentValues values = super.getCV();
-        values.put(DBHelper.C_LOG_ACCOUNTS_SETS_SET, getAccountSetID());
-        values.put(DBHelper.C_LOG_ACCOUNTS_SETS_ACCOUNT, getAccountID());
+        values.put(AccountsSetsLogDAO.COL_SET_ID, getAccountSetID());
+        values.put(AccountsSetsLogDAO.COL_ACCOUNT_ID, getAccountID());
         return values;
     }
 

@@ -4,18 +4,12 @@ import android.content.ContentValues;
 import android.graphics.Color;
 import android.os.Parcel;
 
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.LocationsDAO;
+import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
-/**
- * Created by slv on 13.08.2015.
- *
- */
 public class Location extends BaseModel implements IAbstractModel {
 
-    public static final String TAG = "com.yoshione.fingen.Model.Location";
-
-    //    private long mId = -1;
     private String mName;
     private String mAddress;
     private Double mLon;
@@ -26,7 +20,6 @@ public class Location extends BaseModel implements IAbstractModel {
 
     public Location() {
         super();
-//        this.mId = mID;
         this.mName = "";
         this.mAddress = "";
         this.mLon = 0d;
@@ -129,12 +122,12 @@ public class Location extends BaseModel implements IAbstractModel {
     public ContentValues getCV() {
         ContentValues values = super.getCV();
 
-        values.put(DBHelper.C_REF_LOCATIONS_NAME, getName());
-        values.put(DBHelper.C_REF_LOCATIONS_ADDRESS, getAddress());
-        values.put(DBHelper.C_REF_LOCATIONS_LAT, getLat());
-        values.put(DBHelper.C_REF_LOCATIONS_LON, getLon());
-        values.put(DBHelper.C_PARENTID, mParentID);
-        values.put(DBHelper.C_ORDERNUMBER, getOrderNum());
+        values.put(LocationsDAO.COL_NAME, getName());
+        values.put(LocationsDAO.COL_ADDRESS, getAddress());
+        values.put(LocationsDAO.COL_LAT, getLat());
+        values.put(LocationsDAO.COL_LON, getLon());
+        values.put(LocationsDAO.COL_PARENT_ID, mParentID);
+        values.put(LocationsDAO.COL_ORDER_NUMBER, getOrderNum());
         return values;
     }
 
@@ -185,6 +178,6 @@ public class Location extends BaseModel implements IAbstractModel {
 
     @Override
     public String getLogTransactionsField() {
-        return DBHelper.C_LOG_TRANSACTIONS_LOCATION;
+        return TransactionsDAO.COL_LOCATION;
     }
 }

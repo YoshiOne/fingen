@@ -4,29 +4,40 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.util.Pair;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.db.DbUtil;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.model.Project;
 import com.yoshione.fingen.utils.ColorUtils;
 
-import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by slv on 13.08.2015.
- * +
- */
 public class ProjectsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
-    private static ProjectsDAO sInstance;
 
-    private ProjectsDAO(Context context) {
-        super(context, DBHelper.T_REF_PROJECTS, IAbstractModel.MODEL_TYPE_PROJECT , DBHelper.T_REF_PROJECTS_ALL_COLUMNS);
-        super.setDaoInheritor(this);
-    }
+    //<editor-fold desc="ref_Projects">
+    public static final String TABLE = "ref_Projects";
+
+    public static final String COL_COLOR = "Color";
+    public static final String COL_IS_ACTIVE = "IsActive";
+
+    public static final String[] ALL_COLUMNS = joinArrays(COMMON_COLUMNS, new String[]{
+            COL_NAME, COL_COLOR, COL_IS_ACTIVE, COL_PARENT_ID, COL_ORDER_NUMBER, COL_FULL_NAME, COL_SEARCH_STRING
+    });
+
+    public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + " ("
+            + COMMON_FIELDS +       ", "
+            + COL_NAME +            " TEXT NOT NULL, "
+            + COL_COLOR +           " TEXT DEFAULT '#ffffff', "
+            + COL_IS_ACTIVE +       " INTEGER NOT NULL, "
+            + COL_PARENT_ID +       " INTEGER REFERENCES [" + TABLE + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+            + COL_ORDER_NUMBER +    " INTEGER, "
+            + COL_FULL_NAME +       " TEXT, "
+            + COL_SEARCH_STRING +   " TEXT, "
+            + "UNIQUE (" + COL_NAME + ", " + COL_PARENT_ID + ", " + COL_SYNC_DELETED + ") ON CONFLICT ABORT);";
+    //</editor-fold>
+
+    private static ProjectsDAO sInstance;
 
     public synchronized static ProjectsDAO getInstance(Context context) {
         if (sInstance == null) {
@@ -35,12 +46,22 @@ public class ProjectsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         return sInstance;
     }
 
+    private ProjectsDAO(Context context) {
+        super(context, TABLE, ALL_COLUMNS);
+        super.setDaoInheritor(this);
+    }
+
+    @Override
+    public IAbstractModel createEmptyModel() {
+        return new Project();
+    }
+
     public Project createProject(Project project, Context context) throws Exception {
         List<?> models = getItems(getTableName(), null,
                 String.format("%s = '%s' AND %s = %s AND %s != %s",
-                        DBHelper.C_REF_PROJECTS_NAME, project.getName(),
-                        DBHelper.C_PARENTID, project.getParentID(),
-                        DBHelper.C_ID, String.valueOf(project.getID()))
+                        COL_NAME, project.getName(),
+                        COL_PARENT_ID, project.getParentID(),
+                        COL_ID, String.valueOf(project.getID()))
                 , null, null, null);
         if (!models.isEmpty()) {
             return project;
@@ -58,20 +79,17 @@ public class ProjectsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
 
     private Project cursorToProject(Cursor cursor) {
         Project project = new Project();
-        project.setID(cursor.getLong(mColumnIndexes.get(DBHelper.C_ID)));
-        project.setName(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_PROJECTS_NAME)));
-        project.setFullName(cursor.getString(mColumnIndexes.get(DBHelper.C_FULL_NAME)));
-        project.setParentID(cursor.getLong(mColumnIndexes.get(DBHelper.C_PARENTID)));
-        project.setIsActive(Boolean.valueOf(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_PROJECTS_ISACTIVE))));
-        project.setOrderNum(cursor.getInt(mColumnIndexes.get(DBHelper.C_ORDERNUMBER)));
+        project.setID(DbUtil.getLong(cursor, COL_ID));
+        project.setName(DbUtil.getString(cursor, COL_NAME));
+        project.setFullName(DbUtil.getString(cursor, COL_FULL_NAME));
+        project.setParentID(DbUtil.getLong(cursor, COL_PARENT_ID));
+        project.setIsActive(DbUtil.getBoolean(cursor, COL_IS_ACTIVE));
+        project.setOrderNum(DbUtil.getInt(cursor, COL_ORDER_NUMBER));
         try {
-            project.setColor(Color.parseColor(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_PROJECTS_COLOR))));
+            project.setColor(Color.parseColor(DbUtil.getString(cursor, COL_COLOR)));
         } catch (Exception e) {
             project.setColor(Color.TRANSPARENT);
         }
-
-
-        project = (Project) DBHelper.getSyncDataFromCursor(project, cursor, mColumnIndexes);
 
         return project;
     }
@@ -81,16 +99,16 @@ public class ProjectsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         ContentValues values = new ContentValues();
         //Обнуляем таблице транзакций
         values.clear();
-        values.put(DBHelper.C_LOG_TRANSACTIONS_PROJECT, -1);
-        TransactionsDAO.getInstance(context).bulkUpdateItem(DBHelper.C_LOG_TRANSACTIONS_PROJECT + " = " + model.getID(), values, resetTS);
+        values.put(TransactionsDAO.COL_PROJECT, -1);
+        TransactionsDAO.getInstance(context).bulkUpdateItem(TransactionsDAO.COL_PROJECT + " = " + model.getID(), values, resetTS);
 
         super.deleteModel(model, resetTS, context);
     }
 
     @SuppressWarnings("unchecked")
-    public List<Project> getAllProjects() throws Exception {
+    public List<Project> getAllProjects() {
         return (List<Project>) getItems(getTableName(), null, null,
-                null, DBHelper.C_ORDERNUMBER + "," + DBHelper.C_REF_PROJECTS_NAME, null);
+                null, COL_ORDER_NUMBER + "," + COL_NAME, null);
     }
 
     public Project getProjectByID(long id) {
@@ -98,7 +116,7 @@ public class ProjectsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
     }
 
     @Override
-    public List<?> getAllModels() throws Exception {
+    public List<?> getAllModels() {
         return getAllProjects();
     }
 }

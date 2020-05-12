@@ -15,6 +15,7 @@ import com.yoshione.fingen.BuildConfig;
 import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.classes.ListSumsByCabbage;
 import com.yoshione.fingen.classes.SumsByCabbage;
+import com.yoshione.fingen.db.DbUtil;
 import com.yoshione.fingen.filters.AbstractFilter;
 import com.yoshione.fingen.filters.DateRangeFilter;
 import com.yoshione.fingen.filters.FilterListHelper;
@@ -43,30 +44,92 @@ import java.util.List;
 
 import io.reactivex.Single;
 
-import static com.yoshione.fingen.DBHelper.C_ID;
-import static com.yoshione.fingen.DBHelper.T_LOG_TRANSACTIONS;
-
-/**
- * Created by slv on 14.08.2015.
- * 1
- */
 public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
-    public static final String TAG = "TransactionsDAO";
-    private static final String SQLTAG = "SQLLOG";
-    private static TransactionsDAO sInstance;
-    private ProductEntrysDAO mProductEntrysDAO;
 
-    private TransactionsDAO(Context context) {
-        super(context, T_LOG_TRANSACTIONS, IAbstractModel.MODEL_TYPE_TRANSACTION, DBHelper.T_LOG_TRANSACTIONS_ALL_COLUMNS);
-        super.setDaoInheritor(this);
-        mProductEntrysDAO = ProductEntrysDAO.getInstance(context);
-    }
+    //<editor-fold desc="log_Transactions">
+    public static final String TABLE = "log_Transactions";
+
+    public static final String COL_DATE_TIME = "DateTime";
+    public static final String COL_SRC_ACCOUNT = "SrcAccount";
+    public static final String COL_PAYEE = "Payee";
+    public static final String COL_CATEGORY = "Category";
+    public static final String COL_AMOUNT = "Amount";
+    public static final String COL_PROJECT = "Project";
+    public static final String COL_SIMPLE_DEBT = "SimpleDebt";
+    public static final String COL_DEPARTMENT = "Department";
+    public static final String COL_LOCATION = "Location";
+    public static final String COL_COMMENT = "Comment";
+    public static final String COL_FILE = "File";
+    public static final String COL_DEST_ACCOUNT = "DestAccount";
+    public static final String COL_EXCHANGE_RATE = "ExchangeRate";
+    public static final String COL_AUTO_CREATED = "AutoCreated";
+    public static final String COL_LON = "Lon";
+    public static final String COL_LAT = "Lat";
+    public static final String COL_ACCURACY = "Accuracy";
+    public static final String COL_FN = "FN";
+    public static final String COL_FD = "FD";
+    public static final String COL_FP = "FP";
+    public static final String COL_SPLIT = "Split";
+    
+    public static final String[] ALL_COLUMNS = joinArrays(COMMON_COLUMNS, new String[]{
+            COL_DATE_TIME, COL_SRC_ACCOUNT, COL_PAYEE,
+            COL_CATEGORY, COL_AMOUNT, COL_PROJECT,
+            COL_SIMPLE_DEBT, COL_DEPARTMENT, COL_LOCATION,
+            COL_COMMENT, COL_FILE, COL_DEST_ACCOUNT,
+            COL_EXCHANGE_RATE, COL_AUTO_CREATED, COL_LON,
+            COL_LAT, COL_ACCURACY, COL_SEARCH_STRING,
+            COL_FN, COL_FD, COL_FP, COL_SPLIT
+    });
+    
+    public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + " ("
+            + COMMON_FIELDS +       ", "
+            + COL_DATE_TIME +       " INTEGER NOT NULL, "
+            + COL_SRC_ACCOUNT +     " INTEGER NOT NULL REFERENCES [" + AccountsDAO.TABLE + "]([" + COL_ID + "]) ON DELETE CASCADE ON UPDATE CASCADE, "
+            + COL_PAYEE +           " INTEGER REFERENCES [" + PayeesDAO.TABLE + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+            + COL_CATEGORY +        " INTEGER REFERENCES [" + CategoriesDAO.TABLE + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+            + COL_AMOUNT +          " REAL NOT NULL, "
+            + COL_PROJECT +         " INTEGER REFERENCES [" + ProjectsDAO.TABLE + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+            + COL_SIMPLE_DEBT +     " INTEGER REFERENCES [" + SimpleDebtsDAO.TABLE + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+            + COL_DEPARTMENT +      " INTEGER REFERENCES [" + DepartmentsDAO.TABLE + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+            + COL_LOCATION +        " INTEGER REFERENCES [" + LocationsDAO.TABLE + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE,"
+            + COL_COMMENT +         " TEXT, "
+            + COL_FILE +            " TEXT, "
+            + COL_DEST_ACCOUNT +    " INTEGER NOT NULL REFERENCES [" + AccountsDAO.TABLE + "]([" + COL_ID + "]) ON DELETE CASCADE ON UPDATE CASCADE, "
+            + COL_EXCHANGE_RATE +   " REAL NOT NULL, "
+            + COL_AUTO_CREATED +    " INTEGER NOT NULL, "
+            + COL_LON +             " REAL, "
+            + COL_LAT +             " REAL, "
+            + COL_ACCURACY +        " INTEGER,"
+            + COL_FN +              " INTEGER DEFAULT 0,"
+            + COL_FD +              " INTEGER DEFAULT 0,"
+            + COL_FP +              " INTEGER DEFAULT 0,"
+            + COL_SPLIT +           " INTEGER DEFAULT 0,"
+            + COL_SEARCH_STRING +   " TEXT);";
+
+    public static final String SQL_CREATE_INDEX = "CREATE INDEX [idx] ON [log_Transactions] ([Deleted], [DateTime], [SrcAccount], [DestAccount], [Payee], [Category], [Project], [Department], [Location], [SimpleDebt]);";
+    //</editor-fold>
+
+    private static TransactionsDAO sInstance;
 
     public synchronized static TransactionsDAO getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new TransactionsDAO(context);
         }
         return sInstance;
+    }
+
+    private static final String SQLTAG = "SQLLOG";
+    private ProductEntrysDAO mProductEntrysDAO;
+
+    private TransactionsDAO(Context context) {
+        super(context, TABLE, ALL_COLUMNS);
+        super.setDaoInheritor(this);
+        mProductEntrysDAO = ProductEntrysDAO.getInstance(context);
+    }
+
+    @Override
+    public IAbstractModel createEmptyModel() {
+        return new Transaction(-1);
     }
 
     @Override
@@ -77,29 +140,29 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
     private Transaction cursorToTransaction(Cursor cursor) {
         Transaction transaction = new Transaction(-1);
 
-        transaction.setID(cursor.getLong(mColumnIndexes.get(C_ID)));
-        transaction.setDateTime(new Date(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_DATETIME))));
-        transaction.setAccountID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_SRCACCOUNT)));
-        transaction.setPayeeID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_PAYEE)));
-        transaction.setCategoryID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_CATEGORY)));
-        transaction.setAmount(new BigDecimal(cursor.getDouble(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_AMOUNT))), Transaction.TRANSACTION_TYPE_UNDEFINED);
-        transaction.setProjectID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_PROJECT)));
-        transaction.setDepartmentID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_DEPARTMENT)));
-        transaction.setLocationID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_LOCATION)));
-        transaction.setComment(cursor.getString(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_COMMENT)));
-        transaction.setFile(cursor.getString(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_FILE)));
-        transaction.setDestAccountID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_DESTACCOUNT)));
-        transaction.setExchangeRate(new BigDecimal(cursor.getDouble(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_EXCHANGERATE))));
-        transaction.setAutoCreated(cursor.getInt(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_AUTOCREATED)) == 1);
-        transaction.setLat(cursor.getDouble(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_LAT)));
-        transaction.setLon(cursor.getDouble(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_LON)));
-        transaction.setAccuracy(cursor.getInt(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_ACCURACY)));
-        transaction.setSimpleDebtID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_SIMPLEDEBT)));
-        transaction.setFN(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_FN)));
-        transaction.setFD(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_FD)));
-        transaction.setFP(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_FP)));
+        transaction.setID(DbUtil.getLong(cursor, COL_ID));
+        transaction.setDateTime(new Date(DbUtil.getLong(cursor, COL_DATE_TIME)));
+        transaction.setAccountID(DbUtil.getLong(cursor, COL_SRC_ACCOUNT));
+        transaction.setPayeeID(DbUtil.getLong(cursor, COL_PAYEE));
+        transaction.setCategoryID(DbUtil.getLong(cursor, COL_CATEGORY));
+        transaction.setAmount(new BigDecimal(DbUtil.getDouble(cursor, COL_AMOUNT)), Transaction.TRANSACTION_TYPE_UNDEFINED);
+        transaction.setProjectID(DbUtil.getLong(cursor, COL_PROJECT));
+        transaction.setDepartmentID(DbUtil.getLong(cursor, COL_DEPARTMENT));
+        transaction.setLocationID(DbUtil.getLong(cursor, COL_LOCATION));
+        transaction.setComment(DbUtil.getString(cursor, COL_COMMENT));
+        transaction.setFile(DbUtil.getString(cursor, COL_FILE));
+        transaction.setDestAccountID(DbUtil.getLong(cursor, COL_DEST_ACCOUNT));
+        transaction.setExchangeRate(new BigDecimal(DbUtil.getDouble(cursor, COL_EXCHANGE_RATE)));
+        transaction.setAutoCreated(DbUtil.getBoolean(cursor, COL_AUTO_CREATED));
+        transaction.setLat(DbUtil.getDouble(cursor, COL_LAT));
+        transaction.setLon(DbUtil.getDouble(cursor, COL_LON));
+        transaction.setAccuracy(DbUtil.getInt(cursor, COL_ACCURACY));
+        transaction.setSimpleDebtID(DbUtil.getLong(cursor, COL_SIMPLE_DEBT));
+        transaction.setFN(DbUtil.getLong(cursor, COL_FN));
+        transaction.setFD(DbUtil.getLong(cursor, COL_FD));
+        transaction.setFP(DbUtil.getLong(cursor, COL_FP));
 
-        if (cursor.getInt(mColumnIndexes.get(DBHelper.C_LOG_TRANSACTIONS_SPLIT)) == 1) {
+        if (DbUtil.getBoolean(cursor, COL_SPLIT)) {
             List<ProductEntry> entries = new ArrayList<>();
             for (IAbstractModel entry : mProductEntrysDAO.getAllEntriesOfTransaction(transaction.getID(), false)) {
                 entries.add((ProductEntry) entry);
@@ -116,15 +179,13 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
             transaction.setTransactionType(Transaction.TRANSACTION_TYPE_TRANSFER);
         }
 
-        transaction = (Transaction) DBHelper.getSyncDataFromCursor(transaction, cursor, mColumnIndexes);
-
         return transaction;
     }
 
     private void updateBalanceForTransaction(Transaction t, int mult, boolean revert) {
-        updateBalance(revert, t.getAmount().doubleValue(), mult, t.getAccountID(), t.getID(), t.getDateTime().getTime());
+        RunningBalanceDAO.updateBalance(mDatabase, revert, t.getAmount().doubleValue(), mult, t.getAccountID(), t.getID(), t.getDateTime().getTime());
         if (t.getDestAccountID() >= 0) {
-            updateBalance(revert, TransferManager.getDestAmount(t).doubleValue(), mult, t.getDestAccountID(), t.getID(), t.getDateTime().getTime());
+            RunningBalanceDAO.updateBalance(mDatabase, revert, TransferManager.getDestAmount(t).doubleValue(), mult, t.getDestAccountID(), t.getID(), t.getDateTime().getTime());
         }
     }
 
@@ -213,7 +274,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
         }
 
         if (!models.isEmpty()) {
-            String where = String.format("%s IN (%s)", DBHelper.C_LOG_PRODUCTS_TRANSACTIONID, TextUtils.join(",", tids));
+            String where = String.format("%s IN (%s)", ProductEntrysDAO.COL_TRANSACTION_ID, TextUtils.join(",", tids));
             mProductEntrysDAO.bulkDeleteModel(mProductEntrysDAO.getModels(where), true);
         }
 
@@ -265,7 +326,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
 
     @Override
     public void deleteAllModels() {
-        mDatabase.execSQL("DELETE FROM log_Running_Balance");
+        mDatabase.execSQL("DELETE FROM " + RunningBalanceDAO.TABLE);
         super.deleteAllModels();
     }
 
@@ -282,7 +343,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
             String tableName;
 
             if (filterListHelper.getSearchString().isEmpty()) {
-                tableName = T_LOG_TRANSACTIONS;
+                tableName = TABLE;
             } else {
                 createSearchTransactionsTable(Translit.toTranslit(filterListHelper.getSearchString().toLowerCase()).replaceAll("'", "''"));
                 tableName = DBHelper.T_SEARCH_TRANSACTIONS;
@@ -296,15 +357,15 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
                 where = "";
             }
 
-            String sql = "SELECT DISTINCT lt.*, (frb.Income + frb.Expense + sa.StartBalance) as FromBalance, (trb.Income + trb.Expense + da.StartBalance) as ToBalance\n" +
+            String sql = "SELECT DISTINCT lt.*, (frb." + RunningBalanceDAO.COL_INCOME + " + frb." + RunningBalanceDAO.COL_EXPENSE + " + sa." + AccountsDAO.COL_START_BALANCE + ") as FromBalance, (trb." + RunningBalanceDAO.COL_INCOME + " + trb." + RunningBalanceDAO.COL_EXPENSE + " + da." + AccountsDAO.COL_START_BALANCE + ") as ToBalance\n" +
                     "FROM " + tableName + " as lt\n" +
-                    "LEFT OUTER JOIN ref_Accounts sa ON sa._id = SrcAccount\n" +
-                    "LEFT OUTER JOIN ref_Accounts da ON da._id = DestAccount\n" +
-                    "LEFT OUTER JOIN log_Running_Balance AS frb ON frb.TransactionID = lt._id AND frb.AccountID = lt.SrcAccount\n" +
-                    "LEFT OUTER JOIN log_Running_Balance AS trb ON trb.TransactionID = lt._id AND trb.AccountID = lt.DestAccount\n" +
-                    "WHERE lt.Deleted = 0" + where + "\n" +
-                    "ORDER BY DateTime DESC\n" +
-                    "LIMIT " + String.valueOf(first) + ", " + String.valueOf(count);
+                    "LEFT OUTER JOIN " + AccountsDAO.TABLE + " sa ON sa." + COL_ID + " = " + COL_SRC_ACCOUNT + "\n" +
+                    "LEFT OUTER JOIN " + AccountsDAO.TABLE + " da ON da." + COL_ID + " = " + COL_DEST_ACCOUNT + "\n" +
+                    "LEFT OUTER JOIN " + RunningBalanceDAO.TABLE + " AS frb ON frb." + RunningBalanceDAO.COL_TRANSACTION_ID + " = lt." + COL_ID + " AND frb." + RunningBalanceDAO.COL_ACCOUNT_ID + " = lt." + COL_SRC_ACCOUNT + "\n" +
+                    "LEFT OUTER JOIN " + RunningBalanceDAO.TABLE + " AS trb ON trb." + RunningBalanceDAO.COL_TRANSACTION_ID + " = lt." + COL_ID + " AND trb." + RunningBalanceDAO.COL_ACCOUNT_ID + " = lt." + COL_DEST_ACCOUNT + "\n" +
+                    "WHERE lt." + COL_SYNC_DELETED + " = 0" + where + "\n" +
+                    "ORDER BY " + COL_DATE_TIME + " DESC\n" +
+                    "LIMIT " + first + ", " + count;
 
             if (BuildConfig.DEBUG) {
                 Log.d(SQLTAG, sql);
@@ -350,13 +411,11 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
                         "%s > '%s' AND \n" +
                         "%s < '%s' AND \n" +
                         "Deleted = 0",
-                DBHelper.C_LOG_TRANSACTIONS_AMOUNT, String.valueOf(transaction.getAmount().doubleValue()),
-                DBHelper.C_LOG_TRANSACTIONS_DATETIME, String.valueOf(start.getTime()),
-                DBHelper.C_LOG_TRANSACTIONS_DATETIME, String.valueOf(end.getTime()));
+                COL_AMOUNT, String.valueOf(transaction.getAmount().doubleValue()),
+                COL_DATE_TIME, String.valueOf(start.getTime()),
+                COL_DATE_TIME, String.valueOf(end.getTime()));
 
-//        Log.d(TAG, select);
-
-        Cursor cursor = mDatabase.query(T_LOG_TRANSACTIONS, null,
+        Cursor cursor = mDatabase.query(TABLE, null,
                 select, null,
                 null, null, null);
 
@@ -377,16 +436,16 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
     }
 
     @Override
-    public List<?> getAllModels() throws Exception {
+    public List<?> getAllModels() {
         return getAllTransactions();
     }
 
     @SuppressWarnings("unchecked")
-    public List<Transaction> getAllTransactions() throws Exception {
+    public List<Transaction> getAllTransactions() {
 
         return (List<Transaction>) getItems(getTableName(), null,
                 null, null,
-                String.format("%s %s", DBHelper.C_LOG_TRANSACTIONS_DATETIME, "desc"),
+                String.format("%s %s", COL_DATE_TIME, "desc"),
                 null);
     }
 
@@ -792,17 +851,17 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
             case IAbstractModel.MODEL_TYPE_ACCOUNT:
                 return "Account";
             case IAbstractModel.MODEL_TYPE_CATEGORY:
-                return DBHelper.C_LOG_TRANSACTIONS_CATEGORY;
+                return COL_CATEGORY;
             case IAbstractModel.MODEL_TYPE_PROJECT:
-                return DBHelper.C_LOG_TRANSACTIONS_PROJECT;
+                return COL_PROJECT;
             case IAbstractModel.MODEL_TYPE_SIMPLEDEBT:
-                return DBHelper.C_LOG_TRANSACTIONS_SIMPLEDEBT;
+                return COL_SIMPLE_DEBT;
             case IAbstractModel.MODEL_TYPE_PAYEE:
-                return DBHelper.C_LOG_TRANSACTIONS_PAYEE;
+                return COL_PAYEE;
             case IAbstractModel.MODEL_TYPE_LOCATION:
-                return DBHelper.C_LOG_TRANSACTIONS_LOCATION;
+                return COL_LOCATION;
             case IAbstractModel.MODEL_TYPE_DEPARTMENT:
-                return DBHelper.C_LOG_TRANSACTIONS_DEPARTMENT;
+                return COL_DEPARTMENT;
             default:
                 throw new Exception();
         }
@@ -930,15 +989,15 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
                         "    %s > '%s' AND \n" +
                         "    %s < '%s' AND \n" +
                         "    Deleted = 0", /*DBHelper.T_LOG_TRANSACTIONS,*/
-                DBHelper.C_LOG_TRANSACTIONS_SRCACCOUNT, String.valueOf(transaction.getAccountID()),
-                DBHelper.C_LOG_TRANSACTIONS_AMOUNT, String.valueOf(transaction.getAmount().doubleValue()),
-                DBHelper.C_LOG_TRANSACTIONS_DATETIME, String.valueOf(transaction.getDateTime().getTime() - 60000 * 30),
-                DBHelper.C_LOG_TRANSACTIONS_DATETIME, String.valueOf(transaction.getDateTime().getTime() + 60000 * 30));
+                COL_SRC_ACCOUNT, String.valueOf(transaction.getAccountID()),
+                COL_AMOUNT, String.valueOf(transaction.getAmount().doubleValue()),
+                COL_DATE_TIME, String.valueOf(transaction.getDateTime().getTime() - 60000 * 30),
+                COL_DATE_TIME, String.valueOf(transaction.getDateTime().getTime() + 60000 * 30));
 
 //        Log.d(TAG, select);
 
 
-        Cursor cursor = mDatabase.query(T_LOG_TRANSACTIONS, null,
+        Cursor cursor = mDatabase.query(TABLE, null,
                 select, null,
                 null, null, null);
 
@@ -991,11 +1050,11 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
             DateTime > 123456789)
         */
         String select = String.format("%s = %s AND %s > '%s' AND Deleted = 0",
-                DBHelper.C_LOG_TRANSACTIONS_SRCACCOUNT, String.valueOf(transaction.getAccountID()),
-                DBHelper.C_LOG_TRANSACTIONS_DATETIME, String.valueOf(transaction.getDateTime()));
+                COL_SRC_ACCOUNT, String.valueOf(transaction.getAccountID()),
+                COL_DATE_TIME, String.valueOf(transaction.getDateTime()));
 
 
-        Cursor cursor = mDatabase.query(T_LOG_TRANSACTIONS, null,
+        Cursor cursor = mDatabase.query(TABLE, null,
                 select, null,
                 null, null, null);
 
@@ -1008,10 +1067,10 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
     public Pair<Date, Date> getFullDateRange() {
         Date first = new Date();
         Date last = new Date();
-        String minCol = String.format("MIN(%s) AS minDate", DBHelper.C_LOG_TRANSACTIONS_DATETIME);
-        String maxCol = String.format("MAX(%s) AS maxDate", DBHelper.C_LOG_TRANSACTIONS_DATETIME);
+        String minCol = String.format("MIN(%s) AS minDate", COL_DATE_TIME);
+        String maxCol = String.format("MAX(%s) AS maxDate", COL_DATE_TIME);
 
-        Cursor cursor = mDatabase.query(T_LOG_TRANSACTIONS, new String[]{minCol, maxCol},
+        Cursor cursor = mDatabase.query(TABLE, new String[]{minCol, maxCol},
                 "Deleted = 0", null, null, null, null);
         if (cursor.getCount() == 0) {
             cursor.close();

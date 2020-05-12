@@ -4,8 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.SmsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
 import java.text.DateFormat;
@@ -13,14 +12,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by slv on 30.10.2015.
- *
- */
 public class Sms extends BaseModel implements IAbstractModel {
-    public static final String TAG = "com.yoshione.fingen.Model.Sms";
 
-    //    private long mId = -1;
     private Date mDateTime;
     private long mSenderId;
     private String mBody;
@@ -138,9 +131,9 @@ public class Sms extends BaseModel implements IAbstractModel {
     public ContentValues getCV() {
         ContentValues values = super.getCV();
 
-        values.put(DBHelper.C_LOG_INCOMING_SMS_DATETIME, getmDateTimeAsStringForSql());
-        values.put(DBHelper.C_LOG_INCOMING_SMS_SENDER, getSenderId());
-        values.put(DBHelper.C_LOG_INCOMING_SMS_BODY, getmBody());
+        values.put(SmsDAO.COL_DATE_TIME, getmDateTimeAsStringForSql());
+        values.put(SmsDAO.COL_SENDER, getSenderId());
+        values.put(SmsDAO.COL_BODY, getmBody());
         return values;
     }
 

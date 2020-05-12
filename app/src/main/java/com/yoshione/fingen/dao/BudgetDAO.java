@@ -2,29 +2,42 @@ package com.yoshione.fingen.dao;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Pair;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.db.DbUtil;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.model.BudgetCatSync;
-import com.yoshione.fingen.model.Cabbage;
-import com.yoshione.fingen.model.Category;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by Leonid on 07.03.2016.
- *
- */
 public class BudgetDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
-    public static final String TAG = "BudgetDAO";
+
+    //<editor-fold desc="ref_budget">
+    public static final String TABLE = "ref_budget";
+
+    public static final String COL_YEAR = "Year";
+    public static final String COL_MONTH = "Month";
+    public static final String COL_CATEGORY = "Category";
+    public static final String COL_AMOUNT = "Amount";
+    public static final String COL_CURRENCY = "Currency";
+
+    public static final String[] ALL_COLUMNS = joinArrays(COMMON_COLUMNS, new String[]{
+            COL_YEAR, COL_MONTH, COL_CATEGORY, COL_AMOUNT, COL_CURRENCY
+    });
+
+    public static final String SQL_CREATE_TABLE = "CREATE TABLE [" + TABLE + "] ("
+            + COMMON_FIELDS +   ", "
+            + COL_YEAR +        " INTEGER NOT NULL, "
+            + COL_MONTH +       " INTEGER NOT NULL, "
+            + COL_CATEGORY +    " INTEGER NOT NULL REFERENCES [" + CategoriesDAO.TABLE + "]([" + COL_ID + "]) ON DELETE CASCADE ON UPDATE CASCADE, "
+            + COL_AMOUNT +      " REAL NOT NULL, "
+            + COL_CURRENCY +    " INTEGER NOT NULL REFERENCES [" + CabbagesDAO.TABLE + "]([" + COL_ID + "]) ON DELETE CASCADE ON UPDATE CASCADE, "
+            + "UNIQUE (" + COL_SYNC_DELETED + ", " + COL_YEAR + ", " + COL_MONTH + ", " + COL_CATEGORY + ", " + COL_CURRENCY + ") ON CONFLICT REPLACE);";
+    //</editor-fold>
 
     private static BudgetDAO sInstance;
+
     public synchronized static BudgetDAO getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new BudgetDAO(context);
@@ -33,8 +46,13 @@ public class BudgetDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
     }
 
     private BudgetDAO(Context context) {
-        super(context, DBHelper.T_LOG_BUDGET, IAbstractModel.MODEL_TYPE_BUDGET , DBHelper.T_LOG_BUDGET_ALL_COLUMNS);
+        super(context, TABLE, ALL_COLUMNS);
         super.setDaoInheritor(this);
+    }
+
+    @Override
+    public IAbstractModel createEmptyModel() {
+        return new BudgetCatSync();
     }
 
     public void createBudget(int year, int month, long categoryId, BigDecimal amount, long cabbageId) throws Exception {
@@ -50,27 +68,24 @@ public class BudgetDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
 
     public void deleteBudget(int year, int month, long categoryId, long cabbageId) {
         String where = String.format("%s = %s AND %s = %s AND %s = %s AND %s = %s",
-                DBHelper.C_LOG_BUDGET_YEAR, String.valueOf(year),
-                DBHelper.C_LOG_BUDGET_MONTH, String.valueOf(month),
-                DBHelper.C_LOG_BUDGET_CATEGORY, String.valueOf(categoryId),
-                DBHelper.C_LOG_BUDGET_CURRENCY, String.valueOf(cabbageId));
+                COL_YEAR, String.valueOf(year),
+                COL_MONTH, String.valueOf(month),
+                COL_CATEGORY, String.valueOf(categoryId),
+                COL_CURRENCY, String.valueOf(cabbageId));
         bulkDeleteModel(getModels(where), true);
     }
 
     public void clearBudget(int year, int month) {
         String where = String.format("%s = %s AND %s = %s",
-                DBHelper.C_LOG_BUDGET_YEAR, String.valueOf(year),
-                DBHelper.C_LOG_BUDGET_MONTH, String.valueOf(month));
+                COL_YEAR, String.valueOf(year),
+                COL_MONTH, String.valueOf(month));
         bulkDeleteModel(getModels(where), true);
     }
 
     public /*synchronized*/ boolean budgetExists(int year, int month, long categoryId) {
-
-        Cursor cursor = mDatabase.query(DBHelper.T_LOG_BUDGET, null,
-                DBHelper.C_LOG_BUDGET_YEAR + " = ? AND " +
-                        DBHelper.C_LOG_BUDGET_MONTH + " = ? AND " +
-                        DBHelper.C_LOG_BUDGET_CATEGORY + " = ? AND Deleted = 0", new String[]{String.valueOf(year),
-                        String.valueOf(month),String.valueOf(categoryId)},
+        Cursor cursor = mDatabase.query(TABLE, null,
+                COL_YEAR + " = ? AND " + COL_MONTH + " = ? AND " + COL_CATEGORY + " = ? AND " + COL_SYNC_DELETED + " = 0",
+                new String[]{String.valueOf(year), String.valueOf(month), String.valueOf(categoryId)},
                 null, null, null);
         boolean result = cursor.getCount() > 0;
         cursor.close();
@@ -133,8 +148,6 @@ public class BudgetDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
 
     }
 
-
-
     @Override
     public IAbstractModel cursorToModel(Cursor cursor) {
         return cursorToBudgetCatSync(cursor);
@@ -142,21 +155,18 @@ public class BudgetDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
 
     private BudgetCatSync cursorToBudgetCatSync(Cursor cursor) {
         BudgetCatSync budgetCatSync = new BudgetCatSync();
-        budgetCatSync.setID(cursor.getLong(mColumnIndexes.get(DBHelper.C_ID)));
-        budgetCatSync.setYear(cursor.getInt(mColumnIndexes.get(DBHelper.C_LOG_BUDGET_YEAR)));
-        budgetCatSync.setMonth(cursor.getInt(mColumnIndexes.get(DBHelper.C_LOG_BUDGET_MONTH)));
-        budgetCatSync.setCategoryID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_BUDGET_CATEGORY)));
-        budgetCatSync.setCabbageID(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_BUDGET_CURRENCY)));
-        budgetCatSync.setAmount(cursor.getDouble(mColumnIndexes.get(DBHelper.C_LOG_BUDGET_AMOUNT)));
-
-        budgetCatSync = (BudgetCatSync) DBHelper.getSyncDataFromCursor(budgetCatSync, cursor, mColumnIndexes);
+        budgetCatSync.setID(DbUtil.getLong(cursor, COL_ID));
+        budgetCatSync.setYear(DbUtil.getInt(cursor, COL_YEAR));
+        budgetCatSync.setMonth(DbUtil.getInt(cursor, COL_MONTH));
+        budgetCatSync.setCategoryID(DbUtil.getLong(cursor, COL_CATEGORY));
+        budgetCatSync.setCabbageID(DbUtil.getLong(cursor, COL_CURRENCY));
+        budgetCatSync.setAmount(DbUtil.getDouble(cursor, COL_AMOUNT));
 
         return budgetCatSync;
     }
 
     @SuppressWarnings("unchecked")
     public List<BudgetCatSync> getAllBudgets() throws Exception {
-
         return (List<BudgetCatSync>) getItems(getTableName(), null, null, null, null, null);
     }
 

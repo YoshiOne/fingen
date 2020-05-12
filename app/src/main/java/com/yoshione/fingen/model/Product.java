@@ -3,13 +3,8 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.ProductsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
-
-/**
- * Created by slv on 30.01.2018.
- *
- */
 
 public class Product extends BaseModel implements IAbstractModel {
 
@@ -55,7 +50,7 @@ public class Product extends BaseModel implements IAbstractModel {
     public ContentValues getCV() {
         ContentValues values = super.getCV();
 
-        values.put(DBHelper.C_REF_PAYEES_NAME, getName());
+        values.put(ProductsDAO.COL_NAME, getName());
 
         return values;
     }

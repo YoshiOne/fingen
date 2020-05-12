@@ -3,16 +3,11 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.ProductEntrysDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
-/**
- * Created by slv on 30.01.2018.
- *
- */
 
 public class ProductEntry extends BaseModel implements IAbstractModel {
 
@@ -115,12 +110,12 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
     public ContentValues getCV() {
         ContentValues values = super.getCV();
 
-        values.put(DBHelper.C_LOG_PRODUCTS_TRANSACTIONID, mTransactionID);
-        values.put(DBHelper.C_LOG_PRODUCTS_CATEGORY_ID, mCategoryID);
-        values.put(DBHelper.C_LOG_PRODUCTS_PROJECT_ID, mProjectID);
-        values.put(DBHelper.C_LOG_PRODUCTS_PRODUCTID, mProductID);
-        values.put(DBHelper.C_LOG_PRODUCTS_QUANTITY, mQuantity.doubleValue());
-        values.put(DBHelper.C_LOG_PRODUCTS_PRICE, mPrice.doubleValue());
+        values.put(ProductEntrysDAO.COL_TRANSACTION_ID, mTransactionID);
+        values.put(ProductEntrysDAO.COL_CATEGORY_ID, mCategoryID);
+        values.put(ProductEntrysDAO.COL_PROJECT_ID, mProjectID);
+        values.put(ProductEntrysDAO.COL_PRODUCT_ID, mProductID);
+        values.put(ProductEntrysDAO.COL_QUANTITY, mQuantity.doubleValue());
+        values.put(ProductEntrysDAO.COL_PRICE, mPrice.doubleValue());
         return values;
     }
 

@@ -1,9 +1,10 @@
 package com.yoshione.fingen;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 
 import android.util.Log;
+
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.yoshione.fingen.dao.AccountsDAO;
 import com.yoshione.fingen.dao.CabbagesDAO;
@@ -53,7 +54,7 @@ public class SmsParserTest {
     }
 
     @Test
-    public void smsParser_CorrectParseSms() {ac
+    public void smsParser_CorrectParseSms() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         loadCSV();
@@ -68,9 +69,9 @@ public class SmsParserTest {
             cabbage1 = (Cabbage) CabbagesDAO.getInstance(context).createModel(new Cabbage(-1, "CB1", "CB1", "Cabbage1", 2));
             cabbage2 = (Cabbage) CabbagesDAO.getInstance(context).createModel(new Cabbage(-1, "CB2", "CB2", "Cabbage2", 2));
             account = (Account) AccountsDAO.getInstance(context).createModel(new Account(-1, "Account", cabbage1.getID(), "", "", BigDecimal.ZERO,
-                    Account.AccountType.atCash, 0, false, BigDecimal.ZERO, BigDecimal.ZERO, 0, BigDecimal.ZERO));
+                    Account.AccountType.atCash, 0, false, true, BigDecimal.ZERO, BigDecimal.ZERO, 0, BigDecimal.ZERO));
             destAccount = (Account) AccountsDAO.getInstance(context).createModel(new Account(-1, "AccountDest", cabbage1.getID(), "", "", BigDecimal.ZERO,
-                    Account.AccountType.atCash, 0, false, BigDecimal.ZERO, BigDecimal.ZERO, 0, BigDecimal.ZERO));
+                    Account.AccountType.atCash, 0, false, true, BigDecimal.ZERO, BigDecimal.ZERO, 0, BigDecimal.ZERO));
             payee = (Payee) PayeesDAO.getInstance(context).createModel(new Payee(-1, "Payee", -1, -1, 0, false));
         } catch (Exception e) {
             e.printStackTrace();

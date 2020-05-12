@@ -7,6 +7,8 @@ import android.util.Pair;
 
 import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.classes.TableInfo;
+import com.yoshione.fingen.dao.ProductEntrysDAO;
+import com.yoshione.fingen.dao.ProductsDAO;
 import com.yoshione.fingen.dao.SendersDAO;
 import com.yoshione.fingen.utils.ColorUtils;
 import com.yoshione.fingen.utils.DateTimeFormatter;
@@ -17,11 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.requery.android.database.sqlite.SQLiteDatabase;
-
-/**
- * Created by slv on 28.03.2017.
- * UpdateHelper
- */
 
 public class UpdateHelper {
 
@@ -724,12 +721,11 @@ public class UpdateHelper {
     }
 
     public static void update29(SQLiteDatabase db) {
-        String tableName = DBHelper.T_LOG_TRANSACTIONS;
-        String columnName = DBHelper.C_LOG_TRANSACTIONS_COMMENT;
+        String tableName = "log_Transactions";
         db.execSQL("ALTER TABLE " + tableName + " ADD COLUMN SearchString TEXT;");
-        db.execSQL("ALTER TABLE " + DBHelper.T_REF_SENDERS + " ADD COLUMN "+DBHelper.C_REF_SENDERS_ADD_CREDIT_LIMIT_TO_BALANCE+" INTEGER NOT NULL DEFAULT 0;");
+        db.execSQL("ALTER TABLE ref_Senders ADD COLUMN AddCreditLimitToBalance INTEGER NOT NULL DEFAULT 0;");
 
-        Cursor cursor = db.query(tableName, new String[]{DBHelper.C_ID, columnName}, "Deleted = 0", null, null, null, null);
+        Cursor cursor = db.query(tableName, new String[]{"_id", "Comment"}, "Deleted = 0", null, null, null, null);
         ContentValues cv = new ContentValues();
         try {
             if (cursor.moveToFirst()) {
@@ -746,13 +742,13 @@ public class UpdateHelper {
     }
 
     public static void update30(SQLiteDatabase db) {
-        db.execSQL("ALTER TABLE " + DBHelper.T_LOG_TRANSACTIONS + " ADD COLUMN "+DBHelper.C_LOG_TRANSACTIONS_FN+" INTEGER DEFAULT 0;");
-        db.execSQL("ALTER TABLE " + DBHelper.T_LOG_TRANSACTIONS + " ADD COLUMN "+DBHelper.C_LOG_TRANSACTIONS_FD+" INTEGER DEFAULT 0;");
-        db.execSQL("ALTER TABLE " + DBHelper.T_LOG_TRANSACTIONS + " ADD COLUMN "+DBHelper.C_LOG_TRANSACTIONS_FP+" INTEGER DEFAULT 0;");
+        db.execSQL("ALTER TABLE log_Transactions ADD COLUMN FN INTEGER DEFAULT 0;");
+        db.execSQL("ALTER TABLE log_Transactions ADD COLUMN FD INTEGER DEFAULT 0;");
+        db.execSQL("ALTER TABLE log_Transactions ADD COLUMN FP INTEGER DEFAULT 0;");
     }
 
     public static void update31(SQLiteDatabase db, Context context) {
-        db.execSQL("ALTER TABLE " + DBHelper.T_REF_PROJECTS + " ADD COLUMN "+DBHelper.C_REF_PROJECTS_COLOR+" TEXT DEFAULT '#ffffff';");
+        db.execSQL("ALTER TABLE ref_Projects ADD COLUMN Color TEXT DEFAULT '#ffffff';");
 
         Cursor cursorProjects = db.rawQuery("SELECT _id FROM ref_Projects", null);
         List<Long> projectIDs = new ArrayList<>();
@@ -772,46 +768,26 @@ public class UpdateHelper {
         ContentValues cv = new ContentValues();
         for (long id : projectIDs) {
             cv.clear();
-            cv.put(DBHelper.C_REF_PROJECTS_COLOR, String.format("#%06X", (0xFFFFFF & ColorUtils.getColor(context))));
-            db.update(DBHelper.T_REF_PROJECTS, cv, String.format("_id = %s", String.valueOf(id)), null);
+            cv.put("Color", String.format("#%06X", (0xFFFFFF & ColorUtils.getColor(context))));
+            db.update("ref_Projects", cv, String.format("_id = %s", String.valueOf(id)), null);
         }
     }
 
     public static void update32(SQLiteDatabase db) {
-        db.execSQL("ALTER TABLE " + DBHelper.T_LOG_TRANSACTIONS + " ADD COLUMN "+DBHelper.C_LOG_TRANSACTIONS_SPLIT+" INTEGER DEFAULT 0;");
+        db.execSQL("ALTER TABLE log_Transactions ADD COLUMN Split INTEGER DEFAULT 0;");
 
-        db.execSQL(DBHelper.SQL_CREATE_TABLE_REF_PRODUCTS);
-        db.execSQL(DBHelper.SQL_CREATE_TABLE_LOG_PRODUCTS);
+        db.execSQL(ProductsDAO.SQL_CREATE_TABLE);
+        db.execSQL(ProductEntrysDAO.SQL_CREATE_TABLE);
 
         ContentValues cv = new ContentValues();
-        cv.put(DBHelper.C_ID, 0);
-        cv.put(DBHelper.C_REF_PRODUCTS_NAME, "default_product");
-        db.insert(DBHelper.T_REF_PRODUCTS, "", cv);
+        cv.put("_id", 0);
+        cv.put("Name", "default_product");
+        db.insert("ref_Products", "", cv);
 
         Cursor cursorTransactions = db.rawQuery("SELECT _id, Amount FROM log_Transactions WHERE Deleted = 0", null);
         if (cursorTransactions != null) {
-            try {
-                if (cursorTransactions.moveToFirst()) {
-                    while (!cursorTransactions.isAfterLast()) {
-                        cv.clear();
-                        cv.put(DBHelper.C_SYNC_FBID, "");
-                        cv.put(DBHelper.C_SYNC_TS, -1);
-                        cv.put(DBHelper.C_SYNC_DELETED, 0);
-                        cv.put(DBHelper.C_SYNC_DIRTY, 0);
-                        cv.put(DBHelper.C_SYNC_LASTEDITED, "");
-                        cv.put(DBHelper.C_LOG_PRODUCTS_TRANSACTIONID, cursorTransactions.getLong(0));
-                        cv.put(DBHelper.C_LOG_PRODUCTS_PRODUCTID, 0);
-                        cv.put(DBHelper.C_LOG_PRODUCTS_CATEGORY_ID, -1);
-                        cv.put(DBHelper.C_LOG_PRODUCTS_PROJECT_ID, -1);
-                        cv.put(DBHelper.C_LOG_PRODUCTS_PRICE, cursorTransactions.getDouble(1));
-                        cv.put(DBHelper.C_LOG_PRODUCTS_QUANTITY, 1);
-                        db.insert(DBHelper.T_LOG_PRODUCTS, null, cv);
-                        cursorTransactions.moveToNext();
-                    }
-                }
-            } finally {
-                cursorTransactions.close();
-            }
+            ProductEntrysDAO.updateLogProducts(db, cursorTransactions);
+            cursorTransactions.close();
         }
         db.execSQL("CREATE INDEX [idx_Products] ON [log_Products] ([Deleted], [TransactionID], [ProductID]);");
     }
@@ -822,31 +798,9 @@ public class UpdateHelper {
         Cursor cursor = db.rawQuery("SELECT _id, Amount FROM log_Transactions " +
                 "WHERE _id not in (SELECT TransactionID FROM log_Products) AND Deleted = 0", null);
 
-        ContentValues cv = new ContentValues();
-
         if (cursor != null) {
-            try {
-                if (cursor.moveToFirst()) {
-                    while (!cursor.isAfterLast()) {
-                        cv.clear();
-                        cv.put(DBHelper.C_SYNC_FBID, "");
-                        cv.put(DBHelper.C_SYNC_TS, -1);
-                        cv.put(DBHelper.C_SYNC_DELETED, 0);
-                        cv.put(DBHelper.C_SYNC_DIRTY, 0);
-                        cv.put(DBHelper.C_SYNC_LASTEDITED, "");
-                        cv.put(DBHelper.C_LOG_PRODUCTS_TRANSACTIONID, cursor.getLong(0));
-                        cv.put(DBHelper.C_LOG_PRODUCTS_PRODUCTID, 0);
-                        cv.put(DBHelper.C_LOG_PRODUCTS_CATEGORY_ID, -1);
-                        cv.put(DBHelper.C_LOG_PRODUCTS_PROJECT_ID, -1);
-                        cv.put(DBHelper.C_LOG_PRODUCTS_PRICE, cursor.getDouble(1));
-                        cv.put(DBHelper.C_LOG_PRODUCTS_QUANTITY, 1);
-                        db.insert(DBHelper.T_LOG_PRODUCTS, null, cv);
-                        cursor.moveToNext();
-                    }
-                }
-            } finally {
-                cursor.close();
-            }
+            ProductEntrysDAO.updateLogProducts(db, cursor);
+            cursor.close();
         }
     }
 

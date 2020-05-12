@@ -2,21 +2,33 @@ package com.yoshione.fingen.dao;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.widget.Toast;
 
-import com.yoshione.fingen.DBHelper;
-import com.yoshione.fingen.FGApplication;
+import com.yoshione.fingen.db.DbUtil;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.model.Sms;
 
 import java.util.List;
 
-/**
- * Created by slv on 30.10.2015.
- *
- */
 public class SmsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+
+    //<editor-fold desc="log_Incoming_SMS">
+    public static final String TABLE = "log_Incoming_SMS";
+
+    public static final String COL_DATE_TIME = "DateTime";
+    public static final String COL_SENDER = "Sender";
+    public static final String COL_BODY = "Body";
+
+    public static final String[] ALL_COLUMNS = joinArrays(COMMON_COLUMNS, new String[]{
+            COL_DATE_TIME, COL_SENDER, COL_BODY
+    });
+
+    public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + " ("
+            + COMMON_FIELDS +   ", "
+            + COL_DATE_TIME +   " TEXT NOT NULL, "
+            + COL_SENDER +      " INTEGER NOT NULL, "
+            + COL_BODY +        " TEXT NOT NULL);";
+    //</editor-fold>
 
     private static SmsDAO sInstance;
 
@@ -28,8 +40,13 @@ public class SmsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
     }
 
     private SmsDAO(Context context) {
-        super(context, DBHelper.T_LOG_INCOMING_SMS, IAbstractModel.MODEL_TYPE_SMS , DBHelper.T_LOG_INCOMING_SMS_ALL_COLUMNS);
+        super(context, TABLE, ALL_COLUMNS);
         super.setDaoInheritor(this);
+    }
+
+    @Override
+    public IAbstractModel createEmptyModel() {
+        return new Sms();
     }
 
     @Override
@@ -40,18 +57,18 @@ public class SmsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
     private Sms cursorToSms(Cursor cursor) {
         Sms sms= new Sms();
 
-        sms.setID(cursor.getLong(mColumnIndexes.get(DBHelper.C_ID)));
-        sms.setmDateTimeFromDbString(cursor.getString(mColumnIndexes.get(DBHelper.C_LOG_INCOMING_SMS_DATETIME)));
-        sms.setSenderId(cursor.getLong(mColumnIndexes.get(DBHelper.C_LOG_INCOMING_SMS_SENDER)));
-        sms.setmBody(cursor.getString(mColumnIndexes.get(DBHelper.C_LOG_INCOMING_SMS_BODY)));
+        sms.setID(DbUtil.getLong(cursor, COL_ID));
+        sms.setmDateTimeFromDbString(DbUtil.getString(cursor, COL_DATE_TIME));
+        sms.setSenderId(DbUtil.getLong(cursor, COL_SENDER));
+        sms.setmBody(DbUtil.getString(cursor, COL_BODY));
 
         return sms;
     }
 
     @SuppressWarnings("unchecked")
-    public List<Sms> getAllSmss() throws Exception {
+    public List<Sms> getAllSmss() {
         return (List<Sms>) getItems(getTableName(), null, null,
-                null, DBHelper.C_LOG_INCOMING_SMS_DATETIME + " desc", null);
+                null, COL_DATE_TIME + " desc", null);
     }
 
     public Sms getSmsByID(long id) {
@@ -59,7 +76,7 @@ public class SmsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
     }
 
     @Override
-    public List<?> getAllModels() throws Exception {
+    public List<?> getAllModels() {
         return getAllSmss();
     }
 }
