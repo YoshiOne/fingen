@@ -63,7 +63,7 @@ public class FragmentChangelog extends DialogFragment {
             ChangeLogRecyclerView chgList= (ChangeLogRecyclerView) layoutInflater.inflate(resourceChangelog, null);
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-                    .setTitle(resourceChangelog == CHANGELOG_URL ? R.string.ttl_changelog : R.string.ttl_changelog)
+                    .setTitle(resourceChangelog == CHANGELOG_URL ? R.string.ttl_changelog_new : R.string.ttl_changelog)
                     .setView(chgList)
                     .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
             if (resourceChangelog == CHANGELOG_URL) {
