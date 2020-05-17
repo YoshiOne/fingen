@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.6.4.2-x.4" changeDate=">2020.05.18">
+        <changelogtext>Add check new version</changelogtext>
+        <changelogtext>Add button "All closed accounts" to account sets</changelogtext>
+        <changelogtext>Add "Close/Open account" to context menu of account</changelogtext>
+        <changelogtext>(unwo) Add department of product in transactions</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.6.4.2-x.3" changeDate=">2020.04.18">
         <changelogtext>Fixed error sign up or recovery code when request from FTS</changelogtext>
         <changelogtext>Refactored loading electronic receipt from FTS</changelogtext>
