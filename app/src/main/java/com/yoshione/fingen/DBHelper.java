@@ -275,11 +275,52 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.d(TAG, "Downgrade database " + oldVersion + " -> " + newVersion);
 
-        if (oldVersion == 36 && newVersion == 35) {
+        if (oldVersion >= 37 && newVersion == DATABASE_ORIGIN_VERSION) {
+            db.execSQL("ALTER TABLE ref_Departments RENAME TO ref_Departments_old");
+            db.execSQL("CREATE TABLE ref_Departments ("
+                    + BaseDAO.COMMON_FIELDS + ", "
+                    + BaseDAO.COL_NAME + " TEXT NOT NULL, "
+                    + DepartmentsDAO.COL_IS_ACTIVE + " INTEGER NOT NULL, "
+                    + BaseDAO.COL_PARENT_ID + " INTEGER REFERENCES [" + DepartmentsDAO.TABLE + "]([" + BaseDAO.COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+                    + BaseDAO.COL_ORDER_NUMBER + " INTEGER, "
+                    + BaseDAO.COL_FULL_NAME + " TEXT, "
+                    + BaseDAO.COL_SEARCH_STRING + " TEXT, "
+                    + "UNIQUE (" + BaseDAO.COL_NAME + ", " + BaseDAO.COL_PARENT_ID + ", " + BaseDAO.COL_SYNC_DELETED + ") ON CONFLICT ABORT);");
+            db.execSQL(
+                    "INSERT INTO ref_Departments (" + BaseDAO.COL_ID + ", " + BaseDAO.COL_SYNC_FBID + ", " + BaseDAO.COL_SYNC_TS + ", " + BaseDAO.COL_SYNC_DELETED + ", "
+                            + BaseDAO.COL_SYNC_DIRTY + ", " + BaseDAO.COL_SYNC_LAST_EDITED + ", " + BaseDAO.COL_NAME + ", " + DepartmentsDAO.COL_IS_ACTIVE+ ", "
+                            + BaseDAO.COL_PARENT_ID + ", " + BaseDAO.COL_ORDER_NUMBER + ", " + BaseDAO.COL_FULL_NAME + ", " + BaseDAO.COL_SEARCH_STRING + ")"
+                            + " SELECT " + BaseDAO.COL_ID + ", " + BaseDAO.COL_SYNC_FBID + ", " + BaseDAO.COL_SYNC_TS + ", " + BaseDAO.COL_SYNC_DELETED + ", "
+                            + BaseDAO.COL_SYNC_DIRTY + ", " + BaseDAO.COL_SYNC_LAST_EDITED + ", " + BaseDAO.COL_NAME + ", " + DepartmentsDAO.COL_IS_ACTIVE+ ", "
+                            + BaseDAO.COL_PARENT_ID + ", " + BaseDAO.COL_ORDER_NUMBER + ", " + BaseDAO.COL_FULL_NAME + ", " + BaseDAO.COL_SEARCH_STRING
+                            + " FROM ref_Departments_old");
+            db.execSQL("DROP TABLE ref_Departments_old");
+
+            db.execSQL("ALTER TABLE log_Products RENAME TO log_Products_old");
+            db.execSQL("CREATE TABLE log_Products ("
+                    + BaseDAO.COMMON_FIELDS + ", "
+                    + ProductEntrysDAO.COL_TRANSACTION_ID + " INTEGER REFERENCES [" + TransactionsDAO.TABLE + "]([" + BaseDAO.COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+                    + ProductEntrysDAO.COL_PRODUCT_ID     + " INTEGER REFERENCES [" + ProductsDAO.TABLE   + "]([" + BaseDAO.COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+                    + ProductEntrysDAO.COL_CATEGORY_ID    + " INTEGER DEFAULT -1 REFERENCES [" + CategoriesDAO.TABLE + "]([" + BaseDAO.COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+                    + ProductEntrysDAO.COL_PROJECT_ID     + " INTEGER DEFAULT -1 REFERENCES [" + ProjectsDAO.TABLE  + "]([" + BaseDAO.COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+                    + ProductEntrysDAO.COL_PRICE          + " REAL NOT NULL DEFAULT 0, "
+                    + ProductEntrysDAO.COL_QUANTITY       + " REAL NOT NULL DEFAULT 1 CHECK (Quantity >= 0));");
+            db.execSQL(
+                    "INSERT INTO log_Products (" + BaseDAO.COL_ID + ", " + BaseDAO.COL_SYNC_FBID + ", " + BaseDAO.COL_SYNC_TS + ", " + BaseDAO.COL_SYNC_DELETED + ", "
+                            + BaseDAO.COL_SYNC_DIRTY + ", " + BaseDAO.COL_SYNC_LAST_EDITED + ", " + ProductEntrysDAO.COL_TRANSACTION_ID + ", "
+                            + ProductEntrysDAO.COL_PRODUCT_ID + ", " + ProductEntrysDAO.COL_CATEGORY_ID + ", " + ProductEntrysDAO.COL_PROJECT_ID + ", "
+                            + ProductEntrysDAO.COL_PRICE + ", "  + ProductEntrysDAO.COL_QUANTITY + ")"
+                            + " SELECT " + BaseDAO.COL_ID + ", " + BaseDAO.COL_SYNC_FBID + ", " + BaseDAO.COL_SYNC_TS + ", " + BaseDAO.COL_SYNC_DELETED + ", "
+                            + BaseDAO.COL_SYNC_DIRTY + ", " + BaseDAO.COL_SYNC_LAST_EDITED + ", " + ProductEntrysDAO.COL_TRANSACTION_ID + ", "
+                            + ProductEntrysDAO.COL_PRODUCT_ID + ", " + ProductEntrysDAO.COL_CATEGORY_ID + ", " + ProductEntrysDAO.COL_PROJECT_ID + ", "
+                            + ProductEntrysDAO.COL_PRICE + ", "  + ProductEntrysDAO.COL_QUANTITY
+                            + " FROM log_Products_old");
+            db.execSQL("DROP TABLE log_Products_old");
+        }
+        if (oldVersion >= 36 && newVersion == DATABASE_ORIGIN_VERSION) {
             db.execSQL("ALTER TABLE ref_Accounts RENAME TO ref_Accounts_old");
             db.execSQL("CREATE TABLE " + AccountsDAO.TABLE + " ("
                     + AccountsDAO.COMMON_FIELDS + ", "
-                    + AccountsDAO.COL_TYPE + " INTEGER NOT NULL, "
                     + AccountsDAO.COL_TYPE + " INTEGER NOT NULL, "
                     + AccountsDAO.COL_NAME + " TEXT NOT NULL, "
                     + AccountsDAO.COL_CURRENCY + " INTEGER REFERENCES [" + CabbagesDAO.TABLE + "]([" + BaseDAO.COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
@@ -307,6 +348,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
             db.execSQL("DROP TABLE ref_Accounts_old");
         } else
             super.onDowngrade(db, oldVersion, newVersion);
+
     }
 
     String getSqliteVersion() {
