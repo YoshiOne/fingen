@@ -2027,6 +2027,10 @@
 
     <!-- 27. Products -->
     <!-- Entities -->
+    <string name="ent_split_department" formatted="false">Сплит подр.</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
     <string name="ent_quantity" formatted="false">Количество</string>
 
     <!-- 27. Products -->

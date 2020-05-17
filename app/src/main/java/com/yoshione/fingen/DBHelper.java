@@ -82,7 +82,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
     private static final String DATABASE_ORIGIN_NAME = "origin_fingen.db";
     private static final int DATABASE_ORIGIN_VERSION = 35;
     private static final String DATABASE_NAME = "fingen.db";
-    private static final int DATABASE_VERSION = 36;
+    public static final int DATABASE_VERSION = 37;
     public static final String TAG = "DBHelper";
 
     //common fields
@@ -261,6 +261,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
         if (oldVersion < 32) { UpdateHelper.update32(db); }
         if (oldVersion < 34) { UpdateHelper.update33(db); }
         if (oldVersion < 36) { UpdateHelper.update35(db); }
+        if (oldVersion < 37) { UpdateHelper.update36(db); }
         if (oldVersion < 25) {
             try {
                 updateRunningBalance(db);

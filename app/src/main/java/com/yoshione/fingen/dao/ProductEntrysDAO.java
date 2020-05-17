@@ -27,12 +27,13 @@ public class ProductEntrysDAO extends BaseDAO implements AbstractDAO, IDaoInheri
     public static final String COL_PRODUCT_ID = "ProductID";
     public static final String COL_CATEGORY_ID = "CategoryID";
     public static final String COL_PROJECT_ID = "ProjectID";
+    public static final String COL_DEPARTMENT_ID = "DepartmentID";
     public static final String COL_PRICE = "Price";
     public static final String COL_QUANTITY = "Quantity";
 
     public static final String[] ALL_COLUMNS = joinArrays(COMMON_COLUMNS, new String[]{
             COL_TRANSACTION_ID, COL_PRODUCT_ID, COL_CATEGORY_ID, COL_PROJECT_ID,
-            COL_PRICE, COL_QUANTITY
+            COL_PRICE, COL_QUANTITY, COL_DEPARTMENT_ID
     });
 
     public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + "("
@@ -41,6 +42,7 @@ public class ProductEntrysDAO extends BaseDAO implements AbstractDAO, IDaoInheri
             + COL_PRODUCT_ID     + " INTEGER REFERENCES [" + ProductsDAO.TABLE   + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
             + COL_CATEGORY_ID    + " INTEGER DEFAULT -1 REFERENCES [" + CategoriesDAO.TABLE + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
             + COL_PROJECT_ID     + " INTEGER DEFAULT -1 REFERENCES [" + ProjectsDAO.TABLE  + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+            + COL_DEPARTMENT_ID  + " INTEGER DEFAULT -1 REFERENCES [" + DepartmentsDAO.TABLE  + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
             + COL_PRICE          + " REAL NOT NULL DEFAULT 0, "
             + COL_QUANTITY       + " REAL NOT NULL DEFAULT 1 CHECK (Quantity >= 0));";
 
@@ -73,11 +75,13 @@ public class ProductEntrysDAO extends BaseDAO implements AbstractDAO, IDaoInheri
 
     private ProductEntry cursorToProductEntry(Cursor cursor) {
         ProductEntry productEntry = new ProductEntry();
+
         productEntry.setID(DbUtil.getLong(cursor, COL_ID));
         productEntry.setProductID(DbUtil.getLong(cursor, COL_PRODUCT_ID));
         productEntry.setTransactionID(DbUtil.getLong(cursor, COL_TRANSACTION_ID));
         productEntry.setCategoryID(DbUtil.getLong(cursor, COL_CATEGORY_ID));
         productEntry.setProjectID(DbUtil.getLong(cursor, COL_PROJECT_ID));
+        productEntry.setDepartmentID(DbUtil.getLong(cursor, COL_DEPARTMENT_ID));
         productEntry.setPrice(new BigDecimal(DbUtil.getDouble(cursor, COL_PRICE)).setScale(2, RoundingMode.HALF_UP));
         productEntry.setQuantity(new BigDecimal(DbUtil.getDouble(cursor, COL_QUANTITY)));
 
@@ -183,6 +187,7 @@ public class ProductEntrysDAO extends BaseDAO implements AbstractDAO, IDaoInheri
                 cv.put(ProductEntrysDAO.COL_PRODUCT_ID, 0);
                 cv.put(ProductEntrysDAO.COL_CATEGORY_ID, -1);
                 cv.put(ProductEntrysDAO.COL_PROJECT_ID, -1);
+                cv.put(ProductEntrysDAO.COL_DEPARTMENT_ID, -1);
                 cv.put(ProductEntrysDAO.COL_PRICE, cursor.getDouble(1));
                 cv.put(ProductEntrysDAO.COL_QUANTITY, 1);
                 db.insert(ProductEntrysDAO.TABLE, null, cv);

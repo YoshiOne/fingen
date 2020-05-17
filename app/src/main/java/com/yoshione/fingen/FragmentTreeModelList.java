@@ -29,6 +29,7 @@ import com.yoshione.fingen.adapter.helper.SimpleItemTouchHelperCallback;
 import com.yoshione.fingen.dao.AbstractDAO;
 import com.yoshione.fingen.dao.BaseDAO;
 import com.yoshione.fingen.dao.CategoriesDAO;
+import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.dao.ProjectsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IAdapterEventsListener;
@@ -41,6 +42,7 @@ import com.yoshione.fingen.managers.TreeManager;
 import com.yoshione.fingen.model.BaseModel;
 import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.model.Category;
+import com.yoshione.fingen.model.Department;
 import com.yoshione.fingen.model.Events;
 import com.yoshione.fingen.model.Location;
 import com.yoshione.fingen.model.Project;
@@ -257,6 +259,7 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
         switch (mInputModel.getModelType()) {
             case IAbstractModel.MODEL_TYPE_CATEGORY:
             case IAbstractModel.MODEL_TYPE_PROJECT:
+            case IAbstractModel.MODEL_TYPE_DEPARTMENT:
                 menuInflater.inflate(R.menu.context_menu_categories, menu);
                 break;
             case IAbstractModel.MODEL_TYPE_CABBAGE:
@@ -356,6 +359,14 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
                                     try {
                                         ProjectsDAO projectsDAO = ProjectsDAO.getInstance(FragmentTreeModelList.this.getActivity());
                                         projectsDAO.createProject((Project) model1, getActivity());
+                                    } catch (Exception e) {
+                                        Toast.makeText(getActivity(), R.string.msg_error_on_write_to_db, Toast.LENGTH_SHORT).show();
+                                    }
+                                } else if (model.getClass().equals(Department.class)) {
+                                    ((Department) model1).setColor(selectedColor);
+                                    try {
+                                        DepartmentsDAO departmentsDAO = DepartmentsDAO.getInstance(FragmentTreeModelList.this.getActivity());
+                                        departmentsDAO.createDepartment((Department) model1, getActivity());
                                     } catch (Exception e) {
                                         Toast.makeText(getActivity(), R.string.msg_error_on_write_to_db, Toast.LENGTH_SHORT).show();
                                     }
@@ -555,6 +566,8 @@ public class FragmentTreeModelList extends Fragment implements OnStartDragListen
                     CategoriesDAO.getInstance(getActivity()).createCategory((Category) mModel, getActivity());
                 } else if (mModel.getClass().equals(Project.class)) {
                     ProjectsDAO.getInstance(getActivity()).createProject((Project) mModel, getActivity());
+                } else if (mModel.getClass().equals(Department.class)) {
+                    DepartmentsDAO.getInstance(getActivity()).createDepartment((Department) mModel, getActivity());
                 } else {
                     AbstractDAO dao = BaseDAO.getDAO(mModel.getClass(), getActivity());
                     if (dao != null) {

@@ -2079,6 +2079,10 @@
 
     <!-- 27. Products -->
     <!-- Entities -->
+    <string name="ent_split_department" formatted="false">Split dep.</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
     <string name="ent_quantity" formatted="false">Quantity</string>
 
     <!-- 27. Products -->
