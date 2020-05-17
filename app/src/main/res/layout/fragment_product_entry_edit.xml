@@ -88,11 +88,38 @@
         app:layout_constraintTop_toTopOf="@+id/textInputLayoutProject"
         tools:ignore="ContentDescription" />
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutDepartment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/imageButtonDeleteProject"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutProject"
+        android:hint="@string/ent_department">
+
+        <EditText
+            android:id="@+id/textViewDepartment"
+            style="@style/NotEditableEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine|textNoSuggestions"
+            tools:text="Быт еда" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/imageButtonDeleteDepartment"
+        style="@style/ClearButtonStyle"
+        android:layout_centerVertical="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/textInputLayoutDepartment"
+        app:layout_constraintTop_toTopOf="@id/textInputLayoutDepartment"
+        tools:ignore="ContentDescription" />
+
     <com.yoshione.fingen.widgets.AmountEditor
         android:id="@+id/amount_editor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutProject" />
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutDepartment" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutQuantity"

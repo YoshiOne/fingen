@@ -112,19 +112,7 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
         String text;
         Spannable spannable;
         String search = mParams.mSearchString.toLowerCase();
-        if (t.getDepartmentID() < 0) {
-            text = srcAccount.getName();
-        } else {
-            Department department;
-            if (mParams.mDepartmentCache.indexOfKey(t.getDepartmentID()) >= 0) {
-                department = mParams.mDepartmentCache.get(t.getDepartmentID());
-            } else {
-                department = mParams.mDepartmentsDAO.getDepartmentByID(t.getDepartmentID());
-                mParams.mDepartmentCache.put(department.getID(), department);
-            }
-
-            text = srcAccount.getName() + "(" + department.getFullName() + ")";
-        }
+        text = srcAccount.getName();
         if (search.isEmpty() || !text.toLowerCase().contains(search)) {
             textViewAccount.setText(text);
         } else {
@@ -243,13 +231,17 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
         //<editor-fold desc="Category & Project">
         Category category;
         Project project;
+        Department department;
         boolean isSplitCategory = false;
         boolean isSplitProject = false;
+        boolean isSplitDepartment = false;
         boolean sameCategory = true;
         boolean sameProject = true;
+        boolean sameDepartment = true;
         if (t.getProductEntries().size() == 0) {
             isSplitCategory = false;
             isSplitProject = false;
+            isSplitDepartment = false;
         } else {
             Long lastID = null;
             for (ProductEntry entry : t.getProductEntries()) {
@@ -273,6 +265,18 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
                 }
                 if (entry.getProjectID() != t.getProjectID()) {
                     isSplitProject = true;
+                }
+            }
+            lastID = null;
+            for (ProductEntry entry : t.getProductEntries()) {
+                if (lastID == null) {
+                    lastID = entry.getDepartmentID();
+                } else {
+                    sameDepartment = sameDepartment & entry.getDepartmentID() == lastID;
+                    lastID = entry.getDepartmentID();
+                }
+                if (entry.getDepartmentID() != t.getDepartmentID()) {
+                    isSplitDepartment = true;
                 }
             }
         }
@@ -330,6 +334,28 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
                 mParams.mProjectCache.put(project.getID(), project);
             }
         }
+        if (!isSplitDepartment) {//это не сплит, выводим имя подразделения транзакции
+            if (mParams.mDepartmentCache.indexOfKey(t.getDepartmentID()) >= 0) {
+                department = mParams.mDepartmentCache.get(t.getDepartmentID());
+            } else {
+                department = mParams.mDepartmentsDAO.getDepartmentByID(t.getDepartmentID());
+                mParams.mDepartmentCache.put(department.getID(), department);
+            }
+        } else if (!sameDepartment) {//это сплит и у товаров разные подразделения, выводим надпись "Сплит"
+            department = new Department();
+            department.setID(0);
+            department.setColor(mParams.mColorSplit);
+            department.setFullName(mParams.mSplitStringDepartment);
+        } else {//это сплит, но у него все подразделения одинаковые, выводим название подразделения
+            ProductEntry entry = t.getProductEntries().get(0);
+            long departmentID = entry.getDepartmentID() < 0 ? t.getDepartmentID() : entry.getDepartmentID();
+            if (mParams.mDepartmentCache.indexOfKey(departmentID) >= 0) {
+                department = mParams.mDepartmentCache.get(departmentID);
+            } else {
+                department = mParams.mDepartmentsDAO.getDepartmentByID(departmentID);
+                mParams.mDepartmentCache.put(department.getID(), department);
+            }
+        }
         mTagView.setAlignEnd(true);
         mTagView.getTags().clear();
         mTagView.setTextPaddingTop(1);
@@ -337,22 +363,28 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
         mTagView.setTextPaddingRight(3);
         mTagView.setTextPaddingLeft(3);
         mTagView.setLineMargin(0f);
-        mTagView.setVisibility(category.getID() >= 0 | project.getID() >= 0 ? View.VISIBLE : View.INVISIBLE);
+        mTagView.setVisibility(category.getID() >= 0 | project.getID() >= 0 | department.getID() >= 0? View.VISIBLE : View.INVISIBLE);
         Tag tag;
         int categoryColor;
         int projectColor;
+        int departmentColor;
         if (mParams.isTagsColored) {
             categoryColor = category.getColor();
             projectColor = project.getColor();
+            departmentColor = department.getColor();
         }else {
             categoryColor = mParams.mColorTag;
             projectColor = mParams.mColorTag;
+            departmentColor = mParams.mColorTag;
         }
         if (category.getID() >= 0) {
             mTagView.addTag(getTag(category.getFullName(), categoryColor, 100f));
         }
         if (project.getID() >= 0) {
             mTagView.addTag(getTag(project.getFullName(), projectColor, 5f));
+        }
+        if (department.getID() >= 0) {
+            mTagView.addTag(getTag(department.getFullName(), departmentColor, 20f));
         }
         if (mTagView.getVisibility() == View.INVISIBLE) {
             tag = new Tag(new SpannableString("T"));

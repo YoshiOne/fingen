@@ -7,9 +7,12 @@ import android.util.Pair;
 
 import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.classes.TableInfo;
+import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.dao.ProductEntrysDAO;
 import com.yoshione.fingen.dao.ProductsDAO;
 import com.yoshione.fingen.dao.SendersDAO;
+import com.yoshione.fingen.managers.DepartmentManager;
+import com.yoshione.fingen.model.ProductEntry;
 import com.yoshione.fingen.utils.ColorUtils;
 import com.yoshione.fingen.utils.DateTimeFormatter;
 import com.yoshione.fingen.utils.Translit;
@@ -802,6 +805,11 @@ public class UpdateHelper {
             ProductEntrysDAO.updateLogProducts(db, cursor);
             cursor.close();
         }
+    }
+
+    public static void update37(SQLiteDatabase db) {
+        db.execSQL("ALTER TABLE " + DepartmentsDAO.TABLE + " ADD COLUMN " + DepartmentsDAO.COL_COLOR + " TEXT DEFAULT '#ffffff';");
+        db.execSQL("ALTER TABLE " + ProductEntrysDAO.TABLE + " ADD COLUMN " + ProductEntrysDAO.COL_DEPARTMENT_ID + " INTEGER DEFAULT -1;");
     }
 
 }

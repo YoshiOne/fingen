@@ -47,7 +47,6 @@ import com.yoshione.fingen.dao.SmsDAO;
 import com.yoshione.fingen.dao.SmsMarkersDAO;
 import com.yoshione.fingen.dao.TemplatesDAO;
 import com.yoshione.fingen.dao.TransactionsDAO;
-import com.yoshione.fingen.db.IUpdateRunningBalance;
 import com.yoshione.fingen.db.UpdateHelper;
 import com.yoshione.fingen.interfaces.IOnUnzipComplete;
 import com.yoshione.fingen.managers.CabbageManager;
@@ -80,7 +79,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
 
     private SQLiteDatabase mDatabase;
     private static final String DATABASE_NAME = "fingen.db";
-    public static final int DATABASE_VERSION = 35;
+    public static final int DATABASE_VERSION = 37;
     public static final String TAG = "DBHelper";
 
     private static String getFullNameColumn(String tableName) {
@@ -252,6 +251,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
         if (oldVersion < 31) { UpdateHelper.update31(db, mContext); }
         if (oldVersion < 32) { UpdateHelper.update32(db); }
         if (oldVersion < 34) { UpdateHelper.update33(db); }
+        if (oldVersion < 37) { UpdateHelper.update37(db); }
         if (oldVersion < 25) {
             try {
                 updateRunningBalance(db);

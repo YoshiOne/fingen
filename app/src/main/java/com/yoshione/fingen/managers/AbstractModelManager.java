@@ -13,10 +13,12 @@ import com.yoshione.fingen.R;
 import com.yoshione.fingen.dao.AbstractDAO;
 import com.yoshione.fingen.dao.BaseDAO;
 import com.yoshione.fingen.dao.CategoriesDAO;
+import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.dao.ProjectsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.model.BaseModel;
 import com.yoshione.fingen.model.Category;
+import com.yoshione.fingen.model.Department;
 import com.yoshione.fingen.model.Project;
 import com.yoshione.fingen.utils.BaseNode;
 
@@ -49,6 +51,8 @@ public class AbstractModelManager {
                             CategoriesDAO.getInstance(activity).createCategory((Category) model, activity);
                         } else if (modelType == IAbstractModel.MODEL_TYPE_PROJECT) {
                             ProjectsDAO.getInstance(activity).createProject((Project) model, activity);
+                        } else if (modelType == IAbstractModel.MODEL_TYPE_DEPARTMENT) {
+                            DepartmentsDAO.getInstance(activity).createDepartment((Department) model, activity);
                         } else {
                             AbstractDAO dao = BaseDAO.getDAO(modelType, activity);
                             if (dao != null) {

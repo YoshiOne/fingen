@@ -2154,6 +2154,13 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                         }
                     }
                     break;
+                case IAbstractModel.MODEL_TYPE_DEPARTMENT:
+                    for (ProductEntry entry : transaction.getProductEntries()) {
+                        if (entry.isSelected()) {
+                            entry.setDepartmentID(model.getID());
+                        }
+                    }
+                    break;
             }
             for (ProductEntry entry : transaction.getProductEntries()) {
                 entry.setSelected(false);

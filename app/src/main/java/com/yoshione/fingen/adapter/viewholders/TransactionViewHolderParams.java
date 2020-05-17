@@ -45,6 +45,7 @@ public class TransactionViewHolderParams {
     public int mColorTag;
     public String mSplitStringCategory;
     public String mSplitStringProject;
+    public String mSplitStringDepartment;
     public LongSparseArray<Account> mAccountCache;
     public LongSparseArray<Payee> mPayeeCache;
     public LongSparseArray<Category> mCategoryCache;
@@ -90,6 +91,7 @@ public class TransactionViewHolderParams {
         mWhiteColor = ContextCompat.getColor(context, R.color.fg_white_color);
         mSplitStringCategory = context.getString(R.string.ent_split_category);
         mSplitStringProject = context.getString(R.string.ent_split_project);
+        mSplitStringDepartment = context.getString(R.string.ent_split_department);
         mAccountCache = new LongSparseArray<>();
         mPayeeCache = new LongSparseArray<>();
         mCategoryCache = new LongSparseArray<>();

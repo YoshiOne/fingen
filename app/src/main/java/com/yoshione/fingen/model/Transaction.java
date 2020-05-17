@@ -39,8 +39,8 @@ public class Transaction extends BaseModel implements IAbstractModel {
     private BigDecimal mFromAccountBalance;
     private BigDecimal mToAccountBalance;
     private long mProjectID;
-    private long mSimpleDebtID;
     private long mDepartmentID;
+    private long mSimpleDebtID;
     private long mLocationID;
     private double mLat;
     private double mLon;
@@ -71,6 +71,7 @@ public class Transaction extends BaseModel implements IAbstractModel {
         this.mToAccountBalance = BigDecimal.ZERO;
         this.mExchangeRate = BigDecimal.ONE;
         this.mProjectID = -1;
+        this.mDepartmentID = -1;
         this.mSimpleDebtID = -1;
         this.mLocationID = -1;
         this.mComment = "";
@@ -100,6 +101,7 @@ public class Transaction extends BaseModel implements IAbstractModel {
         mToAccountBalance = src.getToAccountBalance();
         mExchangeRate = new BigDecimal(src.getExchangeRate().doubleValue());
         mProjectID = src.getProjectID();
+        mDepartmentID = src.getDepartmentID();
         mSimpleDebtID = src.getSimpleDebtID();
         mLocationID = src.getLocationID();
         mComment = src.getComment();
@@ -117,7 +119,7 @@ public class Transaction extends BaseModel implements IAbstractModel {
         mFP = src.mFP;
         mProductEntries = new ArrayList<>();
         for (ProductEntry entry : src.getProductEntries()) {
-            mProductEntries.add(new ProductEntry(-1, entry.getProductID(), entry.getQuantity(), entry.getPrice(), entry.getCategoryID(), entry.getProjectID(), getID()));
+            mProductEntries.add(new ProductEntry(-1, entry.getProductID(), entry.getQuantity(), entry.getPrice(), entry.getCategoryID(), entry.getProjectID(), entry.getDepartmentID(), getID()));
         }
     }
 
@@ -134,6 +136,7 @@ public class Transaction extends BaseModel implements IAbstractModel {
         this.mFromAccountBalance = (BigDecimal) in.readSerializable();
         this.mToAccountBalance = (BigDecimal) in.readSerializable();
         this.mProjectID = in.readLong();
+        this.mDepartmentID = in.readLong();
         this.mSimpleDebtID = in.readLong();
         this.mDepartmentID = in.readLong();
         this.mLocationID = in.readLong();
@@ -498,6 +501,7 @@ public class Transaction extends BaseModel implements IAbstractModel {
         dest.writeSerializable(this.mFromAccountBalance);
         dest.writeSerializable(this.mToAccountBalance);
         dest.writeLong(this.mProjectID);
+        dest.writeLong(this.mDepartmentID);
         dest.writeLong(this.mSimpleDebtID);
         dest.writeLong(this.mDepartmentID);
         dest.writeLong(this.mLocationID);
