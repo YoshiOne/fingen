@@ -203,6 +203,11 @@ public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         return (Account) getModelByIdCustomColumns(id, getAllColumns());
     }
 
+    @Override
+    public IAbstractModel getModelById(long id) {
+        return super.getModelByIdCustomColumns(id, getAllColumns());
+    }
+
     public LinkedHashMap<Long,HashSet<Long>> getIDsByCabbages() {
         LinkedHashMap<Long,HashSet<Long>> array = new LinkedHashMap<>();
         Cursor cursor = mDatabase.query(getTableName(), new String[]{COL_ID, COL_CURRENCY}, String.format("%s = 0", COL_SYNC_DELETED), null, null, null, null);
