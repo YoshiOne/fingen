@@ -195,6 +195,7 @@ public class AccountsSetManager {
             AccountsSetsLogDAO.getInstance(context).createAccountsSet(accountsSet);
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
             preferences.edit().putLong(FgConst.PREF_CURRENT_ACCOUNT_SET, accountsSet.getAccountsSetRef().getID()).apply();
+            mCurrentAccountSet = null;
         } catch (Exception e) {
             Toast.makeText(context, context.getString(R.string.msg_error_on_write_to_db), Toast.LENGTH_SHORT).show();
         }
