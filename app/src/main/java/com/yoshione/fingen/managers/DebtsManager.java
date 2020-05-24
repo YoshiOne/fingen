@@ -12,10 +12,6 @@ import com.yoshione.fingen.model.Payee;
 
 import java.math.BigDecimal;
 
-/**
- * Created by slv on 03.03.2016.
- *
- */
 public class DebtsManager {
 
     public static Account getAccount(Credit credit, Context context){

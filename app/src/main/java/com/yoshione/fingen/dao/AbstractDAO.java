@@ -9,8 +9,7 @@ import com.yoshione.fingen.interfaces.IAbstractModel;
 import java.util.HashSet;
 import java.util.List;
 
-public interface AbstractDAO {
-    //Todo: Transform to AbstractDAO<T>, where T is IAbstractModel
+public interface AbstractDAO<T extends IAbstractModel> {
 
     HashSet<Long> getAllModelsIDs();
 
@@ -26,7 +25,7 @@ public interface AbstractDAO {
 
     IAbstractModel getModelByFullName(String fullName) throws Exception;
 
-    List<?> getAllModels() throws Exception;
+    List<T> getAllModels();
 
     List<IAbstractModel> bulkDeleteModel(List<IAbstractModel> modelList, boolean resetTS);
 

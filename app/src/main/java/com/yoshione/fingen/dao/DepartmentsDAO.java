@@ -13,7 +13,7 @@ import com.yoshione.fingen.utils.ColorUtils;
 
 import java.util.List;
 
-public class DepartmentsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class DepartmentsDAO extends BaseDAO<Department> implements IDaoInheritor {
 
     //<editor-fold desc="ref_Departments">
     public static final String TABLE = "ref_Departments";
@@ -100,17 +100,12 @@ public class DepartmentsDAO extends BaseDAO implements AbstractDAO, IDaoInherito
         super.deleteModel(model, resetTS, context);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Department> getAllDepartments() {
-        return (List<Department>) getItems(getTableName(), null, null, null, COL_ORDER_NUMBER + "," + COL_NAME, null);
-    }
-
     public Department getDepartmentByID(long id) {
         return (Department) getModelById(id);
     }
 
     @Override
-    public List<?> getAllModels() {
-        return getAllDepartments();
+    public List<Department> getAllModels() {
+        return getItems(getTableName(), null, null, null, COL_ORDER_NUMBER + "," + COL_NAME, null);
     }
 }

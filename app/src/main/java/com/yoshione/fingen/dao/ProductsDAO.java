@@ -10,7 +10,7 @@ import com.yoshione.fingen.model.Product;
 
 import java.util.List;
 
-public class ProductsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class ProductsDAO extends BaseDAO<Product> implements IDaoInheritor {
 
     //<editor-fold desc="ref_Products">
     public static final String TABLE = "ref_Products";
@@ -68,17 +68,12 @@ public class ProductsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         super.deleteModel(model, resetTS, context);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Product> getAllProducts() {
-        return (List<Product>) getItems(getTableName(), null, null, null, COL_NAME, null);
-    }
-
     public Product getProductByID(long id) {
         return (Product) getModelById(id);
     }
 
     @Override
-    public List<?> getAllModels() {
-        return getAllProducts();
+    public List<Product> getAllModels() {
+        return getItems(getTableName(), null, null, null, COL_NAME, null);
     }
 }

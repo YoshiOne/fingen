@@ -38,9 +38,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.yoshione.fingen.adapter.AdapterSimpleDebts;
 import com.yoshione.fingen.classes.ListSumsByCabbage;
 import com.yoshione.fingen.classes.SumsByCabbage;
-import com.yoshione.fingen.dao.AbstractDAO;
 import com.yoshione.fingen.dao.AccountsDAO;
-import com.yoshione.fingen.dao.BaseDAO;
 import com.yoshione.fingen.dao.CabbagesDAO;
 import com.yoshione.fingen.dao.SimpleDebtsDAO;
 import com.yoshione.fingen.dao.TransactionsDAO;
@@ -437,18 +435,16 @@ public class FragmentSimpleDebts extends BaseListFragment
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SimpleDebtsDAO simpleDebtsDAO = SimpleDebtsDAO.getInstance(getActivity());
         boolean showClosed = mPreferences.getBoolean(FgConst.PREF_SHOW_CLOSED_DEBTS, true);
-        try {
-            List<SimpleDebt> models = simpleDebtsDAO.getAllSimpleDebts();
-            long cabbageID = getActivity().getIntent().getLongExtra("cabbageID", -1);
-            SimpleDebt debt;
-            for (int i = models.size() - 1; i >= 0; i--) {
-                debt = models.get(i);
-                if ((cabbageID >= 0 && debt.getCabbageID() != cabbageID) || (!debt.isActive() && !showClosed)) {
-                    models.remove(i);
-                }
+        List<SimpleDebt> models = simpleDebtsDAO.getAllModels();
+        long cabbageID = Objects.requireNonNull(getActivity()).getIntent().getLongExtra("cabbageID", -1);
+        SimpleDebt debt;
+        for (int i = models.size() - 1; i >= 0; i--) {
+            debt = models.get(i);
+            if ((cabbageID >= 0 && debt.getCabbageID() != cabbageID) || (!debt.isActive() && !showClosed)) {
+                models.remove(i);
             }
-            adapterD.addDebts(models, true);
-        } catch (Exception ignored) { }
+        }
+        adapterD.addDebts(models, true);
 
         adapterD.notifyDataSetChanged();
 

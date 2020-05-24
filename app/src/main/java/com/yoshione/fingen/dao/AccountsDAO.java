@@ -18,7 +18,7 @@ import java.util.List;
 
 import io.reactivex.Single;
 
-public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class AccountsDAO extends BaseDAO<Account> implements IDaoInheritor {
 
     //<editor-fold desc="ref_Accounts">
     public static final String TABLE = "ref_Accounts";
@@ -152,8 +152,7 @@ public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         return Single.fromCallable(() -> getAllAccounts(includeClosed, isOnlyClosed));
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Account> getAllAccounts(boolean includeClosed, boolean isOnlyClosed) throws Exception {
+    public List<Account> getAllAccounts(boolean includeClosed, boolean isOnlyClosed) {
         String selection = null;
         if (!includeClosed) {
             selection = String.format("%s = 0", COL_IS_CLOSED);
@@ -161,10 +160,10 @@ public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
             selection = String.format("%s = 1", COL_IS_CLOSED);
         }
 
-        return (List<Account>) getItems(getTableName(), ALL_COLUMNS, selection, null, COL_NAME, null);
+        return getItems(getTableName(), ALL_COLUMNS, selection, null, COL_NAME, null);
     }
 
-    public List<Account> getAllAccounts(boolean includeClosed) throws Exception {
+    public List<Account> getAllAccounts(boolean includeClosed) {
         return getAllAccounts(includeClosed, false);
     }
 
@@ -263,7 +262,6 @@ public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         return array;
     }
 
-    /*synchronized*/
     public void updateOrder(List<Pair<Long, Integer>> pairs) {
         if (pairs.size() == 0) {
             return;
@@ -283,11 +281,10 @@ public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
                 TABLE, COL_ORDER, COL_ID, when, COL_ID, ids.toString());
 
         mDatabase.execSQL(sql);
-
     }
 
     @Override
-    public List<?> getAllModels() throws Exception {
+    public List<Account> getAllModels() {
         return getAllAccounts(true);
     }
 }

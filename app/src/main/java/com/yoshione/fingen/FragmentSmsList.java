@@ -28,6 +28,7 @@ import com.yoshione.fingen.widgets.ContextMenuRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,7 +42,6 @@ import org.greenrobot.eventbus.ThreadMode;
 public class FragmentSmsList extends Fragment {
     @BindView(R.id.recycler_view)  ContextMenuRecyclerView mRecyclerView;
     private AdapterSms mAdapter;
-//    private List<Sms> mSmsList;
 
     public FragmentSmsList() {
     }
@@ -62,38 +62,19 @@ public class FragmentSmsList extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sms_list, container, false);
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
 
-        SmsDAO mSmsDAO = SmsDAO.getInstance(getActivity());
-
-        //adapter
-        List<Sms> smses;
-        try {
-            smses = mSmsDAO.getAllSmss();
-        } catch (Exception e) {
-            smses = new ArrayList<>();
-        }
-        mAdapter = new AdapterSms(smses,getActivity());
-        mAdapter.setSmsEventsListener(new AdapterSms.SmsEventsListener() {
-            @Override
-            public void OnSmsClick(View view1) {
-                int position = mRecyclerView.getChildAdapterPosition(view1);
-                Intent intent = new Intent(FragmentSmsList.this.getActivity(), ActivityEditTransaction.class);
-                SmsDAO smsDAO = SmsDAO.getInstance(FragmentSmsList.this.getActivity());
-                Sms sms;
-                try {
-                    sms = smsDAO.getAllSmss().get(position);
-                } catch (Exception e) {
-                    return;
-                }
-                intent.putExtra("sms", sms);
-                intent.putExtra("transaction", new Transaction(PrefUtils.getDefDepID(getActivity())));
-                FragmentSmsList.this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
-            }
+        mAdapter = new AdapterSms(SmsDAO.getInstance(getActivity()).getAllModels(), getActivity());
+        mAdapter.setSmsEventsListener(view1 -> {
+            int position = mRecyclerView.getChildAdapterPosition(view1);
+            Intent intent = new Intent(FragmentSmsList.this.getActivity(), ActivityEditTransaction.class);
+            Sms sms = mAdapter.getSmsList().get(position);
+            intent.putExtra("sms", sms);
+            intent.putExtra("transaction", new Transaction(PrefUtils.getDefDepID(getActivity())));
+            FragmentSmsList.this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
         });
-
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
@@ -106,12 +87,7 @@ public class FragmentSmsList extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RequestCodes.REQUEST_CODE_EDIT_TRANSACTION & resultCode == Activity.RESULT_OK) {
-            int smsListSize;
-            try {
-                smsListSize = SmsDAO.getInstance(getActivity()).getAllSmss().size();
-            } catch (Exception e) {
-                smsListSize = 0;
-            }
+            int smsListSize = SmsDAO.getInstance(getActivity()).getAllModels().size();
             if (smsListSize == 0) {
                 getActivity().finish();
             } else {
@@ -142,46 +118,23 @@ public class FragmentSmsList extends Fragment {
                 break;
             }
             case R.id.action_delete:{
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(R.string.ttl_confirm_action);
-                builder.setMessage(R.string.ttl_delete_sms_confirmation);
                 List<Sms> smses = new ArrayList<>();
                 smses.add(smsDAO.getSmsByID(info.id));
 
-                OnDeleteSmsDialogOkClickListener clickListener = new OnDeleteSmsDialogOkClickListener(smses);
-                builder.setPositiveButton("OK", clickListener);
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
+                AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()))
+                        .setTitle(R.string.ttl_confirm_action)
+                        .setMessage(R.string.ttl_delete_sms_confirmation)
+                        .setPositiveButton("OK", new OnDeleteSmsDialogOkClickListener(smses))
+                        .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
                 builder.show();
                 break;
             }
             case R.id.action_delete_all:{
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(R.string.ttl_confirm_action);
-                builder.setMessage(R.string.ttl_delete_all_sms_confirmation);
-                List<Sms> smses;
-                SmsDAO smsDAO1 = SmsDAO.getInstance(getActivity());
-                try {
-                    smses = smsDAO1.getAllSmss();
-                } catch (Exception e) {
-                    smses = new ArrayList<>();
-                }
-
-                OnDeleteSmsDialogOkClickListener clickListener = new OnDeleteSmsDialogOkClickListener(smses);
-                // Set up the buttons
-                builder.setPositiveButton("OK", clickListener);
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
+                AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()))
+                        .setTitle(R.string.ttl_confirm_action)
+                        .setMessage(R.string.ttl_delete_all_sms_confirmation)
+                        .setPositiveButton("OK", new OnDeleteSmsDialogOkClickListener(smsDAO.getAllModels()))
+                        .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
                 builder.show();
                 break;
             }
@@ -215,25 +168,10 @@ public class FragmentSmsList extends Fragment {
     }
 
     private void fullUpdate(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mRecyclerView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        SmsDAO smsDAO = SmsDAO.getInstance(FragmentSmsList.this.getActivity());
-                        List<Sms> smsList;
-                        try {
-                            smsList = smsDAO.getAllSmss();
-                        } catch (Exception e) {
-                            smsList = new ArrayList<>();
-                        }
-                        mAdapter.setSmsList(smsList);
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
-            }
-        }).start();
+        new Thread(() -> mRecyclerView.post(() -> {
+            mAdapter.setSmsList(SmsDAO.getInstance(FragmentSmsList.this.getActivity()).getAllModels());
+            mAdapter.notifyDataSetChanged();
+        })).start();
 
     }
 }

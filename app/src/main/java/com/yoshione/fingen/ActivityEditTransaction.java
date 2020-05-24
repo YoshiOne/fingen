@@ -1587,7 +1587,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
 
     @Override
     public int getPayeeSelectionStyle() {
-        return Integer.valueOf(mPreferences.getString("payee_selection_style", "0"));
+        return Integer.parseInt(mPreferences.getString("payee_selection_style", "0"));
     }
 
     @Override
@@ -1597,14 +1597,8 @@ public class ActivityEditTransaction extends ToolbarActivity implements
 
     @Override
     public NestedItemFullNameAdapter getPayeeNameAutocompleteAdapter() {
-        PayeesDAO payeesDAO = PayeesDAO.getInstance(this);
-        List<IAbstractModel> payees;
         List<AutocompleteItem> autocompleteItems = new ArrayList<>();
-        try {
-            payees = (List<IAbstractModel>) payeesDAO.getAllModels();
-        } catch (Exception e) {
-            payees = new ArrayList<>();
-        }
+        List<Payee> payees = PayeesDAO.getInstance(this).getAllModels();
 
         BaseNode tree = TreeManager.convertListToTree(payees, IAbstractModel.MODEL_TYPE_PAYEE);
         for (BaseNode node : tree.getFlatChildrenList()) {

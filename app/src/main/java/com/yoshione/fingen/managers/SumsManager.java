@@ -23,13 +23,7 @@ import com.yoshione.fingen.utils.CabbageFormatter;
 import java.math.BigDecimal;
 import java.util.HashMap;
 
-/**
- * Created by Leonid on 06.11.2016.
- * a
- */
-
 public class SumsManager {
-
 
     @SuppressLint("SetTextI18n")
     public static synchronized void updateSummaryTable(Activity activity, TableLayout layoutSumTable,

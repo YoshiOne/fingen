@@ -13,7 +13,7 @@ import com.yoshione.fingen.utils.ColorUtils;
 
 import java.util.List;
 
-public class ProjectsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class ProjectsDAO extends BaseDAO<Project> implements IDaoInheritor {
 
     //<editor-fold desc="ref_Projects">
     public static final String TABLE = "ref_Projects";
@@ -105,18 +105,13 @@ public class ProjectsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         super.deleteModel(model, resetTS, context);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Project> getAllProjects() {
-        return (List<Project>) getItems(getTableName(), null, null,
-                null, COL_ORDER_NUMBER + "," + COL_NAME, null);
-    }
-
     public Project getProjectByID(long id) {
         return (Project) getModelById(id);
     }
 
     @Override
-    public List<?> getAllModels() {
-        return getAllProjects();
+    public List<Project> getAllModels() {
+        return getItems(getTableName(), null, null,
+                null, COL_ORDER_NUMBER + "," + COL_NAME, null);
     }
 }

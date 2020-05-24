@@ -44,7 +44,7 @@ import java.util.List;
 
 import io.reactivex.Single;
 
-public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class TransactionsDAO extends BaseDAO<Transaction> implements IDaoInheritor {
 
     //<editor-fold desc="log_Transactions">
     public static final String TABLE = "log_Transactions";
@@ -436,14 +436,8 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
     }
 
     @Override
-    public List<?> getAllModels() {
-        return getAllTransactions();
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<Transaction> getAllTransactions() {
-
-        return (List<Transaction>) getItems(getTableName(), null,
+    public List<Transaction> getAllModels() {
+        return getItems(getTableName(), null,
                 null, null,
                 String.format("%s %s", COL_DATE_TIME, "desc"),
                 null);

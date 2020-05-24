@@ -18,7 +18,7 @@ import java.util.List;
 
 import io.requery.android.database.sqlite.SQLiteDatabase;
 
-public class ProductEntrysDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class ProductEntrysDAO extends BaseDAO<ProductEntry> implements IDaoInheritor {
 
     //<editor-fold desc="log_Products">
     public static final String TABLE = " log_Products";

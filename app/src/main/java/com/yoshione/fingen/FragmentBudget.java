@@ -464,7 +464,7 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
 
 
         time = System.currentTimeMillis();
-        if (CreditsDAO.getInstance(getActivity()).getAllDebts().size() > 0) {
+        if (CreditsDAO.getInstance(getActivity()).getAllModels().size() > 0) {
             Category categoryTotalDebts = new Category(AdapterBudget.BUDGET_ITEM_TOTAL_DEBTS,
                     getActivity().getString(R.string.ent_budget_total_credits), new Category(), 0, true);
             ListSumsByCabbage creditSums = getDebtSums();
@@ -555,9 +555,8 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
         SumsManager.updateSummaryTable(getActivity(), layoutSumTable, false, listSumsDif, CabbagesDAO.getInstance(getActivity()).getCabbagesMap(), null);
     }
 
-    @SuppressWarnings("unchecked")
-    private ListSumsByCabbage getIoSumsFromTree(List<CNode> nodes) throws Exception {
-        List<Cabbage> cabbages = (List<Cabbage>) CabbagesDAO.getInstance(getActivity()).getAllModels();
+    private ListSumsByCabbage getIoSumsFromTree(List<CNode> nodes) {
+        List<Cabbage> cabbages = CabbagesDAO.getInstance(getActivity()).getAllModels();
         ListSumsByCabbage result = new ListSumsByCabbage();
 
         for (Cabbage cabbage : cabbages) {
@@ -581,7 +580,7 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
         return result;
     }
 
-    private ListSumsByCabbage getDebtSums() throws Exception {
+    private ListSumsByCabbage getDebtSums() {
         List<AbstractFilter> filters = new ArrayList<>();
 
         DateRangeFilter dateRangeFilter = new DateRangeFilter(0, getActivity());
@@ -589,7 +588,7 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
         filters.add(dateRangeFilter);
 
         AccountFilter accountFilter = new AccountFilter(1);
-        for (Credit credit : CreditsDAO.getInstance(getActivity()).getAllDebts()) {
+        for (Credit credit : CreditsDAO.getInstance(getActivity()).getAllModels()) {
             accountFilter.addAccount(credit.getAccountID());
         }
         filters.add(accountFilter);

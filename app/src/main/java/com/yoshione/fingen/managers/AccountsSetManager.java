@@ -2,7 +2,6 @@ package com.yoshione.fingen.managers;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -26,11 +25,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-/**
- * Created by slv on 01.12.2016.
- * a
- */
-
 public class AccountsSetManager {
 
     private static AccountsSetManager sInstance;
@@ -48,23 +42,13 @@ public class AccountsSetManager {
     }
 
     public List<AccountsSet> getAcoountsSets(Context context) {
-        List<AccountsSetRef> accountsSetRefList;
         HashSet<AccountsSetLog> accountsSetLogList;
         List<AccountsSet> accountsSetList = new ArrayList<>();
-        try {
-            accountsSetRefList = AccountsSetsRefDAO.getInstance(context).getAllAccountsSets();
-        } catch (Exception e) {
-            accountsSetRefList = new ArrayList<>();
-        }
+        List<AccountsSetRef> accountsSetRefList = AccountsSetsRefDAO.getInstance(context).getAllModels();
 
         AccountsSetsLogDAO accountsSetsLogDAO = AccountsSetsLogDAO.getInstance(context);
         for (AccountsSetRef accountsSetRef : accountsSetRefList) {
-            try {
-                accountsSetLogList = new HashSet<>();
-                accountsSetLogList.addAll(accountsSetsLogDAO.getAccountsBySet(accountsSetRef.getID()));
-            } catch (Exception e) {
-                accountsSetLogList = new HashSet<>();
-            }
+            accountsSetLogList = new HashSet<>(accountsSetsLogDAO.getAccountsBySet(accountsSetRef.getID()));
             accountsSetList.add(new AccountsSet(accountsSetRef, accountsSetLogList));
         }
         return accountsSetList;
@@ -73,13 +57,7 @@ public class AccountsSetManager {
     public AccountsSet getAccountsSetByID(long id, Context context) {
         if (id >= 0) {
             AccountsSetRef accountsSetRef = (AccountsSetRef) AccountsSetsRefDAO.getInstance(context).getModelById(id);
-            HashSet<AccountsSetLog> accountsSetLogList;
-            try {
-                accountsSetLogList = new HashSet<>();
-                accountsSetLogList.addAll(AccountsSetsLogDAO.getInstance(context).getAccountsBySet(id));
-            } catch (Exception e) {
-                accountsSetLogList = new HashSet<>();
-            }
+            HashSet<AccountsSetLog> accountsSetLogList = new HashSet<>(AccountsSetsLogDAO.getInstance(context).getAccountsBySet(id));
             return new AccountsSet(accountsSetRef, accountsSetLogList);
         } else {
             return new AccountsSet(new AccountsSetRef(), new HashSet<AccountsSetLog>());
@@ -97,17 +75,7 @@ public class AccountsSetManager {
     }
 
     public void createAccountSet(final Activity activity, final IOnComplete onComplete) {
-        editName(new AccountsSet(), activity, new IOnEditAction() {
-            @Override
-            public void onEdit(AccountsSet accountsSet) {
-                editAccounts(accountsSet, activity, new IOnEditAction() {
-                    @Override
-                    public void onEdit(AccountsSet accountsSet) {
-                        writeAccountsSet(accountsSet, activity, onComplete);
-                    }
-                });
-            }
-        });
+        editName(new AccountsSet(), activity, accountsSet -> editAccounts(accountsSet, activity, accountsSet1 -> writeAccountsSet(accountsSet1, activity, onComplete)));
     }
 
     public void editName(final AccountsSet accountsSet, Activity activity, final IOnEditAction onEditAction) {
@@ -119,12 +87,9 @@ public class AccountsSetManager {
         input.setText(accountsSet.getAccountsSetRef().getName());
         builder.setView(input);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                accountsSet.getAccountsSetRef().setName(input.getText().toString());
-                onEditAction.onEdit(accountsSet);
-            }
+        builder.setPositiveButton(R.string.ok, (dialogInterface, i) -> {
+            accountsSet.getAccountsSetRef().setName(input.getText().toString());
+            onEditAction.onEdit(accountsSet);
         });
 
         builder.show();
@@ -134,13 +99,8 @@ public class AccountsSetManager {
     public void editAccounts(final AccountsSet accountsSet, Activity activity, final IOnEditAction onEditAction) {
         AlertDialog dialog;
         final AccountsDAO accountsDAO = AccountsDAO.getInstance(activity);
-        List<Account> accountList;
-        try {
-            accountList = accountsDAO.getAllAccounts(PreferenceManager.getDefaultSharedPreferences(activity)
-                    .getBoolean(FgConst.PREF_SHOW_CLOSED_ACCOUNTS, true));
-        } catch (Exception e) {
-            accountList = new ArrayList<>();
-        }
+        List<Account> accountList = accountsDAO.getAllAccounts(PreferenceManager.getDefaultSharedPreferences(activity)
+                .getBoolean(FgConst.PREF_SHOW_CLOSED_ACCOUNTS, true));
         CharSequence[] items = new CharSequence[accountList.size()];
         boolean[] checkedItems = new boolean[accountList.size()];
         for (int i = 0; i < accountList.size(); i++) {
@@ -156,33 +116,23 @@ public class AccountsSetManager {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(activity.getResources().getString(R.string.ttl_select_accounts));
         builder.setMultiChoiceItems(items, checkedItems,
-                new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog1, int indexSelected, boolean isChecked) {
+                (dialog1, indexSelected, isChecked) -> {
 
-                    }
                 })
                 // Set the action buttons
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog1, int id) {
-                        AlertDialog ad = (AlertDialog) dialog1;
-                        String name;
-                        long accId;
-                        accountsSet.getAccountsSetLogList().clear();
-                        for (int i = 0; i < ad.getListView().getCount(); i++) {
-                            name = ad.getListView().getAdapter().getItem(i).toString();
-                            try {
-                                accId = accountsDAO.getModelByName(name).getID();
-                            } catch (Exception e) {
-                                accId = -1;
-                            }
-                            if (ad.getListView().isItemChecked(i)) {
-                                accountsSet.getAccountsSetLogList().add(new AccountsSetLog(-1, accountsSet.getAccountsSetRef().getID(), accId));
-                            }
+                .setPositiveButton(R.string.ok, (dialog1, id) -> {
+                    AlertDialog ad = (AlertDialog) dialog1;
+                    String name;
+                    long accId;
+                    accountsSet.getAccountsSetLogList().clear();
+                    for (int i = 0; i < ad.getListView().getCount(); i++) {
+                        name = ad.getListView().getAdapter().getItem(i).toString();
+                        accId = accountsDAO.getModelByName(name).getID();
+                        if (ad.getListView().isItemChecked(i)) {
+                            accountsSet.getAccountsSetLogList().add(new AccountsSetLog(-1, accountsSet.getAccountsSetRef().getID(), accId));
                         }
-                        onEditAction.onEdit(accountsSet);
                     }
+                    onEditAction.onEdit(accountsSet);
                 });
 
         dialog = builder.create();//AlertDialog dialog; create like this outside onClick

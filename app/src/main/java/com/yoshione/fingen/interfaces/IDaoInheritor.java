@@ -7,6 +7,6 @@ import android.database.Cursor;
  * +
  */
 
-public interface IDaoInheritor {
-    IAbstractModel cursorToModel(Cursor cursor);
+public interface IDaoInheritor<T extends IAbstractModel> {
+    T cursorToModel(Cursor cursor);
 }

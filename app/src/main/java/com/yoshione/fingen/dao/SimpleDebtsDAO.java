@@ -17,7 +17,7 @@ import java.util.List;
 
 import io.reactivex.Single;
 
-public class SimpleDebtsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class SimpleDebtsDAO extends BaseDAO<SimpleDebt> implements IDaoInheritor {
 
     //<editor-fold desc="ref_SimpleDebts">
     public static final String TABLE = "ref_SimpleDebts";
@@ -75,19 +75,14 @@ public class SimpleDebtsDAO extends BaseDAO implements AbstractDAO, IDaoInherito
         return simpledebt;
     }
 
-    @SuppressWarnings("unchecked")
-    public List<SimpleDebt> getAllSimpleDebts() {
-        return (List<SimpleDebt>) getItems(getTableName(), null,
-                null, null, String.format("%s DESC, %s ASC", COL_IS_ACTIVE, COL_NAME), null);
-    }
-
     public SimpleDebt getSimpleDebtByID(long id) {
         return (SimpleDebt) getModelById(id);
     }
 
     @Override
-    public List<?> getAllModels() {
-        return getAllSimpleDebts();
+    public List<SimpleDebt> getAllModels() {
+        return getItems(getTableName(), null,
+                null, null, String.format("%s DESC, %s ASC", COL_IS_ACTIVE, COL_NAME), null);
     }
 
     @Override
@@ -107,22 +102,18 @@ public class SimpleDebtsDAO extends BaseDAO implements AbstractDAO, IDaoInherito
         return Single.fromCallable(() -> getGroupedSums(takeSearchString, selectedIDs, context));
     }
 
-    @SuppressWarnings("unchecked")
-    public synchronized ListSumsByCabbage getGroupedSums(boolean takeSearchString,
-                                                         ArrayList<Long> selectedIDs,
-                                                         Context context) {
+    private synchronized ListSumsByCabbage getGroupedSums(boolean takeSearchString,
+                                                          ArrayList<Long> selectedIDs,
+                                                          Context context) {
         //Создаем экземпляр результирующей записи "валюта - сумма"
         ListSumsByCabbage listSumsByCabbage = new ListSumsByCabbage();
 
-        try {
-            for (SimpleDebt dept : getAllSimpleDebts()) {
-                SumsByCabbage sumsByCabbage = new SumsByCabbage(dept.getCabbageID(),
-                        dept.getAmount() != null ? dept.getAmount() : BigDecimal.ZERO,
-                        dept.getOweMe() != null ? dept.getOweMe() : BigDecimal.ZERO);
-                sumsByCabbage.setStartBalance(dept.getStartAmount());
-                listSumsByCabbage.getmList().add(sumsByCabbage);
-            }
-        } catch (Exception e) {
+        for (SimpleDebt dept : getAllModels()) {
+            SumsByCabbage sumsByCabbage = new SumsByCabbage(dept.getCabbageID(),
+                    dept.getAmount() != null ? dept.getAmount() : BigDecimal.ZERO,
+                    dept.getOweMe() != null ? dept.getOweMe() : BigDecimal.ZERO);
+            sumsByCabbage.setStartBalance(dept.getStartAmount());
+            listSumsByCabbage.getmList().add(sumsByCabbage);
         }
 
         return listSumsByCabbage;

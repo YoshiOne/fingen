@@ -61,8 +61,6 @@ public class SmsParser {
     private final List<Pair<Integer, List<String>>> mTrTypeMarkers;
     private Sender mSender;
     private List<String> mIgnoreMarkers;
-//    public String mCurrentCabbageMarker = "";
-
 
     public SmsParser(Sms mSms, Context context){
         this.mSms = mSms;
@@ -85,7 +83,7 @@ public class SmsParser {
         long accountId;
         for (String object:objects){
             try {
-                accountId = Long.valueOf(object);
+                accountId = Long.parseLong(object);
             } catch (NumberFormatException e) {
                 accountId = -1;
             }

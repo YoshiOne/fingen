@@ -20,7 +20,7 @@ import java.util.Random;
 
 public class FilterManager {
 
-    private static final int FILTER_TYPES[] = new int[]{
+    private static final int[] FILTER_TYPES = {
             IAbstractModel.MODEL_TYPE_AMOUNT_FILTER,
             IAbstractModel.MODEL_TYPE_ACCOUNT,
             IAbstractModel.MODEL_TYPE_DATE_RANGE,
@@ -290,7 +290,7 @@ public class FilterManager {
         List<String> conditions = new ArrayList<>();
         for (AbstractFilter filter : filters) {
             if (filter.getModelType() == IAbstractModel.MODEL_TYPE_AMOUNT_FILTER) {
-                String condition = ((AmountFilter)filter).getSelectionString(filteredAccountIDS);
+                String condition = filter.getSelectionString(filteredAccountIDS);
                 if (!condition.isEmpty()) {
                     conditions.add(condition);
                 }

@@ -298,14 +298,10 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         AccountsSet accountsSet = mAdapterAccountsSets.getList().get(info.position);
         switch (item.getItemId()) {
             case R.id.action_edit_name:
-                AccountsSetManager.getInstance().editName(accountsSet, getActivity(),
-                        accountsSet1 -> AccountsSetManager.getInstance().writeAccountsSet(accountsSet1, getActivity(),
-                                this::fragmentUpdate));
+                AccountsSetManager.getInstance().editName(accountsSet, getActivity(), accountsSet1 -> AccountsSetManager.getInstance().writeAccountsSet(accountsSet1, getActivity(), this::fragmentUpdate));
                 break;
             case R.id.action_edit_accounts:
-                AccountsSetManager.getInstance().editAccounts(accountsSet, getActivity(),
-                        accountsSet2 -> AccountsSetManager.getInstance().writeAccountsSet(accountsSet2, getActivity(),
-                                this::fragmentUpdate));
+                AccountsSetManager.getInstance().editAccounts(accountsSet, getActivity(), accountsSet2 -> AccountsSetManager.getInstance().writeAccountsSet(accountsSet2, getActivity(), this::fragmentUpdate));
                 break;
             case R.id.action_delete:
                 if (getActivity() != null) {

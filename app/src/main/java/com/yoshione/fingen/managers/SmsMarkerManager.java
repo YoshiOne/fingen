@@ -1,13 +1,10 @@
-/*
- * Copyright (c) 2015. 
- */
-
 package com.yoshione.fingen.managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
@@ -18,9 +15,7 @@ import com.yoshione.fingen.dao.CabbagesDAO;
 import com.yoshione.fingen.dao.PayeesDAO;
 import com.yoshione.fingen.FragmentSmsMarkerEdit;
 import com.yoshione.fingen.interfaces.IAbstractModel;
-import com.yoshione.fingen.model.Account;
 import com.yoshione.fingen.model.Cabbage;
-import com.yoshione.fingen.model.Payee;
 import com.yoshione.fingen.model.SmsMarker;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.R;
@@ -30,10 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by slv on 17.12.2015.
- *
- */
 public class SmsMarkerManager {
 
     private static final int[] mTypesTransaction = {SmsParser.MARKER_TYPE_ACCOUNT, SmsParser.MARKER_TYPE_CABBAGE,
@@ -43,41 +34,19 @@ public class SmsMarkerManager {
 
     public static void showEditdialog(SmsMarker smsMarker, FragmentManager fragmentManager,
                                FragmentSmsMarkerEdit.IDialogDismissListener dialogDismissListener, Context context) {
-
-        String title;
-        if (smsMarker.getID() < 0) {
-            title = context.getResources().getString(R.string.act_create_marker);
-        } else {
-            title = context.getResources().getString(R.string.ttl_edit_sms_parser_marker);
-        }
-
-        FragmentSmsMarkerEdit alertDialog = FragmentSmsMarkerEdit.newInstance(title, smsMarker);
+        FragmentSmsMarkerEdit alertDialog = FragmentSmsMarkerEdit.newInstance(smsMarker.getID() < 0 ? context.getResources().getString(R.string.act_create_marker) : context.getResources().getString(R.string.ttl_edit_sms_parser_marker), smsMarker);
         alertDialog.setDialogDismissListener(dialogDismissListener);
         alertDialog.show(fragmentManager, "fragment_smsmarker_edit");
     }
 
-    @SuppressWarnings("unchecked")
     public static void setObjctFromText(SmsMarker smsMarker, String text, Context context) {
         switch (smsMarker.getType()) {
             case SmsParser.MARKER_TYPE_ACCOUNT:
             case SmsParser.MARKER_TYPE_DESTACCOUNT:
-                AccountsDAO accountsDAO = AccountsDAO.getInstance(context);
-                long accID = 0;
-                try {
-                    accID = accountsDAO.getModelByName(text).getID();
-                } catch (Exception e) {
-                    accID = -1;
-                }
-                smsMarker.setObject(String.valueOf(accID));
+                smsMarker.setObject(String.valueOf(AccountsDAO.getInstance(context).getModelByName(text).getID()));
                 break;
             case SmsParser.MARKER_TYPE_CABBAGE:
-                CabbagesDAO cabbagesDAO = CabbagesDAO.getInstance(context);
-                List<Cabbage> cabbages = null;
-                try {
-                    cabbages = (List<Cabbage>) cabbagesDAO.getAllModels();
-                } catch (Exception e) {
-                    cabbages = new ArrayList<>();
-                }
+                List<Cabbage> cabbages = CabbagesDAO.getInstance(context).getAllModels();
                 for (Cabbage cabbage : cabbages) {
                     if (cabbage.toString().equals(text)) {
                         smsMarker.setObject(String.valueOf(cabbage.getID()));
@@ -85,12 +54,7 @@ public class SmsMarkerManager {
                 }
                 break;
             case SmsParser.MARKER_TYPE_PAYEE:
-                PayeesDAO payeesDAO = PayeesDAO.getInstance(context);
-                try {
-                    smsMarker.setObject(String.valueOf(payeesDAO.getModelByName(text).getID()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                smsMarker.setObject(String.valueOf(PayeesDAO.getInstance(context).getModelByName(text).getID()));
                 break;
             case SmsParser.MARKER_TYPE_TRTYPE:
                 TrType trType = new TrType(text, context);
@@ -108,16 +72,13 @@ public class SmsMarkerManager {
         switch (smsMarker.getType()) {
             case SmsParser.MARKER_TYPE_ACCOUNT:
             case SmsParser.MARKER_TYPE_DESTACCOUNT:
-                AccountsDAO accountsDAO = AccountsDAO.getInstance(context);
-                text = accountsDAO.getModelById(getObjectIdFromString(object)).toString();
+                text = AccountsDAO.getInstance(context).getModelById(getObjectIdFromString(object)).toString();
                 break;
             case SmsParser.MARKER_TYPE_CABBAGE:
-                CabbagesDAO cabbagesDAO = CabbagesDAO.getInstance(context);
-                text = cabbagesDAO.getModelById(getObjectIdFromString(object)).toString();
+                text = CabbagesDAO.getInstance(context).getModelById(getObjectIdFromString(object)).toString();
                 break;
             case SmsParser.MARKER_TYPE_PAYEE:
-                PayeesDAO payeesDAO = PayeesDAO.getInstance(context);
-                text = payeesDAO.getModelById(getObjectIdFromString(object)).toString();
+                text = PayeesDAO.getInstance(context).getModelById(getObjectIdFromString(object)).toString();
                 break;
             case SmsParser.MARKER_TYPE_TRTYPE:
                 text = new TrType(getObjectIdFromString(object), context).toString();
@@ -135,14 +96,11 @@ public class SmsMarkerManager {
         switch (smsMarker.getType()) {
             case SmsParser.MARKER_TYPE_ACCOUNT:
             case SmsParser.MARKER_TYPE_DESTACCOUNT:
-                AccountsDAO accountsDAO = AccountsDAO.getInstance(context);
-                return accountsDAO.getModelById(getObjectIdFromString(objectID));
+                return AccountsDAO.getInstance(context).getModelById(getObjectIdFromString(objectID));
             case SmsParser.MARKER_TYPE_CABBAGE:
-                CabbagesDAO cabbagesDAO = CabbagesDAO.getInstance(context);
-                return cabbagesDAO.getModelById(getObjectIdFromString(objectID));
+                return CabbagesDAO.getInstance(context).getModelById(getObjectIdFromString(objectID));
             case SmsParser.MARKER_TYPE_PAYEE:
-                PayeesDAO payeesDAO = PayeesDAO.getInstance(context);
-                return payeesDAO.getModelById(getObjectIdFromString(objectID));
+                return PayeesDAO.getInstance(context).getModelById(getObjectIdFromString(objectID));
             default:
                 return null;
         }
@@ -154,28 +112,13 @@ public class SmsMarkerManager {
             case SmsParser.MARKER_TYPE_ACCOUNT:
             case SmsParser.MARKER_TYPE_DESTACCOUNT:
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-                AccountsDAO accountsDAO = AccountsDAO.getInstance(context);
-                try {
-                    objects = accountsDAO.getAllAccounts(preferences.getBoolean(FgConst.PREF_SHOW_CLOSED_ACCOUNTS, true));
-                } catch (Exception e) {
-                    objects = new ArrayList<Account>();
-                }
+                objects = AccountsDAO.getInstance(context).getAllAccounts(preferences.getBoolean(FgConst.PREF_SHOW_CLOSED_ACCOUNTS, true));
                 break;
             case SmsParser.MARKER_TYPE_CABBAGE:
-                CabbagesDAO cabbagesDAO = CabbagesDAO.getInstance(context);
-                try {
-                    objects = cabbagesDAO.getAllModels();
-                } catch (Exception e) {
-                    objects = new ArrayList<Cabbage>();
-                }
+                objects = CabbagesDAO.getInstance(context).getAllModels();
                 break;
             case SmsParser.MARKER_TYPE_PAYEE:
-                PayeesDAO payeesDAO = PayeesDAO.getInstance(context);
-                try {
-                    objects = payeesDAO.getAllModels();
-                } catch (Exception e) {
-                    objects = new ArrayList<Payee>();
-                }
+                objects = PayeesDAO.getInstance(context).getAllModels();
                 break;
             case SmsParser.MARKER_TYPE_TRTYPE:
                 objects = new ArrayList<>(Arrays.asList(new TrType(-1, context), new TrType(1, context), new TrType(0, context)));
@@ -187,7 +130,7 @@ public class SmsMarkerManager {
     private static long getObjectIdFromString(String id) {
         long result;
         try {
-            result = Long.valueOf(id);
+            result = Long.parseLong(id);
         } catch (NumberFormatException e) {
             result = -1;
         }
@@ -195,7 +138,7 @@ public class SmsMarkerManager {
     }
 
     private static String[] idsToStrings(int[] ids, Context context) {
-        String result[] = new String[ids.length];
+        String[] result = new String[ids.length];
         for (int i = 0; i < ids.length; i++) {
             result[i] = getMarkerTypeName(ids[i], context);
         }
@@ -225,9 +168,9 @@ public class SmsMarkerManager {
     }
 
     public static SmsMarkerType[] getSmsMarkerTypeObjects(int trType, Context context) {
-        int ids[] = getTypes(trType);
-        String names[] = getNames(trType, context);
-        SmsMarkerType result[] = new SmsMarkerType[ids.length];
+        int[] ids = getTypes(trType);
+        String[] names = getNames(trType, context);
+        SmsMarkerType[] result = new SmsMarkerType[ids.length];
         for (int i = 0; i < ids.length; i++) {
             result[i] = new SmsMarkerType(ids[i], names[i]);
         }
@@ -263,6 +206,7 @@ public class SmsMarkerManager {
             this.name = name;
         }
 
+        @NonNull
         public String toString() {
             return name;
         }
@@ -277,6 +221,7 @@ public class SmsMarkerManager {
             this.mContext = context;
         }
 
+        @NonNull
         public String toString() {
             int retval = mType.compareTo(0L);
             if (retval > 0) {
@@ -306,21 +251,19 @@ public class SmsMarkerManager {
         String pattern = marker.getMarker();
         switch (marker.getType()) {
             case SmsParser.MARKER_TYPE_ACCOUNT:
-                object = AccountsDAO.getInstance(context).getAccountByID(Long.valueOf(marker.getObject())).getName();
+            case SmsParser.MARKER_TYPE_DESTACCOUNT:
+                object = AccountsDAO.getInstance(context).getAccountByID(Long.parseLong(marker.getObject())).getName();
                 break;
             case SmsParser.MARKER_TYPE_CABBAGE:
-                object = CabbagesDAO.getInstance(context).getCabbageByID(Long.valueOf(marker.getObject())).toString();
+                object = CabbagesDAO.getInstance(context).getCabbageByID(Long.parseLong(marker.getObject())).toString();
                 break;
             case SmsParser.MARKER_TYPE_TRTYPE:
                 object = new TrType(marker.getType(), context).toString();
                 break;
             case SmsParser.MARKER_TYPE_PAYEE:
-                object = PayeesDAO.getInstance(context).getPayeeByID(Long.valueOf(marker.getObject())).getName();
+                object = PayeesDAO.getInstance(context).getPayeeByID(Long.parseLong(marker.getObject())).getName();
                 break;
             case SmsParser.MARKER_TYPE_IGNORE:
-                break;
-            case SmsParser.MARKER_TYPE_DESTACCOUNT:
-                object = AccountsDAO.getInstance(context).getAccountByID(Long.valueOf(marker.getObject())).getName();
                 break;
         }
         return String.format("%s %s %s", type, object, pattern);

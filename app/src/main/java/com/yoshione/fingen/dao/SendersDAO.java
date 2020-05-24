@@ -10,7 +10,7 @@ import com.yoshione.fingen.model.Sender;
 
 import java.util.List;
 
-public class SendersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class SendersDAO extends BaseDAO<Sender> implements IDaoInheritor {
 
     //<editor-fold desc="ref_Senders">
     public static final String TABLE = "ref_Senders";
@@ -81,22 +81,12 @@ public class SendersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         return sender;
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Sender> getAllSenders() {
-        return (List<Sender>) getItems(getTableName(), null, null, null, COL_NAME, null);
-    }
-
     public Sender getSenderByID(long id) {
         return (Sender) getModelById(id);
     }
 
     public Sender getSenderByPhoneNo(String phoneNo) {
-        List<Sender> senders;
-        try {
-            senders = getAllSenders();
-        } catch (Exception e) {
-            return new Sender();
-        }
+        List<Sender> senders = getAllModels();
 
         for (Sender sender : senders) {
             if (sender.getPhoneNo().toLowerCase().trim().equals(phoneNo.toLowerCase().trim())) {
@@ -108,7 +98,7 @@ public class SendersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
     }
 
     @Override
-    public List<?> getAllModels() {
-        return getAllSenders();
+    public List<Sender> getAllModels() {
+        return getItems(getTableName(), null, null, null, COL_NAME, null);
     }
 }

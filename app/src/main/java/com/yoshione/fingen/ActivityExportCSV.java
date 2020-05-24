@@ -32,7 +32,6 @@ import com.yoshione.fingen.utils.FileUtils;
 import com.yoshione.fingen.widgets.ToolbarActivity;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -176,20 +175,11 @@ public class ActivityExportCSV extends ToolbarActivity implements IProgressEvent
         csvImporter.setmCsvImportProgressChangeListener(this);
 
         handler.sendMessage(handler.obtainMessage(HANDLER_OPERATION_SHOW, 0, 0));
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                List<Transaction> transactions;
-                try {
-                    transactions = getIntent().getParcelableArrayListExtra("transactions");
-                    if (transactions == null) {
-                        transactions = TransactionsDAO.getInstance(ActivityExportCSV.this).getAllTransactions();
-                    }
-                } catch (Exception e) {
-                    transactions = new ArrayList<>();
-                }
-                csvImporter.saveCSV(transactions, mCheckBoxExportProducts.isChecked());
-            }
+        Thread t = new Thread(() -> {
+            List<Transaction> transactions = getIntent().getParcelableArrayListExtra("transactions");
+            if (transactions == null)
+                transactions = TransactionsDAO.getInstance(ActivityExportCSV.this).getAllModels();
+            csvImporter.saveCSV(transactions, mCheckBoxExportProducts.isChecked());
         });
         t.start();
     }

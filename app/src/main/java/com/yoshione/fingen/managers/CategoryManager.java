@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2015.
- */
-
 package com.yoshione.fingen.managers;
 
 import com.yoshione.fingen.classes.ListSumsByCabbage;
@@ -12,12 +8,7 @@ import com.yoshione.fingen.utils.CNode;
 import java.util.HashSet;
 import java.util.List;
 
-/**
- * Created by Leonid on 22.11.2015.
- * a
- */
 public class CategoryManager {
-
 
     public static CNode convertListToTree(List<Category> categoryList) {
         CNode tree = new CNode(new Category(), null);

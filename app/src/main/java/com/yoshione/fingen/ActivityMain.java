@@ -815,18 +815,8 @@ public class ActivityMain extends ToolbarActivity {
 
     private void checkPermissionsAndShowAlert() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
-            List<SmsMarker> smsMarkers;
-            try {
-                smsMarkers = mSmsMarkersDAO.get().getAllSmsParserPatterns();
-            } catch (Exception e) {
-                smsMarkers = new ArrayList<>();
-            }
-            List<Sender> senders;
-            try {
-                senders = mSendersDAO.get().getAllSenders();
-            } catch (Exception e) {
-                senders = new ArrayList<>();
-            }
+            List<SmsMarker> smsMarkers = mSmsMarkersDAO.get().getAllModels();
+            List<Sender> senders = mSendersDAO.get().getAllModels();
             if (smsMarkers.size() > 0 | senders.size() > 0) {
                 ActivityMainPermissionsDispatcher.getReceiveSmsPermissionWithPermissionCheck(this);
             }

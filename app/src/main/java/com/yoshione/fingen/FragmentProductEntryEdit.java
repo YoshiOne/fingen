@@ -10,7 +10,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -31,7 +30,6 @@ import com.yoshione.fingen.model.ProductEntry;
 import com.yoshione.fingen.widgets.AmountEditor;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -271,23 +269,14 @@ public class FragmentProductEntryEdit extends DialogFragment {
     }
 
     void setProductsAutocompleteAdapter(Context context) {
-        ProductsDAO productsDAO = ProductsDAO.getInstance(context);
-        List<Product> products;
-        try {
-            products = productsDAO.getAllProducts();
-        } catch (Exception e) {
-            products = new ArrayList<>();
-        }
+        List<Product> products = ProductsDAO.getInstance(context).getAllModels();
 
         ArrayAdapter<Product> productArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, products);
 
         mTextViewProduct.setAdapter(productArrayAdapter);
-        mTextViewProduct.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Product product = (Product) mTextViewProduct.getAdapter().getItem(i);
-                mProductEntry.setProductID(product.getID());
-            }
+        mTextViewProduct.setOnItemClickListener((adapterView, view, i, l) -> {
+            Product product = (Product) mTextViewProduct.getAdapter().getItem(i);
+            mProductEntry.setProductID(product.getID());
         });
     }
 
