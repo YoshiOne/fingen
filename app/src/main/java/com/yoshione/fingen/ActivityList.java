@@ -35,7 +35,7 @@ public class ActivityList extends ToolbarActivity implements SearchView.OnQueryT
         ButterKnife.bind(this);
         IAbstractModel model = getIntent().getParcelableExtra("model");
 
-        if (getSupportActionBar() != null) {
+        if (getSupportActionBar() != null && model != null) {
             switch (model.getModelType()) {
                 case IAbstractModel.MODEL_TYPE_CABBAGE: {
                     getSupportActionBar().setTitle(getResources().getString(R.string.ent_currencies));
