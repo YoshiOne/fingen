@@ -665,7 +665,7 @@ public class CsvImporter {
         final CSV csv = CSV.separator(mSeparator).quote(mQuote).skipLines(0).charset(mCharset).create();
 
         final Transaction transaction = new Transaction(PrefUtils.getDefDepID(mContext));
-        final boolean skipDuplicates = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("custom_csv_skip_diplicates", false);
+        final boolean skipDuplicates = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("financisto_csv_skip_diplicates", false);
         List<IAbstractModel> transactionList = new ArrayList<>();
         CsvCachesSet caches = new CsvCachesSet(mContext);
 
