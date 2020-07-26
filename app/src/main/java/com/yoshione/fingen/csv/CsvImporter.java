@@ -1071,7 +1071,7 @@ public class CsvImporter {
                         return;
                     }
                     //Сумма транзакции, если входящий перевод
-                    mTransaction.setExchangeRate(TransferManager.getExRate(mTransaction, parseAmount(vls, 3)));
+                    mTransaction.setExchangeRate(TransferManager.getExRate(mTransaction, parseAmount(vls, mColumns.get(CN_AMOUNT).getIndex())));
                 }
                 mTransaction.setTransactionOpened(false);
                 if (mTransaction.getAccountID() >= 0 && mTransaction.getAmount().compareTo(BigDecimal.ZERO) != 0) {
