@@ -59,6 +59,7 @@ import com.yoshione.fingen.dao.SmsMarkersDAO;
 import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.filters.AbstractFilter;
 import com.yoshione.fingen.filters.AccountFilter;
+import com.yoshione.fingen.fts.FTSJsonToTransaction;
 import com.yoshione.fingen.iab.BillingService;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ITransactionItemEventListener;
@@ -87,6 +88,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -484,6 +491,31 @@ public class ActivityMain extends ToolbarActivity {
         super.onStart();
         EventBus.getDefault().register(this);
 
+        if (Intent.ACTION_SEND.equals(getIntent().getAction()) && getIntent().getType() != null) {
+            getIntent().setAction("");
+            String type = getIntent().getType();
+            if ("text/html".equals(type)) {
+                Uri jsonUri = (Uri) getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+                if (jsonUri != null) {
+                    File fl = new File(jsonUri.getPath());
+                    try {
+                        FileInputStream fin = new FileInputStream(fl);
+                        String ret = convertStreamToString(fin);
+                        fin.close();
+                        Transaction transaction = new Transaction(-1);
+                        FTSJsonToTransaction ftsJsonToTransaction = new FTSJsonToTransaction(getApplicationContext(), transaction, ret);
+                        transaction = ftsJsonToTransaction.generateTransaction(false);
+                        getIntent().putExtra("jsonAsString", ret);
+                        findTransactionDialog(transaction);
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
         checkPermissionsAndShowAlert();
 
         List<TrEditItem> tabs = PrefUtils.getTabsOrder(mPreferences, ActivityMain.this);
@@ -524,6 +556,24 @@ public class ActivityMain extends ToolbarActivity {
         if (currentItem >= 0 && currentItem < fragments.size()) {
             viewPager.setCurrentItem(currentItem);
         }
+    }
+
+    public static String convertStreamToString(InputStream is) throws IOException {
+        // http://www.java2s.com/Code/Java/File-Input-Output/ConvertInputStreamtoString.htm
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        boolean firstLine = true;
+        while ((line = reader.readLine()) != null) {
+            if (firstLine) {
+                sb.append(line);
+                firstLine = false;
+            } else {
+                sb.append("\n").append(line);
+            }
+        }
+        reader.close();
+        return sb.toString();
     }
 
     private String getFragmentID(Fragment fragment) {
@@ -915,59 +965,69 @@ public class ActivityMain extends ToolbarActivity {
                 }
             }
         }else if (data != null && resultCode == RESULT_OK && requestCode == RequestCodes.REQUEST_CODE_SCAN_QR) {
-            final Intent intent = new Intent(this, ActivityEditTransaction.class);
             final Transaction transaction = data.getParcelableExtra("transaction");
-            List<Transaction> transactions = mTransactionsDAO.get().getTransactionsByQR(transaction, getApplicationContext());
-            if (transactions.isEmpty()) {
-                intent.putExtra("transaction", transaction);
-                intent.putExtra("load_products", true);
-                this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
-            } else {
-                AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
-                builderSingle.setTitle(getResources().getString(R.string.ttl_attach_receipt_to));
-
-                final Dialog[] dialog = new Dialog[]{null};
-                final TransactionsArrayAdapter arrayAdapter = new TransactionsArrayAdapter(
-                        this, transactions, new ITransactionItemEventListener() {
-                    @Override
-                    public void onTransactionItemClick(Transaction foundTransaction) {
-                        dialog[0].dismiss();
-                        foundTransaction.setFN(transaction.getFN());
-                        foundTransaction.setFD(transaction.getFD());
-                        foundTransaction.setFP(transaction.getFP());
-                        intent.putExtra("transaction", foundTransaction);
-                        intent.putExtra("load_products", true);
-                        startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
-                    }
-
-                    @Override
-                    public void onSelectionChange(int selectedCount) {
-
-                    }
-                });
-                arrayAdapter.addAll(transactions);
-
-                builderSingle.setPositiveButton(getResources().getString(R.string.act_create_new),
-                        (dialogInterface, i) -> {
-                            intent.putExtra("transaction", transaction);
-                            intent.putExtra("load_products", true);
-                            startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
-                        });
-
-                builderSingle.setAdapter(arrayAdapter, null);
-                dialog[0] = builderSingle.show();
-
-                WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-                lp.copyFrom(Objects.requireNonNull(dialog[0].getWindow()).getAttributes());
-                lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-                lp.height = ScreenUtils.dpToPx(500f, this);
-                dialog[0].show();
-                dialog[0].getWindow().setAttributes(lp);
-            }
+            findTransactionDialog(transaction);
         }else if (requestCode == RequestCodes.REQUEST_CODE_OPEN_PREFERENCES) {
-//            updateLists();
+            updateLists();
         } else {
             new Handler().postDelayed(() -> fragments.get(viewPager.getCurrentItem()).onActivityResult(requestCode, resultCode, data), 200);
+        }
+    }
+
+    private void findTransactionDialog(Transaction transaction)
+    {
+        final String jsonAsString = getIntent().getStringExtra("jsonAsString");
+        final Intent intent = new Intent(this, ActivityEditTransaction.class);
+
+        List<Transaction> transactions = mTransactionsDAO.get().getTransactionsByQR(transaction, getApplicationContext());
+        if (transactions.isEmpty()) {
+            intent.putExtra("transaction", transaction);
+            intent.putExtra("load_products", true);
+            intent.putExtra("jsonAsString", jsonAsString);
+            this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+        } else {
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+            builderSingle.setTitle(getResources().getString(R.string.ttl_attach_receipt_to));
+
+            final Dialog[] dialog = new Dialog[]{null};
+            final TransactionsArrayAdapter arrayAdapter = new TransactionsArrayAdapter(
+                    this, transactions, new ITransactionItemEventListener() {
+                @Override
+                public void onTransactionItemClick(Transaction foundTransaction) {
+                    dialog[0].dismiss();
+                    foundTransaction.setFN(transaction.getFN());
+                    foundTransaction.setFD(transaction.getFD());
+                    foundTransaction.setFP(transaction.getFP());
+                    intent.putExtra("transaction", foundTransaction);
+                    intent.putExtra("load_products", true);
+                    intent.putExtra("jsonAsString", jsonAsString);
+                    startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+                }
+
+                @Override
+                public void onSelectionChange(int selectedCount) {
+
+                }
+            });
+            arrayAdapter.addAll(transactions);
+
+            builderSingle.setPositiveButton(getResources().getString(R.string.act_create_new),
+                    (dialogInterface, i) -> {
+                        intent.putExtra("transaction", transaction);
+                        intent.putExtra("load_products",true);
+                        intent.putExtra("jsonAsString", jsonAsString);
+                        startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+                    });
+
+            builderSingle.setAdapter(arrayAdapter, null);
+            dialog[0] = builderSingle.show();
+
+            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            lp.copyFrom(Objects.requireNonNull(dialog[0].getWindow()).getAttributes());
+            lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+            lp.height = ScreenUtils.dpToPx(500f, this);
+            dialog[0].show();
+            dialog[0].getWindow().setAttributes(lp);
         }
     }
 
