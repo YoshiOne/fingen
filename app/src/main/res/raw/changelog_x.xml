@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.6.4.2-x.5" changeDate=">2020.08.07">
+        <changelogtext>Bugs fixes</changelogtext>
+        <changelogtext>(Sovvateikin Sergei) Fix import products from CSV</changelogtext>
+        <changelogtext>(Sovvateikin Sergei) Fix skipping duplicates when import from CSV</changelogtext>
+        <changelogtext>(unwo) Add read json receipt from official app</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.6.4.2-x.4" changeDate=">2020.05.18">
         <changelogtext>Add check new version</changelogtext>
         <changelogtext>Add button "All closed accounts" to account sets</changelogtext>

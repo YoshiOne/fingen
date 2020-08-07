@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.6.4.2-x.5" changeDate=">2020.08.07">
+        <changelogtext>Исправлены некоторые вылеты приложения</changelogtext>
+        <changelogtext>(Sovvateikin Sergei) Исправлен импорт товаров из CSV</changelogtext>
+        <changelogtext>(Sovvateikin Sergei) Исправлен пропуск дубликатов при импорте из CSV</changelogtext>
+        <changelogtext>(unwo) Добавлено чтение чека из приложения "Проверка чеков ФНС"</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.6.4.2-x.4" changeDate=">2020.05.18">
         <changelogtext>Добавлена проверка о появлении новой версии</changelogtext>
         <changelogtext>В наборы счетов добавлен постоянный набор "Все закрытые счета"</changelogtext>
