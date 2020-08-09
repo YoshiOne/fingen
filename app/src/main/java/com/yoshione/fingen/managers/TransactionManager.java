@@ -163,12 +163,13 @@ public class TransactionManager {
 
         Transaction lastTransaction = TransactionsDAO.getInstance(context).getLastTransactionForFN(transaction);
 
-        if (transaction.getAccountID() < 0) {
+        if (transaction.getAccountID() < 0 && lastTransaction.getAccountID() >= 0) {
             transaction.setAccountID(lastTransaction.getAccountID());
         }
-        if (transaction.getPayeeID() < 0) {
+        if (transaction.getPayeeID() < 0 && lastTransaction.getPayeeID() >= 0) {
             transaction.setPayeeID(lastTransaction.getPayeeID());
-            transaction.setCategoryID(PayeeManager.getDefCategory(PayeesDAO.getInstance(context).getPayeeByID(transaction.getPayeeID()),context).getID());
+            if (transaction.getCategoryID() < 0)
+                transaction.setCategoryID(PayeeManager.getDefCategory(PayeesDAO.getInstance(context).getPayeeByID(transaction.getPayeeID()),context).getID());
         }
 
         return transaction;
