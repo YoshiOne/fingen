@@ -480,7 +480,7 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(accounts -> {
                         adapter.notifyDataSetChanged();
-                        if (mPreferences.get().getInt(FgConst.PREF_NEW_ACCOUNT_BUTTON_COUNTER, 0) < 3) {
+                        if (mPreferences.get().getInt(FgConst.PREF_NEW_ACCOUNT_BUTTON_COUNTER, 0) < 3 && accounts.size() < 3) {
                             mTextViewPullToCreateAccount.setVisibility(View.VISIBLE);
                         } else {
                             mTextViewPullToCreateAccount.setVisibility(View.GONE);
