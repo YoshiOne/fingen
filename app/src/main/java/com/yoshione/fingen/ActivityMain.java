@@ -175,6 +175,7 @@ public class ActivityMain extends ToolbarActivity {
     private volatile boolean waitForQueue = false;
     UpdateUIHandler mUpdateUIHandler;
     private int mUnreadSms = 0;
+    private String importJsonTicket = null;
 
     @Inject
     Lazy<BillingService> mBillingService;
@@ -495,7 +496,7 @@ public class ActivityMain extends ToolbarActivity {
             getIntent().setAction("");
             String type = getIntent().getType();
             if ("text/html".equals(type)) {
-                Uri jsonUri = (Uri) getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+                Uri jsonUri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
                 if (jsonUri != null) {
                     File fl = new File(jsonUri.getPath());
                     try {
@@ -505,7 +506,7 @@ public class ActivityMain extends ToolbarActivity {
                         Transaction transaction = new Transaction(-1);
                         FTSJsonToTransaction ftsJsonToTransaction = new FTSJsonToTransaction(getApplicationContext(), transaction, ret);
                         transaction = ftsJsonToTransaction.generateTransaction(false);
-                        getIntent().putExtra("jsonAsString", ret);
+                        importJsonTicket = ret;
                         findTransactionDialog(transaction);
                     }
                     catch (Exception e)
@@ -976,14 +977,13 @@ public class ActivityMain extends ToolbarActivity {
 
     private void findTransactionDialog(Transaction transaction)
     {
-        final String jsonAsString = getIntent().getStringExtra("jsonAsString");
         final Intent intent = new Intent(this, ActivityEditTransaction.class);
 
         List<Transaction> transactions = mTransactionsDAO.get().getTransactionsByQR(transaction, getApplicationContext());
         if (transactions.isEmpty()) {
             intent.putExtra("transaction", transaction);
-            intent.putExtra("load_products", true);
-            intent.putExtra("jsonAsString", jsonAsString);
+            intent.putExtra("load_products", 1);
+            intent.putExtra("jsonAsString", importJsonTicket);
             this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
         } else {
             AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
@@ -999,8 +999,8 @@ public class ActivityMain extends ToolbarActivity {
                     foundTransaction.setFD(transaction.getFD());
                     foundTransaction.setFP(transaction.getFP());
                     intent.putExtra("transaction", foundTransaction);
-                    intent.putExtra("load_products", true);
-                    intent.putExtra("jsonAsString", jsonAsString);
+                    intent.putExtra("load_products", 1);
+                    intent.putExtra("jsonAsString", importJsonTicket);
                     startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
                 }
 
@@ -1014,8 +1014,8 @@ public class ActivityMain extends ToolbarActivity {
             builderSingle.setPositiveButton(getResources().getString(R.string.act_create_new),
                     (dialogInterface, i) -> {
                         intent.putExtra("transaction", transaction);
-                        intent.putExtra("load_products",true);
-                        intent.putExtra("jsonAsString", jsonAsString);
+                        intent.putExtra("load_products",1);
+                        intent.putExtra("jsonAsString", importJsonTicket);
                         startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
                     });
 
