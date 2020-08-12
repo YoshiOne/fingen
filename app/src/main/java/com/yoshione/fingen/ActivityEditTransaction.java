@@ -728,15 +728,10 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                 break;
         }
 
-        //region Данный блок работает только НЕ в режиме сплита
-        if (srcTransaction == null) {
-            //Если у транзакции нет получателя, но в поле ввода есть текст, значит создаем такого получателя
-            checkPayeeAndCreateIfNecessary(false);
-
-            //Устанавливаем текущему получателю в качестве категории по умолчанию текущую категорию
-            updatePayeeWithDefCategory();
-        }
-        //endregion
+        //Если у транзакции нет получателя, но в поле ввода есть текст, значит создаем такого получателя
+        checkPayeeAndCreateIfNecessary(false);
+        //Устанавливаем текущему получателю в качестве категории по умолчанию текущую категорию
+        updatePayeeWithDefCategory();
 
         if (template == null) {
             switch (validateTransaction()) {

@@ -79,8 +79,12 @@ public class PayeeManager {
         } else if (fullName.toLowerCase().equals(text.toLowerCase())) {
             return payeeID;
         } else {
-            List<BaseNode> payeesTree = AbstractModelManager.createModelWithFullName(text, IAbstractModel.MODEL_TYPE_PAYEE, context).getFlatChildrenList();
+            BaseNode rootTree = AbstractModelManager.createModelWithFullName(text, IAbstractModel.MODEL_TYPE_PAYEE, context);
+            List<BaseNode> payeesTree = rootTree.getFlatChildrenList();
             int treeSize = payeesTree.size();
+            if (treeSize == 0 && rootTree.getModel().getID() != -1) {
+                return rootTree.getModel().getID();
+            }
             PayeesDAO payeesDAO = PayeesDAO.getInstance(context);
             long parentID = -1;
             for (BaseNode node : payeesTree) {
