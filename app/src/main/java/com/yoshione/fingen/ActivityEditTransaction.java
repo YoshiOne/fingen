@@ -60,6 +60,7 @@ import com.yoshione.fingen.dao.CategoriesDAO;
 import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.dao.LocationsDAO;
 import com.yoshione.fingen.dao.PayeesDAO;
+import com.yoshione.fingen.dao.ProductEntrysDAO;
 import com.yoshione.fingen.dao.ProductsDAO;
 import com.yoshione.fingen.dao.ProjectsDAO;
 import com.yoshione.fingen.dao.SimpleDebtsDAO;
@@ -1754,6 +1755,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                                     ProductsDAO productsDAO = ProductsDAO.getInstance(getApplicationContext());
                                     Product product;
                                     ProductEntry productEntry;
+                                    ProductEntrysDAO productEntrysDAO = ProductEntrysDAO.getInstance(getApplicationContext());
                                     for (Item item : items) {
                                         if (item.getName() == null)
                                             item.setName(getString(R.string.ent_unknown_product));
@@ -1774,6 +1776,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                                             productEntry = new ProductEntry();
                                             productEntry.setPrice(new BigDecimal(item.getPrice() / -100d));
                                             productEntry.setQuantity(new BigDecimal(item.getQuantity()));
+                                            productEntry.setCategoryID(productEntrysDAO.getLastCategoryID(product.getName()));
                                             productEntry.setTransactionID(transaction.getID());
                                             productEntry.setProductID(product.getID());
                                             productEntries.add(productEntry);
