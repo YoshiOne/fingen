@@ -44,6 +44,7 @@ import com.yoshione.fingen.model.SmsMarker;
 import com.yoshione.fingen.model.Template;
 import com.yoshione.fingen.utils.FabMenuController;
 import com.yoshione.fingen.utils.SmsParser;
+import com.yoshione.fingen.utils.Translit;
 import com.yoshione.fingen.widgets.ContextMenuRecyclerView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -100,7 +101,7 @@ public class FragmentModelList extends Fragment {
     SharedPreferences mPreferences;
 
     void setmFilter(String mFilter) {
-        this.mFilter = mFilter;
+        this.mFilter = Translit.toTranslit(mFilter);
     }
 
     private String mFilter = "";
