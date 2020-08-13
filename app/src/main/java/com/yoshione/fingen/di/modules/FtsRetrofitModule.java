@@ -1,6 +1,7 @@
 package com.yoshione.fingen.di.modules;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -86,6 +87,8 @@ public class FtsRetrofitModule {
 							ResponseBody responseBody = responseAuth.body();
 							if (responseBody != null) {
 								String responseJson = responseBody.string();
+								if (BuildConfig.DEBUG)
+									Log.d("FTS", "reAuth: " + responseJson);
 								ReAuthLoginResponse reAuthLoginResponse = new Gson().fromJson(responseJson, ReAuthLoginResponse.class);
 								preferences.edit()
 										.putString(FgConst.PREF_FTS_REFRESH_TOKEN, reAuthLoginResponse.getRefresh_token())

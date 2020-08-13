@@ -2195,7 +2195,7 @@
 
     <!-- 27. Products -->
     <!-- Errors -->
-    <string name="err_loading_products" formatted="false">Не удалось загрузить товары</string>
+    <string name="err_loading_products" formatted="false">Не удалось загрузить товары, попробуйте попозже...</string>
 
     <!-- 27. Products -->
     <!-- Errors -->

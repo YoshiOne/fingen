@@ -1736,6 +1736,13 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                                         if (attempt < 5) {
                                             mTextViewLoadingProducts.setText(getString(R.string.ttl_add_accept_attempt, ++attempt));
                                             unsubscribeOnDestroy(mFtsHelper.getCheck(ticketId, this));
+                                        } else {
+                                            isErrorLoadingProducts = true;
+                                            getIntent().removeExtra(LOAD_PRODUCTS);
+                                            mImageViewLoadingProducts.clearAnimation();
+                                            mImageViewLoadingProducts.setVisibility(View.GONE);
+                                            mTextViewLoadingProducts.setText(R.string.err_loading_products);
+                                            updateControlsState();
                                         }
                                         return;
                                     }
