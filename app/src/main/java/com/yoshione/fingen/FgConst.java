@@ -60,6 +60,9 @@ public class FgConst {
     public static final String PREF_DEFAULT_DEPARTMENT = "default_department";
     public static final String PREF_RESET_DEFAULT_DEPARTMENT = "reset_default_department";
     public static final String PREF_ENABLE_SCAN_QR = "enable_scan_qr";
+    public static final String PREF_FTS_CLIENT_SECRET = "fts_client_secret";
+    public static final String PREF_FTS_REFRESH_TOKEN = "fts_refresh_token";
+    public static final String PREF_FTS_SESSION_ID = "fts_session_id";
     public static final String PREF_FTS_LOGIN = "fts_login";
     public static final String PREF_FTS_PASS = "fts_pass";
     public static final String PREF_FTS_EMAIL = "fts_email";

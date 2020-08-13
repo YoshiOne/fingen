@@ -72,9 +72,10 @@ import com.yoshione.fingen.fts.ActivityScanQR;
 import com.yoshione.fingen.fts.FTSJsonToTransaction;
 import com.yoshione.fingen.fts.FtsHelper;
 import com.yoshione.fingen.fts.IFtsCallback;
-import com.yoshione.fingen.fts.models.FtsResponse;
-import com.yoshione.fingen.fts.models.Item;
-import com.yoshione.fingen.fts.models.Receipt;
+import com.yoshione.fingen.fts.models.tickets.Item;
+import com.yoshione.fingen.fts.models.tickets.Receipt;
+import com.yoshione.fingen.fts.models.tickets.Ticket;
+import com.yoshione.fingen.fts.models.tickets.TicketFindById;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.managers.AccountManager;
 import com.yoshione.fingen.managers.PayeeManager;
@@ -441,7 +442,6 @@ public class ActivityEditTransaction extends ToolbarActivity implements
         }
 
         if (getIntent().getBooleanExtra("scan_qr", false)) {
-
             getIntent().removeExtra("scan_qr");
             Intent intent = new Intent(ActivityEditTransaction.this, ActivityScanQR.class);
             intent.putExtra("transaction", transaction);
@@ -1619,7 +1619,6 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     }
 
     private void initFTS() {
-
         mTextViewFN.setText(String.valueOf(transaction.getFN()));
         mTextViewFD.setText(String.valueOf(transaction.getFD()));
         mTextViewFP.setText(String.valueOf(transaction.getFP()));
@@ -1699,7 +1698,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     boolean mProductListExpanded = true;
 
     private void loadProducts() {
-        if (mFtsHelper.isFtsCredentialsAvailable(this)) {
+        if (mFtsHelper.isFtsCredentialsAvailable(mPreferences)) {
             final RotateAnimation spinAnim = new RotateAnimation(360, 0f,
                     Animation.RELATIVE_TO_SELF, 0.5f,
                     Animation.RELATIVE_TO_SELF, 0.5f);
@@ -1718,89 +1717,119 @@ public class ActivityEditTransaction extends ToolbarActivity implements
 
                 @Override
                 public void onAccepted(Object response) {
-                    mTextViewLoadingProducts.setText(getString(R.string.ttl_check_correct_attempt, ++attempt));
+                    mTextViewLoadingProducts.setText(R.string.ttl_check_correct);
 
-                    IFtsCallback getCallback = new IFtsCallback() {
+                    IFtsCallback addCallback = new IFtsCallback() {
                         @Override
                         public void onAccepted(Object response) {
-                            FtsResponse body = (FtsResponse) response;
-                            Receipt receipt = body.getDocument().getReceipt();
+                            mTextViewLoadingProducts.setText(getString(R.string.ttl_add_accept_attempt, ++attempt));
 
-                            List<Item> items = new ArrayList<>(receipt.getItems());
-                            List<ProductEntry> productEntries = new ArrayList<>();
-                            ProductsDAO productsDAO = ProductsDAO.getInstance(getApplicationContext());
-                            Product product;
-                            ProductEntry productEntry;
-                            for (Item item : items) {
-                                if (item.getName() == null)
-                                    item.setName(getString(R.string.ent_unknown_product));
-                                try {
-                                    product = (Product) productsDAO.getModelByName(item.getName());
-                                } catch (Exception e) {
-                                    product = new Product();
+                            Ticket body = (Ticket) response;
+                            final String ticketId = body.getId();
+
+                            IFtsCallback getCallback = new IFtsCallback() {
+                                @Override
+                                public void onAccepted(Object response) {
+                                    TicketFindById body = (TicketFindById) response;
+
+                                    if (body.getStatus() < 2) {
+                                        if (attempt < 5) {
+                                            mTextViewLoadingProducts.setText(getString(R.string.ttl_add_accept_attempt, ++attempt));
+                                            unsubscribeOnDestroy(mFtsHelper.getCheck(ticketId, this));
+                                        }
+                                        return;
+                                    }
+
+                                    Receipt receipt = body.getTicket().getDocument().getReceipt();
+
+                                    List<Item> items = new ArrayList<>(receipt.getItems());
+                                    List<ProductEntry> productEntries = new ArrayList<>();
+                                    ProductsDAO productsDAO = ProductsDAO.getInstance(getApplicationContext());
+                                    Product product;
+                                    ProductEntry productEntry;
+                                    for (Item item : items) {
+                                        if (item.getName() == null)
+                                            item.setName(getString(R.string.ent_unknown_product));
+                                        try {
+                                            product = (Product) productsDAO.getModelByName(item.getName());
+                                        } catch (Exception e) {
+                                            product = new Product();
+                                        }
+                                        if (product.getID() < 0) {
+                                            try {
+                                                product.setName(item.getName());
+                                                product = (Product) productsDAO.createModel(product);
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        if (product.getID() > 0) {
+                                            productEntry = new ProductEntry();
+                                            productEntry.setPrice(new BigDecimal(item.getPrice() / -100d));
+                                            productEntry.setQuantity(new BigDecimal(item.getQuantity()));
+                                            productEntry.setTransactionID(transaction.getID());
+                                            productEntry.setProductID(product.getID());
+                                            productEntries.add(productEntry);
+                                        }
+                                    }
+                                    String payeeName = receipt.getUser();
+                                    if (payeeName == null || payeeName.isEmpty())
+                                        payeeName = receipt.getUserInn();
+
+                                    mImageViewLoadingProducts.clearAnimation();
+                                    mLayoutLoadingProducts.setVisibility(View.GONE);
+
+                                    transaction.getProductEntries().clear();
+                                    transaction.getProductEntries().addAll(productEntries);
+                                    getIntent().removeExtra(LOAD_PRODUCTS);
+                                    fillProductList();
+                                    if ((viewPager.getCurrentItem() == 0) && mPayeeName != null && mPayeeName.isEmpty())
+                                        setPayeeName(payeeName);
+                                    isErrorLoadingProducts = false;
                                 }
-                                if (product.getID() < 0) {
-                                    try {
-                                        product.setName(item.getName());
-                                        product = (Product) productsDAO.createModel(product);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
+
+                                @Override
+                                public void onFailure(String errMsg, int responseCode) {
+                                    boolean isErr = false;
+                                    if (responseCode == 401) {
+                                        FtsHelper.clearFtsCredentials(mPreferences);
+                                        isErr = true;
+                                        errMsg = getString(R.string.ttl_user_incorrect);
+                                    } else if (attempt < 5 || (responseCode == 202 && attempt < 10)) {
+                                        mTextViewLoadingProducts.setText(getString(R.string.ttl_add_accept_attempt, ++attempt));
+                                        unsubscribeOnDestroy(mFtsHelper.getCheck(ticketId, this));
+                                    } else {
+                                        isErr = true;
+                                    }
+
+                                    if (isErr) {
+                                        isErrorLoadingProducts = true;
+                                        getIntent().removeExtra(LOAD_PRODUCTS);
+                                        mImageViewLoadingProducts.clearAnimation();
+                                        mImageViewLoadingProducts.setVisibility(View.GONE);
+                                        mTextViewLoadingProducts.setText(errMsg);
+                                        updateControlsState();
                                     }
                                 }
-                                if (product.getID() > 0) {
-                                    productEntry = new ProductEntry();
-                                    productEntry.setPrice(new BigDecimal(item.getPrice() / -100d));
-                                    productEntry.setQuantity(new BigDecimal(item.getQuantity()));
-                                    productEntry.setTransactionID(transaction.getID());
-                                    productEntry.setProductID(product.getID());
-                                    productEntries.add(productEntry);
-                                }
-                            }
-                            String payeeName = receipt.getUser();
-                            if (payeeName == null || payeeName.isEmpty())
-                                payeeName = receipt.getUserInn();
-
-                            mImageViewLoadingProducts.clearAnimation();
-                            mLayoutLoadingProducts.setVisibility(View.GONE);
-
-                            transaction.getProductEntries().clear();
-                            transaction.getProductEntries().addAll(productEntries);
-                            getIntent().removeExtra(LOAD_PRODUCTS);
-                            fillProductList();
-                            if ((viewPager.getCurrentItem() == 0) && mPayeeName != null && mPayeeName.isEmpty())
-                                setPayeeName(payeeName);
-                            isErrorLoadingProducts = false;
+                            };
+                            unsubscribeOnDestroy(mFtsHelper.getCheck(ticketId, getCallback));
                         }
 
                         @Override
                         public void onFailure(String errMsg, int responseCode) {
-                            if (responseCode == 403) {
-                                mPreferences.edit()
-                                        .remove(FgConst.PREF_FTS_PASS)
-                                        .remove(FgConst.PREF_FTS_NAME)
-                                        .remove(FgConst.PREF_FTS_EMAIL)
-                                        .apply();
-                                isErrorLoadingProducts = true;
-                                getIntent().removeExtra(LOAD_PRODUCTS);
-                                mImageViewLoadingProducts.clearAnimation();
-                                mImageViewLoadingProducts.setVisibility(View.GONE);
-                                mTextViewLoadingProducts.setText(getString(R.string.ttl_user_incorrect));
-                                updateControlsState();
-                            } else if (attempt < 5 || (responseCode == 202 && attempt < 10)) {
-                                mTextViewLoadingProducts.setText(getString(R.string.ttl_check_correct_attempt, ++attempt));
-                                unsubscribeOnDestroy(mFtsHelper.getCheck(transaction, this));
-                            } else {
-                                isErrorLoadingProducts = true;
-                                getIntent().removeExtra(LOAD_PRODUCTS);
-                                mImageViewLoadingProducts.clearAnimation();
-                                mImageViewLoadingProducts.setVisibility(View.GONE);
-                                mTextViewLoadingProducts.setText(errMsg);
-                                updateControlsState();
+                            if (responseCode == 401) {
+                                FtsHelper.clearFtsCredentials(mPreferences);
+                                errMsg = getString(R.string.ttl_user_incorrect);
                             }
-
+                            isErrorLoadingProducts = true;
+                            getIntent().removeExtra(LOAD_PRODUCTS);
+                            mImageViewLoadingProducts.clearAnimation();
+                            mImageViewLoadingProducts.setVisibility(View.GONE);
+                            mTextViewLoadingProducts.setText(errMsg);
+                            updateControlsState();
                         }
                     };
-                    unsubscribeOnDestroy(mFtsHelper.getCheck(transaction, getCallback));
+                    unsubscribeOnDestroy(mFtsHelper.addCheck(transaction, addCallback));
                 }
 
                 @Override
@@ -1829,15 +1858,14 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     private void loadProductsJSON(String jsonAsString) {
         try {
             FTSJsonToTransaction ftsJsonToTransaction = new FTSJsonToTransaction(getApplicationContext(), transaction, jsonAsString);
-            transaction=ftsJsonToTransaction.generateTransaction(true);
+            transaction = ftsJsonToTransaction.generateTransaction(true);
             setPayeeName(ftsJsonToTransaction.getPayerName());
-            getIntent().removeExtra("load_products");
-            fillProductList();
+            getIntent().removeExtra(LOAD_PRODUCTS);
             isErrorLoadingProducts = false;
             initUI();
         } catch (Exception e) {
             isErrorLoadingProducts = true;
-            getIntent().removeExtra("load_products");
+            getIntent().removeExtra(LOAD_PRODUCTS);
             mTextViewLoadingProducts.setText(e.getMessage());
             updateControlsState();
         }

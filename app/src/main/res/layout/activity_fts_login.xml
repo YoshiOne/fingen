@@ -141,24 +141,18 @@
                     tools:text="ivan@example.com" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:id="@+id/buttonCreateAccount"
-                style="@android:style/Widget.Material.Button.Borderless"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/textViewInfo"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/ttl_create_account"
-                app:layout_constraintEnd_toStartOf="@id/guideline7"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textInputLayoutEmail" />
-
-            <Button
-                android:id="@+id/buttonRecoveryCode"
-                style="@android:style/Widget.Material.Button.Borderless"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/ttl_recovery_code"
+                android:layout_margin="@dimen/activity_margin"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/ttl_fts_info"
+                android:textAppearance="@style/AppTheme.Toolbar.Title"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/guideline7"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textInputLayoutEmail" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -225,6 +219,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/guideline6" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

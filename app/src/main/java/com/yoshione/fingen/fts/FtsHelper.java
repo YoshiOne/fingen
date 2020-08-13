@@ -2,6 +2,10 @@ package com.yoshione.fingen.fts;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.text.format.DateFormat;
 import android.util.Base64;
 import android.util.Log;
 
@@ -9,12 +13,14 @@ import androidx.preference.PreferenceManager;
 
 import com.yoshione.fingen.FGApplication;
 import com.yoshione.fingen.FgConst;
-import com.yoshione.fingen.fts.models.RestoreRequest;
-import com.yoshione.fingen.fts.models.SignUpRequest;
+import com.yoshione.fingen.fts.api.LoginApi;
+import com.yoshione.fingen.fts.api.TicketApi;
+import com.yoshione.fingen.fts.models.login.PhoneLoginRequest;
+import com.yoshione.fingen.fts.models.tickets.TicketQrCodeRequest;
 import com.yoshione.fingen.model.Transaction;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 import javax.inject.Inject;
 
@@ -23,15 +29,13 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
-/**
- * Created by slv on 30.01.2018.
- *
- */
 
 public class FtsHelper {
 
     @Inject
-    FtsApi mApi;
+    TicketApi mApi;
+    @Inject
+    LoginApi loginApi;
     @Inject
     Context mContext;
 
@@ -48,53 +52,17 @@ public class FtsHelper {
      * @return
      */
     public Disposable checkAuth(final String phone, final String code, final IFtsCallback callback) {
-        String auth = getAuth(phone, code).replaceAll("\n", "");
-
-        return mApi.checkAuth("Basic " + auth,
-                "748036d688ec41c6",
-                "Android 8.0")
+        String hashKey = getHashKey(mContext);
+        if (hashKey.isEmpty()) {
+            callback.onFailure("system error: FNS application is not found", -1);
+            return null;
+        }
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        preferences.edit().putString(FgConst.PREF_FTS_CLIENT_SECRET, hashKey).apply();
+        return loginApi.loginUser(new PhoneLoginRequest(hashKey, phone, code))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> responseAuth(200, response, callback), throwable -> throwableAuth(throwable, callback));
-    }
-
-    /**
-     *  Регистрация пользователя. Посылает POST запрос в ФНС для регистрации нового пользователя. В качестве логина будет использован
-     *  его телефон, пароль выдает ФНС через смс.
-     *
-     * @param phone номер телефона в формате "+79001234567"
-     * @param name имя
-     * @param email электронный адрес
-     * @param callback интерфейс ответа
-     * @return
-     */
-    public Disposable signUpAuth(final String phone, final String name, final String email, final IFtsCallback callback) {
-        SignUpRequest signUpBody = new SignUpRequest();
-        signUpBody.setPhone(phone);
-        signUpBody.setName(name);
-        signUpBody.setEmail(email);
-
-        return mApi.signUp(signUpBody)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> responseAuth(204, response, callback), throwable -> throwableAuth(throwable, callback));
-    }
-
-    /**
-     * Процедура восстановления пароля. Отправка POST запроса в ФНС
-     *
-     * @param phone номер телефона в формате "+79001234567"
-     * @param callback интерфейс ответа
-     * @return
-     */
-    public Disposable recoveryCode(final String phone, IFtsCallback callback) {
-        RestoreRequest restoreBody = new RestoreRequest();
-        restoreBody.setPhone(phone);
-
-        return mApi.restoreCode(restoreBody)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> responseAuth(204, response, callback), throwable -> throwableAuth(throwable, callback));
     }
 
     /**
@@ -105,39 +73,38 @@ public class FtsHelper {
      * @return
      */
     public Disposable isCheckExists(final Transaction transaction, final IFtsCallback callback) {
-        String date = android.text.format.DateFormat.format("yyyy-MM-ddTHH:mm:00", transaction.getDateTime()).toString();
-        String sum = Long.toString(Math.round(transaction.getAmount().doubleValue() * -100.0));
-        String url = String.format("/v1/ofds/*/inns/*/fss/%s/operations/1/tickets/%s?fiscalSign=%s&date=%s&sum=%s",
-                String.valueOf(transaction.getFN()),
-                String.valueOf(transaction.getFD()),
-                String.valueOf(transaction.getFP()),
-                date,
-                sum);
+        String date = DateFormat.format("yyyy-MM-ddTHH:mm:00", transaction.getDateTime()).toString();
+        Long sum = Math.round(transaction.getAmount().doubleValue() * -100.0);
 
-        return mApi.checkExists(url)
+        return mApi.validateTicket(String.valueOf(transaction.getFN()), 1, String.valueOf(transaction.getFD()), String.valueOf(transaction.getFP()), date, sum)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> responseAuth(204, response, callback), throwable -> throwableAuth(throwable, callback));
     }
 
     /**
-     * Получение чека из ФНС
+     * Добавление чека в ФНС
      *
      * @param transaction информация о транзакции, содержащей данные электронного чека
      * @param callback интерфейс ответа
      * @return
      */
-    public Disposable getCheck(final Transaction transaction, final IFtsCallback callback) {
-        String url = String.format("/v1/inns/*/kkts/*/fss/%s/tickets/%s?fiscalSign=%s&sendToEmail=no",
-                String.valueOf(transaction.getFN()),
-                String.valueOf(transaction.getFD()),
-                String.valueOf(transaction.getFP()));
-        String auth = getAuth(mContext).replaceAll("\n", "");
+    public Disposable addCheck(final Transaction transaction, final IFtsCallback callback) {
+        return mApi.addTicketQR(new TicketQrCodeRequest(transaction.getQRCode()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> responseAuth(200, response, callback), throwable -> throwableAuth(throwable, callback));
+    }
 
-        return mApi.getData(url,
-                "Basic " + auth,
-                "748036d688ec41c6",
-                "Android 8.0")
+    /**
+     * Получение чека из ФНС
+     *
+     * @param ticketId идентификатор чека в ФНС
+     * @param callback интерфейс ответа
+     * @return
+     */
+    public Disposable getCheck(final String ticketId, final IFtsCallback callback) {
+        return mApi.getTicket(ticketId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> responseAuth(200, response, callback), throwable -> throwableAuth(throwable, callback));
@@ -170,28 +137,36 @@ public class FtsHelper {
         callback.onFailure(throwable.getMessage(), -1);
     }
 
-    private String getAuth(String phone, String code) {
-        String auth = String.format("%s:%s", phone, code);
-
-        byte[] data = auth.getBytes(StandardCharsets.UTF_8);
-        auth = Base64.encodeToString(data, Base64.DEFAULT);
-        if (auth == null) {
-            auth = "";
+    private String getHashKey(Context pContext) {
+        try {
+            PackageInfo info = pContext.getPackageManager().getPackageInfo("ru.fns.billchecker", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String hashKey = Base64.encodeToString(md.digest(), Base64.NO_WRAP);
+                Log.d("HashKey", "printHashKey() Hash Key: " + hashKey);
+                return hashKey;
+            }
+        } catch (Exception e) {
+            Log.e("HashKey", "printHashKey()", e);
         }
-        return auth;
+        return "";
     }
 
-    private String getAuth(Context context) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String phone = preferences.getString(FgConst.PREF_FTS_LOGIN, "");
-        String code = preferences.getString(FgConst.PREF_FTS_PASS, "");
-        return getAuth(phone, code);
-    }
-
-    public boolean isFtsCredentialsAvailable(Context context) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+    public static boolean isFtsCredentialsAvailable(SharedPreferences preferences) {
         return preferences.getBoolean(FgConst.PREF_FTS_ENABLED, true)
-                & !preferences.getString(FgConst.PREF_FTS_LOGIN, "").isEmpty()
-                & !preferences.getString(FgConst.PREF_FTS_PASS, "").isEmpty();
+                & !preferences.getString(FgConst.PREF_FTS_SESSION_ID, "").isEmpty();
+    }
+
+    public static void clearFtsCredentials(SharedPreferences preferences) {
+        preferences.edit()
+                .remove(FgConst.PREF_FTS_LOGIN)
+                .remove(FgConst.PREF_FTS_PASS)
+                .remove(FgConst.PREF_FTS_NAME)
+                .remove(FgConst.PREF_FTS_EMAIL)
+                .remove(FgConst.PREF_FTS_CLIENT_SECRET)
+                .remove(FgConst.PREF_FTS_REFRESH_TOKEN)
+                .remove(FgConst.PREF_FTS_SESSION_ID)
+                .apply();
     }
 }

@@ -13,7 +13,8 @@ import com.yoshione.fingen.adapter.viewholders.TransactionViewHolderParams;
 import com.yoshione.fingen.di.modules.BillingModule;
 import com.yoshione.fingen.di.modules.ContextModule;
 import com.yoshione.fingen.di.modules.DaoModule;
-import com.yoshione.fingen.di.modules.FtsApiModule;
+import com.yoshione.fingen.di.modules.LoginApiModule;
+import com.yoshione.fingen.di.modules.TicketApiModule;
 import com.yoshione.fingen.di.modules.FtsHelperModule;
 import com.yoshione.fingen.di.modules.FtsRetrofitModule;
 import com.yoshione.fingen.di.modules.PreferencesModule;
@@ -28,7 +29,7 @@ import dagger.Component;
 
 @Singleton
 @Component(modules = {ContextModule.class, PreferencesModule.class, BillingModule.class, DaoModule.class,
-		FtsRetrofitModule.class, FtsApiModule.class, FtsHelperModule.class})
+		FtsRetrofitModule.class, TicketApiModule.class, LoginApiModule.class, FtsHelperModule.class})
 public interface AppComponent {
 	Context getContext();
 

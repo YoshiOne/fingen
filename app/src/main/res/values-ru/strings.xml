@@ -2135,7 +2135,11 @@
 
     <!-- 27. Products -->
     <!-- Titles -->
-    <string name="ttl_check_correct_attempt" formatted="false">Чек найден. Загрузка товаров... Попытка %d</string>
+    <string name="ttl_check_correct" formatted="false">Чек корректен. Добавление в аккаунт ФНС...</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_add_accept_attempt" formatted="false">Чек добавлен. Загрузка товаров... Попытка %d</string>
 
     <!-- 27. Products -->
     <!-- Titles -->
@@ -2180,6 +2184,10 @@
     <!-- 27. Products -->
     <!-- Titles -->
     <string name="ttl_fts_enabled" formatted="false">Подключаться к ФНС</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_fts_info" formatted="false">Для получения кода необходимо запустить приложение \"Проверка чеков\", зайти во вкладку \"Профиль\", нажать на кнопку \"Войти\", выбрать пункт \"Номер телефона\", ввести свой номер телефона и нажать на кнопку \"Выслать код\", код придет в смс, вводить в приложении \"Проверка чеков\" его не нужно. После ввода смс кода в этом окне авторизовываться в приложении \"Проверка чеков\" нельзя, иначе слетит авторизация здесь!</string>
 
     <!-- 27. Products -->
     <!-- Messages -->

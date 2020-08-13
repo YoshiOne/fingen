@@ -2135,7 +2135,11 @@
 
     <!-- 27. Products -->
     <!-- Titles -->
-    <string name="ttl_check_correct_attempt" formatted="false">The check is correct. Loading products... Attempt %d</string>
+    <string name="ttl_check_correct" formatted="false">The check is correct. Add it to FNS account...</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_add_accept_attempt" formatted="false">The check added. Loading products... Attempt %d</string>
 
     <!-- 27. Products -->
     <!-- Titles -->
@@ -2180,6 +2184,10 @@
     <!-- 27. Products -->
     <!-- Titles -->
     <string name="ttl_fts_enabled" formatted="false">Enabled FTS request</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_fts_info" formatted="false">To receive the code, you need to launch the \"Check Checker\" application, go to the \"Profile\" tab, click on the \"Login\" button, select the \"Phone Number\" item, enter your phone number and click on the \"Send Code\" button, the code will be sent in SMS, you do not need to enter it in there application. You cannot use the \"Check Checker\" application at the same time!</string>
 
     <!-- 27. Products -->
     <!-- Messages -->
