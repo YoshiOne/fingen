@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.6.4.2-x.6" changeDate=">2020.08.13">
+        <changelogtext>Repair get electornic receipts from FNS server (additional in the 4pda forum)</changelogtext>
+        <changelogtext>Fix replace category of exists transactions after scan QR-code</changelogtext>
+        <changelogtext>Fix save payee after load products from electronic receipt</changelogtext>
+        <changelogtext>Fix auto-loading products after scan QR-code from transaction list page</changelogtext>
+        <changelogtext>(kasimm) Add last category for products downloaded by e-receipt</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.6.4.2-x.5" changeDate=">2020.08.07">
         <changelogtext>Bugs fixes</changelogtext>
         <changelogtext>(Sovvateikin Sergei) Fix import products from CSV</changelogtext>

@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
+    <changelogversion versionName="2.6.4.2-x.6" changeDate=">2020.08.13">
+        <changelogtext>Восстановлена возможность получения электронных чеков с сервера ФНС (подробности на форуме)</changelogtext>
+        <changelogtext>Исправлена замена категории у существующей транзакции после сканирования QR-кода</changelogtext>
+        <changelogtext>Исправлена сохранение получателя после загрузки товаров из электронного чека</changelogtext>
+        <changelogtext>Исправлен автоматический запуск загрузки электронного чека после сканирования QR-кода со страницы транзакций</changelogtext>
+        <changelogtext>(kasimm) Добавлена автоподстановка категории товаров на основе последнего выбора</changelogtext>
+    </changelogversion>
     <changelogversion versionName="2.6.4.2-x.5" changeDate=">2020.08.07">
         <changelogtext>Исправлены некоторые вылеты приложения</changelogtext>
         <changelogtext>(Sovvateikin Sergei) Исправлен импорт товаров из CSV</changelogtext>
