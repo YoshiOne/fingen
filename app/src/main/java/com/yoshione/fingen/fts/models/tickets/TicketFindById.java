@@ -6,6 +6,7 @@ public class TicketFindById {
     private Seller seller;
     private TicketQuery query;
     private TicketData ticket;
+    private StatusDescription statusDescription;
 
     public Integer getStatus() {
         return status;
@@ -45,6 +46,14 @@ public class TicketFindById {
 
     public void setTicket(TicketData ticket) {
         this.ticket = ticket;
+    }
+
+    public StatusDescription getStatusDescription() {
+        return statusDescription;
+    }
+
+    public void setStatusDescription(StatusDescription statusDescription) {
+        this.statusDescription = statusDescription;
     }
 
     @Override
