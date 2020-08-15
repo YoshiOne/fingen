@@ -186,8 +186,7 @@ public class ActivityScanQR extends AppCompatActivity
         // Creates and starts the camera.  Note that this uses a higher resolution in comparison
         // to other detection examples to enable the barcode detector to detect small barcodes
         // at long distances.
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
 
         boolean autoFocusEnabled = mPreferences.getBoolean(FgConst.PREF_SCAN_QR_AUTO_FOCUS, false);
         CameraSource.Builder builder = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
