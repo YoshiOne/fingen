@@ -21,6 +21,12 @@
             android:entries="@array/pref_theme_titles"
             android:entryValues="@array/pref_theme_values"/>
         <ListPreference
+            android:key="font_scale"
+            android:title="@string/pref_font_scale"
+            android:defaultValue="1"
+            android:entries="@array/pref_font_scale"
+            android:entryValues="@array/pref_font_scale_values"/>
+        <ListPreference
             android:key="first_day_of_week"
             android:title="@string/pref_first_day_of_week"
             android:defaultValue="monday"

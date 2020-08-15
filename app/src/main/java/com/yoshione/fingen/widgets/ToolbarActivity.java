@@ -6,6 +6,8 @@ package com.yoshione.fingen.widgets;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +22,7 @@ import com.github.omadahealth.lollipin.lib.PinCompatActivity;
 import com.yoshione.fingen.ActivityMain;
 import com.yoshione.fingen.BuildConfig;
 import com.yoshione.fingen.FGApplication;
+import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.interfaces.IUnsubscribeOnDestroy;
 import com.yoshione.fingen.utils.ViewServer;
@@ -55,13 +58,17 @@ public abstract class ToolbarActivity extends PinCompatActivity implements IUnsu
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        getMvpDelegate().onCreate(savedInstanceState);
+        FGApplication.getAppComponent().inject(this);
+
+        Resources res = getResources();
+        int font_scale = Integer.parseInt(mPreferences.getString(FgConst.PREF_FONT_SCALE, "1"));
+        Configuration conf = new Configuration(res.getConfiguration());
+        conf.fontScale = 0.85f + font_scale * 0.15f;
+        res.updateConfiguration(conf, res.getDisplayMetrics());
 
         setContentView(getLayoutResourceId());
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-
-        FGApplication.getAppComponent().inject(this);
 
         mCompositeDisposable = new CompositeDisposable();
 

@@ -102,6 +102,7 @@ public class FragmentSettings extends XpPreferenceFragment implements ICanPressB
         activities[0] = getActivity();
 
         bindPreferenceSummaryToValue(findPreference(FgConst.PREF_START_TAB));
+        bindPreferenceSummaryToValue(findPreference(FgConst.PREF_FONT_SCALE));
         bindPreferenceSummaryToValue(findPreference("theme"));
         bindPreferenceSummaryToValue(findPreference(FgConst.PREF_ACCOUNT_CLICK_ACTION));
         bindPreferenceSummaryToValue(findPreference("balance_compare_error"));
@@ -113,6 +114,14 @@ public class FragmentSettings extends XpPreferenceFragment implements ICanPressB
         bindPreferenceSummaryToValue(findPreference(FgConst.PREF_PIN_LOCK_TIMEOUT));
 
         updateAndReturnPinLockState();
+        findPreference(FgConst.PREF_FONT_SCALE).setOnPreferenceChangeListener((preference, value) -> {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(Objects.requireNonNull(getContext()));
+            if (!prefs.getString(FgConst.PREF_FONT_SCALE, "1").equals(value)) {
+                if (prefs.edit().putString(FgConst.PREF_FONT_SCALE, (String) value).commit())
+                    System.exit(0);
+            }
+            return true;
+        });
         findPreference(FgConst.PREF_PIN_LOCK_ENABLE).setOnPreferenceChangeListener((preference, value) -> {
             boolean isChecked = ((SwitchPreference) preference).isChecked();
             Intent intent = new Intent(activities[0], CustomPinActivity.class);

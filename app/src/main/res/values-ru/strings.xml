@@ -1523,6 +1523,15 @@
 
     <!-- 20. Settings -->
     <!-- General -->
+    <string name="pref_font_scale" formatted="false">Размер шрифта</string>
+
+    <string name="pref_font_scale_0" formatted="false">Мелкий</string>
+    <string name="pref_font_scale_1" formatted="false">Обычный</string>
+    <string name="pref_font_scale_2" formatted="false">Большой</string>
+    <string name="pref_font_scale_3" formatted="false">Огромный</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
     <string name="pref_title_theme_light" formatted="false">Светлая</string>
 
     <!-- 20. Settings -->

@@ -30,6 +30,7 @@ public class FgConst {
     public static final String TEI_COMMENT = "comment";
 
     //<editor-fold Preference keys
+    public static final String PREF_FONT_SCALE = "font_scale";
     public static final String PREF_CURRENT_ACCOUNT_SET = "current_account_set";
     public static final String PREF_FORCE_UPDATE_ACCOUNTS = "force_update_accounts";
     public static final String PREF_FORCE_UPDATE_SUMMARY = "force_update_summary";
