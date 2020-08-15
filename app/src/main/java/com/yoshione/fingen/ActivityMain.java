@@ -998,6 +998,8 @@ public class ActivityMain extends ToolbarActivity {
                     foundTransaction.setFN(transaction.getFN());
                     foundTransaction.setFD(transaction.getFD());
                     foundTransaction.setFP(transaction.getFP());
+                    foundTransaction.setDateTime(transaction.getDateTime());
+                    foundTransaction.setAmount(transaction.getAmount(), transaction.getTransactionType());
                     intent.putExtra("transaction", foundTransaction);
                     intent.putExtra("load_products", 1);
                     intent.putExtra("jsonAsString", importJsonTicket);
