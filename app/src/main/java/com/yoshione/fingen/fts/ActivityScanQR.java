@@ -63,8 +63,10 @@ public class ActivityScanQR extends AppCompatActivity
 
         // clipboard worker copied from ActivitySmsList
         ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        if (clipboard.hasPrimaryClip()) {
-            ClipData data = clipboard.getPrimaryClip();
+        ClipData data = null;
+        if (clipboard.hasPrimaryClip())
+            data = clipboard.getPrimaryClip();
+        if (data != null) {
             ClipData.Item item = data.getItemAt(0);
 
             String text = "";
