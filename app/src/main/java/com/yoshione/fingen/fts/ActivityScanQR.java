@@ -236,7 +236,11 @@ public class ActivityScanQR extends AppCompatActivity
             }
         });
 
-        qrCodeReaderView.setOnClickListener(view -> mCameraSource.autoFocus(null));
+        qrCodeReaderView.setOnClickListener(view -> {
+            try {
+                mCameraSource.autoFocus(null);
+            } catch (Exception ignored) { }
+        });
         checkBoxAutoFocus.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             mCameraSource.setFocusMode(isChecked ? Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE : Camera.Parameters.FOCUS_MODE_MACRO);
             checkBoxAutoFocus.setCompoundDrawablesWithIntrinsicBounds(0, isChecked ? R.drawable.ic_scan_qr_autofocus : R.drawable.ic_scan_qr_focus, 0, 0);
