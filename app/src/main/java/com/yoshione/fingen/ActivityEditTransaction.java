@@ -940,7 +940,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                      & item.isVisible() ? View.VISIBLE : View.GONE);
         }
 
-        boolean scanQR = mPreferences.getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true);
+        boolean scanQR = mPreferences.getBoolean(FgConst.PREF_SCAN_QR_ENABLED, true);
 
         item = PrefUtils.getTrEditItemByID(mTrEditItems, FgConst.TEI_FTS);
         if (item != null) {

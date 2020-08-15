@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -32,6 +33,8 @@ import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.android.material.snackbar.Snackbar;
+import com.yoshione.fingen.FGApplication;
+import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.managers.TransactionManager;
 import com.yoshione.fingen.model.Transaction;
@@ -40,6 +43,8 @@ import com.yoshione.fingen.utils.ColorUtils;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.inject.Inject;
 
 public class ActivityScanQR extends AppCompatActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -54,12 +59,17 @@ public class ActivityScanQR extends AppCompatActivity
     private SurfaceView qrCodeReaderView;
     private BarcodeDetector barcodeDetector;
 
+    @Inject
+    public SharedPreferences mPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_decoder);
         mainLayout = findViewById(R.id.main_layout);
+
+        FGApplication.getAppComponent().inject(this);
 
         // clipboard worker copied from ActivitySmsList
         ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
@@ -165,7 +175,8 @@ public class ActivityScanQR extends AppCompatActivity
         View content = getLayoutInflater().inflate(R.layout.content_decoder, mainLayout, true);
 
         qrCodeReaderView = content.findViewById(R.id.qrdecoderview);
-        CheckBox flashlightCheckBox = content.findViewById(R.id.flashlight_checkbox);
+        CheckBox checkBoxFlashlight = content.findViewById(R.id.checkboxFlashlight);
+        CheckBox checkBoxAutoFocus = content.findViewById(R.id.checkboxAutoFocus);
         Button buttonGallery = content.findViewById(R.id.buttonGallery);
 
         barcodeDetector = new BarcodeDetector.Builder(getApplicationContext())
@@ -178,11 +189,13 @@ public class ActivityScanQR extends AppCompatActivity
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
+        boolean autoFocusEnabled = mPreferences.getBoolean(FgConst.PREF_SCAN_QR_AUTO_FOCUS, false);
         CameraSource.Builder builder = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
                 .setRequestedPreviewSize(metrics.heightPixels, metrics.widthPixels)
                 .setRequestedFps(24.0f)
-                .setFocusMode(Camera.Parameters.FOCUS_MODE_MACRO);
+                .setFlashMode(Camera.Parameters.FLASH_MODE_OFF)
+                .setFocusMode(autoFocusEnabled ? Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE : Camera.Parameters.FOCUS_MODE_MACRO);
 
         mCameraSource = builder.build();
 
@@ -224,7 +237,21 @@ public class ActivityScanQR extends AppCompatActivity
         });
 
         qrCodeReaderView.setOnClickListener(view -> mCameraSource.autoFocus(null));
-        flashlightCheckBox.setOnCheckedChangeListener((compoundButton, isChecked) -> mCameraSource.setFlashMode(isChecked ? Camera.Parameters.FLASH_MODE_TORCH : Camera.Parameters.FLASH_MODE_OFF));
+        checkBoxAutoFocus.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            mCameraSource.setFocusMode(isChecked ? Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE : Camera.Parameters.FOCUS_MODE_MACRO);
+            checkBoxAutoFocus.setCompoundDrawablesWithIntrinsicBounds(0, isChecked ? R.drawable.ic_scan_qr_autofocus : R.drawable.ic_scan_qr_focus, 0, 0);
+            checkBoxAutoFocus.setText(isChecked ? R.string.ttl_autoFocus : R.string.ttl_manualFocus);
+            mPreferences.edit().putBoolean(FgConst.PREF_SCAN_QR_AUTO_FOCUS, isChecked).apply();
+        });
+        checkBoxAutoFocus.setChecked(autoFocusEnabled);
+        if (mCameraSource.getFlashMode() != null) {
+            checkBoxFlashlight.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+                mCameraSource.setFlashMode(isChecked ? Camera.Parameters.FLASH_MODE_TORCH : Camera.Parameters.FLASH_MODE_OFF);
+                checkBoxFlashlight.setCompoundDrawablesWithIntrinsicBounds(0, isChecked ? R.drawable.ic_scan_qr_flash_on : R.drawable.ic_scan_qr_flash_off, 0, 0);
+            });
+        } else {
+            checkBoxFlashlight.setVisibility(View.GONE);
+        }
         buttonGallery.setOnClickListener(view -> {
             Intent i = new Intent(
                     Intent.ACTION_PICK,

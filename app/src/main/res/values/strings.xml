@@ -2015,7 +2015,15 @@
 
     <!-- 26. ScanQR -->
     <!-- Titles -->
-    <string name="ttl_on_off_flashlight">On/Off flashlight</string>
+    <string name="ttl_flashlight">Flashlight</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_manualFocus">ManualFocus</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_autoFocus">AutoFocus</string>
 
     <!-- 26. ScanQR -->
     <!-- Titles -->

@@ -59,7 +59,8 @@ public class FgConst {
     public static final String PREF_SHOW_CLOSED_DEBTS = "show_closed_debts";
     public static final String PREF_DEFAULT_DEPARTMENT = "default_department";
     public static final String PREF_RESET_DEFAULT_DEPARTMENT = "reset_default_department";
-    public static final String PREF_ENABLE_SCAN_QR = "enable_scan_qr";
+    public static final String PREF_SCAN_QR_ENABLED = "scan_qr_enabled";
+    public static final String PREF_SCAN_QR_AUTO_FOCUS = "scan_qr_auto_focus";
     public static final String PREF_FTS_CLIENT_SECRET = "fts_client_secret";
     public static final String PREF_FTS_REFRESH_TOKEN = "fts_refresh_token";
     public static final String PREF_FTS_SESSION_ID = "fts_session_id";

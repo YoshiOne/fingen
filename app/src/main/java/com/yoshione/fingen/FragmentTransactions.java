@@ -1186,7 +1186,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     private void setupBottomBar() {
         FragmentTransactions.BottomButtonClickListener clickListener = new FragmentTransactions.BottomButtonClickListener();
 
-        boolean scanQR = mPreferences.getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true);
+        boolean scanQR = mPreferences.getBoolean(FgConst.PREF_SCAN_QR_ENABLED, true);
         mButtonScanQR.setVisibility(scanQR ? View.VISIBLE : View.GONE);
 
         mButtonTemplates.setOnClickListener(clickListener);

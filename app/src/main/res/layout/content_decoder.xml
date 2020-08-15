@@ -24,22 +24,36 @@
       android:orientation="horizontal">
 
     <CheckBox
-        android:id="@+id/flashlight_checkbox"
+        android:id="@+id/checkboxFlashlight"
         style="@style/BottomBarButton"
         android:layout_width="0dp"
-        android:layout_weight="3"
+        android:layout_weight="1"
         android:layout_height="match_parent"
-        android:text="@string/ttl_on_off_flashlight"
+        android:button="@android:color/transparent"
+        android:drawableTop="@drawable/ic_scan_qr_flash_off"
+        android:text="@string/ttl_flashlight"
         android:textColor="#ffffff"
         android:textSize="14sp"
         android:checked="false" />
+
+    <CheckBox
+        android:id="@+id/checkboxAutoFocus"
+        style="@style/BottomBarButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:button="@android:color/transparent"
+        android:drawableTop="@drawable/ic_scan_qr_focus"
+        android:text="@string/ttl_manualFocus"
+        android:textColor="#ffffff"
+        android:textSize="14sp" />
 
     <Button
         android:id="@+id/buttonGallery"
         style="@style/BottomBarButton"
         android:layout_width="0dp"
-        android:layout_weight="2"
-        android:drawableTop="@drawable/ic_picture"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/ic_scan_qr_gallery"
         android:text="@string/ttl_open_gallery"
         android:textColor="#ffffff"
         android:textSize="14sp" />
