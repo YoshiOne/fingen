@@ -135,14 +135,6 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
             mParams.mCabbageCache.put(cabbage.getID(), cabbageFormatter);
         }
 
-        textViewAccountBalance.setTextColor(getAmountColor(t.getFromAccountBalance()));
-        mUnsubscriber.unsubscribeOnDestroy(
-                cabbageFormatter.formatRx(t.getFromAccountBalance())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(s -> textViewAccountBalance.setText(s))
-        );
-
         CabbageFormatter destCabbageFormatter = null;
         if (t.getDestAccountID() >= 0) {
             if (mParams.mCabbageCache.indexOfKey(destAccount.getCabbageId()) >= 0) {
@@ -171,6 +163,14 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
 
         if (mParams.mShowDateInsteadOfRunningBalance) {
             textViewAccountBalance.setText(mParams.mDateTimeFormatter.getDateMediumString(t.getDateTime()));
+        } else {
+            textViewAccountBalance.setTextColor(getAmountColor(t.getFromAccountBalance()));
+            mUnsubscriber.unsubscribeOnDestroy(
+                    cabbageFormatter.formatRx(t.getFromAccountBalance())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(s -> textViewAccountBalance.setText(s))
+            );
         }
 
         //<editor-fold desc="DateTime">
