@@ -64,7 +64,7 @@ public class AccountsSetsRefDAO extends BaseDAO<AccountsSetRef> implements IDaoI
     @Override
     public synchronized void deleteModel(IAbstractModel model, boolean resetTS, Context context) {
         AccountsSetsLogDAO accountsSetsLogDAO = AccountsSetsLogDAO.getInstance(context);
-        accountsSetsLogDAO.bulkDeleteModel(accountsSetsLogDAO.getModels(String.format("%s = %s", AccountsSetsLogDAO.TABLE,
+        accountsSetsLogDAO.bulkDeleteModel(accountsSetsLogDAO.getModels(String.format("%s = %s", AccountsSetsLogDAO.COL_SET_ID,
                 String.valueOf(model.getID()))), resetTS);
 
         super.deleteModel(model, resetTS, context);
