@@ -1733,7 +1733,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                                 public void onAccepted(Object response) {
                                     TicketFindById body = (TicketFindById) response;
 
-                                    if (body.getStatus() < 2 || body.getTicket() == null || body.getTicket().getDocument() == null || body.getTicket().getDocument().getReceipt() == null) {
+                                    if (body.getStatus() != 2 || body.getTicket() == null || body.getTicket().getDocument() == null || body.getTicket().getDocument().getReceipt() == null) {
                                         if (attempt < 5) {
                                             mTextViewLoadingProducts.setText(getString(R.string.ttl_add_accept_attempt, ++attempt));
                                             unsubscribeOnDestroy(mFtsHelper.getCheck(ticketId, this));
