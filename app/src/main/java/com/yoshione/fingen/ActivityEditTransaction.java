@@ -633,7 +633,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     }
 
     private boolean checkPayeeAndCreateIfNecessary(boolean updateAutocompleteAdapter) {
-        if ((viewPager.getCurrentItem() == 0) && !mPayeeName.isEmpty()) {
+        if ((viewPager.getCurrentItem() == 0) && mPayeeName != null && !mPayeeName.isEmpty()) {
             try {
                 transaction.setPayeeID(PayeeManager.checkPayeeAndCreateIfNecessary(transaction.getPayeeID(), mPayeeName, this));
             } catch (Exception e) {
@@ -1071,7 +1071,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
         switch (markerType) {
             case SmsParser.MARKER_TYPE_PAYEE: {
                 if (transaction.getPayeeID() < 0) {
-                    if (mPayeeName.isEmpty()) {
+                    if (mPayeeName != null && mPayeeName.isEmpty()) {
                         new AlertDialog.Builder(this)
                                 .setNegativeButton(R.string.act_create, (dialog, which) -> {
                                     PayeesDAO payeesDAO = PayeesDAO.getInstance(ActivityEditTransaction.this);
