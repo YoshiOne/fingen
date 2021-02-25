@@ -7,18 +7,23 @@ import com.google.gson.annotations.SerializedName;
 public class FtsResponse {
 
     private String error;
-    private Integer code;
+    private Integer code = 0; // remove?!
 
-    @SerializedName("document")
+    @SerializedName("ticket")
     @Expose
-    private Document document;
+    private Ticket ticket;
 
     public Document getDocument() {
-        return document;
+        return this.ticket.getDocument();
     }
 
     public void setDocument(Document document) {
-        this.document = document;
+        this.ticket.setDocument(document);
+    }
+
+    public Boolean hasTicket()
+    {
+        return ticket != null;
     }
 
     public String getError() {

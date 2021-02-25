@@ -46,7 +46,7 @@ public class FtsRetrofitModule {
 	@Singleton
 	Gson provideGson() {
 		return new GsonBuilder()
-				.registerTypeAdapter(FtsResponse.class, new ReceiptDeserializer())
+				//.registerTypeAdapter(FtsResponse.class, new ReceiptDeserializer())
 				.create();
 	}
 

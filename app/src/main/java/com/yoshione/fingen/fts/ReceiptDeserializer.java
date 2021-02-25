@@ -13,6 +13,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Set;
 
+// not use, deserialize automatically (by model)
 public class ReceiptDeserializer implements JsonDeserializer<FtsResponse> {
 
     public FtsResponse deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)

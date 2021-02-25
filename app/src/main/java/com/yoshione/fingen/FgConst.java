@@ -59,6 +59,8 @@ public class FgConst {
     public static final String PREF_ENABLE_SCAN_QR = "enable_scan_qr";
     public static final String PREF_FTS_LOGIN = "fts_login";
     public static final String PREF_FTS_PASS = "fts_pass";
+    public static final String PREF_FTS_SESSION = "fts_sess";
+    public static final String PREF_FTS_TOKEN = "fts_token";
     public static final String PREF_FTS_DO_NOT_SHOW_AGAIN = "fts_do_not_show_again";
     public static final String PREF_FTS_CREDENTIALS = "fts_credentials";
     public static final String PREF_SHOW_INCOME_EXPENSE_FOR_ACCOUNTS = "show_income_expense_for_accounts";
