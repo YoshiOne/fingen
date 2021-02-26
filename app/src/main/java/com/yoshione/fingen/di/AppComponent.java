@@ -17,6 +17,7 @@ import com.yoshione.fingen.di.modules.FtsApiModule;
 import com.yoshione.fingen.di.modules.FtsHelperModule;
 import com.yoshione.fingen.di.modules.FtsRetrofitModule;
 import com.yoshione.fingen.di.modules.PreferencesModule;
+import com.yoshione.fingen.fts.ActivityFtsLogin;
 import com.yoshione.fingen.fts.FtsHelper;
 import com.yoshione.fingen.iab.BillingService;
 import com.yoshione.fingen.widgets.ToolbarActivity;
@@ -40,6 +41,7 @@ public interface AppComponent {
 	void inject(ActivityPro activityPro);
 	void inject(ToolbarActivity toolbarActivity);
 	void inject(ActivityEditTransaction activityEditTransaction);
+	void inject(ActivityFtsLogin activityFtsLogin);
 	void inject(FtsHelper ftsHelper);
 	void inject(TransactionViewHolderParams transactionViewHolderParams);
 }
