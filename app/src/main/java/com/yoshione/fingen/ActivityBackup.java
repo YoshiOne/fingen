@@ -169,11 +169,14 @@ public class ActivityBackup extends ToolbarActivity {
 
     private void initDropbox() {
         getUserAccount();
+        Context context = this.getApplicationContext();
         final SharedPreferences dropboxPrefs = getSharedPreferences("com.yoshione.fingen.dropbox", Context.MODE_PRIVATE);
         final String token = dropboxPrefs.getString("dropbox-token", null);
+        int resId = context.getResources().getIdentifier("dropboxApiKey", "string", context.getPackageName());
+        String dropboxAppKey = context.getString(resId);
         mEditTextDropboxAccount.setOnClickListener(view -> {
             if (token == null) {
-                Auth.startOAuth2Authentication(ActivityBackup.this, getString(R.string.DROPBOX_APP_KEY));
+                Auth.startOAuth2Authentication(ActivityBackup.this, dropboxAppKey);
             }
         });
         mButtonLogoutFromDropbox.setVisibility(token == null ? View.GONE : View.VISIBLE);
