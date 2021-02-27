@@ -1,11 +1,10 @@
 package com.yoshione.fingen;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.fragment.app.FragmentTransaction;
 
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.model.BaseModel;

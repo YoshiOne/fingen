@@ -5,20 +5,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.Pair;
+
+import androidx.annotation.Nullable;
 
 import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.db.IOnConflict;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.model.Account;
-import com.yoshione.fingen.model.AccountsSetLog;
-import com.yoshione.fingen.model.AccountsSetRef;
 import com.yoshione.fingen.model.BaseModel;
-import com.yoshione.fingen.model.BudgetCatSync;
-import com.yoshione.fingen.model.BudgetCreditSync;
 import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.model.Category;
 import com.yoshione.fingen.model.Credit;
@@ -26,8 +23,6 @@ import com.yoshione.fingen.model.Department;
 import com.yoshione.fingen.model.Events;
 import com.yoshione.fingen.model.Location;
 import com.yoshione.fingen.model.Payee;
-import com.yoshione.fingen.model.Product;
-import com.yoshione.fingen.model.ProductEntry;
 import com.yoshione.fingen.model.Project;
 import com.yoshione.fingen.model.Sender;
 import com.yoshione.fingen.model.SimpleDebt;
@@ -39,6 +34,7 @@ import com.yoshione.fingen.model.Transaction;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,39 +42,62 @@ import java.util.List;
 
 import io.requery.android.database.sqlite.SQLiteDatabase;
 
-import static com.yoshione.fingen.DBHelper.C_ID;
-import static com.yoshione.fingen.DBHelper.C_SYNC_DELETED;
-
-/**
- * Created by slv on 12.08.2016.
- * 1
- */
-
 public class BaseDAO implements AbstractDAO {
+
+    //<editor-fold desc="common fields">
+    public static final String COL_ID = "_id";
+    public static final String COL_SYNC_FBID = "FBID";
+    public static final String COL_SYNC_TS = "TS";
+    public static final String COL_SYNC_DELETED = "Deleted";
+    public static final String COL_SYNC_DIRTY = "Dirty";
+    public static final String COL_SYNC_LAST_EDITED = "LastEdited";
+    public static final String COL_SEARCH_STRING = "SearchString";
+    public static final String COL_PARENT_ID = "ParentID";
+    public static final String COL_ORDER_NUMBER = "OrderNumber";
+    public static final String COL_FULL_NAME = "FullName";
+    public static final String COL_NAME = "Name";
+
+    public static final String COMMON_FIELDS =
+            COL_ID +                 " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, "
+            + COL_SYNC_FBID +        " TEXT, "
+            + COL_SYNC_TS +          " INTEGER, "
+            + COL_SYNC_DELETED +     " INTEGER, "
+            + COL_SYNC_DIRTY +       " INTEGER, "
+            + COL_SYNC_LAST_EDITED + " TEXT";
+
+    public static final String[] COMMON_COLUMNS = {
+            COL_ID, COL_SYNC_FBID, COL_SYNC_TS, COL_SYNC_DELETED, COL_SYNC_DIRTY, COL_SYNC_LAST_EDITED
+    };
+    //</editor-fold>
+
     protected final String TAG = this.getClass().toString();
+
     protected HashMap<String, Integer> mColumnIndexes;
     SQLiteDatabase mDatabase;
     private String mTableName;
-    private int mModelType;
-
-    String[] getAllColumns() {
-        return mAllColumns;
-    }
-
-    private String mAllColumns[];
+    private String[] mAllColumns;
     private IDaoInheritor mDaoInheritor;
 
-    public BaseDAO(Context context, String tableName, int modelType, String allColumns[]) {
+    public BaseDAO(Context context, String tableName, String[] allColumns) {
         try {
             DatabaseUpgradeHelper dbh = DatabaseUpgradeHelper.getInstance();
             while (dbh.isUpgrading()) {
                 SystemClock.sleep(50);
             }
-            init(DBHelper.getInstance(context).getDatabase(), tableName, modelType, allColumns);
+            init(DBHelper.getInstance(context).getDatabase(), tableName, allColumns);
         } catch (SQLException e) {
             Log.e(TAG, "SQLException on openning database " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public IAbstractModel createEmptyModel() {
+        return new BaseModel();
+    }
+
+    String[] getAllColumns() {
+        return mAllColumns;
     }
 
     public static AbstractDAO getDAO(int modelType, Context context) {
@@ -142,15 +161,14 @@ public class BaseDAO implements AbstractDAO {
         return null;
     }
 
-    private void init(SQLiteDatabase database, String tableName, int modelType, String allColumns[]) {
+    private void init(SQLiteDatabase database, String tableName, String[] allColumns) {
         mDatabase = database;
         mDaoInheritor = null;
         mTableName = tableName;
-        mModelType = modelType;
         mAllColumns = allColumns;
         mColumnIndexes = new HashMap<>();
 
-        Cursor cursor = mDatabase.query(getTableName(), null, C_ID + " < 0", null, null, null, null);
+        Cursor cursor = mDatabase.query(getTableName(), null, COL_ID + " < 0", null, null, null, null);
         if (cursor != null) {
             for (String column : mAllColumns) {
                 mColumnIndexes.put(column, cursor.getColumnIndex(column));
@@ -158,16 +176,14 @@ public class BaseDAO implements AbstractDAO {
         }
     }
 
-    //regio1 Select
     @Override
     public List<?> getAllModels() throws Exception {
         return null;
     }
-    //endregio1
 
-    /*synchronized*/ List<IAbstractModel> getModels(String where) {
+    List<IAbstractModel> getModels(String where) {
         List<IAbstractModel> models = new ArrayList<>();
-        Cursor cursor = mDatabase.query(mTableName, null, C_SYNC_DELETED + " = 0 AND (" + where + ")", null, null, null, null);
+        Cursor cursor = mDatabase.query(mTableName, null, COL_SYNC_DELETED + " = 0 AND (" + where + ")", null, null, null, null);
         if (cursor != null) {
             try {
                 if (cursor.moveToFirst()) {
@@ -186,7 +202,7 @@ public class BaseDAO implements AbstractDAO {
     @Override
     public HashSet<Long> getAllModelsIDs() {
         HashSet<Long> ids = new HashSet<>();
-        Cursor cursor = mDatabase.query(mTableName, new String[]{C_ID}, C_SYNC_DELETED + " = 0", null, null, null, null);
+        Cursor cursor = mDatabase.query(mTableName, new String[]{COL_ID}, COL_SYNC_DELETED + " = 0", null, null, null, null);
         if (cursor != null) {
             try {
                 if (cursor.moveToFirst()) {
@@ -202,14 +218,9 @@ public class BaseDAO implements AbstractDAO {
         return ids;
     }
 
-    List<?> getItems(String tableName, String allColumns[], @Nullable String selection, @Nullable String groupBy,
-                     @Nullable String order, @Nullable String limit) throws Exception {
-        String where;
-        if (selection != null && !selection.isEmpty()) {
-            where = C_SYNC_DELETED + " = 0 AND ("+selection+") ";
-        } else {
-            where = C_SYNC_DELETED + " = 0";
-        }
+    List<?> getItems(String tableName, String[] allColumns, @Nullable String selection, @Nullable String groupBy,
+                     @Nullable String order, @Nullable String limit) {
+        String where = COL_SYNC_DELETED + " = 0" + (selection != null && !selection.isEmpty() ? " AND (" + selection + ")" : "");
         Cursor cursor;
         List<IAbstractModel> modelList = new ArrayList<>();
         try {
@@ -233,41 +244,14 @@ public class BaseDAO implements AbstractDAO {
         return modelList;
     }
 
-    @Override
-    /*synchronized*/ public long getLastTS() {
-        if (mTableName.isEmpty()) return -1;
-        long ts;
-        Cursor cursor = mDatabase.query(mTableName, new String[]{String.format("IFNULL(MAX(%s), -1) AS %s", DBHelper.C_SYNC_TS, DBHelper.C_SYNC_TS)},
-                null, null, null, null, null);
-        if (cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            ts = cursor.getLong(0);
-        } else {
-            ts = -1;
-        }
-        cursor.close();
-
-        return ts;
-    }
-
     public long getModelCount() {
         if (mTableName.isEmpty()) return 0;
         int count;
-        Cursor cursor = mDatabase.query(mTableName, new String[]{C_ID}, null, null, null, null, null);
+        Cursor cursor = mDatabase.query(mTableName, new String[]{COL_ID}, null, null, null, null, null);
         count = cursor.getCount();
         cursor.close();
         return count;
     }
-
-    @Override
-    public List<IAbstractModel> getModelsByIDs(List<Long> idList) {
-        List<IAbstractModel> models = new ArrayList<>();
-        for (long id : idList) {
-            models.add(getModelById(id));
-        }
-        return models;
-    }
-    //endregio1
 
     @Override
     public IAbstractModel getModelById(long id) {
@@ -277,51 +261,17 @@ public class BaseDAO implements AbstractDAO {
     @SuppressWarnings("unchecked")
     @Override
     public IAbstractModel getModelByName(String name) throws Exception {
-        List<IAbstractModel> models;
-
-        models = (List<IAbstractModel>) getAllModels();
-
-        for (IAbstractModel model : models) {
-            if (model.getName().toLowerCase().equals(name.toLowerCase())) {
-                return model;
-            }
-        }
-
-        return BaseModel.createModelByType(mModelType);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public IAbstractModel getModelByFullName(String fullName) throws Exception {
-        List<IAbstractModel> models;
-
-        models = (List<IAbstractModel>) getAllModels();
-
-        for (IAbstractModel model : models) {
-            if (model.getFullName().toLowerCase().equals(fullName.toLowerCase())) {
-                return model;
-            }
-        }
-
-        return BaseModel.createModelByType(mModelType);
-    }
-
-    //regio1 Delete
-
-    /*synchronized*/
-    public IAbstractModel getModelByIdCustomColumns(long id, String allColumns[]) {
-        Cursor cursor = mDatabase.query(mTableName, allColumns,
-                C_SYNC_DELETED + " = 0 AND " + C_ID + " = " + String.valueOf(id), null, null, null, null);
+        Cursor cursor = mDatabase.query(mTableName, getAllColumns(),
+                COL_SYNC_DELETED + " = 0 AND " + COL_NAME + " = '" + name + "'", null, null, null, null);
         IAbstractModel model = null;
         if (cursor != null) {
             try {
                 if (cursor.moveToFirst()) {
-                    cursor.moveToFirst();
                     model = mDaoInheritor.cursorToModel(cursor);
                 }
             } finally {
                 if (model == null) {
-                    model = createModelByTable();
+                    model = createEmptyModel();
                 }
                 cursor.close();
             }
@@ -329,30 +279,50 @@ public class BaseDAO implements AbstractDAO {
         return model;
     }
 
-    /*synchronized*/
-    public long getIDByFBID(String FBID) {
-        if (mTableName.isEmpty() || FBID.isEmpty()) return -1;
-        long id;
-        Cursor cursor = mDatabase.query(mTableName, new String[]{C_ID},
-                String.format("%s = '%s'", DBHelper.C_SYNC_FBID, FBID),
-                null, null, null, null);
-        if (cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            id = cursor.getLong(mColumnIndexes.get(C_ID));
-        } else {
-            id = -1;
+    @SuppressWarnings("unchecked")
+    @Override
+    public IAbstractModel getModelByFullName(String fullName) throws Exception {
+        Cursor cursor = mDatabase.query(mTableName, getAllColumns(),
+                COL_SYNC_DELETED + " = 0 AND " + COL_FULL_NAME + " = '" + fullName + "'", null, null, null, null);
+        IAbstractModel model = null;
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    model = mDaoInheritor.cursorToModel(cursor);
+                }
+            } finally {
+                if (model == null) {
+                    model = createEmptyModel();
+                }
+                cursor.close();
+            }
         }
-        cursor.close();
-
-        return id;
+        return model;
     }
 
-    //regio1 Create
+    public IAbstractModel getModelByIdCustomColumns(long id, String[] columns) {
+        Cursor cursor = mDatabase.query(mTableName, columns,
+                COL_SYNC_DELETED + " = 0 AND " + COL_ID + " = " + id, null, null, null, null);
+        IAbstractModel model = null;
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    model = mDaoInheritor.cursorToModel(cursor);
+                }
+            } finally {
+                if (model == null) {
+                    model = createEmptyModel();
+                }
+                cursor.close();
+            }
+        }
+        return model;
+    }
+
     private IAbstractModel createItem(IAbstractModel model) throws Exception {
         long insertId = createItem(model.getCV(), model.getID(), true);
         return getModelById(insertId);
     }
-    //endregio1
 
     @Override
     public IAbstractModel createModel(IAbstractModel model) throws Exception {
@@ -372,17 +342,11 @@ public class BaseDAO implements AbstractDAO {
 
     @Override
     public List<IAbstractModel> bulkCreateModel(List<IAbstractModel> models, IOnConflict onConflictListener, boolean updateDependencies) throws Exception {
-//        List<ContentValues> valuesList = new ArrayList<>();
-//        for (IAbstractModel model : models) {
-//            valuesList.add(model.getCV());
-//        }
-
         mDatabase.beginTransaction();
         int i = 0;
         long id;
         List<IAbstractModel> createdModels = new ArrayList<>();
         for (IAbstractModel model : models) {
-//            id = models.get(i++).getID();
             try {
                 id = createItem(model.getCV(), model.getID(), updateDependencies);
             } catch (Exception e) {
@@ -402,8 +366,8 @@ public class BaseDAO implements AbstractDAO {
 
     public synchronized long createItem(ContentValues cv, long id, boolean updateDependencies) throws Exception {
         //Нужно для совместимости. Поле знак удалено из java, но осталось в БД
-        if (mTableName.equals(DBHelper.T_REF_CATEGORIES)) {
-            cv.put(DBHelper.C_REF_CATEGORIES_SIGN, 1);
+        if (mTableName.equals(CategoriesDAO.TABLE)) {
+            cv.put(CategoriesDAO.COL_SIGN, 1);
         }
         long result;
 
@@ -415,11 +379,13 @@ public class BaseDAO implements AbstractDAO {
         //<editor-fold desc="Отменяем изменения в кэше балансов, сделанные предыдущей версией транзакции, если она уже была в БД">
 
         if (updateDependencies) {
-            if (mTableName.equals(DBHelper.T_LOG_TRANSACTIONS) && id >= 0) {
-                Cursor cursor = mDatabase.query(mTableName, new String[]{DBHelper.C_LOG_TRANSACTIONS_AMOUNT,
-                                DBHelper.C_LOG_TRANSACTIONS_DATETIME, DBHelper.C_LOG_TRANSACTIONS_SRCACCOUNT,
-                                DBHelper.C_LOG_TRANSACTIONS_DESTACCOUNT, DBHelper.C_LOG_TRANSACTIONS_EXCHANGERATE},
-                        DBHelper.C_ID + " = " + String.valueOf(id), null, null, null, null);
+            if (mTableName.equals(TransactionsDAO.TABLE) && id >= 0) {
+                Cursor cursor = mDatabase.query(mTableName,
+                        new String[] {
+                                TransactionsDAO.COL_AMOUNT, TransactionsDAO.COL_DATE_TIME, TransactionsDAO.COL_SRC_ACCOUNT,
+                                TransactionsDAO.COL_DEST_ACCOUNT, TransactionsDAO.COL_EXCHANGE_RATE
+                        },
+                        TransactionsDAO.COL_ID + " = " + id, null, null, null, null);
                 if (cursor.getCount() > 0) {
                     cursor.moveToFirst();
                     double amount = cursor.getDouble(0);
@@ -427,10 +393,10 @@ public class BaseDAO implements AbstractDAO {
                     long srcAccountID = cursor.getLong(2);
                     long destAccountID = cursor.getLong(3);
                     double exRate = cursor.getDouble(4);
-                    updateBalance(true, amount, -1, srcAccountID, id, dateTime);
+                    RunningBalanceDAO.updateBalance(mDatabase, true, amount, -1, srcAccountID, id, dateTime);
 
                     if (destAccountID >= 0) {
-                        updateBalance(true, amount * exRate, 1, destAccountID, id, dateTime);
+                        RunningBalanceDAO.updateBalance(mDatabase, true, amount * exRate, 1, destAccountID, id, dateTime);
                     }
                 }
                 cursor.close();
@@ -442,7 +408,7 @@ public class BaseDAO implements AbstractDAO {
         if (id < 0) {
             result = mDatabase.insertOrThrow(mTableName, null, cv);
         } else {
-            int rowsAffected = mDatabase.update(mTableName, cv, C_ID + " = " + id, null);
+            int rowsAffected = mDatabase.update(mTableName, cv, COL_ID + " = " + id, null);
             if (rowsAffected == 0) {
                 mDatabase.endTransaction();
                 throw new Exception();
@@ -452,35 +418,35 @@ public class BaseDAO implements AbstractDAO {
 
         if (updateDependencies) {
             //<editor-fold desc="Добавляем сумму транзакции к кэшам балансов">
-            if (mTableName.equals(DBHelper.T_LOG_TRANSACTIONS)) {
-                double amount = cv.getAsDouble(DBHelper.C_LOG_TRANSACTIONS_AMOUNT);
-                double exRate = cv.getAsDouble(DBHelper.C_LOG_TRANSACTIONS_EXCHANGERATE);
-                long srcAccountID = cv.getAsLong(DBHelper.C_LOG_TRANSACTIONS_SRCACCOUNT);
-                long destAccountID = cv.getAsLong(DBHelper.C_LOG_TRANSACTIONS_DESTACCOUNT);
-                long dateTime = cv.getAsLong(DBHelper.C_LOG_TRANSACTIONS_DATETIME);
+            if (mTableName.equals(TransactionsDAO.TABLE)) {
+                double amount = cv.getAsDouble(TransactionsDAO.COL_AMOUNT);
+                double exRate = cv.getAsDouble(TransactionsDAO.COL_EXCHANGE_RATE);
+                long srcAccountID = cv.getAsLong(TransactionsDAO.COL_SRC_ACCOUNT);
+                long destAccountID = cv.getAsLong(TransactionsDAO.COL_DEST_ACCOUNT);
+                long dateTime = cv.getAsLong(TransactionsDAO.COL_DATE_TIME);
 
-                updateBalance(false, amount, 1, srcAccountID, result, dateTime);
+                RunningBalanceDAO.updateBalance(mDatabase, false, amount, 1, srcAccountID, result, dateTime);
 
                 if (destAccountID >= 0) {
-                    updateBalance(false, amount * exRate, -1, destAccountID, result, dateTime);
+                    RunningBalanceDAO.updateBalance(mDatabase, false, amount * exRate, -1, destAccountID, result, dateTime);
                 }
             }
             //</editor-fold>
 
             //<editor-fold desc="Обновляем поисковые строки транслитом и полные имена сущностей">
             switch (mTableName) {
-                case DBHelper.T_REF_CATEGORIES:
-                case DBHelper.T_REF_PAYEES:
-                case DBHelper.T_REF_PROJECTS:
-                case DBHelper.T_REF_LOCATIONS:
-                case DBHelper.T_REF_DEPARTMENTS:
+                case CategoriesDAO.TABLE:
+                case PayeesDAO.TABLE:
+                case ProjectsDAO.TABLE:
+                case LocationsDAO.TABLE:
+                case DepartmentsDAO.TABLE:
                     DBHelper.updateFullNames(mTableName, true, mDatabase);
                     break;
-                case DBHelper.T_REF_ACCOUNTS:
-                case DBHelper.T_LOG_TEMPLATES:
-                case DBHelper.T_REF_SIMPLEDEBTS:
-                case DBHelper.T_LOG_TRANSACTIONS:
-                case DBHelper.T_REF_PRODUCTS:
+                case AccountsDAO.TABLE:
+                case TemplatesDAO.TABLE:
+                case SimpleDebtsDAO.TABLE:
+                case TransactionsDAO.TABLE:
+                case ProductsDAO.TABLE:
                     DBHelper.updateFullNames(mTableName, false, mDatabase);
                     break;
             }
@@ -495,70 +461,34 @@ public class BaseDAO implements AbstractDAO {
         return result;
     }
 
-    void updateBalance(boolean revert, double amount, int mult, long accountId, long transactionID, long dateTime) {
-        //Учесть измение стартового баланса!!!
-        String fieldName;
-        if (amount * mult > 0) {
-            if (!revert) {
-                fieldName = DBHelper.C_LOG_RB_INCOME;
-            } else {
-                fieldName = DBHelper.C_LOG_RB_EXPENSE;
-            }
-        } else {
-            if (!revert) {
-                fieldName = DBHelper.C_LOG_RB_EXPENSE;
-            } else {
-                fieldName = DBHelper.C_LOG_RB_INCOME;
-            }
-        }
-
-        String sql;
-        if (!revert) {
-            sql = "INSERT OR REPLACE INTO log_Running_Balance (AccountID, TransactionID, DateTimeRB, Income, Expense) VALUES("
-                    + String.valueOf(accountId) + ", " + String.valueOf(transactionID) + ", " + String.valueOf(dateTime) + ", "
-                    + "IFNULL((SELECT Income FROM log_Running_Balance WHERE AccountID = " + String.valueOf(accountId) + " AND DateTimeRB <= " + String.valueOf(dateTime) + " ORDER BY DateTimeRB DESC LIMIT 1), 0), "
-                    + "IFNULL((SELECT Expense FROM log_Running_Balance WHERE AccountID = " + String.valueOf(accountId) + " AND DateTimeRB <= " + String.valueOf(dateTime) + " ORDER BY DateTimeRB DESC LIMIT 1), 0))";
-            mDatabase.execSQL(sql);
-        }
-
-        sql = "UPDATE log_Running_Balance SET " + fieldName + " = " + fieldName + " + " + String.valueOf(amount * mult)
-                + " WHERE AccountID = " + String.valueOf(accountId) + " AND DateTimeRB >= " + String.valueOf(dateTime);
-        mDatabase.execSQL(sql);
-    }
-
-    //regio1 Update
     synchronized void bulkUpdateItem(String where, ContentValues contentValues, boolean resetTS) {
         List<IAbstractModel> inputModels = getModels(where);
-        List<IAbstractModel> outputModels = new ArrayList<>();
-
         if (inputModels.isEmpty()) return;
+
+        List<IAbstractModel> outputModels = new ArrayList<>();
 
         ContentValues cv = new ContentValues();
         mDatabase.beginTransaction();
         for (IAbstractModel model : inputModels) {
             cv.clear();
             cv.putAll(contentValues);
-            if (resetTS) cv.put(DBHelper.C_SYNC_TS, -1);
-            mDatabase.update(mTableName, cv, String.format("%s = %s", C_ID, String.valueOf(model.getID())), null);
+            if (resetTS) cv.put(COL_SYNC_TS, -1);
+            mDatabase.update(mTableName, cv, String.format("%s = %s", COL_ID, String.valueOf(model.getID())), null);
             outputModels.add(getModelById(model.getID()));
         }
         mDatabase.setTransactionSuccessful();
         mDatabase.endTransaction();
         if (resetTS)
-            EventBus.getDefault().postSticky(new Events.EventOnModelChanged(outputModels, createModelByTable().getModelType(), Events.MODEL_CHANGED));
+            EventBus.getDefault().postSticky(new Events.EventOnModelChanged(outputModels, createEmptyModel().getModelType(), Events.MODEL_CHANGED));
     }
 
     @Override
     synchronized public void deleteModel(IAbstractModel model, boolean resetTS, Context context) {
         int maxDel = DBHelper.getMaxDel(mDatabase, mTableName);
         ContentValues cv = new ContentValues();
-        cv.put(C_SYNC_DELETED, ++maxDel);
-        if (resetTS) {
-            cv.put(DBHelper.C_SYNC_TS, -1);
-        } else {
-            cv.put(DBHelper.C_SYNC_TS, model.getTS());
-        }
-        mDatabase.update(mTableName, cv, String.format("%s = %s", C_ID, String.valueOf(model.getID())), null);
+        cv.put(COL_SYNC_DELETED, ++maxDel);
+        cv.put(COL_SYNC_TS, resetTS ? -1 : model.getTS());
+        mDatabase.update(mTableName, cv, String.format("%s = %s", COL_ID, String.valueOf(model.getID())), null);
 
         model.setDeleted(true);
         Events.EventOnModelChanged event = new Events.EventOnModelChanged(Collections.singletonList(model), model.getModelType(), Events.MODEL_DELETED);
@@ -581,9 +511,9 @@ public class BaseDAO implements AbstractDAO {
         ContentValues cv = new ContentValues();
         for (IAbstractModel model : models) {
             cv.clear();
-            cv.put(C_SYNC_DELETED, ++maxDel);
-            if (resetTS) cv.put(DBHelper.C_SYNC_TS, -1);
-            mDatabase.update(mTableName, cv, String.format("%s = %s", C_ID, String.valueOf(model.getID())), null);
+            cv.put(COL_SYNC_DELETED, ++maxDel);
+            if (resetTS) cv.put(COL_SYNC_TS, -1);
+            mDatabase.update(mTableName, cv, String.format("%s = %s", COL_ID, String.valueOf(model.getID())), null);
             model.setDeleted(true);
             deletedModels.add(model);
         }
@@ -592,26 +522,22 @@ public class BaseDAO implements AbstractDAO {
             mDatabase.endTransaction();
         }
         if (resetTS)
-            EventBus.getDefault().postSticky(new Events.EventOnModelChanged(deletedModels, createModelByTable().getModelType(), Events.MODEL_DELETED));
+            EventBus.getDefault().postSticky(new Events.EventOnModelChanged(deletedModels, createEmptyModel().getModelType(), Events.MODEL_DELETED));
         return deletedModels;
     }
 
     @Override
     public void deleteAllModels() {
-        List<IAbstractModel> models = getModels("*");
-        bulkDeleteModel(models, true);
+        bulkDeleteModel(getModels("*"), true);
     }
 
-    //regio1 Service
     public String getTableName() {
         return mTableName;
     }
-    //endregio1
 
     public void setDaoInheritor(IDaoInheritor daoInheritor) {
         mDaoInheritor = daoInheritor;
     }
-
 
     @Override
     public void updateOrder(List<Pair<Long, Integer>> pairs) {
@@ -619,99 +545,25 @@ public class BaseDAO implements AbstractDAO {
             return;
         }
 
-        String ids = "";
+        StringBuilder ids = new StringBuilder();
         String comma = "";
         String when = "";
 
         for (Pair<Long, Integer> pair : pairs) {
             when = String.format("%s\tWHEN %s THEN %s\n", when, String.valueOf(pair.first), String.valueOf(pair.second));
-            ids = ids + comma + String.valueOf(pair.first);
+            ids.append(comma).append(pair.first);
             comma = ",";
         }
 
-        String sql = String.format("UPDATE %s\n" +
-                        "\tSET %s = CASE %s\n" +
-                        "%s\n" +
-                        "\tEND\n" +
-                        "WHERE %s IN (%s)",
-                mTableName,
-                DBHelper.C_ORDERNUMBER,
-                C_ID,
-                when,
-                C_ID,
-                ids);
-
+        String sql = String.format("UPDATE %s SET %s = CASE %s %s END WHERE %s IN (%s)",
+                mTableName, COL_ORDER_NUMBER, COL_ID, when, COL_ID, ids.toString());
 
         mDatabase.execSQL(sql);
     }
 
-    @Override
-    public IAbstractModel createEmptyModel() throws Exception {
-        return createModelByTable();
+    protected static String[] joinArrays(String[] collection1, String[] collection2) {
+        List<String> arr = new ArrayList<>(Arrays.asList(collection1));
+        arr.addAll(Arrays.asList(collection2));
+        return arr.toArray(new String[0]);
     }
-
-    private IAbstractModel createModelByTable() {
-        if (mTableName.equals(DBHelper.T_REF_CURRENCIES)) {
-            return new Cabbage();
-        }
-        if (mTableName.equals(DBHelper.T_REF_ACCOUNTS)) {
-            return new Account();
-        }
-        if (mTableName.equals(DBHelper.T_REF_PROJECTS)) {
-            return new Project();
-        }
-        if (mTableName.equals(DBHelper.T_REF_DEPARTMENTS)) {
-            return new Department();
-        }
-        if (mTableName.equals(DBHelper.T_REF_LOCATIONS)) {
-            return new Location();
-        }
-        if (mTableName.equals(DBHelper.T_REF_CATEGORIES)) {
-            return new Category();
-        }
-        if (mTableName.equals(DBHelper.T_REF_PAYEES)) {
-            return new Payee();
-        }
-        if (mTableName.equals(DBHelper.T_REF_SIMPLEDEBTS)) {
-            return new SimpleDebt();
-        }
-        if (mTableName.equals(DBHelper.T_REF_DEBTS)) {
-            return new Credit();
-        }
-        if (mTableName.equals(DBHelper.T_LOG_TRANSACTIONS)) {
-            return new Transaction(-1);
-        }
-        if (mTableName.equals(DBHelper.T_LOG_TEMPLATES)) {
-            return new Template();
-        }
-        if (mTableName.equals(DBHelper.T_LOG_SMS_PARSER_PATTERNS)) {
-            return new SmsMarker();
-        }
-        if (mTableName.equals(DBHelper.T_LOG_BUDGET)) {
-            return new BudgetCatSync();
-        }
-        if (mTableName.equals(DBHelper.T_LOG_BUDGET_DEBTS)) {
-            return new BudgetCreditSync();
-        }
-        if (mTableName.equals(DBHelper.T_REF_SENDERS)) {
-            return new Sender();
-        }
-        if (mTableName.equals(DBHelper.T_LOG_INCOMING_SMS)) {
-            return new Sms();
-        }
-        if (mTableName.equals(DBHelper.T_LOG_ACCOUNTS_SETS)) {
-            return new AccountsSetLog();
-        }
-        if (mTableName.equals(DBHelper.T_REF_ACCOUNTS_SETS)) {
-            return new AccountsSetRef();
-        }
-        if (mTableName.equals(DBHelper.T_REF_PRODUCTS)) {
-            return new Product();
-        }
-        if (mTableName.equals(DBHelper.T_LOG_PRODUCTS)) {
-            return new ProductEntry();
-        }
-        return new BaseModel();
-    }
-    //endregio1
 }

@@ -12,14 +12,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.preference.PreferenceManager;
 
 import com.evernote.android.job.JobManager;
 import com.github.omadahealth.lollipin.lib.managers.LockManager;
@@ -29,7 +30,6 @@ import com.yoshione.fingen.backup.BackupTestJobCreator;
 import com.yoshione.fingen.di.AppComponent;
 import com.yoshione.fingen.di.DaggerAppComponent;
 import com.yoshione.fingen.di.modules.ContextModule;
-import com.yoshione.fingen.fts.FtsApi;
 import com.yoshione.fingen.interfaces.ISyncAnimMethods;
 import com.yoshione.fingen.receivers.CustomIntentReceiver;
 import com.yoshione.fingen.widgets.CustomPinActivity;

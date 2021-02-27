@@ -3,20 +3,14 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.SimpleDebtsDAO;
+import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
 import java.math.BigDecimal;
 
-/**
- * Created by slv on 13.08.2015.
- *
- */
 public class SimpleDebt extends BaseModel implements IAbstractModel {
-    public static final String TAG = "com.yoshione.fingen.Model.SimpleDebt";
 
-//    private long mId = -1;
     private String mName;
     private Boolean mIsActive;
     private BigDecimal mStartAmount;//- Я должен, + мне должны
@@ -125,16 +119,16 @@ public class SimpleDebt extends BaseModel implements IAbstractModel {
     @Override
     public ContentValues getCV() {
         ContentValues values = super.getCV();
-        values.put(DBHelper.C_REF_SIMPLEDEBTS_NAME, mName);
-        values.put(DBHelper.C_REF_SIMPLEDEBTS_ISACTIVE, mIsActive ? 1 : 0);
-        values.put(DBHelper.C_REF_SIMPLEDEBTS_START_AMOUNT, mStartAmount.doubleValue());
-        values.put(DBHelper.C_REF_SIMPLEDEBTS_CABBAGE, mCabbageID);
+        values.put(SimpleDebtsDAO.COL_NAME, mName);
+        values.put(SimpleDebtsDAO.COL_IS_ACTIVE, mIsActive ? 1 : 0);
+        values.put(SimpleDebtsDAO.COL_START_AMOUNT, mStartAmount.doubleValue());
+        values.put(SimpleDebtsDAO.COL_CURRENCY, mCabbageID);
         return values;
     }
 
     @Override
     public String getLogTransactionsField() {
-        return DBHelper.C_LOG_TRANSACTIONS_SIMPLEDEBT;
+        return TransactionsDAO.COL_SIMPLE_DEBT;
     }
 
     @Override

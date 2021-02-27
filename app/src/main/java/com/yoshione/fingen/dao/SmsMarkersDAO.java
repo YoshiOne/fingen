@@ -1,13 +1,9 @@
-/*
- * Copyright (c) 2015. 
- */
-
 package com.yoshione.fingen.dao;
 
 import android.content.Context;
 import android.database.Cursor;
 
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.db.DbUtil;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.model.SmsMarker;
@@ -16,26 +12,44 @@ import com.yoshione.fingen.utils.SmsParser;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Leonid on 01.11.2015.
- */
 public class SmsMarkersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
-    public static final String TAG = "SmsMarkersDAO";
+
+    //<editor-fold desc="ref_Sms_Parser_Patterns">
+    public static final String TABLE = "ref_Sms_Parser_Patterns";
+
+    public static final String COL_TYPE = "Type";
+    public static final String COL_OBJECT = "Object";
+    public static final String COL_PATTERN = "Pattern";
+
+    public static final String[] ALL_COLUMNS = joinArrays(COMMON_COLUMNS, new String[]{
+            COL_TYPE, COL_OBJECT, COL_PATTERN
+    });
+
+    public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + " ("
+            + COMMON_FIELDS +   ", "
+            + COL_TYPE +        " INTEGER NOT NULL, "
+            + COL_OBJECT +      " TEXT NOT NULL, "
+            + COL_PATTERN +     " TEXT NOT NULL, "
+            + "UNIQUE (" + COL_TYPE + ", " + COL_PATTERN + ", " + COL_SYNC_DELETED + ") ON CONFLICT REPLACE);";
+    //</editor-fold>
 
     private static SmsMarkersDAO sInstance;
-
-//    char spec[] = {'[', '\\', '^', '$', '.', '|', '?', '*', '+', '(', ')'};
-
-    private SmsMarkersDAO(Context context) {
-        super(context, DBHelper.T_LOG_SMS_PARSER_PATTERNS, IAbstractModel.MODEL_TYPE_SMSMARKER , DBHelper.T_LOG_SMS_PARSER_PATTERNS_ALL_COLUMNS);
-        super.setDaoInheritor(this);
-    }
 
     public synchronized static SmsMarkersDAO getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new SmsMarkersDAO(context);
         }
         return sInstance;
+    }
+
+    private SmsMarkersDAO(Context context) {
+        super(context, TABLE, ALL_COLUMNS);
+        super.setDaoInheritor(this);
+    }
+
+    @Override
+    public IAbstractModel createEmptyModel() {
+        return new SmsMarker();
     }
 
     @Override
@@ -46,14 +60,11 @@ public class SmsMarkersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
     private SmsMarker cursorToSmsParserPattern(Cursor cursor) {
         SmsMarker smsMarker = new SmsMarker();
 
-        smsMarker.setID(cursor.getLong(mColumnIndexes.get(DBHelper.C_ID)));
-        smsMarker.setType(cursor.getInt(mColumnIndexes.get(DBHelper.C_LOG_SMS_PARSER_PATTERNS_TYPE)));
-        smsMarker.setObject(cursor.getString(mColumnIndexes.get(DBHelper.C_LOG_SMS_PARSER_PATTERNS_OBJECT)));
-        if (smsMarker.getType() == SmsParser.MARKER_TYPE_CABBAGE) {
-            smsMarker.setMarker(escapeSpecialSymbols(cursor.getString(mColumnIndexes.get(DBHelper.C_LOG_SMS_PARSER_PATTERNS_PATTERN))));
-        } else {
-            smsMarker.setMarker(cursor.getString(mColumnIndexes.get(DBHelper.C_LOG_SMS_PARSER_PATTERNS_PATTERN)));
-        }
+        smsMarker.setID(DbUtil.getLong(cursor, COL_ID));
+        smsMarker.setType(DbUtil.getInt(cursor, COL_TYPE));
+        smsMarker.setObject(DbUtil.getString(cursor, COL_OBJECT));
+        String pattern = DbUtil.getString(cursor, COL_PATTERN);
+        smsMarker.setMarker(smsMarker.getType() == SmsParser.MARKER_TYPE_CABBAGE ? escapeSpecialSymbols(pattern): pattern);
 
         return smsMarker;
     }
@@ -63,9 +74,9 @@ public class SmsMarkersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
     }
 
     @SuppressWarnings("unchecked")
-    public List<SmsMarker> getAllSmsParserPatterns() throws Exception {
+    public List<SmsMarker> getAllSmsParserPatterns() {
         return (List<SmsMarker>) getItems(getTableName(), null,
-                null, null, DBHelper.C_LOG_SMS_PARSER_PATTERNS_TYPE, null);
+                null, null, COL_TYPE, null);
     }
 
     @SuppressWarnings("unchecked")
@@ -75,8 +86,8 @@ public class SmsMarkersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
         List<SmsMarker> markers;
         try {
             markers = (List<SmsMarker>) getItems(getTableName(), null,
-                    DBHelper.C_LOG_SMS_PARSER_PATTERNS_TYPE + " = " + type,
-                    DBHelper.C_LOG_SMS_PARSER_PATTERNS_OBJECT,
+                    COL_TYPE + " = " + type,
+                    COL_OBJECT,
                     null, null);
         } catch (Exception e) {
             markers = new ArrayList<>();
@@ -96,8 +107,8 @@ public class SmsMarkersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
         try {
             markers = (List<SmsMarker>) getItems(getTableName(), null,
                     String.format("(%s = %s) AND (%s = '%s')",
-                            DBHelper.C_LOG_SMS_PARSER_PATTERNS_TYPE, String.valueOf(type),
-                            DBHelper.C_LOG_SMS_PARSER_PATTERNS_OBJECT, object),
+                            COL_TYPE, String.valueOf(type),
+                            COL_OBJECT, object),
                     null,
                     null, null);
         } catch (Exception e) {
@@ -117,7 +128,7 @@ public class SmsMarkersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
         List<SmsMarker> markers;
         try {
             markers = (List<SmsMarker>) getItems(getTableName(), null,
-                    DBHelper.C_LOG_SMS_PARSER_PATTERNS_TYPE + " = " + type,
+                    COL_TYPE + " = " + type,
                     null,
                     null, null);
         } catch (Exception e) {
@@ -131,7 +142,7 @@ public class SmsMarkersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
     }
 
     @Override
-    public List<?> getAllModels() throws Exception {
+    public List<?> getAllModels() {
         return getAllSmsParserPatterns();
     }
 }

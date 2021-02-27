@@ -3,23 +3,40 @@ package com.yoshione.fingen.dao;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Pair;
+import android.graphics.Color;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.db.DbUtil;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.model.Department;
+import com.yoshione.fingen.utils.ColorUtils;
 
-import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by slv on 13.08.2015.
- *
- */
 public class DepartmentsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
-    public static final String TAG = "DepartmentDAO";
+
+    //<editor-fold desc="ref_Departments">
+    public static final String TABLE = "ref_Departments";
+
+    public static final String COL_COLOR = "Color";
+    public static final String COL_IS_ACTIVE = "IsActive";
+
+    public static final String[] ALL_COLUMNS = joinArrays(COMMON_COLUMNS, new String[]{
+            COL_NAME, COL_COLOR, COL_IS_ACTIVE, COL_PARENT_ID, COL_ORDER_NUMBER, COL_FULL_NAME, COL_SEARCH_STRING
+    });
+
+    public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + " ("
+            + COMMON_FIELDS +       ", "
+            + COL_NAME +            " TEXT NOT NULL, "
+            + COL_COLOR +           " TEXT DEFAULT '#ffffff', "
+            + COL_IS_ACTIVE +       " INTEGER NOT NULL, "
+            + COL_PARENT_ID +       " INTEGER REFERENCES [" + TABLE + "]([" + COL_ID + "]) ON DELETE SET NULL ON UPDATE CASCADE, "
+            + COL_ORDER_NUMBER +    " INTEGER, "
+            + COL_FULL_NAME +       " TEXT, "
+            + COL_SEARCH_STRING +   " TEXT, "
+            + "UNIQUE (" + COL_NAME + ", " + COL_PARENT_ID + ", " + COL_SYNC_DELETED + ") ON CONFLICT ABORT);";
+    //</editor-fold>
+
     private static DepartmentsDAO sInstance;
 
     public synchronized static DepartmentsDAO getInstance(Context context) {
@@ -30,8 +47,29 @@ public class DepartmentsDAO extends BaseDAO implements AbstractDAO, IDaoInherito
     }
 
     private DepartmentsDAO(Context context) {
-        super(context, DBHelper.T_REF_DEPARTMENTS, IAbstractModel.MODEL_TYPE_DEPARTMENT , DBHelper.T_REF_DEPARTMENTS_ALL_COLUMNS);
+        super(context, TABLE, ALL_COLUMNS);
         super.setDaoInheritor(this);
+    }
+
+    @Override
+    public IAbstractModel createEmptyModel() {
+        return new Department();
+    }
+
+    public Department createDepartment(Department department, Context context) throws Exception {
+        List<?> models = getItems(getTableName(), null,
+                String.format("%s = '%s' AND %s = %s AND %s != %s",
+                        COL_NAME, department.getName(),
+                        COL_PARENT_ID, department.getParentID(),
+                        COL_ID, String.valueOf(department.getID()))
+                , null, null, null);
+        if (!models.isEmpty()) {
+            return department;
+        }
+        if (department.getID() < 0 && context != null) {
+            department.setColor(ColorUtils.getColor(context));
+        }
+        return (Department) super.createModel(department);
     }
 
     @Override
@@ -41,14 +79,13 @@ public class DepartmentsDAO extends BaseDAO implements AbstractDAO, IDaoInherito
 
     private Department cursorToDepartment(Cursor cursor) {
         Department department = new Department();
-        department.setID(cursor.getLong(mColumnIndexes.get(DBHelper.C_ID)));
-        department.setParentID(cursor.getLong(mColumnIndexes.get(DBHelper.C_PARENTID)));
-        department.setName(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_DEPARTMENTS_NAME)));
-        department.setFullName(cursor.getString(mColumnIndexes.get(DBHelper.C_FULL_NAME)));
-        department.setIsActive(Boolean.valueOf(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_DEPARTMENTS_ISACTIVE))));
-        department.setOrderNum(cursor.getInt(mColumnIndexes.get(DBHelper.C_ORDERNUMBER)));
-
-        department = (Department) DBHelper.getSyncDataFromCursor(department, cursor, mColumnIndexes);
+        department.setID(DbUtil.getLong(cursor, COL_ID));
+        department.setParentID(DbUtil.getLong(cursor, COL_PARENT_ID));
+        department.setName(DbUtil.getString(cursor, COL_NAME));
+        department.setFullName(DbUtil.getString(cursor, COL_FULL_NAME));
+        department.setIsActive(DbUtil.getBoolean(cursor, COL_IS_ACTIVE));
+        department.setColor(Color.parseColor(DbUtil.getString(cursor, COL_COLOR)));
+        department.setOrderNum(DbUtil.getInt(cursor, COL_ORDER_NUMBER));
 
         return department;
     }
@@ -57,15 +94,15 @@ public class DepartmentsDAO extends BaseDAO implements AbstractDAO, IDaoInherito
     public void deleteModel(IAbstractModel model, boolean resetTS, Context context) {
         //Обнуляем таблице транзакций
         ContentValues values = new ContentValues();
-        values.put(DBHelper.C_LOG_TRANSACTIONS_DEPARTMENT, -1);
-        TransactionsDAO.getInstance(context).bulkUpdateItem(DBHelper.C_LOG_TRANSACTIONS_DEPARTMENT + " = " + model.getID(), values, resetTS);
+        values.put(TransactionsDAO.COL_DEPARTMENT, -1);
+        TransactionsDAO.getInstance(context).bulkUpdateItem(TransactionsDAO.COL_DEPARTMENT + " = " + model.getID(), values, resetTS);
 
         super.deleteModel(model, resetTS, context);
     }
 
     @SuppressWarnings("unchecked")
-    public List<Department> getAllDepartments() throws Exception {
-        return (List<Department>) getItems(getTableName(), null, null, null, DBHelper.C_REF_DEPARTMENTS_NAME, null);
+    public List<Department> getAllDepartments() {
+        return (List<Department>) getItems(getTableName(), null, null, null, COL_ORDER_NUMBER + "," + COL_NAME, null);
     }
 
     public Department getDepartmentByID(long id) {
@@ -73,7 +110,7 @@ public class DepartmentsDAO extends BaseDAO implements AbstractDAO, IDaoInherito
     }
 
     @Override
-    public List<?> getAllModels() throws Exception {
+    public List<?> getAllModels() {
         return getAllDepartments();
     }
 }

@@ -12,22 +12,6 @@ import android.content.pm.PackageManager;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -52,7 +36,23 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.textfield.TextInputLayout;
 import com.yoshione.fingen.adapter.AdapterProducts;
 import com.yoshione.fingen.adapter.NestedItemFullNameAdapter;
 import com.yoshione.fingen.dao.AccountsDAO;
@@ -124,7 +124,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.fabric.sdk.android.Fabric;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnPermissionDenied;
@@ -135,6 +134,7 @@ import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
+import static com.yoshione.fingen.filters.DateRangeFilter.getFirstDayOfWeek;
 import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_SELECT_MODEL;
 import static com.yoshione.fingen.utils.RequestCodes.REQUEST_CODE_SELECT_MODEL_FOR_PRODUCT;
 
@@ -335,12 +335,6 @@ public class ActivityEditTransaction extends ToolbarActivity implements
         super.onCreate(savedInstanceState);
 
         FGApplication.getAppComponent().inject(this);
-
-        if (!BuildConfig.DEBUG) {
-            if (!Fabric.isInitialized()) {
-                Fabric.with(this, new Crashlytics());
-            }
-        }
 
         ButterKnife.bind(this);
 
@@ -646,6 +640,8 @@ public class ActivityEditTransaction extends ToolbarActivity implements
         if (transaction.getPayeeID() < 0) return;
         Category category = TransactionManager.getCategory(transaction, this);
         Payee payee = TransactionManager.getPayee(transaction, this);
+        if (payee.getID() < 0)
+            return;
         Category defCategory = PayeeManager.getDefCategory(payee, this);
         if (defCategory.getID() != category.getID() & category.getID() >= 0) {
             PayeesDAO payeesDAO = PayeesDAO.getInstance(getApplicationContext());
@@ -964,7 +960,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                 edExchangeRate.setText(String.valueOf(transaction.getExchangeRate().doubleValue()));
             } else {
                 s = String.format("%s/%s", dstCabbage.getCode(), srcCabbage.getCode());
-                edExchangeRate.setText(String.valueOf(BigDecimal.ONE.divide(transaction.getExchangeRate(), 5, RoundingMode.HALF_UP).doubleValue()));
+                edExchangeRate.setText(String.valueOf((BigDecimal.ZERO.compareTo(transaction.getExchangeRate()) != 0 ? BigDecimal.ONE.divide(transaction.getExchangeRate(), 5, RoundingMode.HALF_UP) : BigDecimal.ZERO).doubleValue()));
             }
             if (onExRateTextChangedListener != null)
                 edExchangeRate.addTextChangedListener(onExRateTextChangedListener);
@@ -1728,7 +1724,6 @@ public class ActivityEditTransaction extends ToolbarActivity implements
 
                 @Override
                 public void onAccepted() {
-                    initProductList();
                 }
 
                 @Override
@@ -2159,6 +2154,13 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                         }
                     }
                     break;
+                case IAbstractModel.MODEL_TYPE_DEPARTMENT:
+                    for (ProductEntry entry : transaction.getProductEntries()) {
+                        if (entry.isSelected()) {
+                            entry.setDepartmentID(model.getID());
+                        }
+                    }
+                    break;
             }
             for (ProductEntry entry : transaction.getProductEntries()) {
                 entry.setSelected(false);
@@ -2189,14 +2191,15 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     public void onDateClick(View view) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(transaction.getDateTime());
-        new DatePickerDialog(this, (datePicker, year, monthOfYear, dayOfMonth) -> {
+        DatePickerDialog dpd = new DatePickerDialog(this, (datePicker, year, monthOfYear, dayOfMonth) -> {
             Calendar calendar1 = Calendar.getInstance();
             calendar1.setTime(transaction.getDateTime());
             calendar1.set(year, monthOfYear, dayOfMonth);
             transaction.setDateTime(calendar1.getTime());
             initDateTimeButtons();
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
-                .show();
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        dpd.getDatePicker().setFirstDayOfWeek(getFirstDayOfWeek(view.getContext()));
+        dpd.show();
     }
 
     public void onTimeClick(View view) {
@@ -2432,8 +2435,10 @@ public class ActivityEditTransaction extends ToolbarActivity implements
             BigDecimal visibleExRate;
             if (!isExRateInverted) {
                 visibleExRate = transaction.getExchangeRate();
-            } else {
+            } else if (BigDecimal.ZERO.compareTo(transaction.getExchangeRate()) != 0) {
                 visibleExRate = BigDecimal.ONE.divide(transaction.getExchangeRate(), 5, RoundingMode.HALF_UP);
+            } else {
+                visibleExRate = BigDecimal.ZERO;
             }
             edExchangeRate.setText(String.valueOf(visibleExRate.doubleValue()));
             edExchangeRate.addTextChangedListener(onExRateTextChangedListener);

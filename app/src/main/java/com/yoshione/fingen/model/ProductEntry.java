@@ -3,16 +3,11 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.ProductEntrysDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
-/**
- * Created by slv on 30.01.2018.
- *
- */
 
 public class ProductEntry extends BaseModel implements IAbstractModel {
 
@@ -20,6 +15,7 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
     private long mTransactionID;
     private long mCategoryID;
     private long mProjectID;
+    private long mDepartmentID;
     private BigDecimal mPrice;
     private BigDecimal mQuantity;
     private boolean mSelected;
@@ -31,10 +27,11 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
         mPrice = BigDecimal.ZERO;
         mCategoryID = -1;
         mProjectID = -1;
+        mDepartmentID = -1;
         mTransactionID = -1;
     }
 
-    public ProductEntry(long id, long productID, BigDecimal quantity, BigDecimal price, long categoryID, long projectID, long transactionID) {
+    public ProductEntry(long id, long productID, BigDecimal quantity, BigDecimal price, long categoryID, long projectID, long departmentID, long transactionID) {
         super();
         setID(id);
         mProductID = productID;
@@ -42,6 +39,7 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
         mPrice = price;
         mCategoryID = categoryID;
         mProjectID = projectID;
+        mDepartmentID = departmentID;
         mTransactionID = transactionID;
     }
 
@@ -75,6 +73,14 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
 
     public void setProjectID(long projectID) {
         mProjectID = projectID;
+    }
+
+    public long getDepartmentID() {
+        return mDepartmentID;
+    }
+
+    public void setDepartmentID(long departmentID) {
+        mDepartmentID = departmentID;
     }
 
     public BigDecimal getPrice() {
@@ -115,12 +121,14 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
     public ContentValues getCV() {
         ContentValues values = super.getCV();
 
-        values.put(DBHelper.C_LOG_PRODUCTS_TRANSACTIONID, mTransactionID);
-        values.put(DBHelper.C_LOG_PRODUCTS_CATEGORY_ID, mCategoryID);
-        values.put(DBHelper.C_LOG_PRODUCTS_PROJECT_ID, mProjectID);
-        values.put(DBHelper.C_LOG_PRODUCTS_PRODUCTID, mProductID);
-        values.put(DBHelper.C_LOG_PRODUCTS_QUANTITY, mQuantity.doubleValue());
-        values.put(DBHelper.C_LOG_PRODUCTS_PRICE, mPrice.doubleValue());
+        values.put(ProductEntrysDAO.COL_TRANSACTION_ID, mTransactionID);
+        values.put(ProductEntrysDAO.COL_CATEGORY_ID, mCategoryID);
+        values.put(ProductEntrysDAO.COL_PROJECT_ID, mProjectID);
+        values.put(ProductEntrysDAO.COL_PRODUCT_ID, mProductID);
+        values.put(ProductEntrysDAO.COL_DEPARTMENT_ID, mDepartmentID);
+        values.put(ProductEntrysDAO.COL_QUANTITY, mQuantity.doubleValue());
+        values.put(ProductEntrysDAO.COL_PRICE, mPrice.doubleValue());
+
         return values;
     }
 
@@ -136,6 +144,7 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
         dest.writeLong(this.mTransactionID);
         dest.writeLong(this.mCategoryID);
         dest.writeLong(this.mProjectID);
+        dest.writeLong(this.mDepartmentID);
         dest.writeSerializable(this.mPrice);
         dest.writeSerializable(this.mQuantity);
         dest.writeByte(this.mSelected ? (byte) 1 : (byte) 0);
@@ -147,6 +156,7 @@ public class ProductEntry extends BaseModel implements IAbstractModel {
         this.mTransactionID = in.readLong();
         this.mCategoryID = in.readLong();
         this.mProjectID = in.readLong();
+        this.mDepartmentID = in.readLong();
         this.mPrice = (BigDecimal) in.readSerializable();
         this.mQuantity = (BigDecimal) in.readSerializable();
         this.mSelected = in.readByte() != 0;

@@ -46,6 +46,10 @@
             android:title="@string/pref_hide_sums_panel"/>
         <SwitchPreference
             android:defaultValue="true"
+            android:key="show_closed_debts"
+            android:title="@string/pref_show_closed_debts"/>
+        <SwitchPreference
+            android:defaultValue="true"
             android:key="expand_lists"
             android:title="@string/pref_expand_lists"/>
         <SwitchPreference

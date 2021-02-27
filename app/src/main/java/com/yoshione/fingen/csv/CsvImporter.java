@@ -8,8 +8,9 @@ package com.yoshione.fingen.csv;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.util.Log;
+
+import androidx.preference.PreferenceManager;
 
 import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.dao.AbstractDAO;
@@ -664,7 +665,7 @@ public class CsvImporter {
         final CSV csv = CSV.separator(mSeparator).quote(mQuote).skipLines(0).charset(mCharset).create();
 
         final Transaction transaction = new Transaction(PrefUtils.getDefDepID(mContext));
-        final boolean skipDuplicates = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("custom_csv_skip_diplicates", false);
+        final boolean skipDuplicates = PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("financisto_csv_skip_diplicates", false);
         List<IAbstractModel> transactionList = new ArrayList<>();
         CsvCachesSet caches = new CsvCachesSet(mContext);
 
@@ -1070,7 +1071,7 @@ public class CsvImporter {
                         return;
                     }
                     //Сумма транзакции, если входящий перевод
-                    mTransaction.setExchangeRate(TransferManager.getExRate(mTransaction, parseAmount(vls, 3)));
+                    mTransaction.setExchangeRate(TransferManager.getExRate(mTransaction, parseAmount(vls, mColumns.get(CN_AMOUNT).getIndex())));
                 }
                 mTransaction.setTransactionOpened(false);
                 if (mTransaction.getAccountID() >= 0 && mTransaction.getAmount().compareTo(BigDecimal.ZERO) != 0) {

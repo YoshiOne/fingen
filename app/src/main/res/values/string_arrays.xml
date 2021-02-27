@@ -25,27 +25,17 @@
         <item>@string/sort_type_desc</item>
     </string-array>
 
-
     <string-array name="pref_start_tab_titles" translatable="false">
         <item>@string/ent_summary</item>
         <item>@string/ent_accounts</item>
         <item>@string/ent_transactions</item>
+        <item>@string/ent_debts</item>
     </string-array>
     <string-array name="pref_start_tab_values" translatable="false">
         <item>summary</item>
         <item>accounts</item>
         <item>transactions</item>
-    </string-array>
-
-    <string-array name="pref_tabs_order" translatable="false">
-        <item>@string/ent_summary</item>
-        <item>@string/ent_accounts</item>
-        <item>@string/ent_transactions</item>
-    </string-array>
-    <string-array name="pref_tabs_order_values" translatable="false">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
+        <item>loans</item>
     </string-array>
 
     <string-array name="pref_theme_titles" translatable="false">

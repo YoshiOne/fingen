@@ -1,6 +1,6 @@
 package com.yoshione.fingen.iab;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.anjlab.android.iab.v3.TransactionDetails;
 

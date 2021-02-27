@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -25,7 +25,7 @@
         app:layout_constraintTop_toBottomOf="@id/include2">
     </TextView>
 
-    <android.support.v7.widget.SwitchCompat
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switchCompatEnablePasswordProtection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
         android:text="@string/ttl_enable_backup_password_protection"
         app:layout_constraintTop_toBottomOf="@id/textViewAutoBackupInfo"/>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -50,9 +50,9 @@
             android:ems="10"
             android:inputType="textPassword"
             tools:text="******" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutDropboxAccount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -85,14 +85,14 @@
             android:layout_weight="1"
             android:text="@string/act_logout_from_dropbox"
             android:visibility="gone" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <View
         android:id="@+id/fabBGLayout"
         style="@style/FabMenuBackground" />
 
     <LinearLayout
-        android:id="@+id/fabBackupLayout"
+        android:id="@+id/fabBackupToOriginDBLayout"
         style="@style/FabMenuButtonChildLayout"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
@@ -102,31 +102,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/act_backup" />
+            android:text="@string/act_backup_to_origin" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fabBackup"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabBackupToOriginDB"
             style="@style/FabMenuButtonChild"
             app:srcCompat="@drawable/ic_backup_white" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/fabRestoreLayout"
-        style="@style/FabMenuButtonChildLayout"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
-        app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout"
-        app:layout_constraintTop_toTopOf="@+id/fabMenuButtonRootLayout">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/act_restore" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fabRestore"
-            style="@style/FabMenuButtonChild"
-            app:srcCompat="@drawable/ic_restore_white" />
     </LinearLayout>
 
     <LinearLayout
@@ -142,10 +123,48 @@
             android:layout_height="wrap_content"
             android:text="@string/act_restore_from_dropbox" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabRestoreFromDropbox"
             style="@style/FabMenuButtonChild"
             app:srcCompat="@drawable/ic_dropbox_white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fabRestoreLayout"
+        style="@style/FabMenuButtonChildLayout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintTop_toTopOf="@+id/fabMenuButtonRootLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/act_restore" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabRestore"
+            style="@style/FabMenuButtonChild"
+            app:srcCompat="@drawable/ic_restore_white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fabBackupLayout"
+        style="@style/FabMenuButtonChildLayout"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintEnd_toEndOf="@+id/fabMenuButtonRootLayout"
+        app:layout_constraintTop_toTopOf="@+id/fabMenuButtonRootLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/act_backup" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabBackup"
+            style="@style/FabMenuButtonChild"
+            app:srcCompat="@drawable/ic_backup_white" />
     </LinearLayout>
 
     <LinearLayout
@@ -155,7 +174,7 @@
         style="@style/FabMenuRootButtonLayout">
 
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabMenuButtonRoot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -165,4 +184,4 @@
             app:srcCompat="@drawable/ic_backup_and_restore_white" />
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

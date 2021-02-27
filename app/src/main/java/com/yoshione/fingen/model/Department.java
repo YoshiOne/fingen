@@ -1,22 +1,16 @@
 package com.yoshione.fingen.model;
 
 import android.content.ContentValues;
-import android.graphics.Color;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.DepartmentsDAO;
+import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
+import com.yoshione.fingen.interfaces.IOrderable;
 
-/**
- * Created by slv on 13.08.2015.
- *
- */
-public class Department extends BaseModel implements IAbstractModel {
-    public static final String TAG = "com.yoshione.fingen.Model.Department";
+public class Department extends BaseModel implements IAbstractModel, IOrderable {
 
-//    private long mId = -1;
+    private int mColor;
     private String mName;
     private Boolean mIsActive;
     private long mParentID;
@@ -102,10 +96,11 @@ public class Department extends BaseModel implements IAbstractModel {
     @Override
     public ContentValues getCV() {
         ContentValues values = super.getCV();
-        values.put(DBHelper.C_REF_DEPARTMENTS_NAME,getName());
-        values.put(DBHelper.C_REF_DEPARTMENTS_ISACTIVE, getIsActive());
-        values.put(DBHelper.C_PARENTID, mParentID);
-        values.put(DBHelper.C_ORDERNUMBER, getOrderNum());
+        values.put(DepartmentsDAO.COL_NAME, getName());
+        values.put(DepartmentsDAO.COL_IS_ACTIVE, getIsActive());
+        values.put(DepartmentsDAO.COL_COLOR, String.format("#%06X", (0xFFFFFF & getColor())));
+        values.put(DepartmentsDAO.COL_PARENT_ID, mParentID);
+        values.put(DepartmentsDAO.COL_ORDER_NUMBER, getOrderNum());
         return values;
     }
 
@@ -118,6 +113,7 @@ public class Department extends BaseModel implements IAbstractModel {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(this.mName);
+        dest.writeInt(this.mColor);
         dest.writeValue(this.mIsActive);
         dest.writeLong(this.mParentID);
         dest.writeInt(this.mOrderNum);
@@ -127,6 +123,7 @@ public class Department extends BaseModel implements IAbstractModel {
     protected Department(Parcel in) {
         super(in);
         this.mName = in.readString();
+        this.mColor = in.readInt();
         this.mIsActive = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.mParentID = in.readLong();
         this.mOrderNum = in.readInt();
@@ -147,11 +144,15 @@ public class Department extends BaseModel implements IAbstractModel {
 
     @Override
     public int getColor() {
-        return Color.TRANSPARENT;
+        return mColor;
+    }
+
+    public void setColor(int mColor) {
+        this.mColor = mColor;
     }
 
     @Override
     public String getLogTransactionsField() {
-        return DBHelper.C_LOG_TRANSACTIONS_DEPARTMENT;
+        return TransactionsDAO.COL_DEPARTMENT;
     }
 }

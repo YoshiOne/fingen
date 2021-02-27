@@ -3,14 +3,9 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.CreditsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
-/**
- * Created by slv on 03.03.2016.
- *
- */
 public class Credit extends BaseModel implements IAbstractModel {
 
     public static final int DEBT_ACTION_BORROW = 0;
@@ -18,7 +13,6 @@ public class Credit extends BaseModel implements IAbstractModel {
     public static final int DEBT_ACTION_GRANT = 2;
     public static final int DEBT_ACTION_TAKE = 3;
 
-//    private long mId = -1;
     private long mAccountID = -1;
     private long mPayeeID = -1;
     private long mCategoryID = -1;
@@ -138,11 +132,11 @@ public class Credit extends BaseModel implements IAbstractModel {
     public ContentValues getCV() {
         ContentValues values = super.getCV();
 
-        values.put(DBHelper.C_REF_DEBTS_ACCOUNT, getAccountID());
-        values.put(DBHelper.C_REF_DEBTS_PAYEE, getPayeeID());
-        values.put(DBHelper.C_REF_DEBTS_CATEGORY, getCategoryID());
-        values.put(DBHelper.C_REF_DEBTS_CLOSED, isClosed());
-        values.put(DBHelper.C_REF_DEBTS_COMMENT, getComment());
+        values.put(CreditsDAO.COL_ACCOUNT, getAccountID());
+        values.put(CreditsDAO.COL_PAYEE, getPayeeID());
+        values.put(CreditsDAO.COL_CATEGORY, getCategoryID());
+        values.put(CreditsDAO.COL_CLOSED, isClosed());
+        values.put(CreditsDAO.COL_COMMENT, getComment());
         return values;
     }
 

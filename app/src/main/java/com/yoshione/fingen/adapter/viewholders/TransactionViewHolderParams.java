@@ -2,15 +2,15 @@ package com.yoshione.fingen.adapter.viewholders;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
 import android.util.LongSparseArray;
 import android.view.ContextThemeWrapper;
+
+import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import com.yoshione.fingen.FGApplication;
 import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.R;
-import com.yoshione.fingen.adapter.AdapterTransactions;
 import com.yoshione.fingen.dao.AccountsDAO;
 import com.yoshione.fingen.dao.CabbagesDAO;
 import com.yoshione.fingen.dao.CategoriesDAO;
@@ -19,7 +19,6 @@ import com.yoshione.fingen.dao.LocationsDAO;
 import com.yoshione.fingen.dao.PayeesDAO;
 import com.yoshione.fingen.dao.ProjectsDAO;
 import com.yoshione.fingen.model.Account;
-import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.model.Category;
 import com.yoshione.fingen.model.Department;
 import com.yoshione.fingen.model.Location;
@@ -29,8 +28,6 @@ import com.yoshione.fingen.utils.AmountColorizer;
 import com.yoshione.fingen.utils.CabbageFormatter;
 import com.yoshione.fingen.utils.DateTimeFormatter;
 import com.yoshione.fingen.utils.ScreenUtils;
-
-import java.util.HashMap;
 
 import javax.inject.Inject;
 
@@ -48,6 +45,7 @@ public class TransactionViewHolderParams {
     public int mColorTag;
     public String mSplitStringCategory;
     public String mSplitStringProject;
+    public String mSplitStringDepartment;
     public LongSparseArray<Account> mAccountCache;
     public LongSparseArray<Payee> mPayeeCache;
     public LongSparseArray<Category> mCategoryCache;
@@ -93,6 +91,7 @@ public class TransactionViewHolderParams {
         mWhiteColor = ContextCompat.getColor(context, R.color.fg_white_color);
         mSplitStringCategory = context.getString(R.string.ent_split_category);
         mSplitStringProject = context.getString(R.string.ent_split_project);
+        mSplitStringDepartment = context.getString(R.string.ent_split_department);
         mAccountCache = new LongSparseArray<>();
         mPayeeCache = new LongSparseArray<>();
         mCategoryCache = new LongSparseArray<>();

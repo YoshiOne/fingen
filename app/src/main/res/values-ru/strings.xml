@@ -335,6 +335,14 @@
 
     <!-- 2. Accounts -->
     <!-- Entities -->
+    <string name="ent_close_account" formatted="false">Закрыть счет</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_open_account" formatted="false">Открыть счет</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
     <string name="ent_new_account" formatted="false">Новый счет</string>
 
     <!-- 2. Accounts -->
@@ -448,6 +456,14 @@
     <!-- 2. Accounts -->
     <!-- Messages -->
     <string name="msg_delete_account_set_confirmation" formatted="false">Удалить набор счетов %s?</string>
+
+    <!-- 2. Accounts -->
+    <!-- Messages -->
+    <string name="msg_close_account_confirmation" formatted="false">Закрыть счет %s?</string>
+
+    <!-- 2. Accounts -->
+    <!-- Messages -->
+    <string name="msg_open_account_confirmation" formatted="false">Открыть счет %s?</string>
 
     <!-- 2. Accounts -->
     <!-- Messages -->
@@ -1210,6 +1226,10 @@
     <string name="ttl_select_db_file" formatted="false">Выберите файл</string>
 
     <!-- 16. Backup & Restore -->
+    <!-- Actions -->
+    <string name="act_backup_to_origin" formatted="false">Сохранить БД для оригинала</string>
+
+    <!-- 16. Backup & Restore -->
     <!-- Titles -->
     <string name="ttl_enable_auto_backup" formatted="false">Включить ежедневное автоматическое резервное копирование</string>
 
@@ -1500,6 +1520,10 @@
     <!-- 20. Settings -->
     <!-- General -->
     <string name="pref_hide_sums_panel" formatted="false">Скрывать панель с суммами</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_show_closed_debts" formatted="false">Показывать закрытые долги</string>
 
     <!-- 20. Settings -->
     <!-- General -->
@@ -2020,6 +2044,10 @@
     <!-- 27. Products -->
     <!-- Entities -->
     <string name="ent_split_project" formatted="false">Сплит пр.</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ent_split_department" formatted="false">Сплит подр.</string>
 
     <!-- 27. Products -->
     <!-- Entities -->

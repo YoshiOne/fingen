@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:layout_margin="16dp">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutProduct"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
             android:completionThreshold="1"
             android:inputType="textNoSuggestions"
             tools:text="Зефир Ванильный Каравай глазированный 500гр"/>
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ImageButton
         android:id="@+id/imageButtonDeleteProduct"
@@ -34,7 +34,7 @@
         app:layout_constraintTop_toTopOf="@+id/textInputLayoutProduct"
         tools:ignore="ContentDescription" />
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutCategory"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:inputType="textMultiLine|textNoSuggestions"
             tools:text="Быт еда" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ImageButton
         android:id="@+id/imageButtonDeleteCategory"
@@ -61,7 +61,7 @@
         app:layout_constraintTop_toTopOf="@+id/textInputLayoutCategory"
         tools:ignore="ContentDescription" />
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutProject"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -77,7 +77,7 @@
             android:layout_height="wrap_content"
             android:inputType="textMultiLine|textNoSuggestions"
             tools:text="Быт еда" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ImageButton
         android:id="@+id/imageButtonDeleteProject"
@@ -88,13 +88,40 @@
         app:layout_constraintTop_toTopOf="@+id/textInputLayoutProject"
         tools:ignore="ContentDescription" />
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutDepartment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/imageButtonDeleteProject"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutProject"
+        android:hint="@string/ent_department">
+
+        <EditText
+            android:id="@+id/textViewDepartment"
+            style="@style/NotEditableEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine|textNoSuggestions"
+            tools:text="Быт еда" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/imageButtonDeleteDepartment"
+        style="@style/ClearButtonStyle"
+        android:layout_centerVertical="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/textInputLayoutDepartment"
+        app:layout_constraintTop_toTopOf="@id/textInputLayoutDepartment"
+        tools:ignore="ContentDescription" />
+
     <com.yoshione.fingen.widgets.AmountEditor
         android:id="@+id/amount_editor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutProject" />
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutDepartment" />
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutQuantity"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -112,7 +139,7 @@
             android:selectAllOnFocus="true"
             android:inputType="numberDecimal"
             tools:text="1"/>
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ImageButton
         android:id="@+id/imageButtonMore"
@@ -134,4 +161,4 @@
         android:src="@drawable/ic_minus_blue"
         tools:ignore="ContentDescription" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

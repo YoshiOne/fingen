@@ -1,9 +1,10 @@
 package com.yoshione.fingen.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+
+import androidx.annotation.NonNull;
 
 import com.yoshione.fingen.model.AutocompleteItem;
 

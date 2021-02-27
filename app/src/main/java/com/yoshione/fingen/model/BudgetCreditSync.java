@@ -3,15 +3,8 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.BudgetCreditsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
-
-
-/**
- * Created by slv on 07.09.2016.
- * *
- */
 
 public class BudgetCreditSync extends BaseModel implements IAbstractModel {
     private int mYear;
@@ -25,10 +18,6 @@ public class BudgetCreditSync extends BaseModel implements IAbstractModel {
         mMonth = 0;
         mCreditID = -1;
         mAmount = 0d;
-    }
-
-    public BudgetCreditSync(long id) {
-        super(id);
     }
 
     @Override
@@ -101,10 +90,10 @@ public class BudgetCreditSync extends BaseModel implements IAbstractModel {
     public ContentValues getCV() {
         ContentValues values = super.getCV();
 
-        values.put(DBHelper.C_LOG_BUDGET_DEBTS_YEAR,mYear);
-        values.put(DBHelper.C_LOG_BUDGET_DEBTS_MONTH,mMonth);
-        values.put(DBHelper.C_LOG_BUDGET_DEBTS_CREDIT, mCreditID);
-        values.put(DBHelper.C_LOG_BUDGET_DEBTS_AMOUNT,mAmount);
+        values.put(BudgetCreditsDAO.COL_YEAR, mYear);
+        values.put(BudgetCreditsDAO.COL_MONTH, mMonth);
+        values.put(BudgetCreditsDAO.COL_DEBT, mCreditID);
+        values.put(BudgetCreditsDAO.COL_AMOUNT, mAmount);
         return values;
     }
 

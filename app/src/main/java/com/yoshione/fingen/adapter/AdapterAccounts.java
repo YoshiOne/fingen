@@ -1,12 +1,6 @@
 package com.yoshione.fingen.adapter;
 
 import android.app.Activity;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -17,6 +11,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.MotionEventCompat;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.R;
@@ -50,6 +51,9 @@ public class AdapterAccounts extends RecyclerView.Adapter implements ItemTouchHe
 
     public void setAccountList(List<Account> accountList) {
         this.accountList = accountList;
+    }
+    public Account getAccountByPosition(int position) {
+        return accountList.size() > 0 ? accountList.get(position) : null;
     }
 
     private List<Account> accountList;

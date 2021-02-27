@@ -4,17 +4,13 @@ import android.content.ContentValues;
 import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.yoshione.fingen.DBHelper;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
 import java.math.BigDecimal;
-
-/**
- * Created by slv on 10.08.2016.
- *
- */
 
 public class BaseModel implements Parcelable, IAbstractModel {
 
@@ -64,6 +60,18 @@ public class BaseModel implements Parcelable, IAbstractModel {
         mDeleted = false;
         mDirty = false;
     }
+
+    public static final Creator<BaseModel> CREATOR = new Creator<BaseModel>() {
+        @Override
+        public BaseModel createFromParcel(Parcel in) {
+            return new BaseModel(in);
+        }
+
+        @Override
+        public BaseModel[] newArray(int size) {
+            return new BaseModel[size];
+        }
+    };
 
     public boolean isSelected() {
         return mSelected;
@@ -361,16 +369,6 @@ public class BaseModel implements Parcelable, IAbstractModel {
     public int getColor() {
         return Color.TRANSPARENT;
     }
-
-//    @Override
-//    public void setOrderNum(int orderNum) {
-//
-//    }
-//
-//    @Override
-//    public int getOrderNum() {
-//        return 0;
-//    }
 
     public void setSortType(int sortType) {
         mSortType = sortType;

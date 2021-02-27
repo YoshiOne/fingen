@@ -3,13 +3,8 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.AccountsSetsRefDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
-
-/**
- * Created by slv on 30.11.2016.
- */
 
 public class AccountsSetRef extends BaseModel implements IAbstractModel {
     private String mName;
@@ -39,7 +34,7 @@ public class AccountsSetRef extends BaseModel implements IAbstractModel {
     @Override
     public ContentValues getCV() {
         ContentValues values = super.getCV();
-        values.put(DBHelper.C_REF_ACCOUNTS_SETS_NAME, getName());
+        values.put(AccountsSetsRefDAO.COL_NAME, getName());
         return values;
     }
 

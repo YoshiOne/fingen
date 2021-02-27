@@ -2,20 +2,11 @@ package com.yoshione.fingen;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -30,16 +21,24 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.preference.PreferenceManager;
+
 import com.dropbox.core.DbxException;
 import com.dropbox.core.android.Auth;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.FullAccount;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.yoshione.fingen.dropbox.DropboxClient;
 import com.yoshione.fingen.dropbox.UploadTask;
 import com.yoshione.fingen.dropbox.UserAccountTask;
-import com.yoshione.fingen.interfaces.IOnComplete;
 import com.yoshione.fingen.utils.DateTimeFormatter;
 import com.yoshione.fingen.utils.FabMenuController;
 import com.yoshione.fingen.utils.FileUtils;
@@ -77,6 +76,8 @@ public class ActivityBackup extends ToolbarActivity {
     FloatingActionButton fabRestore;
     @BindView(R.id.fabRestoreFromDropbox)
     FloatingActionButton fabRestoreFromDropbox;
+    @BindView(R.id.fabBackupToOriginDB)
+    FloatingActionButton fabBackupToOrigin;
     @BindView(R.id.fabMenuButtonRoot)
     FloatingActionButton fabMenuButtonRoot;
     @BindView(R.id.switchCompatEnablePasswordProtection)
@@ -99,6 +100,8 @@ public class ActivityBackup extends ToolbarActivity {
     LinearLayout mFabRestoreLayout;
     @BindView(R.id.fabRestoreFromDropboxLayout)
     LinearLayout mFabRestoreFromDropboxLayout;
+    @BindView(R.id.fabBackupToOriginDBLayout)
+    LinearLayout mFabBackupToOriginDBLayout;
 
     private SharedPreferences prefs;
     private UpdateRwHandler mHandler;
@@ -168,39 +171,31 @@ public class ActivityBackup extends ToolbarActivity {
         getUserAccount();
         final SharedPreferences dropboxPrefs = getSharedPreferences("com.yoshione.fingen.dropbox", Context.MODE_PRIVATE);
         final String token = dropboxPrefs.getString("dropbox-token", null);
-        mEditTextDropboxAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (token == null) {
-                    Auth.startOAuth2Authentication(ActivityBackup.this, getString(R.string.DROPBOX_APP_KEY));
-                }
+        mEditTextDropboxAccount.setOnClickListener(view -> {
+            if (token == null) {
+                Auth.startOAuth2Authentication(ActivityBackup.this, getString(R.string.DROPBOX_APP_KEY));
             }
         });
         mButtonLogoutFromDropbox.setVisibility(token == null ? View.GONE : View.VISIBLE);
-        mButtonLogoutFromDropbox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AsyncTask.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            DropboxClient.getClient(token).auth().tokenRevoke();
-                        } catch (DbxException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                dropboxPrefs.edit().remove("dropbox-token").apply();
-                dropboxPrefs.edit().remove(FgConst.PREF_DROPBOX_ACCOUNT).apply();
-                initDropbox();
-            }
+        mButtonLogoutFromDropbox.setOnClickListener(view -> {
+            AsyncTask.execute(() -> {
+                try {
+                    DropboxClient.getClient(token).auth().tokenRevoke();
+                } catch (DbxException e) {
+                    e.printStackTrace();
+                }
+            });
+            dropboxPrefs.edit().remove("dropbox-token").apply();
+            dropboxPrefs.edit().remove(FgConst.PREF_DROPBOX_ACCOUNT).apply();
+            initDropbox();
         });
+        mFabMenuController.setViewVisibility(mFabRestoreFromDropboxLayout, token == null ? View.GONE : View.VISIBLE);
         initLastDropboxBackupField();
     }
 
     private void initLastDropboxBackupField() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        Long dateLong = preferences.getLong(FgConst.PREF_SHOW_LAST_SUCCESFUL_BACKUP_TO_DROPBOX, 0);
+        long dateLong = preferences.getLong(FgConst.PREF_SHOW_LAST_SUCCESFUL_BACKUP_TO_DROPBOX, 0);
         String title = getString(R.string.ttl_last_backup_to_dropbox);
         if (dateLong == 0) {
             title = String.format("%s -", title);
@@ -252,27 +247,22 @@ public class ActivityBackup extends ToolbarActivity {
     }
 
     private void initFabMenu() {
-        mFabMenuController = new FabMenuController(fabMenuButtonRoot, fabBGLayout, this, mFabBackupLayout, mFabRestoreLayout, mFabRestoreFromDropboxLayout);
-        fabBackup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ActivityBackupPermissionsDispatcher.backupDBWithPermissionCheck((ActivityBackup) v.getContext());
-                mFabMenuController.closeFABMenu();
-            }
+        mFabMenuController = new FabMenuController(fabMenuButtonRoot, fabBGLayout, this, mFabBackupLayout, mFabRestoreLayout, mFabRestoreFromDropboxLayout, mFabBackupToOriginDBLayout);
+        fabBackup.setOnClickListener(v -> {
+            ActivityBackupPermissionsDispatcher.backupDBWithPermissionCheck((ActivityBackup) v.getContext());
+            mFabMenuController.closeFABMenu();
         });
-        fabRestore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ActivityBackupPermissionsDispatcher.restoreDBWithPermissionCheck((ActivityBackup) v.getContext());
-                mFabMenuController.closeFABMenu();
-            }
+        fabRestore.setOnClickListener(v -> {
+            ActivityBackupPermissionsDispatcher.restoreDBWithPermissionCheck((ActivityBackup) v.getContext());
+            mFabMenuController.closeFABMenu();
         });
-        fabRestoreFromDropbox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ActivityBackupPermissionsDispatcher.restoreDBFromDropboxWithPermissionCheck((ActivityBackup) v.getContext());
-                mFabMenuController.closeFABMenu();
-            }
+        fabRestoreFromDropbox.setOnClickListener(v -> {
+            ActivityBackupPermissionsDispatcher.restoreDBFromDropboxWithPermissionCheck((ActivityBackup) v.getContext());
+            mFabMenuController.closeFABMenu();
+        });
+        fabBackupToOrigin.setOnClickListener(v -> {
+            ActivityBackupPermissionsDispatcher.backupToOriginDBWithPermissionCheck((ActivityBackup) v.getContext());
+            mFabMenuController.closeFABMenu();
         });
     }
 
@@ -292,15 +282,14 @@ public class ActivityBackup extends ToolbarActivity {
         try {
             File zip = DBHelper.getInstance(getApplicationContext()).backupDB(true);
             if (token != null && zip != null) {
-                new UploadTask(DropboxClient.getClient(token), zip, new IOnComplete() {
-                    @Override
-                    public void onComplete() {
-                        Toast.makeText(ActivityBackup.this, "File uploaded successfully", Toast.LENGTH_SHORT).show();
-                        SharedPreferences preferences = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ActivityBackup.this);
-                        preferences.edit().putLong(FgConst.PREF_SHOW_LAST_SUCCESFUL_BACKUP_TO_DROPBOX, new Date().getTime()).apply();
-                        initLastDropboxBackupField();
-                    }
+                new UploadTask(DropboxClient.getClient(token), zip, () -> {
+                    Toast.makeText(ActivityBackup.this, "File uploaded successfully", Toast.LENGTH_SHORT).show();
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ActivityBackup.this);
+                    preferences.edit().putLong(FgConst.PREF_SHOW_LAST_SUCCESFUL_BACKUP_TO_DROPBOX, new Date().getTime()).apply();
+                    initLastDropboxBackupField();
                 }).execute();
+            } else {
+                Toast.makeText(ActivityBackup.this, "File saved successfully", Toast.LENGTH_SHORT).show();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -314,27 +303,45 @@ public class ActivityBackup extends ToolbarActivity {
 
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void restoreDBFromDropbox() {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferences dropboxPrefs = getApplicationContext().getSharedPreferences("com.yoshione.fingen.dropbox", Context.MODE_PRIVATE);
-                String token = dropboxPrefs.getString("dropbox-token", null);
-                List<Metadata> metadataList;
-                List<MetadataItem> items = new ArrayList<>();
-                try {
-                    metadataList = DropboxClient.getListFiles(DropboxClient.getClient(token));
-                    for (int i = metadataList.size() - 1; i >= 0; i--) {
-                        if (metadataList.get(i).getName().toLowerCase().contains(".zip")) {
-                            items.add(new MetadataItem((FileMetadata) metadataList.get(i)));
-                        }
+        Thread t = new Thread(() -> {
+            SharedPreferences dropboxPrefs = getApplicationContext().getSharedPreferences("com.yoshione.fingen.dropbox", Context.MODE_PRIVATE);
+            String token = dropboxPrefs.getString("dropbox-token", null);
+            List<Metadata> metadataList;
+            List<MetadataItem> items = new ArrayList<>();
+            try {
+                metadataList = DropboxClient.getListFiles(DropboxClient.getClient(token));
+                for (int i = metadataList.size() - 1; i >= 0; i--) {
+                    if (metadataList.get(i).getName().toLowerCase().contains(".zip")) {
+                        items.add(new MetadataItem((FileMetadata) metadataList.get(i)));
                     }
-                } catch (Exception e) {
-                    Log.d(TAG, "Error read list of files from Dropbox");
                 }
-                mHandler.sendMessage(mHandler.obtainMessage(MSG_SHOW_DIALOG, items));
+            } catch (Exception e) {
+                Log.d(TAG, "Error read list of files from Dropbox");
             }
+            mHandler.sendMessage(mHandler.obtainMessage(MSG_SHOW_DIALOG, items));
         });
         t.start();
+    }
+
+    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void backupToOriginDB() {
+        SharedPreferences dropboxPrefs = getSharedPreferences("com.yoshione.fingen.dropbox", Context.MODE_PRIVATE);
+        String token = dropboxPrefs.getString("dropbox-token", null);
+        try {
+            File zip = DBHelper.getInstance(getApplicationContext()).backupToOriginDB(true);
+            if (token != null && zip != null) {
+                new UploadTask(DropboxClient.getClient(token), zip, () -> {
+                    Toast.makeText(ActivityBackup.this, "File uploaded successfully", Toast.LENGTH_SHORT).show();
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ActivityBackup.this);
+                    preferences.edit().putLong(FgConst.PREF_SHOW_LAST_SUCCESFUL_BACKUP_TO_DROPBOX, new Date().getTime()).apply();
+                    initLastDropboxBackupField();
+                }).execute();
+            } else {
+                Toast.makeText(ActivityBackup.this, "File saved successfully", Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -365,18 +372,8 @@ public class ActivityBackup extends ToolbarActivity {
 
     private void showRationaleDialog(@StringRes int messageResId, final PermissionRequest request) {
         new AlertDialog.Builder(this)
-                .setPositiveButton(R.string.act_next, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        request.proceed();
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        request.cancel();
-                    }
-                })
+                .setPositiveButton(R.string.act_next, (dialog, which) -> request.proceed())
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> request.cancel())
                 .setCancelable(false)
                 .setMessage(R.string.msg_permission_rw_external_storage_rationale)
                 .show();
@@ -415,39 +412,28 @@ public class ActivityBackup extends ToolbarActivity {
 
                     builderSingle.setNegativeButton(
                             activity.getResources().getString(android.R.string.cancel),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
+                            (dialog, which) -> dialog.dismiss());
 
-                    builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ListView lw = ((AlertDialog) dialog).getListView();
-                            final MetadataItem item = (MetadataItem) lw.getAdapter().getItem(which);
-                            Thread thread = new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    File file = new File(activity.getCacheDir(), item.mMetadata.getName());
-                                    try {
-                                        OutputStream outputStream = new FileOutputStream(file);
-                                        SharedPreferences dropboxPrefs = activity.getSharedPreferences("com.yoshione.fingen.dropbox", Context.MODE_PRIVATE);
-                                        String token = dropboxPrefs.getString("dropbox-token", null);
-                                        DbxClientV2 dbxClient = DropboxClient.getClient(token);
-                                        dbxClient.files().download(item.mMetadata.getPathLower(), item.mMetadata.getRev())
-                                                .download(outputStream);
-                                        activity.mHandler.sendMessage(activity.mHandler.obtainMessage(MSG_DOWNLOAD_FILE, file));
-                                    } catch (DbxException e) {
-                                        e.printStackTrace();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                            thread.start();
-                        }
+                    builderSingle.setAdapter(arrayAdapter, (dialog, which) -> {
+                        ListView lw = ((AlertDialog) dialog).getListView();
+                        final MetadataItem item = (MetadataItem) lw.getAdapter().getItem(which);
+                        Thread thread = new Thread(() -> {
+                            File file = new File(activity.getCacheDir(), item.mMetadata.getName());
+                            try {
+                                OutputStream outputStream = new FileOutputStream(file);
+                                SharedPreferences dropboxPrefs = activity.getSharedPreferences("com.yoshione.fingen.dropbox", Context.MODE_PRIVATE);
+                                String token = dropboxPrefs.getString("dropbox-token", null);
+                                DbxClientV2 dbxClient = DropboxClient.getClient(token);
+                                dbxClient.files().download(item.mMetadata.getPathLower(), item.mMetadata.getRev())
+                                        .download(outputStream);
+                                activity.mHandler.sendMessage(activity.mHandler.obtainMessage(MSG_DOWNLOAD_FILE, file));
+                            } catch (DbxException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                        thread.start();
                     });
                     builderSingle.show();
                     break;
@@ -498,20 +484,12 @@ public class ActivityBackup extends ToolbarActivity {
 
             builderSingle.setNegativeButton(
                     activity.getResources().getString(android.R.string.cancel),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
+                    (dialog, which) -> dialog.dismiss());
 
-            builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    ListView lw = ((AlertDialog) dialog).getListView();
-                    String fileName = (String) lw.getAdapter().getItem(which);
-                    DBHelper.getInstance(activity).showRestoreDialog(FileUtils.getExtFingenBackupFolder() + fileName, activity);
-                }
+            builderSingle.setAdapter(arrayAdapter, (dialog, which) -> {
+                ListView lw = ((AlertDialog) dialog).getListView();
+                String fileName = (String) lw.getAdapter().getItem(which);
+                DBHelper.getInstance(activity).showRestoreDialog(FileUtils.getExtFingenBackupFolder() + fileName, activity);
             });
             builderSingle.show();
         }

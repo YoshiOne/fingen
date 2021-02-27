@@ -7,28 +7,26 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
+
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -37,14 +35,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.tabs.TabLayout;
 import com.mikepenz.actionitembadge.library.ActionItemBadge;
 import com.mikepenz.actionitembadge.library.utils.BadgeStyle;
 import com.mikepenz.actionitembadge.library.utils.NumberUtils;
@@ -62,7 +60,6 @@ import com.yoshione.fingen.dao.SmsMarkersDAO;
 import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.filters.AbstractFilter;
 import com.yoshione.fingen.filters.AccountFilter;
-import com.yoshione.fingen.fts.ActivityScanQR;
 import com.yoshione.fingen.iab.BillingService;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ITransactionItemEventListener;
@@ -72,8 +69,10 @@ import com.yoshione.fingen.model.AccountsSet;
 import com.yoshione.fingen.model.BaseModel;
 import com.yoshione.fingen.model.Events;
 import com.yoshione.fingen.model.Sender;
+import com.yoshione.fingen.model.SimpleDebt;
 import com.yoshione.fingen.model.SmsMarker;
 import com.yoshione.fingen.model.Template;
+import com.yoshione.fingen.model.TrEditItem;
 import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.receivers.SMSReceiver;
 import com.yoshione.fingen.utils.ColorUtils;
@@ -100,7 +99,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.Lazy;
-import io.fabric.sdk.android.Fabric;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnPermissionDenied;
@@ -133,6 +131,8 @@ public class ActivityMain extends ToolbarActivity {
     private static final int DRAWER_ITEM_ID_ABOUT = 10;
     private static final int DRAWER_ITEM_ID_PRO = 12;
 
+    @BindView(R.id.bottomNavigation)
+    AHBottomNavigation mBottomNavigation;
     @BindView(R.id.pager)
     ViewPager viewPager;
     @BindView(R.id.tabLayout)
@@ -149,26 +149,13 @@ public class ActivityMain extends ToolbarActivity {
     AppBarLayout mAppBarLayout;
     @BindView(R.id.textViewSubtitle)
     TextView mTextViewActiveSet;
-    @BindView(R.id.buttonTemplates)
-    Button mButtonTemplates;
-    @BindView(R.id.buttonScanQR)
-    Button mButtonScanQR;
-    @BindView(R.id.buttonNewExpense)
-    Button mButtonNewExpense;
-    @BindView(R.id.buttonNewIncome)
-    Button mButtonNewIncome;
-    @BindView(R.id.buttonNewTransfer)
-    Button mButtonNewTransfer;
-    @BindView(R.id.buttonsBar)
-    LinearLayout mButtonsBar;
-    @BindView(R.id.buttonsBarContainer)
-    FrameLayout mButtonsBarContainer;
 
     private FragmentAccounts fragmentAccounts;
     FragmentTransactions fragmentTransactions;
+    private FragmentSimpleDebts fragmentDebts;
     private FragmentSummary fragmentSummary;
     private Drawer mMaterialDrawer = null;
-    FragmentStatePagerAdapter fragmentPagerAdapter;
+    FragmentPagerAdapter fragmentPagerAdapter;
     private final List<Fragment> fragments = new ArrayList<>();
     private final SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener =
             (prefs, key) -> {
@@ -208,13 +195,11 @@ public class ActivityMain extends ToolbarActivity {
         FGApplication.getAppComponent().inject(this);
         getIntent().putExtra("showHomeButton", false);
 
-        switch (Integer.valueOf(mPreferences.getString("theme", "0"))) {
-            case THEME_LIGHT:
-                setTheme(R.style.AppThemeLight);
-                break;
+        switch (Integer.parseInt(mPreferences.getString("theme", "0"))) {
             case THEME_DARK:
                 setTheme(R.style.AppThemeDark);
                 break;
+            case THEME_LIGHT:
             default:
                 setTheme(R.style.AppThemeLight);
                 break;
@@ -223,10 +208,6 @@ public class ActivityMain extends ToolbarActivity {
         super.onCreate(null);
 
         mUpdateUIHandler = new UpdateUIHandler(this);
-
-        if (!BuildConfig.DEBUG) {
-            Fabric.with(this, new Crashlytics());
-        }
 
         mPreferences.edit().putBoolean(FgConst.PREF_SWITCH_TAB_ON_START, true).apply();
 
@@ -245,18 +226,35 @@ public class ActivityMain extends ToolbarActivity {
         if (drawerToggle != null) {
             drawerToggle.setImageDrawable(getDrawable(R.drawable.ic_menu_white));
         }
-        addFragments();
-
-        setupBottomBar();
 
         //<editor-fold desc="Setup fragments">
-        fragmentPagerAdapter = new FgFragmentPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(fragmentPagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.setOnDragListener((view, dragEvent) -> true);
-        viewPager.setOffscreenPageLimit(2);
-        //</editor-fold>
+        mBottomNavigation.setDefaultBackgroundColor(ColorUtils.getlistItemBackgroundColor(ActivityMain.this));
+        mBottomNavigation.setOnTabSelectedListener((position, wasSelected) -> {
+            if (wasSelected) {
+                return true;
+            }
+            viewPager.setCurrentItem(position);
+            return true;
+        });
+        viewPager.setOffscreenPageLimit(3);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
 
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                mBottomNavigation.setCurrentItem(i);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
+        tabLayout.setVisibility(View.GONE);
+        //</editor-fold>
 
         //<editor-fold desc="Check version and show changelog if necessary">
         PackageInfo pInfo;
@@ -273,23 +271,9 @@ public class ActivityMain extends ToolbarActivity {
                 onUpdateVersion(prevVersion, version);
             }
         }
-
-        mPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
         //</editor-fold>
 
-        final View rootView = getWindow().getDecorView().getRootView();
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            Rect rect = new Rect();
-            rootView.getWindowVisibleDisplayFrame(rect);
-
-            int screenHeight = rootView.getHeight();
-            int keyboardHeight = screenHeight - (rect.bottom - rect.top);
-            if (keyboardHeight > screenHeight / 3) {
-                mButtonsBarContainer.setVisibility(View.GONE);
-            } else {
-                mButtonsBarContainer.setVisibility(View.VISIBLE);
-            }
-        });
+        mPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
     }
 
     @Override
@@ -336,6 +320,9 @@ public class ActivityMain extends ToolbarActivity {
                     case 2:
                         startTabString = FgConst.FRAGMENT_TRANSACTIONS;
                         break;
+                    case 3:
+                        startTabString = FgConst.FRAGMENT_DEBTS;
+                        break;
                     default:
                         startTabString = FgConst.FRAGMENT_SUMMARY;
                 }
@@ -364,7 +351,7 @@ public class ActivityMain extends ToolbarActivity {
         super.onRestoreInstanceState(savedInstanceState);
     }
 
-    private class FgFragmentPagerAdapter extends FragmentStatePagerAdapter {
+    private class FgFragmentPagerAdapter extends FragmentPagerAdapter {
 
         FgFragmentPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -381,75 +368,99 @@ public class ActivityMain extends ToolbarActivity {
         }
 
         @Override
-        public CharSequence getPageTitle(final int position) {
+        public long getItemId(int position) {
+            if (fragments.get(position).getClass().equals(FragmentAccounts.class)) {
+                return 1;
+            } else if (fragments.get(position).getClass().equals(FragmentTransactions.class)) {
+                return 2;
+            } else if (fragments.get(position).getClass().equals(FragmentSummary.class)) {
+                return 3;
+            } else if (fragments.get(position).getClass().equals(FragmentSimpleDebts.class)) {
+                return 4;
+            } else {
+                return 0;
+            }
+        }
 
+        @Override
+        public CharSequence getPageTitle(final int position) {
             if (fragments.get(position).getClass().equals(FragmentAccounts.class)) {
                 return getString(R.string.ent_accounts).toUpperCase();
             } else if (fragments.get(position).getClass().equals(FragmentTransactions.class)) {
                 return getString(R.string.ent_transactions).toUpperCase();
             } else if (fragments.get(position).getClass().equals(FragmentSummary.class)) {
                 return getString(R.string.ent_summary).toUpperCase();
+            } else if (fragments.get(position).getClass().equals(FragmentSimpleDebts.class)) {
+                return getString(R.string.ent_debts).toUpperCase();
             } else {
                 return null;
             }
         }
 
-        @Override
-        public Parcelable saveState() {
-            // Do Nothing
-            return null;
-        }
-
-        @Override
-        public int getItemPosition(@NonNull Object object) {
-            return POSITION_NONE;
-        }
     }
 
 
-    private void addFragments() {
-        fragmentAccounts = FragmentAccounts.newInstance(FgConst.PREF_FORCE_UPDATE_ACCOUNTS, R.layout.fragment_accounts, this::updateLists);
-        fragmentAccounts.setmAccountEventListener(account -> {
-            int action = Integer.valueOf(mPreferences.getString(FgConst.PREF_ACCOUNT_CLICK_ACTION, String.valueOf(ACCOUNT_CLICK_ACTION_LIST_TRANSACTIONS)));
-            switch (action) {
-                case ACCOUNT_CLICK_ACTION_LIST_TRANSACTIONS:
-                    AccountFilter filter = new AccountFilter(0);
-                    filter.addAccount(account.getID());
-                    ArrayList<AbstractFilter> filters = new ArrayList<>();
-                    filters.add(filter);
-                    Intent intent = new Intent(ActivityMain.this, ActivityTransactions.class);
-                    intent.putParcelableArrayListExtra("filter_list", filters);
-                    intent.putExtra("caption", account.getName());
-                    intent.putExtra(FgConst.HIDE_FAB, true);
-                    intent.putExtra(FgConst.LOCK_SLIDINGUP_PANEL, true);
-                    startActivity(intent);
-                    break;
-                case ACCOUNT_CLICK_ACTION_NEW_TRANSACTION:
-                    Transaction transaction = new Transaction(PrefUtils.getDefDepID(ActivityMain.this));
-                    transaction.setAccountID(account.getID());
-                    Intent intentNT = new Intent(ActivityMain.this, ActivityEditTransaction.class);
-                    intentNT.putExtra("transaction", transaction);
-                    startActivity(intentNT);
-                    break;
-            }
+    private void addFragments(List<TrEditItem> tabs) {
+        if (fragmentAccounts == null) {
+            fragmentAccounts = FragmentAccounts.newInstance(FgConst.PREF_FORCE_UPDATE_ACCOUNTS, R.layout.fragment_accounts, this::updateLists);
+            fragmentAccounts.setmAccountEventListener(account -> {
+                int action = Integer.valueOf(mPreferences.getString(FgConst.PREF_ACCOUNT_CLICK_ACTION, String.valueOf(ACCOUNT_CLICK_ACTION_LIST_TRANSACTIONS)));
+                switch (action) {
+                    case ACCOUNT_CLICK_ACTION_LIST_TRANSACTIONS:
+                        AccountFilter filter = new AccountFilter(0);
+                        filter.addAccount(account.getID());
+                        ArrayList<AbstractFilter> filters = new ArrayList<>();
+                        filters.add(filter);
+                        Intent intent = new Intent(ActivityMain.this, ActivityTransactions.class);
+                        intent.putParcelableArrayListExtra("filter_list", filters);
+                        intent.putExtra("caption", account.getName());
+                        intent.putExtra(FgConst.HIDE_FAB, true);
+                        intent.putExtra(FgConst.LOCK_SLIDINGUP_PANEL, true);
+                        startActivity(intent);
+                        break;
+                    case ACCOUNT_CLICK_ACTION_NEW_TRANSACTION:
+                        Transaction transaction = new Transaction(PrefUtils.getDefDepID(ActivityMain.this));
+                        transaction.setAccountID(account.getID());
+                        Intent intentNT = new Intent(ActivityMain.this, ActivityEditTransaction.class);
+                        intentNT.putExtra("transaction", transaction);
+                        startActivity(intentNT);
+                        break;
+                }
 
-        });
-        fragmentSummary = FragmentSummary.newInstance(FgConst.PREF_FORCE_UPDATE_SUMMARY, R.layout.fragment_summary);
-        fragmentTransactions = FragmentTransactions.newInstance(FgConst.PREF_FORCE_UPDATE_TRANSACTIONS, R.layout.fragment_transactions);
-
-        List<String> tabs = PrefUtils.getTabsOrder(mPreferences);
+            });
+        }
+        if (fragmentSummary == null) {
+            fragmentSummary = FragmentSummary.newInstance(FgConst.PREF_FORCE_UPDATE_SUMMARY, R.layout.fragment_summary);
+        }
+        if (fragmentTransactions == null) {
+            fragmentTransactions = FragmentTransactions.newInstance(FgConst.PREF_FORCE_UPDATE_TRANSACTIONS, R.layout.fragment_transactions);
+        }
+        if (fragmentDebts == null) {
+            fragmentDebts = FragmentSimpleDebts.newInstance(FgConst.PREF_FORCE_UPDATE_DEBTS, R.layout.fragment_simpledebts);
+        }
 
         fragments.clear();
-        for (String tabID : tabs) {
-            switch (tabID) {
+        mBottomNavigation.removeAllItems();
+        for (TrEditItem tab : tabs) {
+            if (!tab.isVisible()) {
+                continue;
+            }
+            switch (tab.getID()) {
                 case FgConst.FRAGMENT_SUMMARY:
                     fragments.add(fragmentSummary);
+                    mBottomNavigation.addItem(new AHBottomNavigationItem(getString(R.string.ent_summary).toUpperCase(), R.drawable.selector_reports));
                     break;
                 case FgConst.FRAGMENT_ACCOUNTS:
                     fragments.add(fragmentAccounts);
+                    mBottomNavigation.addItem(new AHBottomNavigationItem(getString(R.string.ent_accounts).toUpperCase(), R.drawable.ic_account_gray));
                     break;
                 case FgConst.FRAGMENT_TRANSACTIONS:
                     fragments.add(fragmentTransactions);
+                    mBottomNavigation.addItem(new AHBottomNavigationItem(getString(R.string.ent_transactions).toUpperCase(), R.drawable.ic_transfer_gray));
+                    break;
+                case FgConst.FRAGMENT_DEBTS:
+                    fragments.add(fragmentDebts);
+                    mBottomNavigation.addItem(new AHBottomNavigationItem(getString(R.string.ent_debts).toUpperCase(), R.drawable.ic_debt_gray));
                     break;
             }
         }
@@ -466,37 +477,45 @@ public class ActivityMain extends ToolbarActivity {
         super.onStart();
         EventBus.getDefault().register(this);
 
-        if (getIntent().getIntExtra("action", 0) == ACTION_OPEN_TRANSACTIONS_LIST) {
-            String startTab = FgConst.FRAGMENT_TRANSACTIONS;
-            List<String> tabsOrder = PrefUtils.getTabsOrder(mPreferences);
-            int currentItem = tabsOrder.indexOf(startTab);
-            if (currentItem >= 0 && currentItem < fragments.size()) {
-                viewPager.setCurrentItem(currentItem);
-            }
-        } else {
-            if (mPreferences.getBoolean(FgConst.PREF_SWITCH_TAB_ON_START, false)) {
-                String startTab = mPreferences.getString(FgConst.PREF_START_TAB, FgConst.FRAGMENT_SUMMARY);
-                List<String> tabsOrder = PrefUtils.getTabsOrder(mPreferences);
-                int currentItem = tabsOrder.indexOf(startTab);
-                if (currentItem >= 0 && currentItem < fragments.size()) {
-                    viewPager.setCurrentItem(currentItem);
-                }
-                mPreferences.edit().putBoolean(FgConst.PREF_SWITCH_TAB_ON_START, false).apply();
+        checkPermissionsAndShowAlert();
+
+        List<TrEditItem> tabs = PrefUtils.getTabsOrder(mPreferences, ActivityMain.this);
+
+        int cntVisible = 0;
+        for (TrEditItem tab : tabs) {
+            if (tab.isVisible()) {
+                cntVisible++;
             }
         }
 
-        checkPermissionsAndShowAlert();
-
-        List<String> tabs = PrefUtils.getTabsOrder(mPreferences);
-        boolean actual = true;
-        if (fragments.size() == tabs.size()) {
-            for (int i = 0; i < fragments.size(); i++) {
-                actual = actual & getFragmentID(fragments.get(i)).equals(tabs.get(i));
+        boolean actual = (cntVisible == fragments.size());
+        int i = 0, j = 0;
+        for (; actual && i < tabs.size() && j < fragments.size(); i++, j++) {
+            while (i < tabs.size() && !tabs.get(i).isVisible()) {
+                i++;
+            }
+            if (i < tabs.size()) {
+                actual = getFragmentID(fragments.get(j)).equals(tabs.get(i).getID());
             }
         }
         if (!actual) {
-            addFragments();
-            fragmentPagerAdapter.notifyDataSetChanged();
+            addFragments(tabs);
+            int currentItem = viewPager.getCurrentItem();
+            fragmentPagerAdapter = new FgFragmentPagerAdapter(getSupportFragmentManager());
+            viewPager.setAdapter(fragmentPagerAdapter);
+            viewPager.setCurrentItem(currentItem);
+        }
+
+        int currentItem = -1;
+        boolean switchOnStart = mPreferences.getBoolean(FgConst.PREF_SWITCH_TAB_ON_START, false);
+        if (getIntent().getIntExtra("action", 0) == ACTION_OPEN_TRANSACTIONS_LIST) {
+            currentItem = tabs.indexOf(PrefUtils.getTrEditItemByID(tabs, FgConst.FRAGMENT_TRANSACTIONS));
+        } else if (switchOnStart) {
+            currentItem = tabs.indexOf(PrefUtils.getTrEditItemByID(tabs, mPreferences.getString(FgConst.PREF_START_TAB, FgConst.FRAGMENT_SUMMARY)));
+            mPreferences.edit().putBoolean(FgConst.PREF_SWITCH_TAB_ON_START, false).apply();
+        }
+        if (currentItem >= 0 && currentItem < fragments.size()) {
+            viewPager.setCurrentItem(currentItem);
         }
     }
 
@@ -507,6 +526,8 @@ public class ActivityMain extends ToolbarActivity {
             return FgConst.FRAGMENT_TRANSACTIONS;
         } else if (fragment.getClass().equals(FragmentSummary.class)) {
             return FgConst.FRAGMENT_SUMMARY;
+        } else if (fragment.getClass().equals(FragmentSimpleDebts.class)) {
+            return FgConst.FRAGMENT_DEBTS;
         } else {
             return "";
         }
@@ -699,7 +720,7 @@ public class ActivityMain extends ToolbarActivity {
         else if (fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentTransactions.class) & (mSlidingUpTransactions != null &&
                 (mSlidingUpTransactions.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || mSlidingUpTransactions.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED))) {
             mSlidingUpTransactions.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-        } else if (fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentTransactions.class) && fragmentTransactions.mFabMenuController.isFABOpen()) {
+        } else if (fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentTransactions.class) && fragmentTransactions.mFabMenuController != null && fragmentTransactions.mFabMenuController.isFABOpen()) {
             fragmentTransactions.mFabMenuController.closeFABMenu();
         } else if (fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentTransactions.class) && fragmentTransactions.mCardViewSearch != null && fragmentTransactions.mCardViewSearch.getVisibility() == View.VISIBLE) {
             fragmentTransactions.hideSearchView();
@@ -838,6 +859,15 @@ public class ActivityMain extends ToolbarActivity {
         }
     }
 
+    private void updateDebts() {
+        if (fragmentDebts != null && fragmentDebts.recyclerView != null
+                && fragments.get(viewPager.getCurrentItem()).getClass().equals(FragmentSimpleDebts.class)) {
+            fragmentDebts.fullUpdate(-1);
+        } else {
+            mPreferences.edit().putBoolean(FgConst.PREF_FORCE_UPDATE_DEBTS, true).apply();
+        }
+    }
+
     private void updateLists() {
         AccountsSet currentAccountsSet = AccountsSetManager.getInstance().getCurrentAccountSet(this);
 
@@ -851,6 +881,7 @@ public class ActivityMain extends ToolbarActivity {
         updateSummary();
         updateAccounts();
         updateTransactions(-1);
+        updateDebts();
     }
 
     private void updateCounters() {
@@ -937,7 +968,7 @@ public class ActivityMain extends ToolbarActivity {
                 dialog[0].getWindow().setAttributes(lp);
             }
         }else if (requestCode == RequestCodes.REQUEST_CODE_OPEN_PREFERENCES) {
-            updateLists();
+//            updateLists();
         } else {
             new Handler().postDelayed(() -> fragments.get(viewPager.getCurrentItem()).onActivityResult(requestCode, resultCode, data), 200);
         }
@@ -1024,52 +1055,6 @@ public class ActivityMain extends ToolbarActivity {
                     break;
             }
 
-        }
-    }
-
-    private void setupBottomBar() {
-        BottomButtonClickListener clickListener = new BottomButtonClickListener();
-
-        boolean scanQR = mPreferences.getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true);
-        mButtonScanQR.setVisibility(scanQR ? View.VISIBLE : View.GONE);
-
-        mButtonTemplates.setOnClickListener(clickListener);
-        mButtonScanQR.setOnClickListener(clickListener);
-        mButtonNewExpense.setOnClickListener(clickListener);
-        mButtonNewIncome.setOnClickListener(clickListener);
-        mButtonNewTransfer.setOnClickListener(clickListener);
-    }
-
-    private class BottomButtonClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            if (v.getId() == R.id.buttonTemplates) {
-                Intent intent = new Intent(ActivityMain.this, ActivityModelList.class);
-                intent.putExtra("showHomeButton", false);
-                intent.putExtra("model", new Template());
-                intent.putExtra("requestCode", RequestCodes.REQUEST_CODE_SELECT_MODEL);
-                ActivityMain.this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_SELECT_MODEL);
-            } else if (v.getId() == R.id.buttonScanQR) {
-                Intent intent = new Intent(ActivityMain.this, ActivityScanQR.class);
-                startActivityForResult(intent, RequestCodes.REQUEST_CODE_SCAN_QR);
-            } else {
-                Transaction transaction = new Transaction(PrefUtils.getDefDepID(ActivityMain.this));
-                Intent intent = new Intent(ActivityMain.this, ActivityEditTransaction.class);
-                switch (v.getId()) {
-                    case R.id.buttonNewIncome:
-                        transaction.setTransactionType(Transaction.TRANSACTION_TYPE_INCOME);
-                        break;
-                    case R.id.buttonNewExpense:
-                        transaction.setTransactionType(Transaction.TRANSACTION_TYPE_EXPENSE);
-                        break;
-                    case R.id.buttonNewTransfer:
-                        transaction.setTransactionType(Transaction.TRANSACTION_TYPE_TRANSFER);
-                        intent.putExtra("focus_to_amount", true);
-                        break;
-                }
-                intent.putExtra("transaction", transaction);
-                ActivityMain.this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
-            }
         }
     }
 }

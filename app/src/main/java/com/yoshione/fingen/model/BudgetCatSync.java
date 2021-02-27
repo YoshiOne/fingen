@@ -3,15 +3,9 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.BudgetDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
-
-/**
- * Created by slv on 07.09.2016.
- * *
- */
 
 public class BudgetCatSync extends BaseModel implements IAbstractModel {
     private int mYear;
@@ -28,19 +22,6 @@ public class BudgetCatSync extends BaseModel implements IAbstractModel {
         mAmount = 0d;
         mCabbageID = -1;
     }
-
-    public BudgetCatSync(long id) {
-        super(id);
-    }
-
-//    public BudgetCatSync(int year, int month, long categoryID, double amount, long cabbageID) {
-//        super();
-//        mYear = year;
-//        mMonth = month;
-//        mCategoryID = categoryID;
-//        mAmount = amount;
-//        mCabbageID = cabbageID;
-//    }
 
     @Override
     public int describeContents() {
@@ -122,11 +103,11 @@ public class BudgetCatSync extends BaseModel implements IAbstractModel {
     public ContentValues getCV() {
         ContentValues values = super.getCV();
 
-        values.put(DBHelper.C_LOG_BUDGET_YEAR,mYear);
-        values.put(DBHelper.C_LOG_BUDGET_MONTH,mMonth);
-        values.put(DBHelper.C_LOG_BUDGET_CATEGORY,mCategoryID);
-        values.put(DBHelper.C_LOG_BUDGET_AMOUNT,mAmount);
-        values.put(DBHelper.C_LOG_BUDGET_CURRENCY,mCabbageID);
+        values.put(BudgetDAO.COL_YEAR, mYear);
+        values.put(BudgetDAO.COL_MONTH, mMonth);
+        values.put(BudgetDAO.COL_CATEGORY, mCategoryID);
+        values.put(BudgetDAO.COL_AMOUNT, mAmount);
+        values.put(BudgetDAO.COL_CURRENCY, mCabbageID);
         return values;
     }
 

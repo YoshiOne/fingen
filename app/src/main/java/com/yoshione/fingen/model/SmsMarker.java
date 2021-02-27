@@ -1,24 +1,13 @@
-/*
- * Copyright (c) 2015.
- */
-
 package com.yoshione.fingen.model;
 
 import android.content.ContentValues;
 import android.os.Parcel;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.SmsMarkersDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
-/**
- * Created by Leonid on 01.11.2015.
- *
- */
 public class SmsMarker extends BaseModel implements IAbstractModel {
-    public static final String TAG = "com.yoshione.fingen.Model.SmsMarker";
 
-//    private long mId = -1;
     private int mType = -1;
     private String mObject = "";
     private String mMarker = "";
@@ -125,9 +114,9 @@ public class SmsMarker extends BaseModel implements IAbstractModel {
     public ContentValues getCV() {
         ContentValues values = super.getCV();
 
-        values.put(DBHelper.C_LOG_SMS_PARSER_PATTERNS_TYPE, getType());
-        values.put(DBHelper.C_LOG_SMS_PARSER_PATTERNS_OBJECT, getObject());
-        values.put(DBHelper.C_LOG_SMS_PARSER_PATTERNS_PATTERN, getMarker());
+        values.put(SmsMarkersDAO.COL_TYPE, getType());
+        values.put(SmsMarkersDAO.COL_OBJECT, getObject());
+        values.put(SmsMarkersDAO.COL_PATTERN, getMarker());
         return values;
     }
 

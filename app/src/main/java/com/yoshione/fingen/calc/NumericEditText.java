@@ -1,12 +1,12 @@
 package com.yoshione.fingen.calc;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.EditText;
+
+import androidx.appcompat.widget.AppCompatEditText;
 
 import org.apache.commons.lang3.StringUtils;
 

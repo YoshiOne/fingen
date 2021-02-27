@@ -19,7 +19,7 @@
                   android:orientation="vertical"
                   android:padding="4dp">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/ent_name">
@@ -29,15 +29,15 @@
                 style="@style/EditableEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutPhoneNo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -53,7 +53,7 @@
                     style="@style/EditableEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
 
             <ImageButton
@@ -66,10 +66,10 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:src="@drawable/ic_import_contacts_blue"
                 tools:ignore="ContentDescription"/>
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/ent_amount_pos">
@@ -79,9 +79,9 @@
                 style="@style/NotEditableEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/ent_balance_pos">
@@ -99,7 +99,7 @@
                 android:layout_weight="1"
                 android:text="@string/title_senders_add_credit_limit_to_balance" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>
 </ScrollView>

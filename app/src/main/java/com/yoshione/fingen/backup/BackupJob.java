@@ -2,8 +2,9 @@ package com.yoshione.fingen.backup;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
-import android.support.v7.preference.PreferenceManager;
+
+import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.DbxClientV2;

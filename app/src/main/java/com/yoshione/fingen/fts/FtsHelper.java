@@ -2,14 +2,14 @@ package com.yoshione.fingen.fts;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
+
+import androidx.preference.PreferenceManager;
 
 import com.yoshione.fingen.FGApplication;
 import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.R;
-import com.yoshione.fingen.dao.ProductEntrysDAO;
 import com.yoshione.fingen.dao.ProductsDAO;
 import com.yoshione.fingen.fts.models.FtsResponse;
 import com.yoshione.fingen.fts.models.Item;
@@ -50,7 +50,8 @@ public class FtsHelper {
 
     public Disposable downloadProductEntryList(final Transaction transaction,
                                                final IDownloadProductsListener downloadProductsListener) {
-        String url = String.format("https://proverkacheka.nalog.ru:9999/v1/inns/*/kkts/*/" +
+        String hostUrl = "https://proverkacheka.nalog.ru:9999";
+        String url = String.format(hostUrl + "/v1/inns/*/kkts/*/" +
                 "fss/%s/" +
                 "tickets/%s" +
                 "?fiscalSign=%s" +
@@ -61,7 +62,7 @@ public class FtsHelper {
         String auth = getAuth(mContext).replaceAll("\n", "");
         String date = android.text.format.DateFormat.format("yyyy-MM-ddTHH:mm:00", transaction.getDateTime()).toString();
         String sum = Long.toString(Math.round(transaction.getAmount().doubleValue() * -100.0));
-        String checkUrl = String.format("https://proverkacheka.nalog.ru:9999/v1/ofds/*/inns/*/" +
+        String checkUrl = String.format(hostUrl + "/v1/ofds/*/inns/*/" +
                         "fss/%s/" +
                         "operations/1/" +
                         "tickets/%s" +
@@ -81,8 +82,8 @@ public class FtsHelper {
                 "Android 8.0",
                 "2",
                 "1.4.4.1",
-                "https://proverkacheka.nalog.ru:9999",
-                "https://proverkacheka.nalog.ru:9999"),
+                hostUrl,
+                hostUrl),
                 mApi.getData(url,
                         "Basic " + auth,
                         "okhttp/3.0.1",
@@ -90,8 +91,8 @@ public class FtsHelper {
                         "Android 8.0",
                         "2",
                         "1.4.4.1",
-                        "https://proverkacheka.nalog.ru:9999",
-                        "https://proverkacheka.nalog.ru:9999"),
+                        hostUrl,
+                        hostUrl),
                 mApi.getData(url,
                         "Basic " + auth,
                         "okhttp/3.0.1",
@@ -99,15 +100,15 @@ public class FtsHelper {
                         "Android 8.0",
                         "2",
                         "1.4.4.1",
-                        "https://proverkacheka.nalog.ru:9999",
-                        "https://proverkacheka.nalog.ru:9999"),
+                        hostUrl,
+                        hostUrl),
                 (u1, u2, u3) -> Arrays.asList(u1, u2, u3))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(responseList -> {
                     for (Response<FtsResponse> response : responseList) {
                         if (response.code() == 202 || response.code() == 204) {
-                          downloadProductsListener.onAccepted();
+                            downloadProductsListener.onAccepted();
                             continue;
                         } else if (response.code() == 200 & response.body() != null) {
                             List<Item> items = new ArrayList<>(response.body().getDocument().getReceipt().getItems());
@@ -115,7 +116,7 @@ public class FtsHelper {
                             ProductsDAO productsDAO = ProductsDAO.getInstance(mContext);
                             Product product;
                             ProductEntry productEntry;
-                            ProductEntrysDAO productEntrysDAO = ProductEntrysDAO.getInstance(mContext);
+//                            ProductEntrysDAO productEntrysDAO = ProductEntrysDAO.getInstance(mContext);
                             for (Item item : items) {
 //                              product = new Product(-1, item.getName());
                                 if (item.getName() == null) {
@@ -144,14 +145,25 @@ public class FtsHelper {
                                     productEntry.setProductID(product.getID());
                                     productEntries.add(productEntry);
                                 }
-                                downloadProductsListener.onDownload(productEntries, response.body().getDocument().getReceipt().getUser());
                             }
+                            String payee = response.body().getDocument().getReceipt().getUser();
+                            if (payee == null) {
+                                payee = response.body().getDocument().getReceipt().getUserInn();
+                            }
+                            downloadProductsListener.onDownload(productEntries, payee);
                             break;
                         } else {
                             try {
-                                downloadProductsListener.onFailure(response.errorBody().string(), false);
+                                String error;
+                                if(response.errorBody() != null) {
+                                    error = "error: " + response.errorBody().string();
+                                } else {
+                                    error = "response error, code: " + response.code() + ", content: [" + response.body() +"]";
+                                }
+
+                                downloadProductsListener.onFailure(error, false);
                             } catch (IOException e) {
-                                downloadProductsListener.onFailure("", false);
+                                downloadProductsListener.onFailure("system error: " + e.getMessage(), false);
                                 e.printStackTrace();
                             }
                         }

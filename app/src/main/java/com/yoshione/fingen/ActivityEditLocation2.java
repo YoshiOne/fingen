@@ -7,14 +7,15 @@ import android.graphics.Point;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.StringRes;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 
 import com.airbnb.android.airmapview.AirMapMarker;
 import com.airbnb.android.airmapview.AirMapView;
@@ -38,8 +39,6 @@ import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
-
-//import permissions.dispatcher.RuntimePermissions;
 
 /**
  * Created by slv on 07.03.2016.
@@ -234,12 +233,10 @@ public class ActivityEditLocation2 extends ToolbarActivity implements OnCameraCh
 
     @Override
     public void onMapClick(LatLng latLng) {
-        if (latLng != null) {
-            removeUpdates();
-            location.setLat(latLng.latitude);
-            location.setLon(latLng.longitude);
-            addMarker(latLng);
-        }
+        removeUpdates();
+        location.setLat(latLng.latitude);
+        location.setLon(latLng.longitude);
+        addMarker(latLng);
     }
 
     @Override

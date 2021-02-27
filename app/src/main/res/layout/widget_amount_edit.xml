@@ -38,7 +38,7 @@
             android:layout_toEndOf="@+id/imagebutton_amount_sign"
             android:layout_toStartOf="@+id/imageButtonCalc" android:baselineAligned="false">
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayoutAmount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
                     android:inputType="numberDecimal"
                     android:selectAllOnFocus="true"
                     tools:text="100" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 
@@ -70,7 +70,7 @@
             tools:ignore="ContentDescription"/>
     </RelativeLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutCabbage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -82,5 +82,5 @@
             style="@style/NotEditableEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

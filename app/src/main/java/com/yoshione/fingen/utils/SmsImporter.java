@@ -6,10 +6,10 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
-
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
 
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.dao.SmsDAO;

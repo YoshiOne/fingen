@@ -4,10 +4,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v7.preference.PreferenceManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -16,6 +12,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
+import androidx.core.view.MotionEventCompat;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.R;
@@ -189,7 +190,7 @@ public class AdapterTreeModel extends RecyclerView.Adapter implements ItemTouchH
         });
 
         p = (ViewGroup.MarginLayoutParams) vh.textViewModelName.getLayoutParams();
-        if (model.getModelType() == IAbstractModel.MODEL_TYPE_CATEGORY | model.getModelType() == IAbstractModel.MODEL_TYPE_PROJECT) {
+        if (model.getModelType() == IAbstractModel.MODEL_TYPE_CATEGORY | model.getModelType() == IAbstractModel.MODEL_TYPE_PROJECT | model.getModelType() == IAbstractModel.MODEL_TYPE_DEPARTMENT) {
             vh.colorTag.setVisibility(View.VISIBLE);
             GradientDrawable bgShape = (GradientDrawable) vh.colorTag.getBackground();
             bgShape.setColor(model.getColor());

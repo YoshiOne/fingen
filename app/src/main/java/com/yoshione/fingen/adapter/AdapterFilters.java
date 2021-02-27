@@ -10,11 +10,6 @@ import android.app.DatePickerDialog;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.AppCompatCheckBox;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
@@ -29,6 +24,12 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.AppCompatCheckBox;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.FragmentDateFilterEdit;
@@ -61,6 +62,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.yoshione.fingen.filters.DateRangeFilter.getFirstDayOfWeek;
 
 /**
  * Created by Leonid on 05.11.2015.
@@ -698,6 +701,7 @@ public class AdapterFilters extends RecyclerView.Adapter {
                         calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
                 );
                 dateType = id;
+                dpd.getDatePicker().setFirstDayOfWeek(getFirstDayOfWeek(v.getContext()));
 
                 dpd.show();
             }

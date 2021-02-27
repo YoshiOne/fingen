@@ -8,13 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.preference.PreferenceManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -27,6 +20,14 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.yoshione.fingen.adapter.AdapterBudget;
 import com.yoshione.fingen.classes.ListSumsByCabbage;
@@ -632,7 +633,7 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
         }
 
         categories = CreditsDAO.getInstance(getActivity()).getDebtsAsCategoriesWithPlanFact(srcYear, srcMonth, getActivity());
-        BudgetCreditsDAO budgetCreditsDAO = BudgetCreditsDAO.getInstance(getActivity());
+        BudgetCreditsDAO budgetDebtsDAO = BudgetCreditsDAO.getInstance(getActivity());
         long creditId;
         for (Category category : categories) {
             if ((id == -1) ^ (id == category.getID())) {
@@ -642,15 +643,15 @@ public class FragmentBudget extends Fragment implements AdapterBudget.IOnItemCli
                         if (!sumsByCabbage.isEmpty(false)) {
                             if (replace) {
                                 try {
-                                    budgetCreditsDAO.createBudget(mYear, mMonth, creditId,
+                                    budgetDebtsDAO.createBudget(mYear, mMonth, creditId,
                                             sumsByCabbage.getInTrSum().add(sumsByCabbage.getOutTrSum()));
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             } else {
-                                if (!budgetCreditsDAO.budgetExists(mYear, mMonth, creditId)) {
+                                if (!budgetDebtsDAO.budgetExists(mYear, mMonth, creditId)) {
                                     try {
-                                        budgetCreditsDAO.createBudget(mYear, mMonth, creditId,
+                                        budgetDebtsDAO.createBudget(mYear, mMonth, creditId,
                                                 sumsByCabbage.getInTrSum().add(sumsByCabbage.getOutTrSum()));
                                     } catch (Exception e) {
                                         e.printStackTrace();

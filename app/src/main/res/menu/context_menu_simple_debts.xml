@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2015.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_borrow"
+        android:title="@string/act_borrow"
+        android:orderInCategory="100"
+        />
+    <item
+        android:id="@+id/action_repay"
+        android:title="@string/act_repay"
+        android:orderInCategory="100"
+        />
+    <item
+        android:id="@+id/action_grant_a_loan_to"
+        android:title="@string/act_grant_a_loan_to"
+        android:orderInCategory="100"
+        />
+    <item
+        android:id="@+id/action_take_in_payment"
+        android:title="@string/act_take_in_payment"
+        android:orderInCategory="100"
+        />
+</menu>

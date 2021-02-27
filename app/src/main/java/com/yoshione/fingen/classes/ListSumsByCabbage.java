@@ -33,7 +33,7 @@ public class ListSumsByCabbage {
         return result;
     }
 
-    private void appendSumFact(SumsByCabbage input) {
+    public void appendSumFact(SumsByCabbage input) {
         SumsByCabbage sumsByCabbage = getSumsByCabbageId(input.getCabbageId());
         if (sumsByCabbage == null) {
             mList.add(new SumsByCabbage(input.getCabbageId(), input.getInTrSum(), input.getOutTrSum()));

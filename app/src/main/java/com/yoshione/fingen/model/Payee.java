@@ -3,20 +3,14 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.graphics.Color;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.PayeesDAO;
+import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.IOrderable;
 
-/**
- * Created by slv on 14.08.2015.
- * a
- */
 public class Payee extends BaseModel implements IAbstractModel, IOrderable {
 
-    public static final String TAG = "com.yoshione.fingen.Model.Payee";
     private String mName;
     private long mDefCategoryID;
     private long mParentID;
@@ -115,10 +109,10 @@ public class Payee extends BaseModel implements IAbstractModel, IOrderable {
     public ContentValues getCV() {
         ContentValues values = super.getCV();
 
-        values.put(DBHelper.C_REF_PAYEES_NAME, getName());
-        values.put(DBHelper.C_REF_PAYEES_DEFCATEGORY, getDefCategoryID());
-        values.put(DBHelper.C_PARENTID, mParentID);
-        values.put(DBHelper.C_ORDERNUMBER, getOrderNum());
+        values.put(PayeesDAO.COL_NAME, getName());
+        values.put(PayeesDAO.COL_DEF_CATEGORY, getDefCategoryID());
+        values.put(PayeesDAO.COL_PARENT_ID, mParentID);
+        values.put(PayeesDAO.COL_ORDER_NUMBER, getOrderNum());
         return values;
     }
 
@@ -160,6 +154,6 @@ public class Payee extends BaseModel implements IAbstractModel, IOrderable {
 
     @Override
     public String getLogTransactionsField() {
-        return DBHelper.C_LOG_TRANSACTIONS_PAYEE;
+        return TransactionsDAO.COL_PAYEE;
     }
 }

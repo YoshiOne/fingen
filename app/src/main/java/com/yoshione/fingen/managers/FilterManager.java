@@ -2,10 +2,9 @@ package com.yoshione.fingen.managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.filters.AbstractFilter;
 import com.yoshione.fingen.filters.AccountFilter;
 import com.yoshione.fingen.filters.AmountFilter;
@@ -18,11 +17,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-
-/**
- * Created by slv on 14.06.2016.
- * a
- */
 
 public class FilterManager {
 
@@ -39,18 +33,18 @@ public class FilterManager {
     };
 
     public static List<AbstractFilter> loadFiltersFromPreferences(SharedPreferences preferences, Context context) {
-        String filters[] = preferences.getString("filters", "").split(";");
+        String[] filters = preferences.getString("filters", "").split(";");
         List<AbstractFilter> filterList = new ArrayList<>();
         AbstractFilter filter;
-        String parts[];
+        String[] parts;
         try {
             for (String s : filters) {
                 parts = s.split("/");
                 if (parts.length != 5) {
                     continue;
                 }
-                long id = Integer.valueOf(parts[0]);
-                int filterType = Integer.valueOf(parts[1]);
+                long id = Integer.parseInt(parts[0]);
+                int filterType = Integer.parseInt(parts[1]);
                 switch (filterType) {
                     case IAbstractModel.MODEL_TYPE_ACCOUNT:
                         filter = new AccountFilter(id);
@@ -73,8 +67,8 @@ public class FilterManager {
                         continue;
                 }
                 if (filter.loadFromString(parts[4])) {
-                    filter.setEnabled(Boolean.valueOf(parts[2]));
-                    filter.setInverted(Boolean.valueOf(parts[3]));
+                    filter.setEnabled(Boolean.parseBoolean(parts[2]));
+                    filter.setInverted(Boolean.parseBoolean(parts[3]));
                     filterList.add(filter);
                 }
             }
@@ -134,16 +128,16 @@ public class FilterManager {
         HashSet<Long> ids = getAccountIDsFromFilters(filters, allAccountIDS);
 
         if (ids.isEmpty()) {
-            return String.format("(%s = -1 AND %s = -1)", DBHelper.C_LOG_TRANSACTIONS_SRCACCOUNT, DBHelper.C_LOG_TRANSACTIONS_DESTACCOUNT);
+            return String.format("(%s = -1 AND %s = -1)", TransactionsDAO.COL_SRC_ACCOUNT, TransactionsDAO.COL_DEST_ACCOUNT);
         } else {
             String s = TextUtils.join(",", ids);
             if (filtersForList) {
-                return String.format("(%s IN (%s) OR %s IN (%s))", DBHelper.C_LOG_TRANSACTIONS_SRCACCOUNT, s, DBHelper.C_LOG_TRANSACTIONS_DESTACCOUNT, s);
+                return String.format("(%s IN (%s) OR %s IN (%s))", TransactionsDAO.COL_SRC_ACCOUNT, s, TransactionsDAO.COL_DEST_ACCOUNT, s);
             } else {
                 if (src) {
-                    return String.format("%s IN (%s)", DBHelper.C_LOG_TRANSACTIONS_SRCACCOUNT, s);
+                    return String.format("%s IN (%s)", TransactionsDAO.COL_SRC_ACCOUNT, s);
                 } else {
-                    return String.format("%s IN (%s)", DBHelper.C_LOG_TRANSACTIONS_DESTACCOUNT, s);
+                    return String.format("%s IN (%s)", TransactionsDAO.COL_DEST_ACCOUNT, s);
                 }
             }
         }
@@ -168,7 +162,6 @@ public class FilterManager {
         switch (filterType) {
             case IAbstractModel.MODEL_TYPE_PAYEE:
             case IAbstractModel.MODEL_TYPE_SIMPLEDEBT:
-            case IAbstractModel.MODEL_TYPE_DEPARTMENT:
             case IAbstractModel.MODEL_TYPE_LOCATION:
                 if (!posIds.isEmpty()) {
                     posCondition = String.format("%s IN (%s)", field, posIDsString);
@@ -177,6 +170,40 @@ public class FilterManager {
                     negCondition = String.format("%s NOT IN (%s)", field, negIDsString);
                 }
                 break;
+            case IAbstractModel.MODEL_TYPE_DEPARTMENT:
+                if (useForList) {
+                    if (!posIds.isEmpty()) {
+                        posCondition = String.format(
+                                "CASE WHEN" +
+                                        " lt.Split\n" +
+                                        "THEN" +
+                                        " EXISTS(SELECT CASE WHEN DepartmentID < 0 THEN Department ELSE DepartmentID END AS cID FROM log_Products WHERE TransactionID = lt._id AND cID IN(%s) LIMIT 1)\n" +
+                                        "ELSE" +
+                                        " Department IN (%s) " +
+                                        "END",
+                                posIDsString, posIDsString);
+                    }
+                    if (!negIds.isEmpty()) {
+                        negCondition = String.format(
+                                "CASE WHEN" +
+                                        " lt.Split\n" +
+                                        "THEN" +
+                                        " EXISTS(SELECT CASE WHEN DepartmentID < 0 THEN Department ELSE DepartmentID END AS cID FROM log_Products WHERE TransactionID = lt._id AND cID NOT IN (%s) LIMIT 1)\n" +
+                                        "ELSE" +
+                                        " Department NOT IN (%s) " +
+                                        "END",
+                                negIDsString, negIDsString);
+                    }
+                } else {
+                    if (!posIds.isEmpty()) {
+                        posCondition = String.format("Department IN (%s)", posIDsString);
+                    }
+                    if (!negIds.isEmpty()) {
+                        negCondition = String.format("Department NOT IN (%s)", negIDsString);
+                    }
+                }
+
+                break;
             case IAbstractModel.MODEL_TYPE_PROJECT:
                 if (useForList) {
                     if (!posIds.isEmpty()) {
@@ -184,7 +211,7 @@ public class FilterManager {
                                 "CASE WHEN" +
                                         " lt.Split\n" +
                                         "THEN" +
-                                        " EXISTS(SELECT CASE WHEN ProjectID < 0 THEN Project ELSE ProjectID END AS cID FROM log_Products WHERE TransactionID = lt._id AND cID IN(%s) LIMIT 1)\n" +
+                                        " EXISTS(SELECT CASE WHEN ProjectID < 0 THEN Project ELSE ProjectID END AS cID FROM log_Products AS prod WHERE prod.Deleted = 0 AND TransactionID = lt._id AND cID IN(%s) LIMIT 1)\n" +
                                         "ELSE" +
                                         " Project IN (%s) " +
                                         "END",
@@ -195,7 +222,7 @@ public class FilterManager {
                                 "CASE WHEN" +
                                         " lt.Split\n" +
                                         "THEN" +
-                                        " EXISTS(SELECT CASE WHEN ProjectID < 0 THEN Project ELSE ProjectID END AS cID FROM log_Products WHERE TransactionID = lt._id AND cID NOT IN (%s) LIMIT 1)\n" +
+                                        " EXISTS(SELECT CASE WHEN ProjectID < 0 THEN Project ELSE ProjectID END AS cID FROM log_Products AS prod WHERE prod.Deleted = 0 AND TransactionID = lt._id AND cID NOT IN (%s) LIMIT 1)\n" +
                                         "ELSE" +
                                         " Project NOT IN (%s) " +
                                         "END",
@@ -218,7 +245,7 @@ public class FilterManager {
                                 "CASE WHEN" +
                                 " lt.Split\n" +
                                 "THEN" +
-                                " EXISTS(SELECT CASE WHEN CategoryID < 0 THEN Category ELSE CategoryID END AS cID FROM log_Products WHERE TransactionID = lt._id AND cID IN(%s) LIMIT 1)\n" +
+                                " EXISTS(SELECT CASE WHEN CategoryID < 0 THEN Category ELSE CategoryID END AS cID FROM log_Products AS prod WHERE prod.Deleted = 0 AND TransactionID = lt._id AND cID IN(%s) LIMIT 1)\n" +
                                 "ELSE" +
                                 " Category IN (%s) " +
                                 "END",
@@ -229,7 +256,7 @@ public class FilterManager {
                                 "CASE WHEN" +
                                         " lt.Split\n" +
                                         "THEN" +
-                                        " EXISTS(SELECT CASE WHEN CategoryID < 0 THEN Category ELSE CategoryID END AS cID FROM log_Products WHERE TransactionID = lt._id AND cID NOT IN (%s) LIMIT 1)\n" +
+                                        " EXISTS(SELECT CASE WHEN CategoryID < 0 THEN Category ELSE CategoryID END AS cID FROM log_Products AS prod WHERE prod.Deleted = 0 AND TransactionID = lt._id AND cID NOT IN (%s) LIMIT 1)\n" +
                                         "ELSE" +
                                         " Category NOT IN (%s) " +
                                         "END",
@@ -319,8 +346,6 @@ public class FilterManager {
         }
 
         condition = TextUtils.join(" AND ", conditions);
-
-
 
         return condition;
     }

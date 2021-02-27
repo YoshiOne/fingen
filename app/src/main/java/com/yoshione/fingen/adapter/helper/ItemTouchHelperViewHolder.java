@@ -16,11 +16,11 @@
 
 package com.yoshione.fingen.adapter.helper;
 
-import android.support.v7.widget.helper.ItemTouchHelper;
+import androidx.recyclerview.widget.ItemTouchHelper;
 
 /**
  * Interface to notify an item ViewHolder of relevant callbacks from {@link
- * android.support.v7.widget.helper.ItemTouchHelper.Callback}.
+ * ItemTouchHelper.Callback}.
  *
  * @author Paul Burke (ipaulpro)
  */

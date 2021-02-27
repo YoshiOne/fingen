@@ -9,9 +9,9 @@ import java.util.List;
  */
 
 public interface IDownloadProductsListener {
-    public void onDownload(List<ProductEntry> productEntries, String payeeName);
+    void onDownload(List<ProductEntry> productEntries, String payeeName);
 
-    public void onAccepted();
+    void onAccepted();
 
-    public void onFailure(String errorMessage, boolean tryAgain);
+    void onFailure(String errorMessage, boolean tryAgain);
 }

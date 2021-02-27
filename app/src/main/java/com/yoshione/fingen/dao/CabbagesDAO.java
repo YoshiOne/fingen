@@ -1,12 +1,9 @@
 package com.yoshione.fingen.dao;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Pair;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.db.DbUtil;
 import com.yoshione.fingen.interfaces.IDaoInheritor;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.model.Cabbage;
@@ -16,15 +13,32 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by slv on 04.12.2015.
- **
- */
 public class CabbagesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
-    public static final String TAG = "CabbagesDAO";
-    // Database fields
+
+    //<editor-fold desc="ref_Currencies">
+    public static final String TABLE = "ref_Currencies";
+
+    public static final String COL_CODE = "Code"; //трехсимвольный уникальный идентификатор валюты
+    public static final String COL_SYMBOL = "Symbol"; //символы, испульзуемые при выводе суммы (например $, руб.)
+    public static final String COL_DECIMAL_COUNT = "DecimalCount"; //количество знаков после запятой (-1  без ограничений)
+    public static final String COL_ORDER_NUMBER = "OrderNumber";
+
+    public static final String ALL_COLUMNS[] = joinArrays(COMMON_COLUMNS, new String[]{
+            COL_CODE, COL_SYMBOL, COL_NAME, COL_DECIMAL_COUNT, COL_ORDER_NUMBER
+    });
+
+    public static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + " ("
+            + COMMON_FIELDS +       ", "
+            + COL_CODE +            " TEXT NOT NULL, "
+            + COL_SYMBOL +          " TEXT NOT NULL, "
+            + COL_NAME +            " TEXT NOT NULL, "
+            + COL_DECIMAL_COUNT +   " INTEGER NOT NULL, "
+            + COL_ORDER_NUMBER +    " INTEGER, "
+            + "UNIQUE (" + COL_CODE + ", " + COL_SYNC_DELETED + ") ON CONFLICT ABORT);";
+    //</editor-fold>
 
     private static CabbagesDAO sInstance;
+
     public synchronized static CabbagesDAO getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new CabbagesDAO(context);
@@ -33,18 +47,23 @@ public class CabbagesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
     }
 
     private CabbagesDAO(Context context) {
-        super(context, DBHelper.T_REF_CURRENCIES, IAbstractModel.MODEL_TYPE_CABBAGE , DBHelper.T_REF_CURRENCIES_ALL_COLUMNS);
+        super(context, TABLE, ALL_COLUMNS);
         super.setDaoInheritor(this);
     }
 
     @Override
-    public List<?> getAllModels() throws Exception {
+    public IAbstractModel createEmptyModel() {
+        return new Cabbage();
+    }
+
+    @Override
+    public List<?> getAllModels() {
         return getItems(getTableName(), null, null, null,
-                DBHelper.C_ORDERNUMBER + "," + DBHelper.C_REF_CURRENCIES_NAME, null);
+                COL_ORDER_NUMBER + "," + COL_NAME, null);
     }
 
     public HashMap<Long, Cabbage> getCabbagesMap() {
-         HashMap<Long, Cabbage> map = new HashMap<>();
+        HashMap<Long, Cabbage> map = new HashMap<>();
         List<Cabbage> cabbages;
         try {
             cabbages = (List<Cabbage>) getAllModels();
@@ -64,14 +83,12 @@ public class CabbagesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
 
     private Cabbage cursorToCabbage(Cursor cursor) {
         Cabbage cabbage = new Cabbage();
-        cabbage.setID(cursor.getLong(mColumnIndexes.get(DBHelper.C_ID)));
-        cabbage.setCode(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_CURRENCIES_CODE)));
-        cabbage.setSimbol(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_CURRENCIES_SYMBOL)));
-        cabbage.setName(cursor.getString(mColumnIndexes.get(DBHelper.C_REF_CURRENCIES_NAME)));
-        cabbage.setDecimalCount(cursor.getInt(mColumnIndexes.get(DBHelper.C_REF_CURRENCIES_DECIMALCOUNT)));
-        cabbage.setOrderNum(cursor.getInt(mColumnIndexes.get(DBHelper.C_ORDERNUMBER)));
-
-        cabbage = (Cabbage) DBHelper.getSyncDataFromCursor(cabbage, cursor, mColumnIndexes);
+        cabbage.setID(DbUtil.getLong(cursor, COL_ID));
+        cabbage.setCode(DbUtil.getString(cursor, COL_CODE));
+        cabbage.setSimbol(DbUtil.getString(cursor, COL_SYMBOL));
+        cabbage.setName(DbUtil.getString(cursor, COL_NAME));
+        cabbage.setDecimalCount(DbUtil.getInt(cursor, COL_DECIMAL_COUNT));
+        cabbage.setOrderNum(DbUtil.getInt(cursor, COL_ORDER_NUMBER));
 
         return cabbage;
     }
@@ -101,8 +118,9 @@ public class CabbagesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
     @Override
     public void deleteModel(IAbstractModel model, boolean resetTS, Context context) {
         SmsMarkersDAO smsMarkersDAO = SmsMarkersDAO.getInstance(context);
-        smsMarkersDAO.bulkDeleteModel(smsMarkersDAO.getModels(String.format("%s = %s AND %s = %s", DBHelper.C_LOG_SMS_PARSER_PATTERNS_TYPE, String.valueOf(SmsParser.MARKER_TYPE_CABBAGE),
-                DBHelper.C_LOG_SMS_PARSER_PATTERNS_OBJECT, String.valueOf(model.getID()))), resetTS);
+        smsMarkersDAO.bulkDeleteModel(smsMarkersDAO.getModels(String.format("%s = %s AND %s = %s",
+                SmsMarkersDAO.COL_TYPE, String.valueOf(SmsParser.MARKER_TYPE_CABBAGE),
+                SmsMarkersDAO.COL_OBJECT, String.valueOf(model.getID()))), resetTS);
 
         super.deleteModel(model, resetTS, context);
     }

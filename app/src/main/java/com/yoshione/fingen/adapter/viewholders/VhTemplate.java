@@ -1,8 +1,6 @@
 package com.yoshione.fingen.adapter.viewholders;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -12,11 +10,9 @@ import com.yoshione.fingen.dao.AccountsDAO;
 import com.yoshione.fingen.managers.AccountManager;
 import com.yoshione.fingen.model.Account;
 import com.yoshione.fingen.model.Template;
-import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.utils.AmountColorizer;
 import com.yoshione.fingen.utils.CabbageFormatter;
-import com.yoshione.fingen.utils.IconGenerator;
 
 import java.util.List;
 

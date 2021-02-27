@@ -3,20 +3,14 @@ package com.yoshione.fingen.model;
 import android.content.ContentValues;
 import android.os.Parcel;
 
-
-import com.yoshione.fingen.DBHelper;
+import com.yoshione.fingen.dao.TemplatesDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-/**
- * Created by slv on 14.08.2015.
- *
- */
 public class Template extends BaseModel implements IAbstractModel {
-    public static final String TAG = "Template";
-    //    private long mId = -1;
+
     private long mAccountID;
     private long mDestAccountID;
     private long mPayeeID;
@@ -182,29 +176,24 @@ public class Template extends BaseModel implements IAbstractModel {
 
     public boolean isValid() {
         return !mName.isEmpty();
-//        return mAccountID >= 0
-//                & mCategoryID >= 0
-//                & mPayeeID >= 0
-//                & !mName.isEmpty()
-//                & ((mTrType == 0 & mDestAccountID >= 0) | (mTrType != 0 & mDestAccountID < 0));
     }
 
     @Override
     public ContentValues getCV() {
         ContentValues values = super.getCV();
 
-        values.put(DBHelper.C_LOG_TEMPLATES_SRCACCOUNT, getAccountID());
-        values.put(DBHelper.C_LOG_TEMPLATES_PAYEE, getPayeeID());
-        values.put(DBHelper.C_LOG_TEMPLATES_CATEGORY, getCategoryID());
-        values.put(DBHelper.C_LOG_TEMPLATES_AMOUNT, getAmount().setScale(2, RoundingMode.HALF_EVEN).doubleValue());
-        values.put(DBHelper.C_LOG_TEMPLATES_EXCHANGERATE, getExchangeRate().setScale(2, RoundingMode.HALF_EVEN).doubleValue());
-        values.put(DBHelper.C_LOG_TEMPLATES_PROJECT, getProjectID());
-        values.put(DBHelper.C_LOG_TEMPLATES_DEPARTMENT, getDepartmentID());
-        values.put(DBHelper.C_LOG_TEMPLATES_LOCATION, getLocationID());
-        values.put(DBHelper.C_LOG_TEMPLATES_NAME, getName());
-        values.put(DBHelper.C_LOG_TEMPLATES_COMMENT, getComment());
-        values.put(DBHelper.C_LOG_TEMPLATES_DESTACCOUNT, getDestAccountID());
-        values.put(DBHelper.C_LOG_TEMPLATES_TYPE, getTrType());
+        values.put(TemplatesDAO.COL_SRC_ACCOUNT, getAccountID());
+        values.put(TemplatesDAO.COL_PAYEE, getPayeeID());
+        values.put(TemplatesDAO.COL_CATEGORY, getCategoryID());
+        values.put(TemplatesDAO.COL_AMOUNT, getAmount().setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        values.put(TemplatesDAO.COL_EXCHANGE_RATE, getExchangeRate().setScale(2, RoundingMode.HALF_EVEN).doubleValue());
+        values.put(TemplatesDAO.COL_PROJECT, getProjectID());
+        values.put(TemplatesDAO.COL_DEPARTMENT, getDepartmentID());
+        values.put(TemplatesDAO.COL_LOCATION, getLocationID());
+        values.put(TemplatesDAO.COL_NAME, getName());
+        values.put(TemplatesDAO.COL_COMMENT, getComment());
+        values.put(TemplatesDAO.COL_DEST_ACCOUNT, getDestAccountID());
+        values.put(TemplatesDAO.COL_TYPE, getTrType());
         return values;
     }
 

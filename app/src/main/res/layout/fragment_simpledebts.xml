@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sliding_layout_debts"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:umanoDragView="@id/dragView"
+    app:umanoScrollableView="@id/recycler_view_filters"
+    style="@style/StyleSlidingUpPanel">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cardViewSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="0dp"
+            android:background="?listItemBackground"
+            android:elevation="4dp"
+            android:padding="0dp"
+            android:visibility="gone">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:padding="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/imageButtonClearSearchString"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:hint="@string/ent_search">
+
+                <EditText
+                    android:id="@+id/editTextSearch"
+                    style="@style/EditableEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:inputType="textNoSuggestions" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/imageButtonClearSearchString"
+                style="@style/ClearButtonStyle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.yoshione.fingen.widgets.ContextMenuRecyclerView
+            style="@style/FastScrollRecyclerVew"
+            android:id="@+id/recycler_view"
+            android:focusableInTouchMode="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/cardViewSearch"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginStart="0dp"
+            tools:listitem="@layout/list_item_simple_dept"/>
+
+        <TextView
+            android:id="@+id/textViewSelectedCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="left"
+            android:textColor="@color/ColorAccent"
+            android:visibility="gone"
+            tools:text="Selected ..." />
+
+        <ImageView
+            android:id="@+id/imageViewPullMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/pull_me_animated"
+            android:visibility="visible" />
+<!--=============================================================================================-->
+        <View
+            android:id="@+id/fabBGLayout"
+            style="@style/FabMenuBackground" />
+
+        <LinearLayout
+            android:id="@+id/fabSelectAllLayout"
+            style="@style/FabMenuButtonChildLayout"
+            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
+            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
+            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/act_select_all" />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabSelectAll"
+                style="@style/FabMenuButtonChild"
+                app:srcCompat="@drawable/ic_select_all_white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fabUnselectAllLayout"
+            style="@style/FabMenuButtonChildLayout"
+            android:layout_alignTop="@+id/fabMenuButtonRootLayout"
+            android:layout_alignBottom="@+id/fabMenuButtonRootLayout"
+            android:layout_alignEnd="@+id/fabMenuButtonRootLayout">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/act_unselect_all" />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabUnselectAll"
+                style="@style/FabMenuButtonChild"
+                app:srcCompat="@drawable/ic_unselect_all_white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fabMenuButtonRootLayout"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:visibility="visible"
+            style="@style/FabMenuRootButtonLayout">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabMenuButtonRoot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:gravity="center_vertical"
+                app:fabSize="normal"
+                app:srcCompat="@drawable/ic_check_circle_white" />
+        </LinearLayout>
+<!--=============================================================================================-->
+    </RelativeLayout>
+
+    <!-- SLIDING LAYOUT -->
+    <LinearLayout
+        android:id="@+id/dragView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="false">
+
+        <include
+            android:id="@+id/sliding_panel_header"
+            layout="@layout/content_slidingup_panel_header"/>
+
+
+        <LinearLayout
+            android:id="@+id/buttonsBarFilters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="?listItemBackground">
+
+            <Button
+                android:id="@+id/buttonSearch"
+                style="@style/BottomBarButton"
+                android:drawableTop="@drawable/selector_search"
+                android:text="@string/ent_search" />
+
+            <Button
+                android:id="@+id/buttonReports"
+                style="@style/BottomBarButton"
+                android:drawableTop="@drawable/selector_reports"
+                android:text="@string/ent_reports" />
+
+            <Button
+                android:id="@+id/buttonAddFilter"
+                style="@style/BottomBarButton"
+                android:drawableTop="@drawable/selector_filter"
+                android:text="@string/ent_filters" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_all_filters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentStart="false"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="false"
+                android:layout_centerVertical="true"
+                android:checked="false"/>
+        </RelativeLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.yoshione.fingen.widgets.ContextMenuRecyclerView
+                style="@style/FastScrollRecyclerVew"
+                android:id="@+id/recycler_view_filters"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/buttonClearfilters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="0dp"
+            android:textSize="@dimen/text_size_big"
+            android:fontFamily="sans-serif-medium"
+            android:textStyle="normal"
+            android:textColor="@color/blue_color"
+            android:text="@string/act_clear_filters"
+            android:layout_gravity="center_vertical"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

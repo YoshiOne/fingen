@@ -3,10 +3,6 @@ package com.yoshione.fingen.adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,17 +10,24 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.FragmentProductEntryEdit;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.dao.AccountsDAO;
 import com.yoshione.fingen.dao.CabbagesDAO;
 import com.yoshione.fingen.dao.CategoriesDAO;
+import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.dao.ProductsDAO;
 import com.yoshione.fingen.dao.ProjectsDAO;
 import com.yoshione.fingen.model.Account;
 import com.yoshione.fingen.model.Cabbage;
 import com.yoshione.fingen.model.Category;
+import com.yoshione.fingen.model.Department;
 import com.yoshione.fingen.model.ProductEntry;
 import com.yoshione.fingen.model.Project;
 import com.yoshione.fingen.model.Transaction;
@@ -167,7 +170,7 @@ public class AdapterProducts extends RecyclerView.Adapter {
                 productEntry = transaction.getProductEntries().get(position);
                 mTextViewProductName.setText(ProductsDAO.getInstance(activity).getProductByID(productEntry.getProductID()).getName());
             } else {
-                productEntry = new ProductEntry(-1, 0, BigDecimal.ONE, transaction.getResidue(), -1, -1, transaction.getID());
+                productEntry = new ProductEntry(-1, 0, BigDecimal.ONE, transaction.getResidue(), -1, -1,-1, transaction.getID());
                 mTextViewProductName.setText(activity.getString(R.string.ttl_split_unknown));
             }
 
@@ -192,6 +195,8 @@ public class AdapterProducts extends RecyclerView.Adapter {
             Category category = CategoriesDAO.getInstance(activity).getCategoryByID(categoryID);
             long projectID = productEntry.getProjectID() < 0 ? transaction.getProjectID() : productEntry.getProjectID();
             Project project = ProjectsDAO.getInstance(activity).getProjectByID(projectID);
+            long departmentID = productEntry.getDepartmentID() < 0 ? transaction.getDepartmentID() : productEntry.getDepartmentID();
+            Department department = DepartmentsDAO.getInstance(activity).getDepartmentByID(departmentID);
             mTagView.setAlignEnd(true);
             mTagView.getTags().clear();
             mTagView.setTextPaddingTop(1);
@@ -199,22 +204,28 @@ public class AdapterProducts extends RecyclerView.Adapter {
             mTagView.setTextPaddingRight(3);
             mTagView.setTextPaddingLeft(3);
             mTagView.setLineMargin(0f);
-            mTagView.setVisibility(category.getID() >= 0 | project.getID() >= 0 ? View.VISIBLE : View.GONE);
+            mTagView.setVisibility(category.getID() >= 0 | project.getID() >= 0 | department.getID() >= 0? View.VISIBLE : View.GONE);
             Tag tag;
             int categoryColor;
             int projectColor;
+            int departmentColor;
             if (isTagsColored) {
                 categoryColor = category.getColor();
                 projectColor = project.getColor();
+                departmentColor = department.getColor();
             }else {
                 categoryColor = mColorTag;
                 projectColor = mColorTag;
+                departmentColor = mColorTag;
             }
             if (category.getID() >= 0) {
                 mTagView.addTag(getTag(category.getFullName(), categoryColor, 100f, tagTextSize));
             }
             if (project.getID() >= 0) {
                 mTagView.addTag(getTag(project.getFullName(), projectColor, 5f, tagTextSize));
+            }
+            if (department.getID() >= 0) {
+                mTagView.addTag(getTag(department.getFullName(), departmentColor, 5f, tagTextSize));
             }
             if (mTagView.getVisibility() == View.GONE) {
                 tag = new Tag(new SpannableString("T"));

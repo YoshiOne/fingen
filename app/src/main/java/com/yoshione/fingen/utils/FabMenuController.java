@@ -3,8 +3,9 @@ package com.yoshione.fingen.utils;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.support.design.widget.FloatingActionButton;
 import android.view.View;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,58 +16,52 @@ public class FabMenuController {
 
     private FloatingActionButton mRoot;
     private List<View> mChildren;
+    private List<Integer> mVisibility;
     private ValueAnimator mAnimator;
     private View mFabBGLayout;
     private Activity mActivity;
     private boolean isFABOpen = false;
 
-    public FabMenuController(FloatingActionButton root, View fabBGLayout, Activity activity, View... chidren) {
+    public FabMenuController(FloatingActionButton root, View fabBGLayout, Activity activity, View... children) {
         mRoot = root;
         mFabBGLayout = fabBGLayout;
         mActivity = activity;
 
-        mChildren = new ArrayList<>(Arrays.asList(chidren));
+        mChildren = new ArrayList<>(Arrays.asList(children));
+        mVisibility = new ArrayList<>(mChildren.size());
+        for (int i = 0; i < mChildren.size(); i++) {
+            mVisibility.add(i, View.VISIBLE);
+        }
 
         mAnimator = ValueAnimator.ofFloat(0f, 0.90f);
-        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                mFabBGLayout.setAlpha((Float) valueAnimator.getAnimatedValue());
-            }
-        });
+        mAnimator.addUpdateListener(valueAnimator -> mFabBGLayout.setAlpha((Float) valueAnimator.getAnimatedValue()));
         mAnimator.setDuration(ANIM_DURATION);
         mAnimator.setRepeatMode(ValueAnimator.REVERSE);
         mAnimator.setRepeatCount(0);
 
-        fabBGLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        fabBGLayout.setOnClickListener(view -> closeFABMenu());
+        mRoot.setOnClickListener(view -> {
+            if(!isFABOpen){
+                showFABMenu();
+            }else{
                 closeFABMenu();
-            }
-        });
-        mRoot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!isFABOpen){
-                    showFABMenu();
-                }else{
-                    closeFABMenu();
-                }
             }
         });
     }
 
     public void showFABMenu() {
         isFABOpen = true;
-        for (View v : mChildren) {
-            v.setVisibility(View.VISIBLE);
+        for (int i = 0; i < mChildren.size(); i++) {
+            mChildren.get(i).setVisibility(mVisibility.get(i));
         }
 
         mRoot.animate().setDuration(ANIM_DURATION).rotationBy(-180);
         int offset = 75;
         int step = 55;
-        for (int i = 0; i < mChildren.size(); i++) {
-            mChildren.get(i).animate().setDuration(ANIM_DURATION).translationY(-ScreenUtils.dpToPx(offset + step * i, mActivity));
+        for (int i = 0, k = 0; i < mChildren.size(); i++) {
+            View v = mChildren.get(i);
+            if (v.getVisibility() == View.VISIBLE)
+                mChildren.get(i).animate().setDuration(ANIM_DURATION).translationY(-ScreenUtils.dpToPx(offset + step * k++, mActivity));
         }
 
         mFabBGLayout.setAlpha(0);
@@ -118,4 +113,10 @@ public class FabMenuController {
     public boolean isFABOpen() {
         return isFABOpen;
     }
+
+    public void setViewVisibility(View view, int visibility) {
+        if (mChildren.contains(view))
+            mVisibility.set(mChildren.indexOf(view), visibility);
+    }
+
 }

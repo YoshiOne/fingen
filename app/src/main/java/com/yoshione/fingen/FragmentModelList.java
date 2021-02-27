@@ -4,17 +4,12 @@
 
 package com.yoshione.fingen;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -23,6 +18,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yoshione.fingen.adapter.AdapterAbstractModel;
 import com.yoshione.fingen.dao.AbstractDAO;
 import com.yoshione.fingen.dao.BaseDAO;
@@ -48,6 +51,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -91,6 +96,8 @@ public class FragmentModelList extends Fragment {
     private AdapterAbstractModel adapter;
     Unbinder unbinder;
     FabMenuController mFabMenuController;
+    @Inject
+    SharedPreferences mPreferences;
 
     void setmFilter(String mFilter) {
         this.mFilter = mFilter;
@@ -322,18 +329,20 @@ public class FragmentModelList extends Fragment {
 
     @SuppressWarnings("unchecked")
     private void loadData() throws Exception {
+        Context context = FGApplication.getContext();
+
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         AbstractDAO abstractDAO = BaseDAO.getDAO(mInputModel.getModelType(), getActivity());
+        boolean showClosed = mPreferences.getBoolean(FgConst.PREF_SHOW_CLOSED_DEBTS, true);
         if (abstractDAO != null) {
             List<IAbstractModel> models = (List<IAbstractModel>) abstractDAO.getAllModels();
             if (mInputModel.getModelType() == IAbstractModel.MODEL_TYPE_SIMPLEDEBT) {
                 long cabbageID = getActivity().getIntent().getLongExtra("cabbageID", -1);
-                if (cabbageID >= 0) {
-                    SimpleDebt debt;
-                    for (int i = models.size() - 1; i >= 0; i--) {
-                        debt = (SimpleDebt) models.get(i);
-                        if (debt.getCabbageID() != cabbageID || !debt.isActive()) {
-                            models.remove(i);
-                        }
+                SimpleDebt debt;
+                for (int i = models.size() - 1; i >= 0; i--) {
+                    debt = (SimpleDebt) models.get(i);
+                    if ((cabbageID >= 0 && debt.getCabbageID() != cabbageID) || (!debt.isActive() && !showClosed)) {
+                        models.remove(i);
                     }
                 }
             }

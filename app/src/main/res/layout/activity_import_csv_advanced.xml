@@ -34,7 +34,7 @@
 
     </LinearLayout>
 
-    <android.support.v7.widget.SwitchCompat
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switchCompatSkipDuplicates"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/activity_margin">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutLines"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
                 style="@style/NotEditableEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ImageButton
             android:layout_width="@dimen/icon_size_large"
@@ -100,7 +100,7 @@
             android:padding="8dp"
             android:gravity="center_vertical|center_horizontal"/>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

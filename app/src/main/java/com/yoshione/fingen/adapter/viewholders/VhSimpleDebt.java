@@ -24,6 +24,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import eu.davidea.flipview.FlipView;
 
 /**
  * Created by slv on 03.03.2016.
@@ -31,8 +32,8 @@ import butterknife.ButterKnife;
  */
 public class VhSimpleDebt extends VhModelBase {
     private final Context mContext;
-    @BindView(R.id.imageViewIcon)
-    ImageView mImageViewIcon;
+    @BindView(R.id.flipViewIcon)
+    FlipView mImageViewIcon;
     @BindView(R.id.textViewName)
     TextView mTextViewName;
     @BindView(R.id.textViewOweMe)
@@ -53,13 +54,15 @@ public class VhSimpleDebt extends VhModelBase {
     FrameLayout mSpaceBottomFinal;
     private TransactionsDAO mTransactionsDAO;
     private AmountColorizer mAmountColorizer;
+    private IOnItemSelectedClickListener mOnItemSelectedClickListener;
 
-    public VhSimpleDebt(View itemView, IOnItemClickListener onItemClickListener, Context context) {
-        super(itemView, onItemClickListener, context);
+    public VhSimpleDebt(View itemView, IOnItemClickListener onItemSelectedClickListener, Context context) {
+        super(itemView, onItemSelectedClickListener, context);
         ButterKnife.bind(this, itemView);
         mContext = context;
         mTransactionsDAO = TransactionsDAO.getInstance(context);
         mAmountColorizer = new AmountColorizer(context);
+        mOnItemSelectedClickListener = (onItemSelectedClickListener instanceof IOnItemSelectedClickListener) ? (IOnItemSelectedClickListener) onItemSelectedClickListener : null;
     }
 
     @Override
@@ -94,24 +97,38 @@ public class VhSimpleDebt extends VhModelBase {
         switch (sum.compareTo(BigDecimal.ZERO)) {
             case -1:
                 s.setSpan(new ForegroundColorSpan(mAmountColorizer.getColorNegative()), 0, s.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                mImageViewIcon.setImageDrawable(mAmountColorizer.getIconExpense());
+                mImageViewIcon.getFrontImageView().setImageDrawable(mAmountColorizer.getIconExpense());
                 mTextViewTotalTitle.setText(mContext.getString(R.string.ttl_total_I_owe));
                 break;
             case 1:
                 s.setSpan(new ForegroundColorSpan(mAmountColorizer.getColorPositive()), 0, s.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                mImageViewIcon.setImageDrawable(mAmountColorizer.getIconIncome());
+                mImageViewIcon.getFrontImageView().setImageDrawable(mAmountColorizer.getIconIncome());
                 mTextViewTotalTitle.setText(mContext.getString(R.string.ttl_total_owe_me));
                 break;
             case 0:
                 s.setSpan(new ForegroundColorSpan(mAmountColorizer.getColorInactive()), 0, s.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                mImageViewIcon.setImageDrawable(mAmountColorizer.getIconZero());
+                mImageViewIcon.getFrontImageView().setImageDrawable(mAmountColorizer.getIconZero());
                 mTextViewTotalTitle.setText(mContext.getString(R.string.ttl_total_owe_me));
                 break;
         }
 
         if (!simpleDebt.isActive()) {
-            mImageViewIcon.setImageDrawable(mAmountColorizer.getIconClosed());
+            mImageViewIcon.getFrontImageView().setImageDrawable(mAmountColorizer.getIconClosed());
         }
+
+        mImageViewIcon.getFrontImageView().setScaleType(ImageView.ScaleType.CENTER);
+        mImageViewIcon.getRearImageView().setImageResource(R.drawable.ic_check_circle_blue);
+        mImageViewIcon.getRearImageView().setScaleType(ImageView.ScaleType.CENTER);
+        mImageViewIcon.flipSilently(simpleDebt.isSelected());
+        mImageViewIcon.setEnabled(mOnItemSelectedClickListener != null);
+
+        mImageViewIcon.setOnClickListener(view -> {
+            simpleDebt.setSelected(!simpleDebt.isSelected());
+            mImageViewIcon.flip(simpleDebt.isSelected());
+            if (mOnItemSelectedClickListener != null) {
+                mOnItemSelectedClickListener.OnItemSelected();
+            }
+        });
 
         if (text.length() > 0) {
             text = new SpannableString(TextUtils.concat(text, "\n"));
@@ -126,5 +143,9 @@ public class VhSimpleDebt extends VhModelBase {
             mSpaceBottom.setVisibility(View.VISIBLE);
             mSpaceBottomFinal.setVisibility(View.GONE);
         }
+    }
+
+    public interface IOnItemSelectedClickListener extends IOnItemClickListener {
+        void OnItemSelected();
     }
 }
