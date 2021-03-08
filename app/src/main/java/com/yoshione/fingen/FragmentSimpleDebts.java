@@ -70,6 +70,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_OK;
+import static org.apache.commons.lang3.BooleanUtils.and;
 
 public class FragmentSimpleDebts extends BaseListFragment
         implements
@@ -312,11 +313,32 @@ public class FragmentSimpleDebts extends BaseListFragment
 
         ListSumsByCabbage listSumsByCabbage = new ListSumsByCabbage();
         for (SimpleDebt dept : adapterD.getSelectedDebts()) {
-            boolean startAmountIsPositive = dept.getStartAmount().abs().equals(dept.getStartAmount());
-            SumsByCabbage sumsByCabbage = new SumsByCabbage(dept.getCabbageID(),
-                    dept.getOweMe().add(startAmountIsPositive ? dept.getStartAmount() : BigDecimal.ZERO),
-                    BigDecimal.ZERO.subtract(dept.getAmount()).add(!startAmountIsPositive ? dept.getStartAmount() : BigDecimal.ZERO));
-            listSumsByCabbage.appendSumFact(sumsByCabbage);
+            if (dept.getStartAmount().abs().equals(dept.getStartAmount()) & !dept.getStartAmount().equals(BigDecimal.ZERO)) {
+                BigDecimal totalAmount = dept.getStartAmount().add(BigDecimal.ZERO.subtract(dept.getIOwe().abs()).add(dept.getOweMe().abs()));
+                boolean totalAmountIsPositive = totalAmount.abs().equals(totalAmount);
+                SumsByCabbage sumsByCabbage = new
+                        SumsByCabbage(dept.getCabbageID(),
+                        (totalAmountIsPositive ? totalAmount : BigDecimal.ZERO),
+                        (!totalAmountIsPositive ? totalAmount : BigDecimal.ZERO));
+                        listSumsByCabbage.appendSumFact(sumsByCabbage);
+            } else
+                if (!dept.getStartAmount().abs().equals(dept.getStartAmount()) & !dept.getStartAmount().equals(BigDecimal.ZERO)) {
+                BigDecimal totalAmount = BigDecimal.ZERO.subtract(dept.getStartAmount().abs().add(dept.getOweMe().add(dept.getIOwe())));
+                boolean totalAmountIsPositive = (totalAmount).abs().equals(totalAmount);
+                SumsByCabbage sumsByCabbage = new
+                        SumsByCabbage(dept.getCabbageID(),
+                        (totalAmountIsPositive ? totalAmount : BigDecimal.ZERO),
+                        (!totalAmountIsPositive ? totalAmount : BigDecimal.ZERO));
+                        listSumsByCabbage.appendSumFact(sumsByCabbage);
+                } else {
+                    BigDecimal totalAmount = BigDecimal.ZERO.subtract(dept.getStartAmount().abs().add(dept.getOweMe().add(dept.getIOwe())));
+                    boolean totalAmountIsPositive = (totalAmount).abs().equals(totalAmount);
+                    SumsByCabbage sumsByCabbage = new
+                            SumsByCabbage(dept.getCabbageID(),
+                            (totalAmountIsPositive ? totalAmount : BigDecimal.ZERO),
+                            (!totalAmountIsPositive ? totalAmount : BigDecimal.ZERO));
+                    listSumsByCabbage.appendSumFact(sumsByCabbage);
+                }
         }
         updateSums(listSumsByCabbage);
     }
@@ -394,19 +416,19 @@ public class FragmentSimpleDebts extends BaseListFragment
     }
 
     private void showSearchView() {
-        Toast.makeText(getActivity(), "Not implemented yet", Toast.LENGTH_LONG).show();
-//        mCardViewSearch.setVisibility(View.VISIBLE);
-//        mSlidingLayoutDebts.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-//        mEditTextSearch.requestFocus();
-//        if (getActivity() != null) {
-//            final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//            mEditTextSearch.postDelayed(
-//                    () -> {
-//                        if (imm != null) {
-//                            imm.showSoftInput(mEditTextSearch, 0);
-//                        }
-//                    }, 300);
-//        }
+//        Toast.makeText(getActivity(), "Not", Toast.LENGTH_LONG).show();
+        mCardViewSearch.setVisibility(View.VISIBLE);
+        mSlidingLayoutDebts.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        mEditTextSearch.requestFocus();
+        if (getActivity() != null) {
+            final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            mEditTextSearch.postDelayed(
+                    () -> {
+                        if (imm != null) {
+                            imm.showSoftInput(mEditTextSearch, 0);
+                        }
+                    }, 300);
+        }
     }
 
     void hideSearchView() {
