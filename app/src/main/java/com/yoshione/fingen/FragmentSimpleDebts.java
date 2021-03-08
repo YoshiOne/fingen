@@ -70,7 +70,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_OK;
-import static org.apache.commons.lang3.BooleanUtils.and;
 
 public class FragmentSimpleDebts extends BaseListFragment
         implements
@@ -416,7 +415,6 @@ public class FragmentSimpleDebts extends BaseListFragment
     }
 
     private void showSearchView() {
-//        Toast.makeText(getActivity(), "Not", Toast.LENGTH_LONG).show();
         mCardViewSearch.setVisibility(View.VISIBLE);
         mSlidingLayoutDebts.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         mEditTextSearch.requestFocus();
