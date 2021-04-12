@@ -344,6 +344,8 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             });
 
             setupBottomBar();
+        } else if (getActivity() instanceof ActivityTransactions) {
+            setupBottomBar();
         } else {
             mButtonsBarContainer.setVisibility(View.GONE);
         }
@@ -1210,6 +1212,12 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 getActivity().startActivityForResult(intent, RequestCodes.REQUEST_CODE_SCAN_QR);
             } else {
                 Transaction transaction = new Transaction(PrefUtils.getDefDepID(getActivity()));
+                if (getActivity() instanceof ActivityTransactions
+                        && adapterF.getFilterList().size() > 0
+                        && adapterF.getFilterList().get(0).getClass().equals(AccountFilter.class)
+                        && adapterF.getFilterList().get(0).getIDsSet().size() > 0) {
+                    transaction.setAccountID(Long.parseLong(adapterF.getFilterList().get(0).getIDsSet().toArray()[0].toString()));
+                }
                 Intent intent = new Intent(getActivity(), ActivityEditTransaction.class);
                 switch (v.getId()) {
                     case R.id.buttonNewIncome:
