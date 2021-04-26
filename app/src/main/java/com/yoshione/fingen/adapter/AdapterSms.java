@@ -28,17 +28,17 @@ import butterknife.ButterKnife;
  */
 public class AdapterSms extends RecyclerView.Adapter {
 
-//    public List<Sms> getSmsList() {
-//        return smsList;
-//    }
+    private List<Sms> smsList;
+    private final Context context;
+    private SmsEventsListener smsEventsListener;
+
+    public List<Sms> getSmsList() {
+        return smsList;
+    }
 
     public void setSmsList(List<Sms> smsList) {
         this.smsList = smsList;
     }
-
-    private List<Sms> smsList;
-    private final Context context;
-    private SmsEventsListener smsEventsListener;
 
     public void setSmsEventsListener(SmsEventsListener smsEventsListener) {
         this.smsEventsListener = smsEventsListener;
@@ -49,7 +49,6 @@ public class AdapterSms extends RecyclerView.Adapter {
         return smsList.get(position).getID();
     }
 
-    //Конструктор
     public AdapterSms(List<Sms> sms, Context context) {
         this.context = context;
         smsList = sms;
@@ -96,17 +95,13 @@ public class AdapterSms extends RecyclerView.Adapter {
         @BindView(R.id.date)TextView textViewDate;
         @BindView(R.id.body)TextView textViewBody;
 
-
         SmsViewHolder(View v) {
             super(v);
-            ButterKnife.bind(this,v);
+            ButterKnife.bind(this, v);
 
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v1) {
-                    if (smsEventsListener != null) {
-                        smsEventsListener.OnSmsClick(v1);
-                    }
+            v.setOnClickListener(v1 -> {
+                if (smsEventsListener != null) {
+                    smsEventsListener.OnSmsClick(v1);
                 }
             });
         }

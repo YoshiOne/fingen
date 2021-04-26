@@ -235,6 +235,10 @@
 
     <!-- 1. General -->
     <!-- Actions -->
+    <string name="act_check_and_save" formatted="false">Check &amp; Save</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
     <string name="act_ask_question" formatted="false">Ask a question</string>
 
     <!-- 1. General -->
@@ -248,6 +252,10 @@
     <!-- 1. General -->
     <!-- Actions -->
     <string name="act_new_transfer" formatted="false">New transfer</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_do_not_remind" formatted="false">Don\'t remind</string>
 
     <!-- 1. General -->
     <!-- Titles -->
@@ -343,6 +351,10 @@
 
     <!-- 2. Accounts -->
     <!-- Entities -->
+    <string name="ent_account_isincludeintototals" formatted="false">Include into totals</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
     <string name="ent_new_account" formatted="false">New account</string>
 
     <!-- 2. Accounts -->
@@ -352,6 +364,10 @@
     <!-- 2. Accounts -->
     <!-- Entities -->
     <string name="ent_all_accounts" formatted="false">All accounts</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_all_closed_accounts" formatted="false">All closed accounts</string>
 
     <!-- 2. Accounts -->
     <!-- Entities -->
@@ -1459,6 +1475,10 @@
 
     <!-- 19. About -->
     <!-- Titles -->
+    <string name="ttl_changelog_new" formatted="false">New changes</string>
+
+    <!-- 19. About -->
+    <!-- Titles -->
     <string name="ttl_third_party_license" formatted="false">Open source licenses</string>
 
     <!-- 19. About -->
@@ -1500,6 +1520,15 @@
     <!-- 20. Settings -->
     <!-- General -->
     <string name="pref_title_theme" formatted="false">Theme</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_font_scale" formatted="false">Font size</string>
+
+    <string name="pref_font_scale_0" formatted="false">Small</string>
+    <string name="pref_font_scale_1" formatted="false">Normal</string>
+    <string name="pref_font_scale_2" formatted="false">Large</string>
+    <string name="pref_font_scale_3" formatted="false">Huge</string>
 
     <!-- 20. Settings -->
     <!-- General -->
@@ -1548,6 +1577,10 @@
     <!-- 20. Settings -->
     <!-- Account list -->
     <string name="pref_title_accounts_list_show_closed" formatted="false">Show closed accounts</string>
+
+    <!-- 20. Settings -->
+    <!-- Account list -->
+    <string name="pref_title_show_closed_account_transactions" formatted="false">Show closed account transactions</string>
 
     <!-- 20. Settings -->
     <!-- Account list -->
@@ -1990,6 +2023,22 @@
     <string name="ttl_attach_receipt_to" formatted="false">Attach receipt to transaction:</string>
 
     <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_flashlight">Flashlight</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_manualFocus">ManualFocus</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_autoFocus">AutoFocus</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_open_gallery">Open gallery</string>
+
+    <!-- 26. ScanQR -->
     <!-- Messages -->
     <string name="msg_camera_permission_was_granted" formatted="false">Camera permission was granted</string>
 
@@ -2063,6 +2112,26 @@
 
     <!-- 27. Products -->
     <!-- Entities -->
+    <string name="ent_fts_name" formatted="false">Your name</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ent_fts_email" formatted="false">Your e-mail address</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ttl_create_account" formatted="false">Create account</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ttl_recovery_code" formatted="false">Recovery code</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ttl_exit_account" formatted="false">Exit from account</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
     <string name="ent_unknown_product" formatted="false">Unknown product</string>
 
     <!-- 27. Products -->
@@ -2080,6 +2149,26 @@
     <!-- 27. Products -->
     <!-- Titles -->
     <string name="ttl_loading_products" formatted="false">Loading products...</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_check_correct" formatted="false">The check is correct. Add it to FNS account...</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_add_accept_attempt" formatted="false">The check added. Loading products... Attempt %d</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_user_incorrect" formatted="false">The specified user was not found or the specified code was not correct! Authentication settings reset.</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_checking_data" formatted="false">Checking input data...</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_auth_success" formatted="false">Auth success</string>
 
     <!-- 27. Products -->
     <!-- Titles -->
@@ -2103,19 +2192,19 @@
 
     <!-- 27. Products -->
     <!-- Titles -->
-    <string name="ttl_not_now" formatted="false">Not now</string>
-
-    <!-- 27. Products -->
-    <!-- Titles -->
-    <string name="ttl_do_not_show_again" formatted="false">Do not show again</string>
-
-    <!-- 27. Products -->
-    <!-- Titles -->
-    <string name="ttl_you_can_edit_later" formatted="false">You can edit credentials later in Preferences</string>
+    <string name="ttl_back" formatted="false">Back</string>
 
     <!-- 27. Products -->
     <!-- Titles -->
     <string name="ttl_move_residue" formatted="false">Add %s to transaction sum</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_fts_enabled" formatted="false">Enabled FTS request</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_fts_info" formatted="false">To receive the code, you need to launch the \"Check Checker\" application, go to the \"Profile\" tab, click on the \"Login\" button, select the \"Phone Number\" item, enter your phone number and click on the \"Send Code\" button, the code will be sent in SMS, you do not need to enter it in there application. You cannot use the \"Check Checker\" application at the same time!</string>
 
     <!-- 27. Products -->
     <!-- Messages -->
@@ -2128,10 +2217,6 @@
     <!-- 27. Products -->
     <!-- Errors -->
     <string name="err_set_product" formatted="false">I must specify product</string>
-
-    <!-- 27. Products -->
-    <!-- Messages -->
-    <string name="msg_fts_login_html" formatted="false"><![CDATA[<p>To download list of products from receipts:</p><p>&nbsp;&nbsp;&nbsp; 1. Install the application "<strong>Проверка касcового чека</strong>" (author of <strong>АО ГНИВЦ</strong>).</p><p>&nbsp;&nbsp;&nbsp; 2. Register in it using your mobile phone number and get the code by SMS.</p><p>&nbsp;&nbsp;&nbsp; 3. Enter the phone number and code in the form below.</p><p>&nbsp;&nbsp;&nbsp; 4. Tap "<strong>Save</strong>".</p>]]></string>
 
     <!-- 28. EditorConstructor -->
     <!-- Entities -->

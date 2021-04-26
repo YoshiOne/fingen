@@ -12,7 +12,7 @@ import com.yoshione.fingen.utils.SmsParser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SmsMarkersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class SmsMarkersDAO extends BaseDAO<SmsMarker> implements IDaoInheritor {
 
     //<editor-fold desc="ref_Sms_Parser_Patterns">
     public static final String TABLE = "ref_Sms_Parser_Patterns";
@@ -73,19 +73,12 @@ public class SmsMarkersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
         return s.replaceAll("(?=[]\\[+&$|!(){}^\"~*?:\\\\-])", "\\\\");
     }
 
-    @SuppressWarnings("unchecked")
-    public List<SmsMarker> getAllSmsParserPatterns() {
-        return (List<SmsMarker>) getItems(getTableName(), null,
-                null, null, COL_TYPE, null);
-    }
-
-    @SuppressWarnings("unchecked")
     public List<String> getAllObjectsByType(int type) {
         List<String> result = new ArrayList<>();
 
         List<SmsMarker> markers;
         try {
-            markers = (List<SmsMarker>) getItems(getTableName(), null,
+            markers = getItems(getTableName(), null,
                     COL_TYPE + " = " + type,
                     COL_OBJECT,
                     null, null);
@@ -99,13 +92,12 @@ public class SmsMarkersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getAllMarkersByObject(int type, String object) {
         List<String> result = new ArrayList<>();
 
         List<SmsMarker> markers;
         try {
-            markers = (List<SmsMarker>) getItems(getTableName(), null,
+            markers = getItems(getTableName(), null,
                     String.format("(%s = %s) AND (%s = '%s')",
                             COL_TYPE, String.valueOf(type),
                             COL_OBJECT, object),
@@ -121,13 +113,12 @@ public class SmsMarkersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getAllPatternsByType(int type) {
         List<String> result = new ArrayList<>();
 
         List<SmsMarker> markers;
         try {
-            markers = (List<SmsMarker>) getItems(getTableName(), null,
+            markers = getItems(getTableName(), null,
                     COL_TYPE + " = " + type,
                     null,
                     null, null);
@@ -142,7 +133,9 @@ public class SmsMarkersDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
     }
 
     @Override
-    public List<?> getAllModels() {
-        return getAllSmsParserPatterns();
+    public List<SmsMarker> getAllModels() {
+        return getItems(getTableName(), null,
+                null, null, COL_TYPE, null);
+
     }
 }

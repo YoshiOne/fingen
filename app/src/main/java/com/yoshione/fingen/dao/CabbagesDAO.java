@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class CabbagesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class CabbagesDAO extends BaseDAO<Cabbage> implements IDaoInheritor {
 
     //<editor-fold desc="ref_Currencies">
     public static final String TABLE = "ref_Currencies";
@@ -57,7 +57,7 @@ public class CabbagesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
     }
 
     @Override
-    public List<?> getAllModels() {
+    public List<Cabbage> getAllModels() {
         return getItems(getTableName(), null, null, null,
                 COL_ORDER_NUMBER + "," + COL_NAME, null);
     }

@@ -63,6 +63,8 @@ public class ActivityEditAccount extends ToolbarActivity {
     AmountEditor amountEditorStartBalance;
     @BindView(R.id.checkboxAccountClosed)
     AppCompatCheckBox checkboxAccountClosed;
+    @BindView(R.id.checkboxIncludeIntoTotals)
+    AppCompatCheckBox checkboxIncludeIntoTotals;
     @BindView(R.id.amountEditorCreditLimit)
     AmountEditor amountEditorCreditLimit;
     @BindView(R.id.textInputLayoutEmitent)
@@ -256,6 +258,9 @@ public class ActivityEditAccount extends ToolbarActivity {
             }
         });
 
+        checkboxIncludeIntoTotals.setChecked(account.getIsIncludeIntoTotals());
+        checkboxIncludeIntoTotals.setOnCheckedChangeListener((buttonView, isChecked) -> account.setIsIncludeIntoTotals(isChecked));
+
         final String accTypes[] = getResources().getStringArray(R.array.account_types);
         editTextType.setText(accTypes[account.getAccountType().ordinal()]);
         editTextType.setOnClickListener(new View.OnClickListener() {
@@ -300,18 +305,13 @@ public class ActivityEditAccount extends ToolbarActivity {
         amountEditorStartBalance.setScale(cabbage.getDecimalCount());
         amountEditorCreditLimit.setScale(cabbage.getDecimalCount());
 
-        if (account.getCabbageId() < 0) {
-            editTextCabbage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(ActivityEditAccount.this.getApplicationContext(), ActivityList.class);
-                    intent.putExtra("showHomeButton", false);
-                    intent.putExtra("model", new Cabbage());
-                    intent.putExtra("requestCode", RequestCodes.REQUEST_CODE_SELECT_MODEL);
-                    ActivityEditAccount.this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_SELECT_MODEL);
-                }
-            });
-        }
+        editTextCabbage.setOnClickListener(v -> {
+            Intent intent = new Intent(ActivityEditAccount.this.getApplicationContext(), ActivityList.class);
+            intent.putExtra("showHomeButton", false);
+            intent.putExtra("model", new Cabbage());
+            intent.putExtra("requestCode", RequestCodes.REQUEST_CODE_SELECT_MODEL);
+            ActivityEditAccount.this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_SELECT_MODEL);
+        });
 
         setFieldsVisibility();
     }

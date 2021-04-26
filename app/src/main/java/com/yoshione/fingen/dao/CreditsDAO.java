@@ -22,7 +22,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class CreditsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class CreditsDAO extends BaseDAO<Credit> implements IDaoInheritor {
 
     //<editor-fold desc="ref_Debts">
     public static final String TABLE = "ref_Debts";
@@ -95,18 +95,13 @@ public class CreditsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         super.deleteModel(model, resetTS, context);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Credit> getAllDebts() {
-        return (List<Credit>) getItems(getTableName(), null, null, null, null, null);
-    }
-
     public Credit getCreditByID(long id) {
         return (Credit) getModelById(id);
     }
 
     @Override
-    public List<?> getAllModels() {
-        return getAllDebts();
+    public List<Credit> getAllModels() {
+        return getItems(getTableName(), null, null, null, null, null);
     }
 
     public /*synchronized*/ List<Category> getDebtsAsCategoriesWithPlanFact(int year, int month, Context context) {

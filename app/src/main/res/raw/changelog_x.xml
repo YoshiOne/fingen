@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelog bulletedList="true">
+    <changelogversion versionName="2.6.4.2-x.7" changeDate=">2020.08.16">
+        <changelogtext>Fix search cyrillic in dictionary models</changelogtext>
+        <changelogtext>Add some types of e-receipt from FNS</changelogtext>
+        <changelogtext>Replace date in founded transactions after scan QR-code from transactions list</changelogtext>
+        <changelogtext>Fix display date in founded transactions list</changelogtext>
+        <changelogtext>Add button to toggle auto-focus in scan QR-code activity</changelogtext>
+        <changelogtext>Add font size to settings</changelogtext>
+        <changelogtext>Bugs fixes</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.6.4.2-x.6" changeDate=">2020.08.13">
+        <changelogtext>Repair get electornic receipts from FNS server (additional in the 4pda forum)</changelogtext>
+        <changelogtext>Fix replace category of exists transactions after scan QR-code</changelogtext>
+        <changelogtext>Fix save payee after load products from electronic receipt</changelogtext>
+        <changelogtext>Fix auto-loading products after scan QR-code from transaction list page</changelogtext>
+        <changelogtext>(kasimm) Add last category for products downloaded by e-receipt</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.6.4.2-x.5" changeDate=">2020.08.07">
+        <changelogtext>Bugs fixes</changelogtext>
+        <changelogtext>(Sovvateikin Sergei) Fix import products from CSV</changelogtext>
+        <changelogtext>(Sovvateikin Sergei) Fix skipping duplicates when import from CSV</changelogtext>
+        <changelogtext>(unwo) Add read json receipt from official app</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.6.4.2-x.4" changeDate=">2020.05.18">
+        <changelogtext>Add check new version</changelogtext>
+        <changelogtext>Add button "All closed accounts" to account sets</changelogtext>
+        <changelogtext>Add "Close/Open account" to context menu of account</changelogtext>
+        <changelogtext>(unwo) Add department of product in transactions</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.6.4.2-x.3" changeDate=">2020.04.18">
+        <changelogtext>Fixed error sign up or recovery code when request from FTS</changelogtext>
+        <changelogtext>Refactored loading electronic receipt from FTS</changelogtext>
+        <changelogtext>Added "Load QR-Code from gallery" button</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.6.4.2-x.2" changeDate=">2020.04.13">
+        <changelogtext>Refactored window preference of FTS</changelogtext>
+        <changelogtext>Bugs fixes</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.6.4.2-x.1" changeDate=">2020.04.04">
+        <changelogtext>Added button "Create backup for origin"</changelogtext>
+        <changelogtext>Fixed output sum in the simple dept window</changelogtext>
+        <changelogtext>Refactored pin-code settings window</changelogtext>
+        <changelogtext>Added partial sum when text search in transactions</changelogtext>
+        <changelogtext>Removed button "Recovery from Dropbox" when connections is closed</changelogtext>
+        <changelogtext>Bugs fixes</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.6.4.2-x.0" changeDate=">2020.03.28">
+        <changelogtext>Many changes. Look changelog for Russian language</changelogtext>
+    </changelogversion>
+</changelog>

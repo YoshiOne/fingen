@@ -10,7 +10,7 @@ import com.yoshione.fingen.model.AccountsSetRef;
 
 import java.util.List;
 
-public class AccountsSetsRefDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class AccountsSetsRefDAO extends BaseDAO<AccountsSetRef> implements IDaoInheritor {
 
     //<editor-fold desc="ref_Accounts_Sets">
     public static final String TABLE = "ref_Accounts_Sets";
@@ -55,21 +55,16 @@ public class AccountsSetsRefDAO extends BaseDAO implements AbstractDAO, IDaoInhe
         return accountsSetRef;
     }
 
-    @SuppressWarnings("unchecked")
-    public List<AccountsSetRef> getAllAccountsSets() throws Exception {
-        return (List<AccountsSetRef>) getItems(getTableName(), null,
-                null, null, COL_NAME, null);
-    }
-
     @Override
-    public List<?> getAllModels() throws Exception {
-        return getAllAccountsSets();
+    public List<AccountsSetRef> getAllModels() {
+        return getItems(getTableName(), null,
+                null, null, COL_NAME, null);
     }
 
     @Override
     public synchronized void deleteModel(IAbstractModel model, boolean resetTS, Context context) {
         AccountsSetsLogDAO accountsSetsLogDAO = AccountsSetsLogDAO.getInstance(context);
-        accountsSetsLogDAO.bulkDeleteModel(accountsSetsLogDAO.getModels(String.format("%s = %s", AccountsSetsLogDAO.TABLE,
+        accountsSetsLogDAO.bulkDeleteModel(accountsSetsLogDAO.getModels(String.format("%s = %s", AccountsSetsLogDAO.COL_SET_ID,
                 String.valueOf(model.getID()))), resetTS);
 
         super.deleteModel(model, resetTS, context);

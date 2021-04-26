@@ -104,7 +104,6 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
     private ItemTouchHelper mItemTouchHelper;
     private IUpdateCallback mFullUpdateCallback;
     private int contextMenuTarget = -1;
-    private String mAllAccountsSetCaption;
 
     @Inject
     Lazy<BillingService> mBillingService;
@@ -141,8 +140,6 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         FGApplication.getAppComponent().inject(this);
-
-        mAllAccountsSetCaption = getString(R.string.ent_all_accounts);
 
         adapter = new AdapterAccounts((ToolbarActivity) getActivity(), this);
         adapter.setHasStableIds(true);
@@ -214,6 +211,7 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
                 Single.fromCallable(() -> {
                     List<AccountsSet> accountsSetList = AccountsSetManager.getInstance().getAcoountsSets(getActivity());
                     accountsSetList.add(0, new AccountsSet(new AccountsSetRef(-1, getString(R.string.ent_all_accounts)), new HashSet<>()));
+                    accountsSetList.add(1, new AccountsSet(new AccountsSetRef(-2, getString(R.string.ent_all_closed_accounts)), new HashSet<>()));
                     long currentSetID = getActivity() != null ? mPreferences.get().getLong(FgConst.PREF_CURRENT_ACCOUNT_SET, -1) : -1;
                     for (AccountsSet accountsSet : accountsSetList) {
                         accountsSet.setSelected(accountsSet.getAccountsSetRef().getID() == currentSetID);
@@ -300,14 +298,10 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         AccountsSet accountsSet = mAdapterAccountsSets.getList().get(info.position);
         switch (item.getItemId()) {
             case R.id.action_edit_name:
-                AccountsSetManager.getInstance().editName(accountsSet, getActivity(),
-                        accountsSet1 -> AccountsSetManager.getInstance().writeAccountsSet(accountsSet1, getActivity(),
-                                this::fragmentUpdate));
+                AccountsSetManager.getInstance().editName(accountsSet, getActivity(), accountsSet1 -> AccountsSetManager.getInstance().writeAccountsSet(accountsSet1, getActivity(), this::fragmentUpdate));
                 break;
             case R.id.action_edit_accounts:
-                AccountsSetManager.getInstance().editAccounts(accountsSet, getActivity(),
-                        accountsSet2 -> AccountsSetManager.getInstance().writeAccountsSet(accountsSet2, getActivity(),
-                                this::fragmentUpdate));
+                AccountsSetManager.getInstance().editAccounts(accountsSet, getActivity(), accountsSet2 -> AccountsSetManager.getInstance().writeAccountsSet(accountsSet2, getActivity(), this::fragmentUpdate));
                 break;
             case R.id.action_delete:
                 if (getActivity() != null) {
@@ -446,13 +440,14 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
 //        if (Looper.myLooper() == Looper.getMainLooper()) {
 //            Log.d(TAG, "Main thread!!!");
 //        }
-        boolean showClosed = mPreferences.get().getBoolean(FgConst.PREF_SHOW_CLOSED_ACCOUNTS, true);
+        boolean isOnlyClosed = mPreferences.get().getLong(FgConst.PREF_CURRENT_ACCOUNT_SET, -1) == -2;
+        boolean showClosed = isOnlyClosed || mPreferences.get().getBoolean(FgConst.PREF_SHOW_CLOSED_ACCOUNTS, true);
         int sortType = mPreferences.get().getInt("accounts_sort_type", 0);
         int sortOrder = mPreferences.get().getInt("accounts_sort_order", 0);
 
         ToolbarActivity activity = (ToolbarActivity) getActivity();
         Objects.requireNonNull(activity).unsubscribeOnDestroy(
-            mAccountsDAO.get().getAllAccountsRx(showClosed)
+            mAccountsDAO.get().getAllAccountsRx(showClosed, isOnlyClosed)
                     .subscribeOn(Schedulers.newThread())
                     .map(accounts -> {
                         if (!mPreferences.get().getBoolean("show_debt_accounts", true)) {
@@ -485,7 +480,7 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(accounts -> {
                         adapter.notifyDataSetChanged();
-                        if (mPreferences.get().getInt(FgConst.PREF_NEW_ACCOUNT_BUTTON_COUNTER, 0) < 3) {
+                        if (mPreferences.get().getInt(FgConst.PREF_NEW_ACCOUNT_BUTTON_COUNTER, 0) < 3 && accounts.size() < 3) {
                             mTextViewPullToCreateAccount.setVisibility(View.VISIBLE);
                         } else {
                             mTextViewPullToCreateAccount.setVisibility(View.GONE);
@@ -505,7 +500,7 @@ public class FragmentAccounts extends BaseListFragment implements OnStartDragLis
         ToolbarActivity activity = (ToolbarActivity) getActivity();
         HashMap<Long, Cabbage> cabbages = mCabbagesDAO.get().getCabbagesMap();
         Objects.requireNonNull(activity).unsubscribeOnDestroy(
-                mTransactionsDAO.get().getGroupedSumsRx(new FilterListHelper(filters, "", activity), true, null, getActivity())
+                mTransactionsDAO.get().getGroupedSumsRx(new FilterListHelper(filters, "", activity, mPreferences.get(), true), true, null, getActivity())
                         .map(listSumsByCabbage -> SumsManager.formatSums(listSumsByCabbage, cabbages, true))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())

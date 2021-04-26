@@ -38,9 +38,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.yoshione.fingen.adapter.AdapterSimpleDebts;
 import com.yoshione.fingen.classes.ListSumsByCabbage;
 import com.yoshione.fingen.classes.SumsByCabbage;
-import com.yoshione.fingen.dao.AbstractDAO;
 import com.yoshione.fingen.dao.AccountsDAO;
-import com.yoshione.fingen.dao.BaseDAO;
 import com.yoshione.fingen.dao.CabbagesDAO;
 import com.yoshione.fingen.dao.SimpleDebtsDAO;
 import com.yoshione.fingen.dao.TransactionsDAO;
@@ -314,11 +312,32 @@ public class FragmentSimpleDebts extends BaseListFragment
 
         ListSumsByCabbage listSumsByCabbage = new ListSumsByCabbage();
         for (SimpleDebt dept : adapterD.getSelectedDebts()) {
-            boolean startAmountIsPositive = dept.getStartAmount().abs().equals(dept.getStartAmount());
-            SumsByCabbage sumsByCabbage = new SumsByCabbage(dept.getCabbageID(),
-                    dept.getOweMe().add(startAmountIsPositive ? dept.getStartAmount() : BigDecimal.ZERO),
-                    BigDecimal.ZERO.subtract(dept.getAmount()).add(!startAmountIsPositive ? dept.getStartAmount() : BigDecimal.ZERO));
-            listSumsByCabbage.appendSumFact(sumsByCabbage);
+            if (dept.getStartAmount().abs().equals(dept.getStartAmount()) & !dept.getStartAmount().equals(BigDecimal.ZERO)) {
+                BigDecimal totalAmount = dept.getStartAmount().add(BigDecimal.ZERO.subtract(dept.getIOwe().abs()).add(dept.getOweMe().abs()));
+                boolean totalAmountIsPositive = totalAmount.abs().equals(totalAmount);
+                SumsByCabbage sumsByCabbage = new
+                        SumsByCabbage(dept.getCabbageID(),
+                        (totalAmountIsPositive ? totalAmount : BigDecimal.ZERO),
+                        (!totalAmountIsPositive ? totalAmount : BigDecimal.ZERO));
+                        listSumsByCabbage.appendSumFact(sumsByCabbage);
+            } else
+                if (!dept.getStartAmount().abs().equals(dept.getStartAmount()) & !dept.getStartAmount().equals(BigDecimal.ZERO)) {
+                BigDecimal totalAmount = BigDecimal.ZERO.subtract(dept.getStartAmount().abs().add(dept.getOweMe().add(dept.getIOwe())));
+                boolean totalAmountIsPositive = (totalAmount).abs().equals(totalAmount);
+                SumsByCabbage sumsByCabbage = new
+                        SumsByCabbage(dept.getCabbageID(),
+                        (totalAmountIsPositive ? totalAmount : BigDecimal.ZERO),
+                        (!totalAmountIsPositive ? totalAmount : BigDecimal.ZERO));
+                        listSumsByCabbage.appendSumFact(sumsByCabbage);
+                } else {
+                    BigDecimal totalAmount = BigDecimal.ZERO.subtract(dept.getStartAmount().abs().add(dept.getOweMe().add(dept.getIOwe())));
+                    boolean totalAmountIsPositive = (totalAmount).abs().equals(totalAmount);
+                    SumsByCabbage sumsByCabbage = new
+                            SumsByCabbage(dept.getCabbageID(),
+                            (totalAmountIsPositive ? totalAmount : BigDecimal.ZERO),
+                            (!totalAmountIsPositive ? totalAmount : BigDecimal.ZERO));
+                    listSumsByCabbage.appendSumFact(sumsByCabbage);
+                }
         }
         updateSums(listSumsByCabbage);
     }
@@ -396,19 +415,18 @@ public class FragmentSimpleDebts extends BaseListFragment
     }
 
     private void showSearchView() {
-        Toast.makeText(getActivity(), "Not implemented yet", Toast.LENGTH_LONG).show();
-//        mCardViewSearch.setVisibility(View.VISIBLE);
-//        mSlidingLayoutDebts.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-//        mEditTextSearch.requestFocus();
-//        if (getActivity() != null) {
-//            final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//            mEditTextSearch.postDelayed(
-//                    () -> {
-//                        if (imm != null) {
-//                            imm.showSoftInput(mEditTextSearch, 0);
-//                        }
-//                    }, 300);
-//        }
+        mCardViewSearch.setVisibility(View.VISIBLE);
+        mSlidingLayoutDebts.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        mEditTextSearch.requestFocus();
+        if (getActivity() != null) {
+            final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            mEditTextSearch.postDelayed(
+                    () -> {
+                        if (imm != null) {
+                            imm.showSoftInput(mEditTextSearch, 0);
+                        }
+                    }, 300);
+        }
     }
 
     void hideSearchView() {
@@ -437,18 +455,16 @@ public class FragmentSimpleDebts extends BaseListFragment
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SimpleDebtsDAO simpleDebtsDAO = SimpleDebtsDAO.getInstance(getActivity());
         boolean showClosed = mPreferences.getBoolean(FgConst.PREF_SHOW_CLOSED_DEBTS, true);
-        try {
-            List<SimpleDebt> models = simpleDebtsDAO.getAllSimpleDebts();
-            long cabbageID = getActivity().getIntent().getLongExtra("cabbageID", -1);
-            SimpleDebt debt;
-            for (int i = models.size() - 1; i >= 0; i--) {
-                debt = models.get(i);
-                if ((cabbageID >= 0 && debt.getCabbageID() != cabbageID) || (!debt.isActive() && !showClosed)) {
-                    models.remove(i);
-                }
+        List<SimpleDebt> models = simpleDebtsDAO.getAllModels();
+        long cabbageID = Objects.requireNonNull(getActivity()).getIntent().getLongExtra("cabbageID", -1);
+        SimpleDebt debt;
+        for (int i = models.size() - 1; i >= 0; i--) {
+            debt = models.get(i);
+            if ((cabbageID >= 0 && debt.getCabbageID() != cabbageID) || (!debt.isActive() && !showClosed)) {
+                models.remove(i);
             }
-            adapterD.addDebts(models, true);
-        } catch (Exception ignored) { }
+        }
+        adapterD.addDebts(models, true);
 
         adapterD.notifyDataSetChanged();
 
@@ -506,7 +522,7 @@ public class FragmentSimpleDebts extends BaseListFragment
     private boolean mPullMeBended = false;
 
     private void animatePullMe() {
-        if (!mPullMeBended) {
+        if (!mPullMeBended && mImageViewPullMe != null) {
             mPullMeBended = true;
             mImageViewPullMe.setImageDrawable(Objects.requireNonNull(getContext()).getDrawable(R.drawable.pull_me_animated));
             ((Animatable) mImageViewPullMe.getDrawable()).start();
@@ -514,7 +530,7 @@ public class FragmentSimpleDebts extends BaseListFragment
     }
 
     private void animatePullMeReverse() {
-        if (mPullMeBended) {
+        if (mPullMeBended && mImageViewPullMe != null) {
             mPullMeBended = false;
             mImageViewPullMe.setImageDrawable(Objects.requireNonNull(getContext()).getDrawable(R.drawable.pull_me_animated_reverse));
             ((Animatable) mImageViewPullMe.getDrawable()).start();

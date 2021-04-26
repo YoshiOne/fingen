@@ -42,7 +42,7 @@ import java.util.List;
 
 import io.requery.android.database.sqlite.SQLiteDatabase;
 
-public class BaseDAO implements AbstractDAO {
+public abstract class BaseDAO<T extends IAbstractModel> implements AbstractDAO<T> {
 
     //<editor-fold desc="common fields">
     public static final String COL_ID = "_id";
@@ -76,7 +76,7 @@ public class BaseDAO implements AbstractDAO {
     SQLiteDatabase mDatabase;
     private String mTableName;
     private String[] mAllColumns;
-    private IDaoInheritor mDaoInheritor;
+    private IDaoInheritor<T> mDaoInheritor;
 
     public BaseDAO(Context context, String tableName, String[] allColumns) {
         try {
@@ -177,7 +177,7 @@ public class BaseDAO implements AbstractDAO {
     }
 
     @Override
-    public List<?> getAllModels() throws Exception {
+    public List<T> getAllModels() {
         return null;
     }
 
@@ -218,11 +218,11 @@ public class BaseDAO implements AbstractDAO {
         return ids;
     }
 
-    List<?> getItems(String tableName, String[] allColumns, @Nullable String selection, @Nullable String groupBy,
+    List<T> getItems(String tableName, String[] allColumns, @Nullable String selection, @Nullable String groupBy,
                      @Nullable String order, @Nullable String limit) {
         String where = COL_SYNC_DELETED + " = 0" + (selection != null && !selection.isEmpty() ? " AND (" + selection + ")" : "");
         Cursor cursor;
-        List<IAbstractModel> modelList = new ArrayList<>();
+        List<T> modelList = new ArrayList<>();
         try {
             cursor = mDatabase.query(tableName, allColumns, where, null, groupBy, null, order, limit);
         } catch (Exception e) {
@@ -232,7 +232,7 @@ public class BaseDAO implements AbstractDAO {
             try {
                 if (cursor.moveToFirst()) {
                     while (!cursor.isAfterLast()) {
-                        IAbstractModel model = mDaoInheritor.cursorToModel(cursor);
+                        T model = mDaoInheritor.cursorToModel(cursor);
                         modelList.add(model);
                         cursor.moveToNext();
                     }
@@ -258,9 +258,8 @@ public class BaseDAO implements AbstractDAO {
         return getModelByIdCustomColumns(id, null);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public IAbstractModel getModelByName(String name) throws Exception {
+    public IAbstractModel getModelByName(String name) {
         Cursor cursor = mDatabase.query(mTableName, getAllColumns(),
                 COL_SYNC_DELETED + " = 0 AND " + COL_NAME + " = '" + name + "'", null, null, null, null);
         IAbstractModel model = null;
@@ -279,9 +278,8 @@ public class BaseDAO implements AbstractDAO {
         return model;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public IAbstractModel getModelByFullName(String fullName) throws Exception {
+    public IAbstractModel getModelByFullName(String fullName) {
         Cursor cursor = mDatabase.query(mTableName, getAllColumns(),
                 COL_SYNC_DELETED + " = 0 AND " + COL_FULL_NAME + " = '" + fullName + "'", null, null, null, null);
         IAbstractModel model = null;
@@ -493,7 +491,6 @@ public class BaseDAO implements AbstractDAO {
         model.setDeleted(true);
         Events.EventOnModelChanged event = new Events.EventOnModelChanged(Collections.singletonList(model), model.getModelType(), Events.MODEL_DELETED);
         if (resetTS) EventBus.getDefault().postSticky(event);
-
     }
 
     @Override

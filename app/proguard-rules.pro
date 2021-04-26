@@ -106,3 +106,15 @@
 -dontwarn com.sothree.**
 -keep class com.sothree.**
 -keep interface com.sothree.**
+
+# For requests signup and recovery in FTS
+-keep class com.yoshione.fingen.fts.models.** { *; }
+
+# SQLite
+-keepclasseswithmembers class io.requery.android.database.** {
+  native <methods>;
+  public <init>(...);
+}
+-keepnames class io.requery.android.database.** { *; }
+-keep public class io.requery.android.database.sqlite.SQLiteConnection** { *; }
+-keepattributes Exceptions,InnerClasses

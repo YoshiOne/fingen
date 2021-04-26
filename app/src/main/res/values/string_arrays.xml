@@ -38,6 +38,19 @@
         <item>loans</item>
     </string-array>
 
+    <string-array name="pref_font_scale" translatable="false">
+        <item>@string/pref_font_scale_0</item>
+        <item>@string/pref_font_scale_1</item>
+        <item>@string/pref_font_scale_2</item>
+        <item>@string/pref_font_scale_3</item>
+    </string-array>
+    <string-array name="pref_font_scale_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
     <string-array name="pref_theme_titles" translatable="false">
         <item>@string/pref_title_theme_light</item>
         <item>@string/pref_title_theme_dark</item>

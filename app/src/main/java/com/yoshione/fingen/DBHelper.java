@@ -85,6 +85,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
     public static final int DATABASE_VERSION = 37;
     public static final String TAG = "DBHelper";
 
+    //common fields
     private static String getFullNameColumn(String tableName) {
         return "(SELECT path FROM (with recursive m(path, _id, name) AS (SELECT Name, _id, Name FROM "+tableName+" WHERE ParentId = -1 UNION ALL  SELECT path||'\\'||t.Name, t._id, t.Name FROM "+tableName+" t, m WHERE t.ParentId = m._id) SELECT * FROM m where _id = "+tableName+"._id)) AS FullName";
     }
@@ -347,6 +348,7 @@ public class DBHelper extends SQLiteOpenHelper implements BaseColumns {
             db.execSQL("DROP TABLE ref_Accounts_old");
         } else
             super.onDowngrade(db, oldVersion, newVersion);
+
     }
 
     String getSqliteVersion() {

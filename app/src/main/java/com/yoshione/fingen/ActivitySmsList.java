@@ -2,11 +2,9 @@ package com.yoshione.fingen;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -21,7 +19,6 @@ import com.yoshione.fingen.utils.RequestCodes;
 import com.yoshione.fingen.utils.SmsParser;
 import com.yoshione.fingen.widgets.ToolbarActivity;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -58,21 +55,15 @@ public class ActivitySmsList extends ToolbarActivity {
         super.onCreateOptionsMenu(menu);
         menu.findItem(R.id.action_paste).setIcon(getDrawable(R.drawable.ic_paste_white));
         menu.findItem(R.id.action_import).setIcon(getDrawable(R.drawable.ic_import_white));
-        menu.findItem(R.id.action_import).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Intent intent = new Intent(ActivitySmsList.this, ActivityImportSms.class);
-                ActivitySmsList.this.startActivity(intent);
-                return true;
-            }
+        menu.findItem(R.id.action_import).setOnMenuItemClickListener(item -> {
+            Intent intent = new Intent(ActivitySmsList.this, ActivityImportSms.class);
+            ActivitySmsList.this.startActivity(intent);
+            return true;
         });
 
-        menu.findItem(R.id.action_paste).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                ActivitySmsList.this.pasteSms();
-                return true;
-            }
+        menu.findItem(R.id.action_paste).setOnMenuItemClickListener(item -> {
+            ActivitySmsList.this.pasteSms();
+            return true;
         });
         return true;
     }
@@ -100,41 +91,28 @@ public class ActivitySmsList extends ToolbarActivity {
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
         final ArrayAdapter<Sender> arrayAdapterCabbages = new ArrayAdapter<>(this, android.R.layout.select_dialog_singlechoice);
-        List<Sender> cabbages;
-        try {
-            cabbages = SendersDAO.getInstance(this).getAllSenders();
-        } catch (Exception e) {
-            cabbages = new ArrayList<>();
-        }
+        List<Sender> cabbages = SendersDAO.getInstance(this).getAllModels();
         arrayAdapterCabbages.addAll(cabbages);
 
         builderSingle.setSingleChoiceItems(arrayAdapterCabbages, -1,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        dialog.cancel();
-                        ListView lw = ((AlertDialog) dialog).getListView();
-                        Sender sender = (Sender) lw.getAdapter().getItem(which);
-                        Sms sms = new Sms(-1, new Date(), sender.getID(), text);
-                        SmsParser smsParser = new SmsParser(sms, getApplicationContext());
-                        Transaction transaction = smsParser.extractTransaction();
+                (dialog, which) -> {
+                    dialog.cancel();
+                    ListView lw = ((AlertDialog) dialog).getListView();
+                    Sender sender = (Sender) lw.getAdapter().getItem(which);
+                    Sms sms = new Sms(-1, new Date(), sender.getID(), text);
+                    SmsParser smsParser = new SmsParser(sms, getApplicationContext());
+                    Transaction transaction = smsParser.extractTransaction();
 
-                        Intent intent = new Intent(ActivitySmsList.this, ActivityEditTransaction.class);
-                        intent.putExtra("transaction", transaction);
-                        intent.putExtra("sms", sms);
-                        startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
-                    }
+                    Intent intent = new Intent(ActivitySmsList.this, ActivityEditTransaction.class);
+                    intent.putExtra("transaction", transaction);
+                    intent.putExtra("sms", sms);
+                    startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
                 });
         builderSingle.setTitle(getString(R.string.title_select_sender));
 
         builderSingle.setNegativeButton(
                 getResources().getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                (dialog, which) -> dialog.dismiss());
         builderSingle.show();
     }
 }

@@ -60,6 +60,8 @@ import com.yoshione.fingen.dao.CategoriesDAO;
 import com.yoshione.fingen.dao.DepartmentsDAO;
 import com.yoshione.fingen.dao.LocationsDAO;
 import com.yoshione.fingen.dao.PayeesDAO;
+import com.yoshione.fingen.dao.ProductEntrysDAO;
+import com.yoshione.fingen.dao.ProductsDAO;
 import com.yoshione.fingen.dao.ProjectsDAO;
 import com.yoshione.fingen.dao.SimpleDebtsDAO;
 import com.yoshione.fingen.dao.SmsDAO;
@@ -68,8 +70,13 @@ import com.yoshione.fingen.dao.TemplatesDAO;
 import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.fts.ActivityFtsLogin;
 import com.yoshione.fingen.fts.ActivityScanQR;
+import com.yoshione.fingen.fts.FTSJsonToTransaction;
 import com.yoshione.fingen.fts.FtsHelper;
-import com.yoshione.fingen.fts.IDownloadProductsListener;
+import com.yoshione.fingen.fts.IFtsCallback;
+import com.yoshione.fingen.fts.models.tickets.Item;
+import com.yoshione.fingen.fts.models.tickets.Receipt;
+import com.yoshione.fingen.fts.models.tickets.Ticket;
+import com.yoshione.fingen.fts.models.tickets.TicketFindById;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.managers.AccountManager;
 import com.yoshione.fingen.managers.PayeeManager;
@@ -84,6 +91,7 @@ import com.yoshione.fingen.model.Category;
 import com.yoshione.fingen.model.Credit;
 import com.yoshione.fingen.model.Location;
 import com.yoshione.fingen.model.Payee;
+import com.yoshione.fingen.model.Product;
 import com.yoshione.fingen.model.ProductEntry;
 import com.yoshione.fingen.model.Sms;
 import com.yoshione.fingen.model.SmsMarker;
@@ -154,6 +162,10 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     private static final int ERR_EXRATE_ONE = 2;
     private static final int ERR_EMPTY_SRC_ACCOUNT = 3;
     private static final String SHOWCASE_ID = "Edit transaction showcase";
+    private static final String LOAD_PRODUCTS = "load_products";
+    private static final int LP_NONE = 0;
+    private static final int LP_QUERY = 1;
+    private static final int LP_RECEIVING = 2;
     //</editor-fold>
 
     //<editor-fold desc="Bind views" defaultstate="collapsed">
@@ -417,6 +429,9 @@ public class ActivityEditTransaction extends ToolbarActivity implements
             mLastTrType = transaction.getTransactionType();
         }
 
+        if (getIntent().hasExtra("jsonAsString") && getIntent().getStringExtra("jsonAsString") != null)
+            loadProductsJSON(getIntent().getStringExtra("jsonAsString"));
+
         initUI();
 
         if (getIntent().getBooleanExtra("focus_to_category", false)) {
@@ -428,7 +443,6 @@ public class ActivityEditTransaction extends ToolbarActivity implements
         }
 
         if (getIntent().getBooleanExtra("scan_qr", false)) {
-
             getIntent().removeExtra("scan_qr");
             Intent intent = new Intent(ActivityEditTransaction.this, ActivityScanQR.class);
             intent.putExtra("transaction", transaction);
@@ -619,7 +633,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     }
 
     private boolean checkPayeeAndCreateIfNecessary(boolean updateAutocompleteAdapter) {
-        if ((viewPager.getCurrentItem() == 0) && !mPayeeName.isEmpty()) {
+        if ((viewPager.getCurrentItem() == 0) && mPayeeName != null && !mPayeeName.isEmpty()) {
             try {
                 transaction.setPayeeID(PayeeManager.checkPayeeAndCreateIfNecessary(transaction.getPayeeID(), mPayeeName, this));
             } catch (Exception e) {
@@ -715,15 +729,10 @@ public class ActivityEditTransaction extends ToolbarActivity implements
                 break;
         }
 
-        //region Данный блок работает только НЕ в режиме сплита
-        if (srcTransaction == null) {
-            //Если у транзакции нет получателя, но в поле ввода есть текст, значит создаем такого получателя
-            checkPayeeAndCreateIfNecessary(false);
-
-            //Устанавливаем текущему получателю в качестве категории по умолчанию текущую категорию
-            updatePayeeWithDefCategory();
-        }
-        //endregion
+        //Если у транзакции нет получателя, но в поле ввода есть текст, значит создаем такого получателя
+        checkPayeeAndCreateIfNecessary(false);
+        //Устанавливаем текущему получателю в качестве категории по умолчанию текущую категорию
+        updatePayeeWithDefCategory();
 
         if (template == null) {
             switch (validateTransaction()) {
@@ -927,11 +936,11 @@ public class ActivityEditTransaction extends ToolbarActivity implements
             mLayoutProductList.setVisibility(
                     (isErrorLoadingProducts | transaction.getProductEntries().size() > 0
                     | (!item.isHideUnderMore() || mIsBtnMorePressed)
-                    | getIntent().getBooleanExtra("load_products", false))
+                    | (getIntent().getIntExtra(LOAD_PRODUCTS, LP_NONE) != LP_NONE))
                      & item.isVisible() ? View.VISIBLE : View.GONE);
         }
 
-        boolean scanQR = mPreferences.getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true);
+        boolean scanQR = mPreferences.getBoolean(FgConst.PREF_SCAN_QR_ENABLED, true);
 
         item = PrefUtils.getTrEditItemByID(mTrEditItems, FgConst.TEI_FTS);
         if (item != null) {
@@ -1062,7 +1071,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
         switch (markerType) {
             case SmsParser.MARKER_TYPE_PAYEE: {
                 if (transaction.getPayeeID() < 0) {
-                    if (mPayeeName.isEmpty()) {
+                    if (mPayeeName != null && mPayeeName.isEmpty()) {
                         new AlertDialog.Builder(this)
                                 .setNegativeButton(R.string.act_create, (dialog, which) -> {
                                     PayeesDAO payeesDAO = PayeesDAO.getInstance(ActivityEditTransaction.this);
@@ -1361,7 +1370,8 @@ public class ActivityEditTransaction extends ToolbarActivity implements
             if (account.getID() < 0) {
                 textViewAccount.setText("");
             } else {
-                textViewAccount.setText(String.format("%s (%s)", account.getName(), cabbage.getSimbol()));
+                CabbageFormatter cabbageFormatter = new CabbageFormatter(cabbage);
+                textViewAccount.setText(String.format("%s (%s)", account.getName(), cabbageFormatter.format(account.getCurrentBalance())));
             }
 //            textViewAccountCabbage.setText(cabbage.getCode());
 
@@ -1411,11 +1421,12 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     public String getDestAccountName() {
         Account destAccount = TransactionManager.getDestAccount(transaction, this);
         String name = destAccount.getName();
-        String code = AccountManager.getCabbage(destAccount, this).getSimbol();
         if (name.isEmpty()) {
             return "";
         } else {
-            return String.format("%s (%s)", destAccount.getName(), code);
+            Cabbage cabbage = AccountManager.getCabbage(destAccount, this);
+            CabbageFormatter cabbageFormatter = new CabbageFormatter(cabbage);
+            return String.format("%s (%s)", name, cabbageFormatter.format(destAccount.getCurrentBalance()));
         }
     }
 
@@ -1576,7 +1587,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
 
     @Override
     public int getPayeeSelectionStyle() {
-        return Integer.valueOf(mPreferences.getString("payee_selection_style", "0"));
+        return Integer.parseInt(mPreferences.getString("payee_selection_style", "0"));
     }
 
     @Override
@@ -1586,14 +1597,8 @@ public class ActivityEditTransaction extends ToolbarActivity implements
 
     @Override
     public NestedItemFullNameAdapter getPayeeNameAutocompleteAdapter() {
-        PayeesDAO payeesDAO = PayeesDAO.getInstance(this);
-        List<IAbstractModel> payees;
         List<AutocompleteItem> autocompleteItems = new ArrayList<>();
-        try {
-            payees = (List<IAbstractModel>) payeesDAO.getAllModels();
-        } catch (Exception e) {
-            payees = new ArrayList<>();
-        }
+        List<Payee> payees = PayeesDAO.getInstance(this).getAllModels();
 
         BaseNode tree = TreeManager.convertListToTree(payees, IAbstractModel.MODEL_TYPE_PAYEE);
         for (BaseNode node : tree.getFlatChildrenList()) {
@@ -1615,7 +1620,6 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     }
 
     private void initFTS() {
-
         mTextViewFN.setText(String.valueOf(transaction.getFN()));
         mTextViewFD.setText(String.valueOf(transaction.getFD()));
         mTextViewFP.setText(String.valueOf(transaction.getFP()));
@@ -1683,8 +1687,10 @@ public class ActivityEditTransaction extends ToolbarActivity implements
             startActivityForResult(intent, RequestCodes.REQUEST_CODE_SCAN_QR);
         });
 
+        mImageButtonDownloadReceipt.setVisibility(mPreferences.getBoolean(FgConst.PREF_FTS_ENABLED, true) ? View.VISIBLE : View.GONE);
         mImageButtonDownloadReceipt.setOnClickListener(view -> {
-            getIntent().putExtra("load_products", true);
+            if (getIntent().getIntExtra(LOAD_PRODUCTS, LP_NONE) < LP_QUERY)
+                getIntent().putExtra(LOAD_PRODUCTS, LP_QUERY);
             initProductList();
         });
     }
@@ -1693,7 +1699,7 @@ public class ActivityEditTransaction extends ToolbarActivity implements
     boolean mProductListExpanded = true;
 
     private void loadProducts() {
-        if (mFtsHelper.isFtsCredentialsAvailiable(this)) {
+        if (mFtsHelper.isFtsCredentialsAvailable(mPreferences)) {
             final RotateAnimation spinAnim = new RotateAnimation(360, 0f,
                     Animation.RELATIVE_TO_SELF, 0.5f,
                     Animation.RELATIVE_TO_SELF, 0.5f);
@@ -1706,42 +1712,160 @@ public class ActivityEditTransaction extends ToolbarActivity implements
             mImageViewLoadingProducts.startAnimation(spinAnim);
             mTextViewLoadingProducts.setText(getString(R.string.ttl_loading_products));
             updateControlsState();
-            IDownloadProductsListener downloadProductsListener = new IDownloadProductsListener() {
+
+            IFtsCallback checkCallback = new IFtsCallback() {
+                int attempt = 0;
+
                 @Override
-                public void onDownload(List<ProductEntry> productEntries, String payeeName) {
-                    spinAnim.cancel();
-                    spinAnim.reset();
-                    mLayoutLoadingProducts.setVisibility(View.GONE);
-                    transaction.getProductEntries().clear();
-                    transaction.getProductEntries().addAll(productEntries);
-                    getIntent().removeExtra("load_products");
-                    fillProductList();
-                    if ((viewPager.getCurrentItem() == 0) && mPayeeName != null && mPayeeName.isEmpty()) {
-                        setPayeeName(payeeName);
-                    }
-                    isErrorLoadingProducts = false;
+                public void onAccepted(Object response) {
+                    mTextViewLoadingProducts.setText(R.string.ttl_check_correct);
+
+                    IFtsCallback addCallback = new IFtsCallback() {
+                        @Override
+                        public void onAccepted(Object response) {
+                            mTextViewLoadingProducts.setText(getString(R.string.ttl_add_accept_attempt, ++attempt));
+
+                            Ticket body = (Ticket) response;
+                            final String ticketId = body.getId();
+
+                            IFtsCallback getCallback = new IFtsCallback() {
+                                @Override
+                                public void onAccepted(Object response) {
+                                    TicketFindById body = (TicketFindById) response;
+
+                                    if (body.getStatus() == 12) {
+                                        isErrorLoadingProducts = true;
+                                        getIntent().removeExtra(LOAD_PRODUCTS);
+                                        mImageViewLoadingProducts.clearAnimation();
+                                        mImageViewLoadingProducts.setVisibility(View.GONE);
+                                        mTextViewLoadingProducts.setText(body.getStatusDescription().getLongMessage());
+                                        updateControlsState();
+                                        return;
+                                    } else if (body.getStatus() != 2 || body.getTicket() == null || body.getTicket().getDocument() == null || body.getTicket().getDocument().getReceipt() == null) {
+                                        if (attempt < 5) {
+                                            mTextViewLoadingProducts.setText(getString(R.string.ttl_add_accept_attempt, ++attempt));
+                                            unsubscribeOnDestroy(mFtsHelper.getCheck(ticketId, this));
+                                        } else {
+                                            isErrorLoadingProducts = true;
+                                            getIntent().removeExtra(LOAD_PRODUCTS);
+                                            mImageViewLoadingProducts.clearAnimation();
+                                            mImageViewLoadingProducts.setVisibility(View.GONE);
+                                            mTextViewLoadingProducts.setText(R.string.err_loading_products);
+                                            updateControlsState();
+                                        }
+                                        return;
+                                    }
+
+                                    Receipt receipt = body.getTicket().getDocument().getReceipt();
+
+                                    List<Item> items = new ArrayList<>(receipt.getItems());
+                                    List<ProductEntry> productEntries = new ArrayList<>();
+                                    ProductsDAO productsDAO = ProductsDAO.getInstance(getApplicationContext());
+                                    Product product;
+                                    ProductEntry productEntry;
+                                    ProductEntrysDAO productEntrysDAO = ProductEntrysDAO.getInstance(getApplicationContext());
+                                    for (Item item : items) {
+                                        if (item.getName() == null)
+                                            item.setName(getString(R.string.ent_unknown_product));
+                                        try {
+                                            product = (Product) productsDAO.getModelByName(item.getName());
+                                        } catch (Exception e) {
+                                            product = new Product();
+                                        }
+                                        if (product.getID() < 0) {
+                                            try {
+                                                product.setName(item.getName());
+                                                product = (Product) productsDAO.createModel(product);
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        if (product.getID() > 0) {
+                                            productEntry = new ProductEntry();
+                                            productEntry.setPrice(new BigDecimal(item.getPrice() / -100d));
+                                            productEntry.setQuantity(new BigDecimal(item.getQuantity()));
+                                            productEntry.setCategoryID(productEntrysDAO.getLastCategoryID(product.getName()));
+                                            productEntry.setTransactionID(transaction.getID());
+                                            productEntry.setProductID(product.getID());
+                                            productEntries.add(productEntry);
+                                        }
+                                    }
+                                    String payeeName = receipt.getUser();
+                                    if (payeeName == null || payeeName.isEmpty())
+                                        payeeName = receipt.getUserInn();
+
+                                    mImageViewLoadingProducts.clearAnimation();
+                                    mLayoutLoadingProducts.setVisibility(View.GONE);
+
+                                    transaction.getProductEntries().clear();
+                                    transaction.getProductEntries().addAll(productEntries);
+                                    getIntent().removeExtra(LOAD_PRODUCTS);
+                                    fillProductList();
+                                    if ((viewPager.getCurrentItem() == 0) && mPayeeName != null && mPayeeName.isEmpty())
+                                        setPayeeName(payeeName);
+                                    isErrorLoadingProducts = false;
+                                }
+
+                                @Override
+                                public void onFailure(String errMsg, int responseCode) {
+                                    boolean isErr = false;
+                                    if (responseCode == 401) {
+                                        FtsHelper.clearFtsCredentials(mPreferences);
+                                        isErr = true;
+                                        errMsg = getString(R.string.ttl_user_incorrect);
+                                    } else if (attempt < 5 || (responseCode == 202 && attempt < 10)) {
+                                        mTextViewLoadingProducts.setText(getString(R.string.ttl_add_accept_attempt, ++attempt));
+                                        unsubscribeOnDestroy(mFtsHelper.getCheck(ticketId, this));
+                                    } else {
+                                        isErr = true;
+                                    }
+
+                                    if (isErr) {
+                                        isErrorLoadingProducts = true;
+                                        getIntent().removeExtra(LOAD_PRODUCTS);
+                                        mImageViewLoadingProducts.clearAnimation();
+                                        mImageViewLoadingProducts.setVisibility(View.GONE);
+                                        mTextViewLoadingProducts.setText(errMsg);
+                                        updateControlsState();
+                                    }
+                                }
+                            };
+                            unsubscribeOnDestroy(mFtsHelper.getCheck(ticketId, getCallback));
+                        }
+
+                        @Override
+                        public void onFailure(String errMsg, int responseCode) {
+                            if (responseCode == 401) {
+                                FtsHelper.clearFtsCredentials(mPreferences);
+                                errMsg = getString(R.string.ttl_user_incorrect);
+                            }
+                            isErrorLoadingProducts = true;
+                            getIntent().removeExtra(LOAD_PRODUCTS);
+                            mImageViewLoadingProducts.clearAnimation();
+                            mImageViewLoadingProducts.setVisibility(View.GONE);
+                            mTextViewLoadingProducts.setText(errMsg);
+                            updateControlsState();
+                        }
+                    };
+                    unsubscribeOnDestroy(mFtsHelper.addCheck(transaction, addCallback));
                 }
 
                 @Override
-                public void onAccepted() {
-                }
-
-                @Override
-                public void onFailure(String errorMessage, boolean tryAgain) {
+                public void onFailure(String errMsg, int responseCode) {
                     isErrorLoadingProducts = true;
-                    getIntent().removeExtra("load_products");
-                    spinAnim.cancel();
-                    spinAnim.reset();
+                    getIntent().removeExtra(LOAD_PRODUCTS);
+                    mImageViewLoadingProducts.clearAnimation();
                     mImageViewLoadingProducts.setVisibility(View.GONE);
-                    mTextViewLoadingProducts.setText(errorMessage);
+                    mTextViewLoadingProducts.setText(errMsg);
                     updateControlsState();
                 }
             };
-            unsubscribeOnDestroy(mFtsHelper.downloadProductEntryList(transaction, downloadProductsListener));
+            getIntent().putExtra(LOAD_PRODUCTS, LP_RECEIVING);
+            unsubscribeOnDestroy(mFtsHelper.isCheckExists(transaction, checkCallback));
         } else {
             mLayoutLoadingProducts.setVisibility(View.GONE);
             fillProductList();
-            if (!mPreferences.getBoolean(FgConst.PREF_FTS_DO_NOT_SHOW_AGAIN, false)) {
+            if (mPreferences.getBoolean(FgConst.PREF_FTS_ENABLED, true)) {
                 startActivityForResult(
                         new Intent(ActivityEditTransaction.this, ActivityFtsLogin.class),
                         RequestCodes.REQUEST_CODE_ENTER_FTS_LOGIN);
@@ -1749,10 +1873,27 @@ public class ActivityEditTransaction extends ToolbarActivity implements
         }
     }
 
+    private void loadProductsJSON(String jsonAsString) {
+        try {
+            FTSJsonToTransaction ftsJsonToTransaction = new FTSJsonToTransaction(getApplicationContext(), transaction, jsonAsString);
+            transaction = ftsJsonToTransaction.generateTransaction(true);
+            setPayeeName(ftsJsonToTransaction.getPayerName());
+            getIntent().removeExtra(LOAD_PRODUCTS);
+            isErrorLoadingProducts = false;
+            initUI();
+        } catch (Exception e) {
+            isErrorLoadingProducts = true;
+            getIntent().removeExtra(LOAD_PRODUCTS);
+            mTextViewLoadingProducts.setText(e.getMessage());
+            updateControlsState();
+        }
+    }
+
     private void initProductList() {
-        if (getIntent().getBooleanExtra("load_products", false)) {
+        int lp_state = getIntent().getIntExtra(LOAD_PRODUCTS, LP_NONE);
+        if (lp_state == LP_QUERY) {
             loadProducts();
-        } else {
+        } else if (lp_state == LP_NONE) {
             fillProductList();
         }
 
@@ -2170,11 +2311,11 @@ public class ActivityEditTransaction extends ToolbarActivity implements
             updateControlsState();
         } else if (resultCode == RESULT_OK && requestCode == RequestCodes.REQUEST_CODE_SCAN_QR) {
             transaction = data.getParcelableExtra("transaction");
-            getIntent().putExtra("load_products", true);
+            getIntent().putExtra(LOAD_PRODUCTS, LP_QUERY);
             initUI();
         } else if (requestCode == RequestCodes.REQUEST_CODE_ENTER_FTS_LOGIN) {
             if (resultCode != RESULT_OK) {
-                getIntent().removeExtra("load_products");
+                getIntent().removeExtra(LOAD_PRODUCTS);
             }
         } else {
             switch (requestCode) {

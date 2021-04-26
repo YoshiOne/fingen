@@ -24,7 +24,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.util.Log;
@@ -60,6 +59,7 @@ import com.yoshione.fingen.dao.SmsMarkersDAO;
 import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.filters.AbstractFilter;
 import com.yoshione.fingen.filters.AccountFilter;
+import com.yoshione.fingen.fts.FTSJsonToTransaction;
 import com.yoshione.fingen.iab.BillingService;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ITransactionItemEventListener;
@@ -69,7 +69,6 @@ import com.yoshione.fingen.model.AccountsSet;
 import com.yoshione.fingen.model.BaseModel;
 import com.yoshione.fingen.model.Events;
 import com.yoshione.fingen.model.Sender;
-import com.yoshione.fingen.model.SimpleDebt;
 import com.yoshione.fingen.model.SmsMarker;
 import com.yoshione.fingen.model.Template;
 import com.yoshione.fingen.model.TrEditItem;
@@ -77,6 +76,7 @@ import com.yoshione.fingen.model.Transaction;
 import com.yoshione.fingen.receivers.SMSReceiver;
 import com.yoshione.fingen.utils.ColorUtils;
 import com.yoshione.fingen.utils.Lg;
+import com.yoshione.fingen.utils.ModUtils;
 import com.yoshione.fingen.utils.NotificationCounter;
 import com.yoshione.fingen.utils.NotificationHelper;
 import com.yoshione.fingen.utils.PrefUtils;
@@ -88,9 +88,16 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -168,6 +175,7 @@ public class ActivityMain extends ToolbarActivity {
     private volatile boolean waitForQueue = false;
     UpdateUIHandler mUpdateUIHandler;
     private int mUnreadSms = 0;
+    private String importJsonTicket = null;
 
     @Inject
     Lazy<BillingService> mBillingService;
@@ -259,9 +267,13 @@ public class ActivityMain extends ToolbarActivity {
         //<editor-fold desc="Check version and show changelog if necessary">
         PackageInfo pInfo;
         int version;
+        int version_x = -1;
         try {
             pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             version = pInfo.versionCode;
+            int index = pInfo.versionName.lastIndexOf("-X");
+            if (index != -1)
+                version_x = Integer.parseInt(pInfo.versionName.substring(index + 3));
         } catch (PackageManager.NameNotFoundException e) {
             version = -1;
         }
@@ -269,6 +281,16 @@ public class ActivityMain extends ToolbarActivity {
             int prevVersion = mPreferences.getInt("version_code", -1);
             if (version != prevVersion) {
                 onUpdateVersion(prevVersion, version);
+            } else if (version_x != -1) {
+                long current_time = new Date().getTime();
+                if (current_time > mPreferences.getLong(FgConst.PREF_VERSION_NEXT_CHECK, -1)) {
+                    ModUtils.checkVersion(this, mPreferences.getInt(FgConst.PREF_VERSION_X_CHECK, version_x), (response) -> {
+                        mPreferences.edit().putLong(FgConst.PREF_VERSION_NEXT_CHECK, current_time + 24 * 60 * 60 * 1000).apply();
+                        if (response.getExists()) {
+                            FragmentChangelog.show(ActivityMain.this, FragmentChangelog.CHANGELOG_URL);
+                        }
+                    });
+                }
             }
         }
         //</editor-fold>
@@ -336,14 +358,7 @@ public class ActivityMain extends ToolbarActivity {
             mPreferences.edit().putInt(FgConst.PREF_NEW_ACCOUNT_BUTTON_COUNTER, 4).apply();
         }
 
-        FragmentChangelog fragmentChangelog = new FragmentChangelog();
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        Fragment prev = fm.findFragmentByTag("changelogdemo_dialog");
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        fragmentChangelog.show(ft, "changelogdemo_dialog");
+        FragmentChangelog.show(ActivityMain.this, FragmentChangelog.CHANGELOG_X);
     }
 
     @Override
@@ -477,6 +492,31 @@ public class ActivityMain extends ToolbarActivity {
         super.onStart();
         EventBus.getDefault().register(this);
 
+        if (Intent.ACTION_SEND.equals(getIntent().getAction()) && getIntent().getType() != null) {
+            getIntent().setAction("");
+            String type = getIntent().getType();
+            if ("text/html".equals(type)) {
+                Uri jsonUri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+                if (jsonUri != null) {
+                    File fl = new File(jsonUri.getPath());
+                    try {
+                        FileInputStream fin = new FileInputStream(fl);
+                        String ret = convertStreamToString(fin);
+                        fin.close();
+                        Transaction transaction = new Transaction(-1);
+                        FTSJsonToTransaction ftsJsonToTransaction = new FTSJsonToTransaction(getApplicationContext(), transaction, ret);
+                        transaction = ftsJsonToTransaction.generateTransaction(false);
+                        importJsonTicket = ret;
+                        findTransactionDialog(transaction);
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
         checkPermissionsAndShowAlert();
 
         List<TrEditItem> tabs = PrefUtils.getTabsOrder(mPreferences, ActivityMain.this);
@@ -517,6 +557,24 @@ public class ActivityMain extends ToolbarActivity {
         if (currentItem >= 0 && currentItem < fragments.size()) {
             viewPager.setCurrentItem(currentItem);
         }
+    }
+
+    public static String convertStreamToString(InputStream is) throws IOException {
+        // http://www.java2s.com/Code/Java/File-Input-Output/ConvertInputStreamtoString.htm
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        boolean firstLine = true;
+        while ((line = reader.readLine()) != null) {
+            if (firstLine) {
+                sb.append(line);
+                firstLine = false;
+            } else {
+                sb.append("\n").append(line);
+            }
+        }
+        reader.close();
+        return sb.toString();
     }
 
     private String getFragmentID(Fragment fragment) {
@@ -808,18 +866,8 @@ public class ActivityMain extends ToolbarActivity {
 
     private void checkPermissionsAndShowAlert() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
-            List<SmsMarker> smsMarkers;
-            try {
-                smsMarkers = mSmsMarkersDAO.get().getAllSmsParserPatterns();
-            } catch (Exception e) {
-                smsMarkers = new ArrayList<>();
-            }
-            List<Sender> senders;
-            try {
-                senders = mSendersDAO.get().getAllSenders();
-            } catch (Exception e) {
-                senders = new ArrayList<>();
-            }
+            List<SmsMarker> smsMarkers = mSmsMarkersDAO.get().getAllModels();
+            List<Sender> senders = mSendersDAO.get().getAllModels();
             if (smsMarkers.size() > 0 | senders.size() > 0) {
                 ActivityMainPermissionsDispatcher.getReceiveSmsPermissionWithPermissionCheck(this);
             }
@@ -918,59 +966,70 @@ public class ActivityMain extends ToolbarActivity {
                 }
             }
         }else if (data != null && resultCode == RESULT_OK && requestCode == RequestCodes.REQUEST_CODE_SCAN_QR) {
-            final Intent intent = new Intent(this, ActivityEditTransaction.class);
             final Transaction transaction = data.getParcelableExtra("transaction");
-            List<Transaction> transactions = mTransactionsDAO.get().getTransactionsByQR(transaction, getApplicationContext());
-            if (transactions.isEmpty()) {
-                intent.putExtra("transaction", transaction);
-                intent.putExtra("load_products", true);
-                this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
-            } else {
-                AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
-                builderSingle.setTitle(getResources().getString(R.string.ttl_attach_receipt_to));
-
-                final Dialog[] dialog = new Dialog[]{null};
-                final TransactionsArrayAdapter arrayAdapter = new TransactionsArrayAdapter(
-                        this, transactions, new ITransactionItemEventListener() {
-                    @Override
-                    public void onTransactionItemClick(Transaction foundTransaction) {
-                        dialog[0].dismiss();
-                        foundTransaction.setFN(transaction.getFN());
-                        foundTransaction.setFD(transaction.getFD());
-                        foundTransaction.setFP(transaction.getFP());
-                        intent.putExtra("transaction", foundTransaction);
-                        intent.putExtra("load_products", true);
-                        startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
-                    }
-
-                    @Override
-                    public void onSelectionChange(int selectedCount) {
-
-                    }
-                });
-                arrayAdapter.addAll(transactions);
-
-                builderSingle.setPositiveButton(getResources().getString(R.string.act_create_new),
-                        (dialogInterface, i) -> {
-                            intent.putExtra("transaction", transaction);
-                            intent.putExtra("load_products", true);
-                            startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
-                        });
-
-                builderSingle.setAdapter(arrayAdapter, null);
-                dialog[0] = builderSingle.show();
-
-                WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-                lp.copyFrom(Objects.requireNonNull(dialog[0].getWindow()).getAttributes());
-                lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-                lp.height = ScreenUtils.dpToPx(500f, this);
-                dialog[0].show();
-                dialog[0].getWindow().setAttributes(lp);
-            }
+            findTransactionDialog(transaction);
         }else if (requestCode == RequestCodes.REQUEST_CODE_OPEN_PREFERENCES) {
-//            updateLists();
+            updateLists();
         } else {
             new Handler().postDelayed(() -> fragments.get(viewPager.getCurrentItem()).onActivityResult(requestCode, resultCode, data), 200);
+        }
+    }
+
+    private void findTransactionDialog(Transaction transaction)
+    {
+        final Intent intent = new Intent(this, ActivityEditTransaction.class);
+
+        List<Transaction> transactions = mTransactionsDAO.get().getTransactionsByQR(transaction, getApplicationContext());
+        if (transactions.isEmpty()) {
+            intent.putExtra("transaction", transaction);
+            intent.putExtra("load_products", 1);
+            intent.putExtra("jsonAsString", importJsonTicket);
+            this.startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+        } else {
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+            builderSingle.setTitle(getResources().getString(R.string.ttl_attach_receipt_to));
+
+            final Dialog[] dialog = new Dialog[]{null};
+            final TransactionsArrayAdapter arrayAdapter = new TransactionsArrayAdapter(
+                    this, transactions, new ITransactionItemEventListener() {
+                @Override
+                public void onTransactionItemClick(Transaction foundTransaction) {
+                    dialog[0].dismiss();
+                    foundTransaction.setFN(transaction.getFN());
+                    foundTransaction.setFD(transaction.getFD());
+                    foundTransaction.setFP(transaction.getFP());
+                    foundTransaction.setDateTime(transaction.getDateTime());
+                    foundTransaction.setAmount(transaction.getAmount(), transaction.getTransactionType());
+                    intent.putExtra("transaction", foundTransaction);
+                    intent.putExtra("load_products", 1);
+                    intent.putExtra("jsonAsString", importJsonTicket);
+                    startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+                }
+
+                @Override
+                public void onSelectionChange(int selectedCount) {
+
+                }
+            });
+            arrayAdapter.addAll(transactions);
+
+            builderSingle.setPositiveButton(getResources().getString(R.string.act_create_new),
+                    (dialogInterface, i) -> {
+                        intent.putExtra("transaction", transaction);
+                        intent.putExtra("load_products",1);
+                        intent.putExtra("jsonAsString", importJsonTicket);
+                        startActivityForResult(intent, RequestCodes.REQUEST_CODE_EDIT_TRANSACTION);
+                    });
+
+            builderSingle.setAdapter(arrayAdapter, null);
+            dialog[0] = builderSingle.show();
+
+            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            lp.copyFrom(Objects.requireNonNull(dialog[0].getWindow()).getAttributes());
+            lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+            lp.height = ScreenUtils.dpToPx(500f, this);
+            dialog[0].show();
+            dialog[0].getWindow().setAttributes(lp);
         }
     }
 

@@ -8,14 +8,9 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 
-/**
- * Created by slv on 25.10.2016.
- * a
- */
-
 public class TreeManager {
 
-    public static BaseNode convertListToTree(List<IAbstractModel> models, int modelType) {
+    public static BaseNode convertListToTree(List<? extends IAbstractModel> models, int modelType) {
         BaseNode tree = new BaseNode(BaseModel.createModelByType(modelType), null);
 
         HashSet<Long> processedIds = new HashSet<>();

@@ -13,6 +13,9 @@ import com.l4digital.fastscroll.FastScroller;
 import com.yoshione.fingen.R;
 import com.yoshione.fingen.adapter.viewholders.TransactionViewHolder;
 import com.yoshione.fingen.adapter.viewholders.TransactionViewHolderParams;
+import com.yoshione.fingen.filters.AbstractFilter;
+import com.yoshione.fingen.filters.FilterListHelper;
+import com.yoshione.fingen.filters.NestedModelFilter;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 import com.yoshione.fingen.interfaces.ILoadMoreFinish;
 import com.yoshione.fingen.interfaces.IOnLoadMore;
@@ -25,6 +28,7 @@ import com.yoshione.fingen.widgets.ToolbarActivity;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import butterknife.BindView;
@@ -42,6 +46,8 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
     private int lastYear;
     private int lastDay;
     private Date lastDate;
+    private HashSet<Long> filterCategory;
+    private HashSet<Long> filterProject;
     private final ArrayList<Transaction> transactionList;
     private final List<String> headerList;
     private IOnLoadMore mOnLoadMore;
@@ -67,6 +73,8 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
 
         mTransactionItemEventListener = transactionItemEventListener;
         mOnLoadMore = onLoadMore;
+        filterCategory = new HashSet<>();
+        filterProject = new HashSet<>();
         transactionList = new ArrayList<>();
         headerList = new ArrayList<>();
 
@@ -96,7 +104,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         return -1;
     }
 
-    public void addTransactions(List<Transaction> input, boolean clearLists) {
+    public void addTransactions(List<Transaction> input, FilterListHelper filterListHelper, boolean clearLists) {
         synchronized (headerList) {
             if (clearLists) {
                 transactionList.clear();
@@ -109,6 +117,24 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
             if (input.size() == 0) {
                 headerList.add(dateTimeFormatter.getDateLongStringWithDayOfWeekName(new Date()));
                 return;
+            }
+
+            filterCategory.clear();
+            filterProject.clear();
+            if (filterListHelper != null) {
+                for (AbstractFilter filter : filterListHelper.getFilters()) {
+                    if (filter.getClass().equals(NestedModelFilter.class) && filter.getEnabled()) {
+                        NestedModelFilter f = (NestedModelFilter) filter;
+                        switch (f.getModelType()) {
+                            case IAbstractModel.MODEL_TYPE_CATEGORY:
+                                filterCategory = f.getIDsSetWithNestedIDs(mActivity);
+                                break;
+                            case IAbstractModel.MODEL_TYPE_PROJECT:
+                                filterProject = f.getIDsSetWithNestedIDs(mActivity);
+                                break;
+                        }
+                    }
+                }
             }
 
             int curYear;
@@ -184,7 +210,7 @@ public class AdapterTransactions extends RecyclerView.Adapter implements FastScr
         Transaction transaction = transactionList.get(position);
 
         TransactionViewHolder tvh = (TransactionViewHolder) viewHolder;
-        tvh.bindTransaction(transaction);
+        tvh.bindTransaction(transaction, filterCategory, filterProject);
     }
 
     @Override

@@ -12,7 +12,7 @@ import com.yoshione.fingen.model.Transaction;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class TemplatesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class TemplatesDAO extends BaseDAO<Template> implements IDaoInheritor {
 
     //<editor-fold desc="log_Templates">
     public static final String TABLE = "log_Templates";
@@ -107,14 +107,9 @@ public class TemplatesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor 
         return template;
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Template> getAllTemplates() {
-        return (List<Template>) getItems(getTableName(), null, null,
-                null, COL_NAME, null);
-    }
-
     @Override
-    public List<?> getAllModels() {
-        return getAllTemplates();
+    public List<Template> getAllModels() {
+        return getItems(getTableName(), null, null,
+                null, COL_NAME, null);
     }
 }

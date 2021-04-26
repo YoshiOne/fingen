@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class CategoriesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class CategoriesDAO extends BaseDAO<Category> implements IDaoInheritor {
 
     //<editor-fold desc="ref_Categories">
     public static final String TABLE = "ref_Categories";
@@ -173,12 +173,6 @@ public class CategoriesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
         super.deleteModel(model, resetTS, context);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Category> getAllCategories() {
-        return (List<Category>) getItems(getTableName(), null,
-                null, null, COL_ORDER_NUMBER + " ASC", null);
-    }
-
     public List<Category> getAllCategoriesWithPlanFact(int year, int month) {
         Calendar c = Calendar.getInstance();
         c.set(year, month, 1, 0, 0, 0);
@@ -240,7 +234,8 @@ public class CategoriesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor
     }
 
     @Override
-    public List<?> getAllModels() {
-        return getAllCategories();
+    public List<Category> getAllModels() {
+        return getItems(getTableName(), null,
+                null, null, COL_ORDER_NUMBER + " ASC", null);
     }
 }

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelog bulletedList="true">
+    <changelogversion versionName="2.6.4.2-x.7" changeDate=">2020.08.16">
+        <changelogtext>Исправлен поиск кириллицей в справочниках</changelogtext>
+        <changelogtext>Добавлена обработка некоторых специфических типов электронных чеков из ФНС</changelogtext>
+        <changelogtext>При сканировании QR-кода из вкладки транзакций теперь заменяется дата найденной существующей транзакции</changelogtext>
+        <changelogtext>Исправлено отображение даты в списке найденных транзакций после сканирования QR-кода</changelogtext>
+        <changelogtext>Добавлена кнопка переключения на авто-фокус в окне сканирования QR-кода</changelogtext>
+        <changelogtext>В настройки добавлен выбор размера шрифта</changelogtext>
+        <changelogtext>Исправлено много различных вылетов приложения</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.6.4.2-x.6" changeDate=">2020.08.13">
+        <changelogtext>Восстановлена возможность получения электронных чеков с сервера ФНС (подробности на форуме)</changelogtext>
+        <changelogtext>Исправлена замена категории у существующей транзакции после сканирования QR-кода</changelogtext>
+        <changelogtext>Исправлена сохранение получателя после загрузки товаров из электронного чека</changelogtext>
+        <changelogtext>Исправлен автоматический запуск загрузки электронного чека после сканирования QR-кода со страницы транзакций</changelogtext>
+        <changelogtext>(kasimm) Добавлена автоподстановка категории товаров на основе последнего выбора</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.6.4.2-x.5" changeDate=">2020.08.07">
+        <changelogtext>Исправлены некоторые вылеты приложения</changelogtext>
+        <changelogtext>(Sovvateikin Sergei) Исправлен импорт товаров из CSV</changelogtext>
+        <changelogtext>(Sovvateikin Sergei) Исправлен пропуск дубликатов при импорте из CSV</changelogtext>
+        <changelogtext>(unwo) Добавлено чтение чека из приложения "Проверка чеков ФНС"</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.6.4.2-x.4" changeDate=">2020.05.18">
+        <changelogtext>Добавлена проверка о появлении новой версии</changelogtext>
+        <changelogtext>В наборы счетов добавлен постоянный набор "Все закрытые счета"</changelogtext>
+        <changelogtext>В контекстном меню счета добавлен пункт "Закрыть/Открыть счет"</changelogtext>
+        <changelogtext>(unwo) Добавлен выбор подразделения товара в транзакциях</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.6.4.2-x.3" changeDate=">2020.04.18">
+        <changelogtext>Исправлена ошибка с регистрацией и восстановлением кода ФНС</changelogtext>
+        <changelogtext>Переработана загрузка электронного чека из ФНС</changelogtext>
+        <changelogtext>Добавлена кнопка "Загрузить QR-код из галереи"</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.6.4.2-x.2" changeDate=">2020.04.13">
+        <changelogtext>Переработано окно настройки учетных данных ФНС</changelogtext>
+        <changelogtext>Исправлены вылеты приложения</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.6.4.2-x.1" changeDate=">2020.04.04">
+        <changelogtext>Добавлена возможность создать резервную копию для оригинального приложения</changelogtext>
+        <changelogtext>Исправлен вывод суммы во вкладке долгов</changelogtext>
+        <changelogtext>Переработано окно параметров пин-кода в настройках</changelogtext>
+        <changelogtext>Добавлен вывод частичный суммы при текстовом поиске в транзакциях</changelogtext>
+        <changelogtext>Убрана кнопка "Восстановить из Dropbox" при отсутствии к нему подключения</changelogtext>
+        <changelogtext>Исправлен плавающий вылет при выходе из настроек</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="2.6.4.2-x.0" changeDate=">2020.03.28">
+        <changelogtext>Кнопки вкладок заменены на изображения с подписями и перемещены вниз</changelogtext>
+        <changelogtext>Нижние кнопки добавления новой транзакции (скан чека, шаблоны, расход, приход, перевод) теперь только на вкладке "Транзакции"</changelogtext>
+        <changelogtext>Заменен QRCodeReader на BarcodeDetector с использование библиотеки play-services-vision</changelogtext>
+        <changelogtext>Добавлен вывод частичной суммы в сплит-категориях при выборе соответствующей фильтрации</changelogtext>
+        <changelogtext>Добавлен вывод текущего состояния счета (около его имени) при вводе и изменении транзакций</changelogtext>
+        <changelogtext>Добавлен вывод последних 4 цифр дебетовой/кредитной карты на вкладке "Счета"</changelogtext>
+        <changelogtext>Добавлена опция "Показывать транзакции закрытых счетов"</changelogtext>
+        <changelogtext>Добавлен параметр счета "Включать в итог"</changelogtext>
+        <changelogtext>Убран циклический запрос электронного чека, из-за которого дергалась анимация иконки и приложение подвисало, но если чек получить не удалось, то выдается ошибка и необходимо запрашивать повторный чек вручную</changelogtext>
+        <changelogtext>Исправлено мелькание иконок на вкладке счетов при пролистывании списка счетов</changelogtext>
+        <changelogtext>Исправлен вылет приложения при сканировании QR-кода, если в буфере обмена ничего не содержится</changelogtext>
+        <changelogtext>Убран вывод получателя/плательщика в списке транзакций, если поле пустое, тогда вместо него выводить комментарий транзакции</changelogtext>
+        <changelogtext>Добавлена возможность множественного выбора во вкладке долгов (как в транзакция), по выделенным долгам считается сумму</changelogtext>
+        <changelogtext>Поиск во вкладке "Транзакции" теперь также ищет в продуктах из электронного чека этой транзакции</changelogtext>
+        <changelogtext>Произведена миграция библиотек до AndroidX</changelogtext>
+        <changelogtext>Увеличена производительность при фильтрации категорий</changelogtext>
+        <changelogtext>(smet) Изменен процесс загрузки чеков - приложение не виснет, анимация иконки загрузки может дергаться (сбрасывает при каждом запросе - которых может быть много, ожидание до 1 минуты, но чек потом приходит)</changelogtext>
+        <changelogtext>(smet) Разблокированы про функции</changelogtext>
+        <changelogtext>(smet) При открытии сканера чеков выполняется проверка буфера обмена, если в нем строка соответствующая результатам скана - выдает запрос на получение чека из буфера обмена, вместо выполнения скана (некоторые чеки Google Lens только может разобрать, из него и копировал строку)</changelogtext>
+        <changelogtext>(smet) Добавлена возможность мультиоконности или плавающего окна (на Samsung) - реализована некорректна, запущенное приложение закрывается, повторная попытка открывает по крайней мере в плавающем окне на Samsung</changelogtext>
+        <changelogtext>(smet) Пофикшена проблема скролинга (открытие и закрытие транзакций не сбрасывают позицию в списке)</changelogtext>
+        <changelogtext>(smet) Убрана проблема дублирование транзакций при скролинге</changelogtext>
+        <changelogtext>(smet) Пофикшены некоторые проблемы фильтрации (в частности крэш приложения при пустом NOT фильтре)</changelogtext>
+        <changelogtext>(Screamer_dot) Добавлена вкладка "Долги" на главный экран</changelogtext>
+        <changelogtext>(Screamer_dot) Добавлена возможность скрывать закрытые долги</changelogtext>
+        <changelogtext>(Screamer_dot) В настройки добавлен выбор порядка вкладок на главном экране</changelogtext>
+        <changelogtext>(unwo) Установка первого дня неделя (в настройках) теперь влияет и на календарь в изменениях транзакции, в фильтрах и при импорте sms</changelogtext>
+        <changelogtext>(Lev Maximov) Использовать ИНН компании из загруженного электронного чека если имя компании не указано</changelogtext>
+        <changelogtext>Мелкие исправления вылетов приложения</changelogtext>
+    </changelogversion>
+</changelog>

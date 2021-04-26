@@ -1,6 +1,6 @@
 package com.yoshione.fingen.di.modules;
 
-import com.yoshione.fingen.fts.FtsApi;
+import com.yoshione.fingen.fts.api.TicketApi;
 
 import javax.inject.Singleton;
 
@@ -9,10 +9,10 @@ import dagger.Provides;
 import retrofit2.Retrofit;
 
 @Module(includes = {FtsRetrofitModule.class})
-public class FtsApiModule {
+public class TicketApiModule {
     @Provides
     @Singleton
-    public FtsApi provideSyncApi(Retrofit retrofit) {
-        return retrofit.create(FtsApi.class);
+    public TicketApi provideTicketApi(Retrofit retrofit) {
+        return retrofit.create(TicketApi.class);
     }
 }

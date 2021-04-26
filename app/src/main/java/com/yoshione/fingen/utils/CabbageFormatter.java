@@ -28,6 +28,10 @@ public class CabbageFormatter {
         mNumberFormat = NumberFormat.getCurrencyInstance();
     }
 
+    public synchronized int getDecimalCount() {
+        return mCabbage != null ? mCabbage.getDecimalCount() : 0;
+    }
+
     public synchronized String format(BigDecimal amount){
         if (mCabbage != null) {
             mNumberFormat.setMinimumFractionDigits(mCabbage.getDecimalCount());

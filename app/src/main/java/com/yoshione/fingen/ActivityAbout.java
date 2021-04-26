@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,8 @@ public class ActivityAbout extends ToolbarActivity {
     TextView mButtonLicenses;
     @BindView(R.id.buttonChangeLog)
     TextView mButtonChangeLog;
+    @BindView(R.id.buttonChangeLogX)
+    TextView mButtonChangeLogX;
     @BindView(R.id.textViewSQLiteVersion)
     TextView mTextViewSQLiteVersion;
     @BindView(R.id.buttonRebuildDB)
@@ -47,9 +50,12 @@ public class ActivityAbout extends ToolbarActivity {
         mHandler = new UpdateUIHandler(this);
         PackageInfo pInfo;
         String version;
+        boolean isMod = false;
         try {
             pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             version = pInfo.versionName;
+            if (version.contains("-X"))
+                isMod = true;
         } catch (PackageManager.NameNotFoundException e) {
             version = "N/A";
         }
@@ -66,19 +72,13 @@ public class ActivityAbout extends ToolbarActivity {
             }
         });
 
-        mButtonChangeLog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentChangelog fragmentChangelog = new FragmentChangelog();
-                FragmentManager fm = ActivityAbout.this.getSupportFragmentManager();
-                FragmentTransaction ft = fm.beginTransaction();
-                Fragment prev = fm.findFragmentByTag("changelogdemo_dialog");
-                if (prev != null) {
-                    ft.remove(prev);
-                }
-                fragmentChangelog.show(ft, "changelogdemo_dialog");
-            }
-        });
+        mButtonChangeLog.setOnClickListener(v -> FragmentChangelog.show(ActivityAbout.this, FragmentChangelog.CHANGELOG_DEFAULT));
+
+        if (isMod) {
+            mButtonChangeLogX.setOnClickListener(v -> FragmentChangelog.show(ActivityAbout.this, FragmentChangelog.CHANGELOG_X));
+        } else {
+            ((LinearLayout) mButtonChangeLogX.getParent()).setVisibility(View.GONE);
+        }
 
         mButtonRebuildDB.setOnClickListener(new View.OnClickListener() {
             @Override

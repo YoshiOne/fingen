@@ -135,7 +135,7 @@ public class SMSReceiver extends BroadcastReceiver {
                                 .setContentText(TransactionManager.transactionToString(transaction, context))// Текст уведомления
                                 .addAction(android.R.drawable.ic_menu_edit, context.getString(R.string.act_edit), pIntentEdit);
 
-                        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true)) {
+                        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(FgConst.PREF_SCAN_QR_ENABLED, true)) {
                             Intent intentScanQR = new Intent(context, ActivityEditTransaction.class);
                             intentScanQR.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             intentScanQR.putExtra("transaction", transaction);

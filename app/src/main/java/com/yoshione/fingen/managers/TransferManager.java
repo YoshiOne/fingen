@@ -30,7 +30,7 @@ public class TransferManager {
     private static BigDecimal trimExRate(BigDecimal untrim, BigDecimal src, BigDecimal dst) {
         BigDecimal cur;
         BigDecimal prev = new BigDecimal(String.valueOf(untrim.doubleValue()));
-        BigDecimal trim = new BigDecimal(String.valueOf(untrim.doubleValue()));
+        BigDecimal trim = prev;
         int scale = untrim.scale();
         while (scale >= 0) {
             trim = untrim.setScale(scale, RoundingMode.HALF_EVEN);

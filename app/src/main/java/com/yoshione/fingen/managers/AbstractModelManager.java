@@ -25,57 +25,44 @@ import com.yoshione.fingen.utils.BaseNode;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Leonid on 25.10.2016.
- * a
- */
-
 public class AbstractModelManager {
 
     public static void editNestedModelNameViaDialog(final IAbstractModel model, final Activity activity, final EditDialogEventsListener eventsListener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(R.string.ttl_enter_new_name);
         final EditText input = (EditText) activity.getLayoutInflater().inflate(R.layout.template_edittext, null);
         input.setText(model.getName());
-        builder.setView(input);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String text = input.getText().toString();
-                if (text.length() > 0) {
-                    model.setName(text);
-                    int modelType = (model).getModelType();
-                    try {
-                        if (modelType == IAbstractModel.MODEL_TYPE_CATEGORY) {
-                            CategoriesDAO.getInstance(activity).createCategory((Category) model, activity);
-                        } else if (modelType == IAbstractModel.MODEL_TYPE_PROJECT) {
-                            ProjectsDAO.getInstance(activity).createProject((Project) model, activity);
+        new AlertDialog.Builder(activity)
+                .setTitle(R.string.ttl_enter_new_name)
+                .setView(input)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    String text = input.getText().toString();
+                    if (text.length() > 0) {
+                        model.setName(text);
+                        int modelType = (model).getModelType();
+                        try {
+                            if (modelType == IAbstractModel.MODEL_TYPE_CATEGORY) {
+                                CategoriesDAO.getInstance(activity).createCategory((Category) model, activity);
+                            } else if (modelType == IAbstractModel.MODEL_TYPE_PROJECT) {
+                                ProjectsDAO.getInstance(activity).createProject((Project) model, activity);
                         } else if (modelType == IAbstractModel.MODEL_TYPE_DEPARTMENT) {
                             DepartmentsDAO.getInstance(activity).createDepartment((Department) model, activity);
-                        } else {
-                            AbstractDAO dao = BaseDAO.getDAO(modelType, activity);
-                            if (dao != null) {
-                                dao.createModel(model);
+                            } else {
+                                AbstractDAO dao = BaseDAO.getDAO(modelType, activity);
+                                if (dao != null) {
+                                    dao.createModel(model);
+                                }
                             }
+                        } catch (Exception e) {
+                            Toast.makeText(activity, R.string.msg_error_on_write_to_db, Toast.LENGTH_SHORT).show();
                         }
-                    } catch (Exception e) {
-                        Toast.makeText(activity, R.string.msg_error_on_write_to_db, Toast.LENGTH_SHORT).show();
+                        if (eventsListener != null) {
+                            eventsListener.OnOkClick(model);
+                        }
                     }
-                    if (eventsListener != null) {
-                        eventsListener.OnOkClick(model);
-                    }
-                }
-            }
-        });
-        builder.setNegativeButton(activity.getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+                })
+                .setNegativeButton(activity.getString(android.R.string.cancel), (dialog, which) -> dialog.cancel())
+                .show();
 
-        builder.show();
         input.requestFocus();
     }
 
@@ -83,28 +70,19 @@ public class AbstractModelManager {
         void OnOkClick(IAbstractModel model);
     }
 
-    @SuppressWarnings("unchecked")
     public static void ShowSelectNestedModelDialog(String title,
                                                    final Activity activity,
                                                    BaseNode tree,
                                                    final BaseNode excludeNode,
                                                    final EditDialogEventsListener eventsListener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         final List<BaseNode> nodes = tree.getFlatChildrenListWOChildrenOfGivenOne(excludeNode);
-        builder.setTitle(title)
+
+        new AlertDialog.Builder(activity).setTitle(title)
                 .setNegativeButton(activity.getResources().getString(android.R.string.cancel),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                .setAdapter(createTreeArrayAdapter(activity, nodes), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (eventsListener != null) {
-                            eventsListener.OnOkClick(nodes.get(which).getModel());
-                        }
+                        (dialog, which) -> dialog.dismiss())
+                .setAdapter(createTreeArrayAdapter(activity, nodes), (dialog, which) -> {
+                    if (eventsListener != null) {
+                        eventsListener.OnOkClick(nodes.get(which).getModel());
                     }
                 })
                 .show();
@@ -113,75 +91,15 @@ public class AbstractModelManager {
     private static ArrayAdapter<String> createTreeArrayAdapter(Activity activity, List<BaseNode> nodes) {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1);
         for (BaseNode node : nodes) {
-            String prefix = "";
-            for (int i = 0; i < node.getLevel() - 2; i++) {
-                prefix = prefix + "\t\t";
-            }
-            if (!prefix.isEmpty()) {
-                if (node.isLastChildren()) {
-                    prefix = prefix + "└ ";
-                } else {
-                    prefix = prefix + "├ ";
-                }
-            }
+            StringBuilder prefix = new StringBuilder();
+            for (int i = 0; i < node.getLevel() - 2; i++)
+                prefix.append("\t\t");
+            if (prefix.length() > 0)
+                prefix.append(node.isLastChildren() ? "└ " : "├ ");
             arrayAdapter.add(prefix + node.getModel().getName());
         }
         return arrayAdapter;
     }
-
-    /*public static String getFullName(IAbstractModel model, Context context) {
-        return getFullName(model.getID(), model.getModelType(), context);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static String getFullName(long modelID, int modelType, Context context) {
-        BaseNode tree;
-        AbstractDAO dao = BaseDAO.getDAO(modelType, context);
-        if (dao == null) return "";
-        try {
-            tree = TreeManager.convertListToTree((List<IAbstractModel>) dao.getAllModels(), modelType);
-        } catch (Exception e) {
-            tree = new BaseNode(BaseModel.createModelByType(modelType), null);
-        }
-        return AbstractModelManager.getFullName(modelID, tree);
-    }
-
-    public static String getFullName(long modelID, BaseNode tree) {
-        if (modelID < 0) return "";
-        BaseNode node = null;
-        try {
-            node = tree.getNodeById(modelID);
-        } catch (Exception e) {
-            return "";
-        }
-        String name = node.getModel().getName();
-        if (node.getParent() == null) {
-            node.getParent();
-            return name;
-        }
-        while (node.getParent().getModel().getID() >= 0) {
-            node = node.getParent();
-            name = node.getModel().getName() + "\\" + name;
-        }
-        return name;
-    }*/
-
-    /*@SuppressWarnings("unchecked")
-    public static IAbstractModel getModelByFullName(String fullName, int modelType, AbstractDAO abstractDAO) {
-        BaseNode tree;
-        try {
-            tree = TreeManager.convertListToTree((List<IAbstractModel>) abstractDAO.getAllModels(), modelType);
-        } catch (Exception e) {
-            tree = new BaseNode(BaseModel.createModelByType(modelType), null);
-        }
-
-        BaseNode node = tree.getChildByFullName(fullName);
-        if (node != null) {
-            return node.getModel();
-        } else {
-            return BaseModel.createModelByType(modelType);
-        }
-    }*/
 
     @SuppressWarnings("unchecked")
     static BaseNode createModelWithFullName(String fullName, int modelType, Context context) {
@@ -199,15 +117,12 @@ public class AbstractModelManager {
 
     @SuppressWarnings("unchecked")
     public static List<IAbstractModel> getAllChildren(IAbstractModel parent, Context context) {
-        BaseNode root = new BaseNode(parent, null);
-        List<IAbstractModel> models;
         AbstractDAO dao = BaseDAO.getDAO(parent.getModelType(), context);
-        if (dao == null) return new ArrayList<>();
-        try {
-            models = (List<IAbstractModel>) dao.getAllModels();
-        } catch (Exception e) {
-            models = new ArrayList<>();
-        }
+        if (dao == null)
+            return new ArrayList<>();
+
+        BaseNode root = new BaseNode(parent, null);
+        List<IAbstractModel> models = dao.getAllModels();
         List<Long> processedIds = new ArrayList<>();
 
         int lastIdCount = 0;

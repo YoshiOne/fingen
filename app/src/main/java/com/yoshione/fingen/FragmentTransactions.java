@@ -344,6 +344,8 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             });
 
             setupBottomBar();
+        } else if (getActivity() instanceof ActivityTransactions) {
+            setupBottomBar();
         } else {
             mButtonsBarContainer.setVisibility(View.GONE);
         }
@@ -567,7 +569,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         ListSumsByCabbage listSumsByCabbage;
         try {
             listSumsByCabbage = mTransactionsDAO.getGroupedSums(new FilterListHelper(adapterF.getFilterList(),
-                    mEditTextSearch.getText().toString(), getActivity()), true, adapterT.getSelectedTransactionsIDsAsLong(), getActivity());
+                    mEditTextSearch.getText().toString(), getActivity(), mPreferences, true), true, adapterT.getSelectedTransactionsIDsAsLong(), getActivity());
         } catch (Exception e) {
             listSumsByCabbage = new ListSumsByCabbage();
         }
@@ -1012,11 +1014,12 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
             AtomicLong curTime = new AtomicLong(System.currentTimeMillis());
             ToolbarActivity activity = (ToolbarActivity) getActivity();
             Lg.d(TAG, "loadMore");
+            FilterListHelper filterListHelper = new FilterListHelper(adapterF.getFilterList(), mEditTextSearch.getText().toString(), getActivity(), mPreferences, false);
             Objects.requireNonNull(activity).unsubscribeOnDestroy(
                     mTransactionsDAO.getRangeTransactionsRx(
                             start,
                             numberItems,
-                            new FilterListHelper(adapterF.getFilterList(), mEditTextSearch.getText().toString(), getActivity()),
+                            filterListHelper,
                             getActivity())
 
                             .subscribeOn(Schedulers.newThread())
@@ -1026,7 +1029,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                                 Log.d(TAG, "Query length " + String.valueOf(curTime.get()));
                                 endOfList = transactions.size() < numberItems;
                                 Lg.d(TAG, "addTransactions");
-                                adapterT.addTransactions(transactions, false);
+                                adapterT.addTransactions(transactions, filterListHelper, false);
                                 if (loadMoreFinish != null) {
                                     loadMoreFinish.onLoadMoreFinish();
                                 }
@@ -1045,7 +1048,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
         HashMap<Long, Cabbage> cabbages = mCabbagesDAO.getCabbagesMap();
         Objects.requireNonNull(activity).unsubscribeOnDestroy(
             mTransactionsDAO.getGroupedSumsRx(new FilterListHelper(adapterF.getFilterList(),
-                    mEditTextSearch.getText().toString(), getActivity()), true, adapterT.getSelectedTransactionsIDsAsLong(), getActivity())
+                    mEditTextSearch.getText().toString(), getActivity(), mPreferences, true), true, adapterT.getSelectedTransactionsIDsAsLong(), getActivity())
                     .map(listSumsByCabbage -> SumsManager.formatSums(listSumsByCabbage, cabbages, false))
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -1185,7 +1188,7 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
     private void setupBottomBar() {
         FragmentTransactions.BottomButtonClickListener clickListener = new FragmentTransactions.BottomButtonClickListener();
 
-        boolean scanQR = mPreferences.getBoolean(FgConst.PREF_ENABLE_SCAN_QR, true);
+        boolean scanQR = mPreferences.getBoolean(FgConst.PREF_SCAN_QR_ENABLED, true);
         mButtonScanQR.setVisibility(scanQR ? View.VISIBLE : View.GONE);
 
         mButtonTemplates.setOnClickListener(clickListener);
@@ -1209,6 +1212,12 @@ public class FragmentTransactions extends BaseListFragment implements AdapterFil
                 getActivity().startActivityForResult(intent, RequestCodes.REQUEST_CODE_SCAN_QR);
             } else {
                 Transaction transaction = new Transaction(PrefUtils.getDefDepID(getActivity()));
+                if (getActivity() instanceof ActivityTransactions
+                        && adapterF.getFilterList().size() > 0
+                        && adapterF.getFilterList().get(0).getClass().equals(AccountFilter.class)
+                        && adapterF.getFilterList().get(0).getIDsSet().size() > 0) {
+                    transaction.setAccountID(Long.parseLong(adapterF.getFilterList().get(0).getIDsSet().toArray()[0].toString()));
+                }
                 Intent intent = new Intent(getActivity(), ActivityEditTransaction.class);
                 switch (v.getId()) {
                     case R.id.buttonNewIncome:

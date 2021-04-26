@@ -2,12 +2,15 @@ package com.yoshione.fingen.model;
 
 import android.content.ContentValues;
 import android.os.Parcel;
+import android.text.format.DateFormat;
 
 import com.yoshione.fingen.dao.TransactionsDAO;
 import com.yoshione.fingen.interfaces.IAbstractModel;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -481,6 +484,24 @@ public class Transaction extends BaseModel implements IAbstractModel {
 
     public void setFP(long FP) {
         mFP = FP;
+    }
+
+    public String getQRCode() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("t=");
+        sb.append(DateFormat.format("yyyyMMddTHHmm", getDateTime()).toString());
+        sb.append("&s=");
+        DecimalFormatSymbols symb = new DecimalFormatSymbols();
+        symb.setDecimalSeparator('.');
+        sb.append(new DecimalFormat("#0.00", symb).format(getAmount().doubleValue() * -1));
+        sb.append("&fn=");
+        sb.append(getFN());
+        sb.append("&i=");
+        sb.append(getFD());
+        sb.append("&fp=");
+        sb.append(getFP());
+        sb.append("&n=1");
+        return sb.toString();
     }
 
     @Override

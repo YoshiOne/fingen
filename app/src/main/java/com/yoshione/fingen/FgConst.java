@@ -30,12 +30,14 @@ public class FgConst {
     public static final String TEI_COMMENT = "comment";
 
     //<editor-fold Preference keys
+    public static final String PREF_FONT_SCALE = "font_scale";
     public static final String PREF_CURRENT_ACCOUNT_SET = "current_account_set";
     public static final String PREF_FORCE_UPDATE_ACCOUNTS = "force_update_accounts";
     public static final String PREF_FORCE_UPDATE_SUMMARY = "force_update_summary";
     public static final String PREF_FORCE_UPDATE_TRANSACTIONS = "force_update_transaction";
     public static final String PREF_FORCE_UPDATE_DEBTS = "force_update_debts";
     public static final String PREF_SHOW_CLOSED_ACCOUNTS = "show_closed_accounts";
+    public static final String PREF_SHOW_CLOSED_ACCOUNT_TRANSACTIONS = "show_closed_account_transactions";
     public static final String PREF_SHOW_LAST_SUCCESFUL_BACKUP_TO_DROPBOX = "last_succesful_backup_to_dropbox";
 //    public static final String PREF_SHOW_SHOW_ACCOUNTS_PANEL = "show_accounts_panel";
     public static final String PREF_START_TAB = "start_tab";
@@ -58,21 +60,29 @@ public class FgConst {
     public static final String PREF_SHOW_CLOSED_DEBTS = "show_closed_debts";
     public static final String PREF_DEFAULT_DEPARTMENT = "default_department";
     public static final String PREF_RESET_DEFAULT_DEPARTMENT = "reset_default_department";
-    public static final String PREF_ENABLE_SCAN_QR = "enable_scan_qr";
+    public static final String PREF_SCAN_QR_ENABLED = "scan_qr_enabled";
+    public static final String PREF_SCAN_QR_AUTO_FOCUS = "scan_qr_auto_focus";
+    public static final String PREF_FTS_CLIENT_SECRET = "fts_client_secret";
+    public static final String PREF_FTS_REFRESH_TOKEN = "fts_refresh_token";
+    public static final String PREF_FTS_SESSION_ID = "fts_session_id";
     public static final String PREF_FTS_LOGIN = "fts_login";
     public static final String PREF_FTS_PASS = "fts_pass";
-    public static final String PREF_FTS_SESSION = "fts_sess";
-    public static final String PREF_FTS_TOKEN = "fts_token";
-    public static final String PREF_FTS_DO_NOT_SHOW_AGAIN = "fts_do_not_show_again";
+    public static final String PREF_FTS_EMAIL = "fts_email";
+    public static final String PREF_FTS_NAME = "fts_name";
+    public static final String PREF_FTS_ENABLED = "fts_enabled";
     public static final String PREF_FTS_CREDENTIALS = "fts_credentials";
     public static final String PREF_SHOW_INCOME_EXPENSE_FOR_ACCOUNTS = "show_income_expense_for_accounts";
     public static final String PREF_FIRST_DAY_OF_WEEK = "first_day_of_week";
     public static final String PREF_VALUE_MONDAY = "monday";
     public static final String PREF_VALUE_SUNDAY = "sunday";
+    public static final String PREF_PIN_LENGTH = "pin_length";
+    public static final String PREF_PIN_LOCK_ENABLE = "enable_pin_lock";
     public static final String PREF_PIN_LOCK_TIMEOUT = "pin_lock_timeout";
     public static final String PREF_NEW_ACCOUNT_BUTTON_COUNTER = "new_account_button_counter";
     public static final String PREF_COLORED_TAGS = "colored_tags";
     public static final String PREF_REMEMBER_LAST_ACCOUNT = "remember_last_account";
+    public static final String PREF_VERSION_NEXT_CHECK = "version_next_check";
+    public static final String PREF_VERSION_X_CHECK = "version_x_check";
     //</editor-fold>
 
     //<editor-fold Intent actions

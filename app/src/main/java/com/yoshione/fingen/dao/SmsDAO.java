@@ -10,7 +10,7 @@ import com.yoshione.fingen.model.Sms;
 
 import java.util.List;
 
-public class SmsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class SmsDAO extends BaseDAO<Sms> implements IDaoInheritor {
 
     //<editor-fold desc="log_Incoming_SMS">
     public static final String TABLE = "log_Incoming_SMS";
@@ -65,18 +65,13 @@ public class SmsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         return sms;
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Sms> getAllSmss() {
-        return (List<Sms>) getItems(getTableName(), null, null,
-                null, COL_DATE_TIME + " desc", null);
-    }
-
     public Sms getSmsByID(long id) {
         return (Sms) getModelById(id);
     }
 
     @Override
-    public List<?> getAllModels() {
-        return getAllSmss();
+    public List<Sms> getAllModels() {
+        return getItems(getTableName(), null, null,
+                null, COL_DATE_TIME + " desc", null);
     }
 }

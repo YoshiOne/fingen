@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -22,24 +23,31 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonNotNow"
-        app:layout_constraintTop_toBottomOf="@+id/include">
+        app:layout_constraintBottom_toTopOf="@id/buttonBack"
+        app:layout_constraintTop_toBottomOf="@id/include">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="0dp">
 
-            <TextView
-                android:id="@+id/textViewFtsLoginHtml"
-                android:layout_width="match_parent"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <CheckBox
+                android:id="@+id/checkBoxFTSEnabled"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="@string/msg_fts_login_html"
+                android:text="@string/ttl_fts_enabled"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/include" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayoutPhoneNo"
@@ -52,7 +60,7 @@
                 android:hint="@string/ent_phoneno"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textViewFtsLoginHtml">
+                app:layout_constraintTop_toBottomOf="@id/checkBoxFTSEnabled" >
 
                 <EditText
                     android:id="@+id/editTextPhoneNo"
@@ -61,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="phone"
-                    tools:text="+7912345678" />
+                    tools:text="+7 (123) 456-78-90" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -75,7 +83,7 @@
                 android:hint="@string/ent_code_from_sms"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPhoneNo">
+                app:layout_constraintTop_toBottomOf="@id/textInputLayoutPhoneNo">
 
                 <EditText
                     android:id="@+id/editTextCode"
@@ -84,56 +92,122 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="number"
-                    tools:text="256483" />
+                    tools:text="123456" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="0dp"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutName"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:text="@string/ttl_you_can_edit_later"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayoutCode" />
-
-            <CheckBox
-                android:id="@+id/checkBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_margin"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="@string/ttl_do_not_show_again"
+                android:hint="@string/ent_fts_name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                app:layout_constraintTop_toBottomOf="@id/textInputLayoutCode">
 
-            <TextView
-                android:id="@+id/textViewFtsLoginError"
+                <EditText
+                    android:id="@+id/editTextName"
+                    style="@style/EditableEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="text"
+                    tools:text="Ivan" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_margin="@dimen/activity_margin"
                 android:layout_marginEnd="8dp"
-                android:textColor="#F44336"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:hint="@string/ent_fts_email"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/checkBox" />
+                app:layout_constraintTop_toBottomOf="@id/textInputLayoutName">
+
+                <EditText
+                    android:id="@+id/editTextEmail"
+                    style="@style/EditableEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="textEmailAddress"
+                    tools:text="ivan@example.com" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/textViewInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_margin"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/ttl_fts_info"
+                android:textAppearance="@style/AppTheme.Toolbar.Title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textInputLayoutEmail" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutChecking"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/buttonBack">
+
+        <ImageView
+            android:id="@+id/imageViewCheckingData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@id/textViewCheckingData"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_sync_blue" />
+
+        <TextView
+            android:id="@+id/textViewCheckingData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/ttl_checking_data"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/imageViewCheckingData"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
-        android:id="@+id/buttonNotNow"
+        android:id="@+id/buttonBack"
         style="@style/BlueButtonStyle"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:background="@drawable/selector_gray_button"
-        android:text="@string/ttl_not_now"
+        android:text="@string/ttl_back"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline6"
+        app:layout_constraintEnd_toStartOf="@id/guideline6"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
@@ -141,10 +215,9 @@
         style="@style/BlueButtonStyle"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:text="@string/act_save"
+        android:text="@string/act_check_and_save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline6" />
-
+        app:layout_constraintStart_toStartOf="@id/guideline6" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

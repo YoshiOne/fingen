@@ -1,13 +1,7 @@
 
-package com.yoshione.fingen.fts.models;
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+package com.yoshione.fingen.fts.models.tickets;
 
 public class Document {
-
-    @SerializedName("receipt")
-    @Expose
     private Receipt receipt;
 
     public Receipt getReceipt() {
@@ -18,4 +12,10 @@ public class Document {
         this.receipt = receipt;
     }
 
+    @Override
+    public String toString() {
+        return "Document{" +
+                "receipt=" + receipt +
+                '}';
+    }
 }

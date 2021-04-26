@@ -22,12 +22,23 @@
         style="@style/StyleTextPrimary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginTop="?vertical_spacimg_tr_list"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewIncludeIntoTotals"
         app:layout_constraintStart_toEndOf="@+id/imageViewAccountIcon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Account name" />
+
+    <ImageView
+        android:id="@+id/imageViewIncludeIntoTotals"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_chart_darkblue"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewAccountName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textViewAccountName"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/textViewAccountType"

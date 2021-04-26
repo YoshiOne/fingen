@@ -11,7 +11,7 @@ import com.yoshione.fingen.model.BudgetCatSync;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class BudgetDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class BudgetDAO extends BaseDAO<BudgetCatSync> implements IDaoInheritor {
 
     //<editor-fold desc="ref_budget">
     public static final String TABLE = "ref_budget";
@@ -165,13 +165,8 @@ public class BudgetDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         return budgetCatSync;
     }
 
-    @SuppressWarnings("unchecked")
-    public List<BudgetCatSync> getAllBudgets() throws Exception {
-        return (List<BudgetCatSync>) getItems(getTableName(), null, null, null, null, null);
-    }
-
     @Override
-    public List<?> getAllModels() throws Exception {
-        return getAllBudgets();
+    public List<BudgetCatSync> getAllModels() {
+        return getItems(getTableName(), null, null, null, null, null);
     }
 }

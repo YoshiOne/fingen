@@ -1,12 +1,7 @@
-/*
- * Copyright (c) 2015.
- */
-
 package com.yoshione.fingen.managers;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -22,13 +17,8 @@ import com.yoshione.fingen.model.Category;
 import com.yoshione.fingen.model.Payee;
 import com.yoshione.fingen.utils.BaseNode;
 
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Leonid on 22.11.2015.
- * f
- */
 public class PayeeManager {
 
     public static Category getDefCategory(Payee payee, Context context) {
@@ -41,71 +31,45 @@ public class PayeeManager {
     }
 
     public static void showEditDialog(final Payee payee, final Activity activity) {
-
-        String title;
-        if (payee.getID() < 0) {
-            title = activity.getResources().getString(R.string.ttl_new_payee);
-        } else {
-            title = activity.getResources().getString(R.string.ttl_edit_payee);
-        }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(title);
         final EditText input = (EditText) activity.getLayoutInflater().inflate(R.layout.template_edittext, null);
         input.setText(payee.getName());
-        builder.setView(input);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String newName = input.getText().toString();
-                if (!newName.isEmpty()) {
-                    PayeesDAO payeesDAO = PayeesDAO.getInstance(activity);
-                    payee.setName(input.getText().toString());
-                    try {
-                        payeesDAO.createModel(payee);
-                    } catch (Exception e) {
-                        Toast.makeText(activity, R.string.msg_error_on_write_to_db, Toast.LENGTH_SHORT).show();
+        String title = payee.getID() < 0 ? activity.getResources().getString(R.string.ttl_new_payee) : activity.getResources().getString(R.string.ttl_edit_payee);
+
+        new AlertDialog.Builder(activity).setTitle(title)
+                .setView(input)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    String newName = input.getText().toString();
+                    if (!newName.isEmpty()) {
+                        PayeesDAO payeesDAO = PayeesDAO.getInstance(activity);
+                        payee.setName(input.getText().toString());
+                        try {
+                            payeesDAO.createModel(payee);
+                        } catch (Exception e) {
+                            Toast.makeText(activity, R.string.msg_error_on_write_to_db, Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
-            }
-        });
+                })
+                .show();
 
-        builder.show();
         input.requestFocus();
     }
 
     public static void ShowSelectPayeeDialog(Activity activity, final OnSelectPayeeListener selectPayeeListener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(activity.getResources().getString(R.string.ttl_select_payee));
+        List<Payee> payees = PayeesDAO.getInstance(activity).getAllModels();
+        ArrayAdapter<Payee> arrayAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, payees);
 
-        ArrayAdapter<Payee> arrayAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1);
-        List<Payee> payees = null;
-        try {
-            payees = PayeesDAO.getInstance(activity).getAllPayees();
-        } catch (Exception e) {
-            payees = new ArrayList<>();
-        }
-        arrayAdapter.addAll(payees);
-
-        builder.setNegativeButton(
-                activity.getResources().getString(android.R.string.cancel),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-        builder.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ListView listView = ((AlertDialog) dialog).getListView();
-                Payee payee = (Payee) listView.getAdapter().getItem(which);
-                selectPayeeListener.OnSelectPayee(payee);
-            }
-        });
-        builder.show();
+        new AlertDialog.Builder(activity)
+                .setTitle(activity.getResources().getString(R.string.ttl_select_payee))
+                .setNegativeButton(
+                    activity.getResources().getString(android.R.string.cancel),
+                    (dialog, which) -> dialog.dismiss())
+                .setAdapter(arrayAdapter, (dialog, which) -> {
+                    ListView listView = ((AlertDialog) dialog).getListView();
+                    Payee payee = (Payee) listView.getAdapter().getItem(which);
+                    selectPayeeListener.OnSelectPayee(payee);
+                })
+                .show();
     }
 
     public static long checkPayeeAndCreateIfNecessary(long payeeID, String text, Context context) throws Exception {
@@ -115,8 +79,12 @@ public class PayeeManager {
         } else if (fullName.toLowerCase().equals(text.toLowerCase())) {
             return payeeID;
         } else {
-            List<BaseNode> payeesTree = AbstractModelManager.createModelWithFullName(text, IAbstractModel.MODEL_TYPE_PAYEE, context).getFlatChildrenList();
+            BaseNode rootTree = AbstractModelManager.createModelWithFullName(text, IAbstractModel.MODEL_TYPE_PAYEE, context);
+            List<BaseNode> payeesTree = rootTree.getFlatChildrenList();
             int treeSize = payeesTree.size();
+            if (treeSize == 0 && rootTree.getModel().getID() != -1) {
+                return rootTree.getModel().getID();
+            }
             PayeesDAO payeesDAO = PayeesDAO.getInstance(context);
             long parentID = -1;
             for (BaseNode node : payeesTree) {

@@ -1,7 +1,9 @@
 package com.yoshione.fingen.filters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
+import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.dao.AccountsDAO;
 
 import java.util.ArrayList;
@@ -19,11 +21,15 @@ public class FilterListHelper {
     private List<AbstractFilter> mFilters;
     private String mSearchString;
     private Context mContext;
+    private SharedPreferences mPreferences;
+    private boolean mExcludeFromTotals;
 
-    public FilterListHelper(List<AbstractFilter> filters, String searchString, Context context) {
+    public FilterListHelper(List<AbstractFilter> filters, String searchString, Context context, SharedPreferences preferences, boolean excludeFromTotals) {
         mFilters = filters;
         mSearchString = searchString;
         mContext = context;
+        mPreferences = preferences;
+        mExcludeFromTotals = excludeFromTotals;
     }
 
     public String getSearchString() {
@@ -31,21 +37,32 @@ public class FilterListHelper {
     }
 
     public List<AbstractFilter> getFilters() {
-        //Получаем список ID закрытых счетов
-        HashSet<Long> closedAccountsIDs = AccountsDAO.getInstance(mContext).getClosedAccountsIDs();
-
-        //Создаем новый фильтр
-        AccountFilter filter = new AccountFilter(new Random().nextInt());
-
-        //добавляем в него список ID
-        filter.getIDsSet().addAll(closedAccountsIDs);
-
-        //Указываем, что фильтр инвертировано (НЕ)
-        filter.setInverted(true);
-
-        //Добавляем новый фильтр к списку фильтров и возвращаем общий список
         List<AbstractFilter> filters = new ArrayList<>(mFilters);
-        filters.add(filter);
+        if (mPreferences == null || !mPreferences.getBoolean(FgConst.PREF_SHOW_CLOSED_ACCOUNT_TRANSACTIONS, false)) {
+            //Получаем список ID закрытых счетов
+            HashSet<Long> closedAccountsIDs = AccountsDAO.getInstance(mContext).getClosedAccountsIDs();
+
+            //Создаем новый фильтр
+            AccountFilter filter = new AccountFilter(new Random().nextInt());
+
+            //добавляем в него список ID
+            filter.getIDsSet().addAll(closedAccountsIDs);
+
+            //Указываем, что фильтр инвертировано (НЕ)
+            filter.setInverted(true);
+
+            //Добавляем новый фильтр к списку фильтров и возвращаем общий список
+            filters.add(filter);
+        }
+        if (mExcludeFromTotals) {
+            HashSet<Long> accountsWithoutIncludeIntoTotalsIDs = AccountsDAO.getInstance(mContext).getAccountsWithoutIncludeIntoTotalsIDs();
+            if (accountsWithoutIncludeIntoTotalsIDs.size() > 0) {
+                AccountFilter filter = new AccountFilter(new Random().nextInt());
+                filter.getIDsSet().addAll(accountsWithoutIncludeIntoTotalsIDs);
+                filter.setInverted(true);
+                filters.add(filter);
+            }
+        }
         return filters;
     }
 }

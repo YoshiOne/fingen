@@ -138,6 +138,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/*" />
+            </intent-filter>
             <meta-data
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts"/>
@@ -267,13 +272,11 @@
         <activity
             android:name=".fts.ActivityScanQR"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeLight"
-            android:noHistory="true"/>
+            android:theme="@style/AppThemeLight"/>
         <activity
             android:name=".fts.ActivityFtsLogin"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeLight"
-            android:noHistory="true"/>
+            android:theme="@style/AppThemeLight"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

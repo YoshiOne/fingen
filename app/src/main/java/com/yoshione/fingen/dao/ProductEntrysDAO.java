@@ -18,7 +18,7 @@ import java.util.List;
 
 import io.requery.android.database.sqlite.SQLiteDatabase;
 
-public class ProductEntrysDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class ProductEntrysDAO extends BaseDAO<ProductEntry> implements IDaoInheritor {
 
     //<editor-fold desc="log_Products">
     public static final String TABLE = " log_Products";
@@ -113,9 +113,10 @@ public class ProductEntrysDAO extends BaseDAO implements AbstractDAO, IDaoInheri
         long lastCategoryID = -1;
         String sql = "SELECT CategoryID\n" +
                 "FROM log_Products as p \n" +
-                "LEFT OUTER JOIN log_Transactions t ON CategoryID = Category AND t.[_id] = TransactionID\n" +
-                "INNER JOIN ref_Products rp ON p.[_id] = ProductID\n" +
-                "WHERE rp.SearchString = '"+ Translit.toTranslit(productName).toLowerCase().replaceAll("'", "''") + "'\n" +
+                "LEFT OUTER JOIN log_Transactions t ON t.[_id] = TransactionID\n" + //CategoryID = Category AND
+                "INNER JOIN ref_Products rp ON rp.[_id] = ProductID\n" +
+                // категория могла быть указана лишь для транзакции в целом (CategoryID > 0)
+                "WHERE CategoryID > 0 AND rp.SearchString = '"+ Translit.toTranslit(productName).toLowerCase().replaceAll("'", "''") + "'\n" +
                 "ORDER BY t.DateTime DESC\n" +
                 "LIMIT 1";
         Cursor cursor;

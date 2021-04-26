@@ -235,6 +235,10 @@
 
     <!-- 1. General -->
     <!-- Actions -->
+    <string name="act_check_and_save" formatted="false">Проверить и Сохранить</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
     <string name="act_ask_question" formatted="false">Задать вопрос</string>
 
     <!-- 1. General -->
@@ -248,6 +252,10 @@
     <!-- 1. General -->
     <!-- Actions -->
     <string name="act_new_transfer" formatted="false">Новый перевод</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
+    <string name="act_do_not_remind" formatted="false">Не напоминать</string>
 
     <!-- 1. General -->
     <!-- Titles -->
@@ -343,6 +351,10 @@
 
     <!-- 2. Accounts -->
     <!-- Entities -->
+    <string name="ent_account_isincludeintototals" formatted="false">Включать в итог</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
     <string name="ent_new_account" formatted="false">Новый счет</string>
 
     <!-- 2. Accounts -->
@@ -352,6 +364,10 @@
     <!-- 2. Accounts -->
     <!-- Entities -->
     <string name="ent_all_accounts" formatted="false">Все счета</string>
+
+    <!-- 2. Accounts -->
+    <!-- Entities -->
+    <string name="ent_all_closed_accounts" formatted="false">Все закрытые счета</string>
 
     <!-- 2. Accounts -->
     <!-- Entities -->
@@ -1459,6 +1475,10 @@
 
     <!-- 19. About -->
     <!-- Titles -->
+    <string name="ttl_changelog_new" formatted="false">Новые изменения</string>
+
+    <!-- 19. About -->
+    <!-- Titles -->
     <string name="ttl_third_party_license" formatted="false">Сторонние лицензии</string>
 
     <!-- 19. About -->
@@ -1500,6 +1520,15 @@
     <!-- 20. Settings -->
     <!-- General -->
     <string name="pref_title_theme" formatted="false">Тема оформления</string>
+
+    <!-- 20. Settings -->
+    <!-- General -->
+    <string name="pref_font_scale" formatted="false">Размер шрифта</string>
+
+    <string name="pref_font_scale_0" formatted="false">Мелкий</string>
+    <string name="pref_font_scale_1" formatted="false">Обычный</string>
+    <string name="pref_font_scale_2" formatted="false">Большой</string>
+    <string name="pref_font_scale_3" formatted="false">Огромный</string>
 
     <!-- 20. Settings -->
     <!-- General -->
@@ -1548,6 +1577,10 @@
     <!-- 20. Settings -->
     <!-- Account list -->
     <string name="pref_title_accounts_list_show_closed" formatted="false">Показывать закрытые счета</string>
+
+    <!-- 20. Settings -->
+    <!-- Account list -->
+    <string name="pref_title_show_closed_account_transactions" formatted="false">Показывать транзакции закрытых счетов</string>
 
     <!-- 20. Settings -->
     <!-- Account list -->
@@ -1990,6 +2023,22 @@
     <string name="ttl_attach_receipt_to" formatted="false">Прикрепить чек к транзакции:</string>
 
     <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_flashlight">Вспышка</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_manualFocus">Ручной фокус</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_autoFocus">Автофокус</string>
+
+    <!-- 26. ScanQR -->
+    <!-- Titles -->
+    <string name="ttl_open_gallery">Из галереи</string>
+
+    <!-- 26. ScanQR -->
     <!-- Messages -->
     <string name="msg_camera_permission_was_granted" formatted="false">Доступ к камере предоставлен</string>
 
@@ -2063,6 +2112,26 @@
 
     <!-- 27. Products -->
     <!-- Entities -->
+    <string name="ent_fts_name" formatted="false">Ваше имя</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ent_fts_email" formatted="false">Ваша электронная почта (e-mail)</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ttl_create_account" formatted="false">Создать аккаунт</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ttl_recovery_code" formatted="false">Забыли код?</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
+    <string name="ttl_exit_account" formatted="false">Выйти из аккаунта</string>
+
+    <!-- 27. Products -->
+    <!-- Entities -->
     <string name="ent_unknown_product" formatted="false">Неизвестный товар</string>
 
     <!-- 27. Products -->
@@ -2080,6 +2149,26 @@
     <!-- 27. Products -->
     <!-- Titles -->
     <string name="ttl_loading_products" formatted="false">Загрузка товаров...</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_check_correct" formatted="false">Чек корректен. Добавление в аккаунт ФНС...</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_add_accept_attempt" formatted="false">Чек добавлен. Загрузка товаров... Попытка %d</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_user_incorrect" formatted="false">Пользователь не найден или указанный код устарел! Параметры аутентификации в ФНС сброшены.</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_checking_data" formatted="false">Проверка введенных данных…</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_auth_success" formatted="false">Успешная авторизация</string>
 
     <!-- 27. Products -->
     <!-- Titles -->
@@ -2103,19 +2192,19 @@
 
     <!-- 27. Products -->
     <!-- Titles -->
-    <string name="ttl_not_now" formatted="false">Не сейчас</string>
-
-    <!-- 27. Products -->
-    <!-- Titles -->
-    <string name="ttl_do_not_show_again" formatted="false">Больше не показывать</string>
-
-    <!-- 27. Products -->
-    <!-- Titles -->
-    <string name="ttl_you_can_edit_later" formatted="false">Параметры можно изменить позже в настройках</string>
+    <string name="ttl_back" formatted="false">Назад</string>
 
     <!-- 27. Products -->
     <!-- Titles -->
     <string name="ttl_move_residue" formatted="false">Добавить %s к сумме транзакции</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_fts_enabled" formatted="false">Подключаться к ФНС</string>
+
+    <!-- 27. Products -->
+    <!-- Titles -->
+    <string name="ttl_fts_info" formatted="false">Для получения кода необходимо запустить приложение \"Проверка чеков\", зайти во вкладку \"Профиль\", нажать на кнопку \"Войти\", выбрать пункт \"Номер телефона\", ввести свой номер телефона и нажать на кнопку \"Выслать код\", код придет в смс, вводить в приложении \"Проверка чеков\" его не нужно. После ввода смс кода в этом окне авторизовываться в приложении \"Проверка чеков\" нельзя, иначе слетит авторизация здесь!</string>
 
     <!-- 27. Products -->
     <!-- Messages -->
@@ -2123,15 +2212,11 @@
 
     <!-- 27. Products -->
     <!-- Errors -->
-    <string name="err_loading_products" formatted="false">Не удалось загрузить товары</string>
+    <string name="err_loading_products" formatted="false">Не удалось загрузить товары, попробуйте попозже...</string>
 
     <!-- 27. Products -->
     <!-- Errors -->
     <string name="err_set_product" formatted="false">Нужно указать товар</string>
-
-    <!-- 27. Products -->
-    <!-- Messages -->
-    <string name="msg_fts_login_html" formatted="false"><![CDATA[<p>Для получения возможности скачивания списка товаров из чека:</p><p>&nbsp;&nbsp;&nbsp; 1. Установите приложение "<strong>Проверка касcового чека</strong>" (автор <strong>АО ГНИВЦ</strong>).</p><p>&nbsp;&nbsp;&nbsp; 2. Зарегистрируйтесь в нем при помощи номера мобильного телефона и получите код по смс.</p><p>&nbsp;&nbsp;&nbsp; 3. Введите номер телефона и код в форму ниже.</p><p>&nbsp;&nbsp;&nbsp; 4. Нажмите "<strong>Сохранить</strong>".</p>]]></string>
 
     <!-- 28. EditorConstructor -->
     <!-- Entities -->

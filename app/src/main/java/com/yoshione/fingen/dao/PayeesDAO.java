@@ -12,7 +12,7 @@ import com.yoshione.fingen.utils.SmsParser;
 
 import java.util.List;
 
-public class PayeesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class PayeesDAO extends BaseDAO<Payee> implements IDaoInheritor {
 
     //<editor-fold desc="ref_Payees">
     public static final String TABLE = "ref_Payees";
@@ -100,18 +100,14 @@ public class PayeesDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         super.deleteModel(model, resetTS, context);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Payee> getAllPayees() throws Exception {
-        return (List<Payee>) getItems(getTableName(), null, null, null,
-                COL_ORDER_NUMBER + "," + COL_NAME, null);
-    }
-
     public Payee getPayeeByID(long id) {
         return (Payee) getModelById(id);
     }
 
     @Override
-    public List<?> getAllModels() throws Exception {
-        return getAllPayees();
+    public List<Payee> getAllModels() {
+        return getItems(getTableName(), null, null, null,
+                COL_ORDER_NUMBER + "," + COL_NAME, null);
+
     }
 }

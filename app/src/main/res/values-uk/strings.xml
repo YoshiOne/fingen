@@ -235,6 +235,10 @@
 
     <!-- 1. General -->
     <!-- Actions -->
+    <string name="act_check_and_save" formatted="false">Проверить и Сохранить</string>
+
+    <!-- 1. General -->
+    <!-- Actions -->
     <string name="act_ask_question" formatted="false">Задать вопрос</string>
 
     <!-- 1. General -->
@@ -2079,15 +2083,7 @@
 
     <!-- 27. Products -->
     <!-- Titles -->
-    <string name="ttl_not_now" formatted="false">Не сейчас</string>
-
-    <!-- 27. Products -->
-    <!-- Titles -->
-    <string name="ttl_do_not_show_again" formatted="false">Больше не показывать</string>
-
-    <!-- 27. Products -->
-    <!-- Titles -->
-    <string name="ttl_you_can_edit_later" formatted="false">Параметры можно изменить позже в настройках</string>
+    <string name="ttl_back" formatted="false">Назад</string>
 
     <!-- 27. Products -->
     <!-- Titles -->
@@ -2104,10 +2100,6 @@
     <!-- 27. Products -->
     <!-- Errors -->
     <string name="err_set_product" formatted="false">Нужно указать товар</string>
-
-    <!-- 27. Products -->
-    <!-- Messages -->
-    <string name="msg_fts_login_html" formatted="false"><![CDATA[<p>Для получения возможности скачивания списка товаров из чека:</p><p>&nbsp;&nbsp;&nbsp; 1. Установите приложение "<strong>Проверка касcового чека</strong>" (автор <strong>АО ГНИВЦ</strong>).</p><p>&nbsp;&nbsp;&nbsp; 2. Зарегистрируйтесь в нем при помощи номера мобильного телефона и получите код по смс.</p><p>&nbsp;&nbsp;&nbsp; 3. Введите номер телефона и код в форму ниже.</p><p>&nbsp;&nbsp;&nbsp; 4. Нажмите "<strong>Сохранить</strong>".</p>]]></string>
 
     <!-- 28. EditorConstructor -->
     <!-- Entities -->

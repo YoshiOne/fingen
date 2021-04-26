@@ -5,8 +5,13 @@ import android.view.View;
 
 import androidx.preference.PreferenceManager;
 
+import com.github.omadahealth.lollipin.lib.managers.AppLock;
 import com.github.omadahealth.lollipin.lib.managers.AppLockActivity;
+import com.yoshione.fingen.FgConst;
 import com.yoshione.fingen.R;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by oliviergoutay on 1/14/15.
@@ -77,7 +82,12 @@ public class CustomPinActivity extends AppLockActivity {
     }
 
     @Override
+    public List<Integer> getBackableTypes() {
+        return Arrays.asList(AppLock.ENABLE_PINLOCK, AppLock.DISABLE_PINLOCK, AppLock.CHANGE_PIN, AppLock.CONFIRM_PIN);
+    }
+
+    @Override
     public int getPinLength() {
-        return Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getString("pin_length", "5"));//super.getPinLength();//you can override this method to change the pin length from the default 4
+        return Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString(FgConst.PREF_PIN_LENGTH, "5"));
     }
 }

@@ -44,7 +44,7 @@ import java.util.List;
 
 import io.reactivex.Single;
 
-public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class TransactionsDAO extends BaseDAO<Transaction> implements IDaoInheritor {
 
     //<editor-fold desc="log_Transactions">
     public static final String TABLE = "log_Transactions";
@@ -436,14 +436,8 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
     }
 
     @Override
-    public List<?> getAllModels() {
-        return getAllTransactions();
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<Transaction> getAllTransactions() {
-
-        return (List<Transaction>) getItems(getTableName(), null,
+    public List<Transaction> getAllModels() {
+        return getItems(getTableName(), null,
                 null, null,
                 String.format("%s %s", COL_DATE_TIME, "desc"),
                 null);
@@ -666,14 +660,15 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
                 "FROM log_Transactions AS t " +
                 "   INNER JOIN log_Products prod ON t._id = prod.TransactionID \n" +
                 "   LEFT OUTER JOIN ref_Accounts    AS a  ON t.SrcAccount   = a._id\n" +
-                "   LEFT OUTER JOIN ref_Categories AS c ON CASE WHEN prod.CategoryID < 0 THEN t.Category ELSE prod.CategoryID END = c._id\n" +
+                "   LEFT OUTER JOIN ref_Categories  AS c  ON CASE WHEN prod.CategoryID < 0 THEN t.Category ELSE prod.CategoryID END = c._id\n" +
 //                "   LEFT OUTER JOIN ref_Categories  AS c  ON t.Category     = c._id\n" +
                 "   LEFT OUTER JOIN ref_Payees      AS p  ON t.Payee        = p._id\n" +
                 "   LEFT OUTER JOIN ref_Locations   AS l  ON t.Location     = l._id\n" +
-                "   LEFT OUTER JOIN ref_Projects AS pr ON CASE WHEN prod.ProjectID < 0 THEN t.Project ELSE prod.ProjectID END = pr._id\n" +
+                "   LEFT OUTER JOIN ref_Projects    AS pr  ON CASE WHEN prod.ProjectID < 0 THEN t.Project ELSE prod.ProjectID END = pr._id\n" +
 //                "   LEFT OUTER JOIN ref_Projects    AS pr ON t.Project      = pr._id\n" +
                 "   LEFT OUTER JOIN ref_SimpleDebts AS s  ON t.SimpleDebt   = s._id\n" +
                 "   LEFT OUTER JOIN ref_Departments AS d  ON t.Department   = d._id\n" +
+                "   LEFT OUTER JOIN ref_Products    AS rp  ON prod.ProductID   = rp._id\n" +
                 "WHERE t.Deleted = 0 \n" +
                 "    AND (lower(t.SearchString) LIKE '%" + searchString + "%'\n" +
                 "    OR lower(a.SearchString)   LIKE '%" + searchString + "%'\n" +
@@ -682,6 +677,7 @@ public class TransactionsDAO extends BaseDAO implements AbstractDAO, IDaoInherit
                 "    OR lower(c.SearchString)   LIKE '%" + searchString + "%'\n" +
                 "    OR lower(pr.SearchString)  LIKE '%" + searchString + "%'\n" +
                 "    OR lower(d.SearchString)   LIKE '%" + searchString + "%'\n" +
+                "    OR lower(rp.SearchString)  LIKE '%" + searchString + "%'\n" +
                 "    OR lower(l.SearchString)   LIKE '%" + searchString + "%');";
         //</editor-fold>
         if (BuildConfig.DEBUG) {

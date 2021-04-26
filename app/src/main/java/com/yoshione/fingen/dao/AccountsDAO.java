@@ -18,7 +18,7 @@ import java.util.List;
 
 import io.reactivex.Single;
 
-public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class AccountsDAO extends BaseDAO<Account> implements IDaoInheritor {
 
     //<editor-fold desc="ref_Accounts">
     public static final String TABLE = "ref_Accounts";
@@ -105,6 +105,8 @@ public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
 
         account.setCreditLimit(new BigDecimal(DbUtil.getDouble(cursor, COL_CREDIT_LIMIT)));
 
+        account.setIsIncludeIntoTotals(DbUtil.getBoolean(cursor, COL_IS_INCLUDE_INTO_TOTALS));
+
         return account;
     }
 
@@ -146,18 +148,23 @@ public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         super.deleteModel(model, resetTS, context);
     }
 
-    public Single<List<Account>> getAllAccountsRx(boolean includeClosed) {
-        return Single.fromCallable(() -> getAllAccounts(includeClosed));
+    public Single<List<Account>> getAllAccountsRx(boolean includeClosed, boolean isOnlyClosed) {
+        return Single.fromCallable(() -> getAllAccounts(includeClosed, isOnlyClosed));
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Account> getAllAccounts(boolean includeClosed) throws Exception {
+    public List<Account> getAllAccounts(boolean includeClosed, boolean isOnlyClosed) {
         String selection = null;
         if (!includeClosed) {
             selection = String.format("%s = 0", COL_IS_CLOSED);
+        } else if (isOnlyClosed) {
+            selection = String.format("%s = 1", COL_IS_CLOSED);
         }
 
-        return (List<Account>) getItems(getTableName(), ALL_COLUMNS, selection, null, COL_NAME, null);
+        return getItems(getTableName(), ALL_COLUMNS, selection, null, COL_NAME, null);
+    }
+
+    public List<Account> getAllAccounts(boolean includeClosed) {
+        return getAllAccounts(includeClosed, false);
     }
 
     HashSet<Long> getAccountsIDsByCabbageID(long cabbageID) {
@@ -182,6 +189,25 @@ public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
 
     public HashSet<Long> getClosedAccountsIDs() {
         String where = COL_IS_CLOSED +" != 0 AND " + COL_SYNC_DELETED + " = 0";
+        Cursor cursor = mDatabase.query(getTableName(), new String[]{COL_ID}, where, null, null, null, null);
+        HashSet<Long> ids = new HashSet<>();
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    while (!cursor.isAfterLast()) {
+                        ids.add(cursor.getLong(0));
+                        cursor.moveToNext();
+                    }
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        return ids;
+    }
+
+    public HashSet<Long> getAccountsWithoutIncludeIntoTotalsIDs() {
+        String where = COL_IS_INCLUDE_INTO_TOTALS + " = 0";
         Cursor cursor = mDatabase.query(getTableName(), new String[]{COL_ID}, where, null, null, null, null);
         HashSet<Long> ids = new HashSet<>();
         if (cursor != null) {
@@ -236,7 +262,6 @@ public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
         return array;
     }
 
-    /*synchronized*/
     public void updateOrder(List<Pair<Long, Integer>> pairs) {
         if (pairs.size() == 0) {
             return;
@@ -256,11 +281,10 @@ public class AccountsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
                 TABLE, COL_ORDER, COL_ID, when, COL_ID, ids.toString());
 
         mDatabase.execSQL(sql);
-
     }
 
     @Override
-    public List<?> getAllModels() throws Exception {
+    public List<Account> getAllModels() {
         return getAllAccounts(true);
     }
 }

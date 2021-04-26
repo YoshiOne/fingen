@@ -11,7 +11,7 @@ import com.yoshione.fingen.model.Location;
 
 import java.util.List;
 
-public class LocationsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class LocationsDAO extends BaseDAO<Location> implements IDaoInheritor {
 
     //<editor-fold desc="ref_Locations">
     public static final String TABLE = "ref_Locations";
@@ -90,18 +90,13 @@ public class LocationsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor 
         super.deleteModel(model, resetTS, context);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Location> getAllLocations() {
-        return (List<Location>) getItems(getTableName(), null, null,
-                null, COL_ORDER_NUMBER + "," + COL_NAME, null);
-    }
-
     public Location getLocationByID(long id) {
         return (Location) getModelById(id);
     }
 
     @Override
-    public List<?> getAllModels() {
-        return getAllLocations();
+    public List<Location> getAllModels() {
+        return getItems(getTableName(), null, null,
+                null, COL_ORDER_NUMBER + "," + COL_NAME, null);
     }
 }

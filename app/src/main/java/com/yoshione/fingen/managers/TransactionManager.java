@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2015.
- */
-
 package com.yoshione.fingen.managers;
 
 import android.content.Context;
@@ -36,10 +32,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Created by Leonid on 22.11.2015.
- *
- */
 public class TransactionManager {
 
     public static Category getCategory(Transaction transaction, Context context){
@@ -126,8 +118,8 @@ public class TransactionManager {
         if (transaction == null) {
             transaction = new Transaction(PrefUtils.getDefDepID(context));
         }
-        String items[] = text.split("&");
-        String keyValue[];
+        String[] items = text.split("&");
+        String[] keyValue;
         for (String s : items) {
             keyValue = s.split("=");
             if (keyValue.length == 2) {
@@ -142,25 +134,25 @@ public class TransactionManager {
                         transaction.setDateTime(DateTimeFormatter.getInstance(context).parseDateTimeQrString(dts.replace("T","")));
                         break;
                     case "s":
-                        transaction.setAmount(new BigDecimal(Double.valueOf(keyValue[1])), Transaction.TRANSACTION_TYPE_EXPENSE);
+                        transaction.setAmount(new BigDecimal(Double.parseDouble(keyValue[1])), Transaction.TRANSACTION_TYPE_EXPENSE);
                         break;
                     case "fn":
                         try {
-                            transaction.setFN(Long.valueOf(keyValue[1]));
+                            transaction.setFN(Long.parseLong(keyValue[1]));
                         } catch (NumberFormatException e) {
                             transaction.setFN(0);
                         }
                         break;
                     case "i":
                         try {
-                            transaction.setFD(Long.valueOf(keyValue[1]));
+                            transaction.setFD(Long.parseLong(keyValue[1]));
                         } catch (NumberFormatException e) {
                             transaction.setFD(0);
                         }
                         break;
                     case "fp":
                         try {
-                            transaction.setFP(Long.valueOf(keyValue[1]));
+                            transaction.setFP(Long.parseLong(keyValue[1]));
                         } catch (NumberFormatException e) {
                             transaction.setFP(0);
                         }
@@ -171,12 +163,13 @@ public class TransactionManager {
 
         Transaction lastTransaction = TransactionsDAO.getInstance(context).getLastTransactionForFN(transaction);
 
-        if (transaction.getAccountID() < 0) {
+        if (transaction.getAccountID() < 0 && lastTransaction.getAccountID() >= 0) {
             transaction.setAccountID(lastTransaction.getAccountID());
         }
-        if (transaction.getPayeeID() < 0) {
+        if (transaction.getPayeeID() < 0 && lastTransaction.getPayeeID() >= 0) {
             transaction.setPayeeID(lastTransaction.getPayeeID());
-            transaction.setCategoryID(PayeeManager.getDefCategory(PayeesDAO.getInstance(context).getPayeeByID(transaction.getPayeeID()),context).getID());
+            if (transaction.getCategoryID() < 0)
+                transaction.setCategoryID(PayeeManager.getDefCategory(PayeesDAO.getInstance(context).getPayeeByID(transaction.getPayeeID()),context).getID());
         }
 
         return transaction;

@@ -11,7 +11,7 @@ import com.yoshione.fingen.model.BudgetCreditSync;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class BudgetCreditsDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class BudgetCreditsDAO extends BaseDAO<BudgetCreditSync> implements IDaoInheritor {
 
     //<editor-fold desc="ref_budget_debts">
     public static final String TABLE = "ref_budget_debts";
@@ -125,13 +125,8 @@ public class BudgetCreditsDAO extends BaseDAO implements AbstractDAO, IDaoInheri
         return budgetCreditSync;
     }
 
-    @SuppressWarnings("unchecked")
-    public List<BudgetCreditSync> getAllBudgets() {
-        return (List<BudgetCreditSync>) getItems(getTableName(), null, null, null, null, null);
-    }
-
     @Override
-    public List<?> getAllModels() {
-        return getAllBudgets();
+    public List<BudgetCreditSync> getAllModels() {
+        return getItems(getTableName(), null, null, null, null, null);
     }
 }

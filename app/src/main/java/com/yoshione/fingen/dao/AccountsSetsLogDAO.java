@@ -12,7 +12,7 @@ import com.yoshione.fingen.model.AccountsSetLog;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AccountsSetsLogDAO extends BaseDAO implements AbstractDAO, IDaoInheritor {
+public class AccountsSetsLogDAO extends BaseDAO<AccountsSetLog> implements IDaoInheritor {
 
     //<editor-fold desc="log_Accounts_Sets">
     public static final String TABLE = "log_Accounts_Sets";
@@ -64,9 +64,8 @@ public class AccountsSetsLogDAO extends BaseDAO implements AbstractDAO, IDaoInhe
         return accountsSetLog;
     }
 
-    @SuppressWarnings("unchecked")
-    public List<AccountsSetLog> getAccountsBySet(long accountSetRefID) throws Exception {
-        return (List<AccountsSetLog>) getItems(getTableName(), null,
+    public List<AccountsSetLog> getAccountsBySet(long accountSetRefID) {
+        return getItems(getTableName(), null,
                 String.format("%s = %s", COL_SET_ID, String.valueOf(accountSetRefID)), null, null, null);
     }
 
