@@ -1,6 +1,6 @@
 # Fingen — правила для оркестратора
 
-Android-приложение учёта доходов и расходов (Java, Gradle, AGP 3.3.0, Gradle 5.4.1, JDK 8, compileSdk 28, minSdk 21). Пакет: `com.yoshione.fingen`, код в `app/src/main/java/com/yoshione/fingen/`.
+Android-приложение учёта доходов и расходов (Java, Gradle, AGP 3.3.0, Gradle 5.4.1, compileSdk 28, minSdk 21). Пакет: `com.yoshione.fingen`, код в `app/src/main/java/com/yoshione/fingen/`.
 
 ## Роль оркестратора
 
@@ -48,11 +48,9 @@ Android-приложение учёта доходов и расходов (Java
 
 Android Studio — только редактор. Сборка и тесты идут через Gradle в терминале.
 
-Java 8: не использовать API и синтаксис новее Java 8 (`var`, records, `List.of` и т.п.).
-
 ## Правила для всех агентов
 
-- Код стилистически совпадает с окружающим: именование, комментарии, отступы, идиомы (сейчас — Java 8, butterknife, dagger, RxJava2, support-библиотеки, не AndroidX).
+- Код стилистически совпадает с окружающим: именование, комментарии, отступы, идиомы (сейчас — butterknife, dagger, RxJava2, support-библиотеки, не AndroidX).
 - Не трогать `build/`, `.gradle/`, `.idea/`, `local.properties`, `*.jks`, `keystore.properties`.
 - Не менять `gradle.properties`, версии зависимостей и `build.gradle` без явного решения оркестратора.
 - Не удалять файлы без явного разрешения пользователя.
